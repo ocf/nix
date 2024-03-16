@@ -31,14 +31,10 @@
     # cron entrypoints
     "ocf_backup/backup-zfs.sh".source = ./assets/backup-zfs.sh;
 
-    # TODO: This appears to be unused.
-    "ocf_backup/check-rsnapshot-backups".source = ./assets/check-rsnapshot-backups;
-
     # rsnapshot configs
     "ocf_backup/rsnapshot-zfs-git.conf".source = ./assets/rsnapshot-zfs-git.conf;
     "ocf_backup/rsnapshot-zfs-mysql.conf".source = ./assets/rsnapshot-zfs-mysql.conf;
     "ocf_backup/rsnapshot-zfs-pgsql.conf".source = ./assets/rsnapshot-zfs-pgsql.conf;
     "ocf_backup/rsnapshot-zfs.conf".source = ./assets/rsnapshot-zfs.conf;
-    "ocf_backup/rsnapshot.conf".source = ./assets/rsnapshot.conf;
   };
 }
