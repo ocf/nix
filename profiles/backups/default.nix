@@ -18,8 +18,7 @@
 
   services.cron.enable = true;
   services.cron.systemCronJobs = [
-    "00 03 * * * /usr/local/sbin/backup-zfs.sh | tee -a /var/log/zfs-backup.log"
-    "0 0 * * * chronic /opt/share/backups/prune-old-backups"
+    "00 03 * * * /etc/ocf_backup/backup-zfs.sh | tee -a /var/log/zfs-backup.log"
   ];
 
   environment.etc = {
@@ -31,7 +30,6 @@
 
     # cron entrypoints
     "ocf_backup/backup-zfs.sh".source = ./assets/backup-zfs.sh;
-    "ocf_backup/prune-old-backups".source = ./assets/prune-old-backups;
 
     # TODO: This appears to be unused.
     "ocf_backup/check-rsnapshot-backups".source = ./assets/check-rsnapshot-backups;
