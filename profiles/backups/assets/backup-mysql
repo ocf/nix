@@ -1,0 +1,21 @@
+#!/usr/bin/env bash -eu
+# Creates a MySQL backup in the current directory, with one file per database.
+# Intended to be called by rsnapshot.
+
+# credit:
+# https://mensfeld.pl/2013/04/backup-mysql-dump-all-your-mysql-databases-in-separate-files/
+
+set -euo pipefail
+
+databases=$(mysql --defaults-file=/opt/share/backups/my.cnf -e "SHOW databases;" | \
+		   grep -Ev "(Database|information_schema|performance_schema)")
+
+# shellcheck disable=SC1004,SC2016,SC2086
+parallel -i \
+    sh -c 'mysqldump \
+             --defaults-file=/opt/share/backups/my.cnf \
+             --events \
+             --triggers \
+             --routines \
+             --single-transaction \
+             --databases {} > "mysql-{}-$(date +%F).sql"' -- $databases
