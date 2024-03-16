@@ -58,6 +58,9 @@
   # This can run concurrently with Teleport SSH. We use this just in case!
   services.openssh.enable = true;
 
+  # OCF Kerberos + LDAP
+  ocf.auth.enable = true;
+
   # Teleport
   services.teleport = {
     enable = true;

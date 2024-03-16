@@ -26,7 +26,16 @@
       ];
 
       # Things to pass into every host configuration...
-      hostDefaults.modules = [ ./profiles/base.nix ./profiles/kubernetes ./profiles/kubernetes/ocfcrio.nix ];
+      hostDefaults.modules = [
+        # General
+        ./profiles/base.nix
+        ./profiles/authentication
+
+        # Machine-Specific
+        ./profiles/backups
+        ./profiles/kubernetes
+        ./profiles/kubernetes/ocfcrio.nix
+      ];
 
       # NixOS will compare the currently set hostname to hosts.* and apply the one that matches.
       hosts.adenine.modules = [ ./hosts/adenine.nix ]; # nucleus A

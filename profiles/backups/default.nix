@@ -6,6 +6,10 @@
 # 
 # FIXME: Rewrite this to use a more nixos-style configuration setup.
 {
+  # TODO(remove): This is a hack to get the old backup scripts to work.
+  programs.nix-ld.enable = true;
+  services.envfs.enable = true;
+
   environment.systemPackages = with pkgs; [
     sanoid # for sanoid and syncoid
     moreutils # for chronic
