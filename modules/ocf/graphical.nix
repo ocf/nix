@@ -164,6 +164,13 @@ in
       # temporary ATDP programs
       filezilla
       sublime
+
+      # GNOME stuff
+      libadwaita
+      adwaita-icon-theme
+      adwaita-qt
+      adwaita-qt6
+      gnomeExtensions.dash-to-dock
     ];
 
     fonts.packages = with pkgs; [ meslo-lgs-nf noto-fonts noto-fonts-cjk noto-fonts-extra ];
@@ -172,21 +179,28 @@ in
       enable = true;
 
       # KDE is our primary DE, but have others available
-      desktopManager.plasma6.enable = true;
+      # desktopManager.plasma6.enable = true;
       desktopManager.gnome.enable = true;
-      desktopManager.xfce.enable = true;
+      # desktopManager.xfce.enable = true;
 
       displayManager = {
-        defaultSession = "plasma";
+        # defaultSession = "plasma";
+        defaultSession = "gnome";
 
-        sddm = {
+        # sddm = {
+        #   enable = true;
+        #   theme = "catppuccin-latte";
+        #   wayland.enable = true;
+        #   settings.Users = {
+        #     RememberLastUser = false;
+        #     RememberLastSession = false;
+        #   };
+        # };
+
+        # Enable GDM
+        gdm = {
           enable = true;
-          theme = "catppuccin-latte";
-          wayland.enable = true;
-          settings.Users = {
-            RememberLastUser = false;
-            RememberLastSession = false;
-          };
+          wayland = true;
         };
       };
 
@@ -196,11 +210,33 @@ in
       };
     };
 
+    # GNOME stuff
+    programs.dconf = {
+      enable = true;
+      # GDM user
+      profiles.user.databases = [
+        {
+          settings = {
+            "org/gnome/shell" = {
+              disable-user-extensions = false;
+              enabled-extensions = with pkgs.gnomeExtensions; [
+                dash-to-dock
+              ];
+            };
+            "org/gnome/desktop/interface" = {
+              cursor-theme = "adwaita";
+            };
+          };
+        }
+      ];
+    };
+
     # KDE 6.0.3 has a bug that breaks logging out within the first 60 seconds.
     # This is caused by the DrKonqi service's ExecStartPre command, which sleeps
     # for 60 seconds to let the system settle before monitoring coredumps. We
     # don't need this wait, so we remove the ExecStartPre entry.
-    systemd.user.services.drkonqi-coredump-pickup.unitConfig.ExecStartPre = lib.mkForce [ ];
+    systemd.user.services.drkonqi-coredump-pickup.unitConfig.ExecStartPre = lib.mkForce
+      [ ];
 
     systemd.user.services.wayout = {
       description = "Automatic idle logout manager";
@@ -225,6 +261,7 @@ in
     };
 
     # Conflict override since multiple DEs set this option
-    programs.ssh.askPassword = pkgs.lib.mkForce (lib.getExe pkgs.ksshaskpass.out);
+    programs.ssh.askPassword = pkgs.lib.mkForce
+      (lib.getExe pkgs.ksshaskpass.out);
   };
 }
