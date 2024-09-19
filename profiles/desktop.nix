@@ -61,4 +61,8 @@
 
   security.rtkit.enable = true;
   hardware.pulseaudio.enable = false;
+
+  # Needed for generic Linux programs
+  # More info: https://nix.dev/guides/faq#how-to-run-non-nix-executables
+  programs.nix-ld.enable = true;
 }
