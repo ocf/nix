@@ -26,6 +26,7 @@
     ghc
     rustup
     clang
+    nodejs_22
 
     # File management tools
     zip
@@ -33,6 +34,8 @@
     _7zz
     eza
     tree
+    dua
+    bat
 
     # Other tools
     ocf.utils
