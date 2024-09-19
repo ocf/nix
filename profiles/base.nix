@@ -85,6 +85,7 @@
     file
     vim
     git
+    killall
 
     comma-with-db
   ];
