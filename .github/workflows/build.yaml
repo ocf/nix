@@ -1,0 +1,21 @@
+name: build nixos hosts
+
+on:
+  push:
+    branches:
+      - ci
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: DeterminateSystems/nix-installer-action@v14
+      - uses: DeterminateSystems/magic-nix-cache-action@v8
+      - uses: DeterminateSystems/flake-checker-action@v9
+
+      - name: Build NixOS hosts
+        run: nix develop -c colmena build
