@@ -3,7 +3,7 @@
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
-    flake-utils.url = "github:numtide/flake-utils";
+    systems.url = "github:nix-systems/default";
     nix-index-database = {
       url = "github:nix-community/nix-index-database";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -25,7 +25,7 @@
   outputs =
     { self
     , nixpkgs
-    , flake-utils
+    , systems
     , nix-index-database
     , ocflib
     , ocf-sync-etc
@@ -34,32 +34,23 @@
     , wayout
     }@inputs:
     let
-      # ================
-      # nixpkgs overlays
-      # ================
+      # ============== #
+      # Things to edit #
+      # ============== #
 
-      pkgs-x86_64-linux = import nixpkgs {
-        system = "x86_64-linux";
-        config = { allowUnfree = true; };
-        overlays = [
-          ocflib.overlays.default
-          ocf-sync-etc.overlays.default
-          ocf-pam-trimspaces.overlays.default
-          nix-index-database.overlays.nix-index
-          (final: prev: {
-            ocf.utils = ocf-utils.packages.x86_64-linux.default;
-            ocf.wayout = wayout.packages.x86_64-linux.default;
-            ocf.plasma-applet-commandoutput = prev.callPackage ./pkgs/plasma-applet-commandoutput.nix { };
-            ocf.catppuccin-sddm = prev.qt6Packages.callPackage ./pkgs/catppuccin-sddm.nix { };
-          })
-        ];
-      };
+      overlays = [
+        ocflib.overlays.default
+        ocf-sync-etc.overlays.default
+        ocf-pam-trimspaces.overlays.default
+        nix-index-database.overlays.nix-index
+        (final: prev: {
+          ocf.utils = ocf-utils.packages.x86_64-linux.default;
+          ocf.wayout = wayout.packages.x86_64-linux.default;
+          ocf.plasma-applet-commandoutput = prev.callPackage ./pkgs/plasma-applet-commandoutput.nix { };
+          ocf.catppuccin-sddm = prev.qt6Packages.callPackage ./pkgs/catppuccin-sddm.nix { };
+        })
+      ];
 
-      # ========================
-      # NixOS Host Configuration
-      # ========================
-
-      # Put modules common to all hosts here.
       commonModules = [
         ./modules/ocf/auth.nix
         ./modules/ocf/etc.nix
@@ -71,20 +62,27 @@
         ./profiles/base.nix
       ];
 
-      # Put modules for specific hosts here.
-      hosts = nixpkgs.lib.concatMapAttrs
-        (filename: _: rec {
-          ${nixpkgs.lib.nameFromURL filename "."} = [
-            ./hosts/${filename}
-          ];
+      # ============== #
+      # Glue/Internals #
+      # ============== #
+
+      pkgsFor = system: import nixpkgs {
+        inherit overlays system;
+        config = { allowUnfree = true; };
+      };
+
+      forAllSystems = fn: nixpkgs.lib.genAttrs
+        (import systems)
+        (system: fn (pkgsFor system));
+
+      hosts = nixpkgs.lib.mapAttrs'
+        (filename: _: {
+          name = nixpkgs.lib.nameFromURL filename ".";
+          value = [ ./hosts/${filename} ];
         })
         (builtins.readDir ./hosts);
 
-      # =====================
-      # Colmena Configuration
-      # =====================
-
-      colmena = builtins.mapAttrs
+      colmenaHosts = builtins.mapAttrs
         (host: modules: {
           imports = commonModules ++ modules;
           deployment.targetHost = "${host}.ocf.berkeley.edu";
@@ -93,45 +91,38 @@
           deployment.allowLocalDeployment = true;
         })
         hosts;
+    in
+    {
+      formatter = forAllSystems (pkgs: pkgs.nixpkgs-fmt);
 
-      nixosConfigurations = builtins.mapAttrs
-        (host: config: nixpkgs.lib.nixosSystem {
-          system = "x86_64-linux";
-          pkgs = pkgs-x86_64-linux;
-          modules = config.imports;
+      colmena = colmenaHosts // {
+        meta = {
+          nixpkgs = pkgsFor "x86_64-linux";
           specialArgs = { inherit inputs; };
-        })
-        colmena;
-
-      directOutputs = {
-        inherit nixosConfigurations;
-
-        colmena = colmena // {
-          meta = {
-            nixpkgs = pkgs-x86_64-linux;
-            specialArgs = {
-              inherit inputs;
-            };
-          };
         };
       };
 
-      # =======================
-      # Dev Shell Configuration
-      # =======================
+      packages = forAllSystems (pkgs: {
+        bootstrap = pkgs.callPackage ./bootstrap { };
+      });
 
-      systemOutputs = flake-utils.lib.eachDefaultSystem
-        (system:
-          let pkgs = import nixpkgs { inherit system; }; in
-          {
-            devShells.default = pkgs.mkShell {
-              packages = [ pkgs.colmena ];
-            };
+      devShells = forAllSystems (pkgs: {
+        default = pkgs.mkShell {
+          packages = [ pkgs.colmena ];
+        };
+      });
 
-            packages.bootstrap = pkgs.callPackage ./bootstrap { };
-            formatter = pkgs.nixpkgs-fmt;
-          }
-        );
-    in
-    directOutputs // systemOutputs;
+      # We usually deploy hosts with colmena, but bootstrap currently uses the
+      # nixosConfigurations flake output... this isn't exactly the same, because
+      # colmena adds a couple of things to it, but it's OK for now...
+
+      nixosConfigurations = builtins.mapAttrs
+        (host: colmenaConfig: nixpkgs.lib.nixosSystem {
+          system = "x86_64-linux";
+          pkgs = pkgsFor "x86_64-linux";
+          modules = colmenaConfig.imports;
+          specialArgs = { inherit inputs; };
+        })
+        colmenaHosts;
+    };
 }
