@@ -73,6 +73,9 @@
     pciutils
     usbutils
     cups
+    ipmitool
+    smartmontools
+    nvme-cli
 
     # Networking tools
     rsync
@@ -85,6 +88,7 @@
     file
     vim
     git
+    killall
 
     comma-with-db
   ];
