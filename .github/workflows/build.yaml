@@ -13,7 +13,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: echo "hosts=" && ls hosts | sed -n 's/\.nix$//p' | jq -R | jq -s >> "$GITHUB_OUTPUT"
+      - run: |
+          echo -n "hosts=" >> "$GITHUB_OUTPUT"
+          ls hosts | sed -n 's/\.nix$//p' | jq -R | jq -s >> "$GITHUB_OUTPUT"
 
   build:
     runs-on: ubuntu-latest
