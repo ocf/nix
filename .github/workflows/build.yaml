@@ -9,8 +9,20 @@ permissions:
   contents: write
 
 jobs:
+  define-matrix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          echo "hosts=" >> "$GITHUB_OUTPUT"
+          ls hosts | sed -n 's/\.nix$//p' | jq -R | jq -s >> "$GITHUB_OUTPUT"
+
   build:
     runs-on: ubuntu-latest
+    needs: define-matrix
+    strategy:
+      matrix:
+        host: ${{ fromJSON(needs.define-matrix.outputs.hosts) }}
     steps:
       - uses: actions/checkout@v4
       - uses: DeterminateSystems/nix-installer-action@v14
@@ -18,4 +30,4 @@ jobs:
       - uses: DeterminateSystems/flake-checker-action@v9
 
       - name: Build NixOS hosts
-        run: nix develop -c colmena build --evaluator streaming
+        run: nix develop -c colmena build --on ${{ matrix.host }}
