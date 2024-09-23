@@ -73,6 +73,9 @@
     pciutils
     usbutils
     cups
+    ipmitool
+    smartmontools
+    nvme-cli
 
     # Networking tools
     rsync
