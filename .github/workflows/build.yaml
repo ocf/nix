@@ -14,10 +14,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: |
-          echo -n "hosts=" >> "$GITHUB_OUTPUT"
-          ls hosts | sed -n 's/\.nix$//p' | jq -R | jq -sc >> "$GITHUB_OUTPUT"
-          echo -n "hosts="
-          ls hosts | sed -n 's/\.nix$//p' | jq -R | jq -sc
+          echo -n "hosts=" && ls hosts | sed -n 's/\.nix$//p' | jq -R | jq -sc >> "$GITHUB_OUTPUT"
+          echo -n "hosts=" && ls hosts | sed -n 's/\.nix$//p' | jq -R | jq -sc
 
   test:
     runs-on: ubuntu-latest
