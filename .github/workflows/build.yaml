@@ -18,4 +18,4 @@ jobs:
       - uses: DeterminateSystems/flake-checker-action@v9
 
       - name: Build NixOS hosts
-        run: nix develop -c colmena build
+        run: nix develop -c colmena build --evaluator streaming
