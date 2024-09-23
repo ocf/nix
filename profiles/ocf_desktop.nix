@@ -1,3 +1,5 @@
+# Configuration profile for lab desktops.
+
 { pkgs, lib, inputs, ... }:
 
 {

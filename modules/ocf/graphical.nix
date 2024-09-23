@@ -1,4 +1,4 @@
-# TODO: Move some of this config to profiles/desktop.nix.
+# TODO: Move some of this config to profiles/ocf_desktop.nix.
 # This file should contain basic DE setup but not the big KDE config, etc.
 
 { lib, config, pkgs, ... }:

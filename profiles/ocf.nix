@@ -1,3 +1,5 @@
+# The main OCF configuration profile. Automatically included by all hosts.
+
 { pkgs, lib, inputs, ... }:
 
 {

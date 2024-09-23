@@ -3,7 +3,7 @@
 {
   imports = [
     ../hardware/ridge-pc.nix
-    ../profiles/desktop.nix
+    ../profiles/ocf_desktop.nix
   ];
 
   networking.hostName = "tabitha";

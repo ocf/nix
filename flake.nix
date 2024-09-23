@@ -59,7 +59,7 @@
         ./modules/ocf/network.nix
         ./modules/ocf/shell.nix
         ./modules/ocf/tmpfs-home.nix
-        ./profiles/base.nix
+        ./profiles/ocf.nix
       ];
 
       # ============== #
