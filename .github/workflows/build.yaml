@@ -11,11 +11,14 @@ permissions:
 jobs:
   define-matrix:
     runs-on: ubuntu-latest
+    outputs:
+      hosts: ${{ steps.hosts.outputs.hosts }}
     steps:
       - uses: actions/checkout@v4
       - uses: DeterminateSystems/nix-installer-action@v14
       - uses: DeterminateSystems/flake-checker-action@v9
-      - run: echo "hosts=$(nix eval .#colmena --apply builtins.attrNames --json)" >> "$GITHUB_OUTPUT"
+      - id: hosts
+        run: echo "hosts=$(nix eval .#colmena --apply builtins.attrNames --json)" >> "$GITHUB_OUTPUT"
 
   test:
     runs-on: ubuntu-latest
