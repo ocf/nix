@@ -16,6 +16,14 @@ jobs:
       - run: |
           echo -n "hosts=" >> "$GITHUB_OUTPUT"
           ls hosts | sed -n 's/\.nix$//p' | jq -R | jq -sc >> "$GITHUB_OUTPUT"
+          echo -n "hosts="
+          ls hosts | sed -n 's/\.nix$//p' | jq -R | jq -sc
+
+  test:
+    runs-on: ubuntu-latest
+    needs: define-matrix
+    steps:
+      - run: echo ${{ needs.define-matrix.outputs.hosts }}
 
   build:
     runs-on: ubuntu-latest
