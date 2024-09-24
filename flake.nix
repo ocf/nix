@@ -90,7 +90,6 @@
         (host: modules: {
           imports = commonModules ++ modules;
           deployment.targetHost = "${host}.ocf.berkeley.edu";
-          deployment.buildOnTarget = true;
           deployment.targetUser = "root";
           deployment.allowLocalDeployment = true;
         })
