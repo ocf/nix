@@ -15,7 +15,6 @@
 
   ocf = {
     auth.enable = true;
-    graphical.enable = true;
 
     network = {
       enable = true;
