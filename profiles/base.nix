@@ -17,10 +17,11 @@
 
   boot.loader = {
     systemd-boot = {
-      enable = true;
+      enable = lib.mkDefault true;
       consoleMode = "max";
     };
 
+    grub.enable = lib.mkDefault false;
     efi.canTouchEfiVariables = true;
   };
 
@@ -69,7 +70,8 @@
   environment.systemPackages = with pkgs; [
     # System utilities
     dnsutils
-    cpufrequtils
+    # This doesn't work on aarch64 for some reason
+    # cpufrequtils
     pulseaudio
     pciutils
     usbutils
