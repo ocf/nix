@@ -213,13 +213,13 @@ in
     # GNOME stuff
     programs.dconf = {
       enable = true;
-      # GDM user
       profiles.user.databases = [
         {
+          lockAll = true;
           settings = {
             "org/gnome/shell" = {
               disable-user-extensions = false;
-              enabled-extensions = with pkgs.gnomeExtensions; [
+              enabled-extensions = with pkgs.gnomeExtensions; map (ext: ext.extensionUuid) [
                 dash-to-dock
               ];
             };
