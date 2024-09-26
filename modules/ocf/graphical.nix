@@ -223,6 +223,9 @@ in
                 dash-to-dock
               ];
             };
+            "org/gnome/mutter" = {
+              experimental-features = [ "scale-monitor-framebuffer" ];
+            };
             "org/gnome/desktop/interface" = {
               cursor-theme = "adwaita";
             };
