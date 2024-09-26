@@ -44,10 +44,25 @@
         ocf-pam-trimspaces.overlays.default
         nix-index-database.overlays.nix-index
         (final: prev: {
-          ocf.utils = ocf-utils.packages.x86_64-linux.default;
-          ocf.wayout = wayout.packages.x86_64-linux.default;
+          ocf.utils = ocf-utils.packages.${final.system}.default;
+          ocf.wayout = wayout.packages.${final.system}.default;
           ocf.plasma-applet-commandoutput = prev.callPackage ./pkgs/plasma-applet-commandoutput.nix { };
           ocf.catppuccin-sddm = prev.qt6Packages.callPackage ./pkgs/catppuccin-sddm.nix { };
+        })
+        # GNOME 46: triple-buffering-v4-46
+        # See: https://nixos.wiki/wiki/GNOME#Dynamic_triple_buffering
+        (final: prev: {
+          gnome = prev.gnome.overrideScope (gnomeFinal: gnomePrev: {
+            mutter = gnomePrev.mutter.overrideAttrs (old: {
+                src = final.fetchFromGitLab  {
+                domain = "gitlab.gnome.org";
+                owner = "vanvugt";
+                repo = "mutter";
+                rev = "triple-buffering-v4-46";
+                hash = "sha256-fkPjB/5DPBX06t7yj0Rb3UEuu5b9mu3aS+jhH18+lpI=";
+              };
+            });
+          });
         })
       ];
 
@@ -55,12 +70,16 @@
         ./modules/ocf/auth.nix
         ./modules/ocf/etc.nix
         ./modules/ocf/graphical.nix
+        ./modules/ocf/kiosk.nix
         ./modules/ocf/kubernetes.nix
         ./modules/ocf/network.nix
         ./modules/ocf/shell.nix
         ./modules/ocf/tmpfs-home.nix
         ./profiles/base.nix
       ];
+
+      defaultSystem = "x86_64-linux";
+      overrideSystem = { overheat = "aarch64-linux"; };
 
       # ============== #
       # Glue/Internals #
@@ -86,7 +105,6 @@
         (host: modules: {
           imports = commonModules ++ modules;
           deployment.targetHost = "${host}.ocf.berkeley.edu";
-          deployment.buildOnTarget = true;
           deployment.targetUser = "root";
           deployment.allowLocalDeployment = true;
         })
@@ -97,7 +115,8 @@
 
       colmena = colmenaHosts // {
         meta = {
-          nixpkgs = pkgsFor "x86_64-linux";
+          nixpkgs = pkgsFor defaultSystem;
+          nodeNixpkgs = nixpkgs.lib.mapAttrs (name: pkgsFor) overrideSystem;
           specialArgs = { inherit inputs; };
         };
       };
@@ -117,9 +136,9 @@
       # colmena adds a couple of things to it, but it's OK for now...
 
       nixosConfigurations = builtins.mapAttrs
-        (host: colmenaConfig: nixpkgs.lib.nixosSystem {
-          system = "x86_64-linux";
-          pkgs = pkgsFor "x86_64-linux";
+        (host: colmenaConfig: nixpkgs.lib.nixosSystem rec {
+          system = overrideSystem.${host} or defaultSystem;
+          pkgs = pkgsFor system;
           modules = colmenaConfig.imports;
           specialArgs = { inherit inputs; };
         })

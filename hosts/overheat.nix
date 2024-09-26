@@ -1,16 +1,15 @@
-{ config, pkgs, ... }:
+{ ... }:
 
 {
   imports = [
-    ../hardware/{{{ hostname }}}.nix
+    ../hardware/raspberry-pi-4b.nix
   ];
 
-  networking.hostName = "{{{ hostname }}}";
+  networking.hostName = "overheat";
 
-  fileSystems."/home" = {
-    device = "tmpfs";
-    fsType = "tmpfs";
-    options = [ "size=16G" "mode=755" ];
+  boot.loader = {
+    systemd-boot.enable = false;
+    generic-extlinux-compatible.enable = true;
   };
 
   ocf = {
@@ -18,7 +17,13 @@
 
     network = {
       enable = true;
-      lastOctet = {{{ ip_last_octet }}};
+      lastOctet = 94;
+    };
+
+    kiosk = {
+      enable = true;
+      url = "https://printlist.ocf.berkeley.edu/home";
+      wlrRandrOptions = "--transform 270";
     };
   };
 
@@ -28,5 +33,5 @@
   # this value at the release version of the first install of this system.
   # Before changing this value read the documentation for this option
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
-  system.stateVersion = "{{{ nixos_version }}}"; # Did you read the comment?
+  system.stateVersion = "24.05"; # Did you read the comment?
 }

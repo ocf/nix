@@ -17,10 +17,11 @@
 
   boot.loader = {
     systemd-boot = {
-      enable = true;
+      enable = lib.mkDefault true;
       consoleMode = "max";
     };
 
+    grub.enable = lib.mkDefault false;
     efi.canTouchEfiVariables = true;
   };
 
@@ -51,6 +52,7 @@
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILOssvEhZ5BG96yH4fsjYhY6xKt3AKyuyAD5TXapdQUw" # lemurseven
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILOaJJvOUG08qr3yeeQRB71M30cdPMuO69nsf0CodALa" # jaysa
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHPeJeRNwcPaZupbmCEtUIOuLDfhow35byMp548TUDYP" # rjz
+    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIO6zftyMUeIQVYkRag6CxWqYShjWnErQ24NeaU95Bp2z" # laksith
   ];
 
   programs.ssh = {
@@ -68,7 +70,8 @@
   environment.systemPackages = with pkgs; [
     # System utilities
     dnsutils
-    cpufrequtils
+    # This doesn't work on aarch64 for some reason
+    # cpufrequtils
     pulseaudio
     pciutils
     usbutils
