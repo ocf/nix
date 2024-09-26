@@ -49,6 +49,21 @@
           ocf.plasma-applet-commandoutput = prev.callPackage ./pkgs/plasma-applet-commandoutput.nix { };
           ocf.catppuccin-sddm = prev.qt6Packages.callPackage ./pkgs/catppuccin-sddm.nix { };
         })
+        # GNOME 46: triple-buffering-v4-46
+        # See: https://nixos.wiki/wiki/GNOME#Dynamic_triple_buffering
+        (final: prev: {
+          gnome = prev.gnome.overrideScope (gnomeFinal: gnomePrev: {
+            mutter = gnomePrev.mutter.overrideAttrs (old: {
+                src = final.fetchFromGitLab  {
+                domain = "gitlab.gnome.org";
+                owner = "vanvugt";
+                repo = "mutter";
+                rev = "triple-buffering-v4-46";
+                hash = "sha256-fkPjB/5DPBX06t7yj0Rb3UEuu5b9mu3aS+jhH18+lpI=";
+              };
+            });
+          });
+        })
       ];
 
       commonModules = [
