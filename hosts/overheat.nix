@@ -23,7 +23,7 @@
     kiosk = {
       enable = true;
       url = "https://printlist.ocf.berkeley.edu/home";
-      wlrRandrOptions = "--transform 270";
+      wlrRandrOptions = "--output Unknown-1 --transform 270";
     };
   };
 

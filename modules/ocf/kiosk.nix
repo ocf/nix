@@ -20,17 +20,32 @@ in
   config = lib.mkIf cfg.enable {
     services.cage = {
       enable = true;
-      program = "${lib.getExe pkgs.chromium} --noerrdialogs --disable-infobars --kiosk ${cfg.url}";
+      program = "${lib.getExe pkgs.chromium} --enable-features=UseOzonePlatform --ozone-platform=wayland --noerrdialogs --disable-infobars --kiosk ${cfg.url}";
       user = "ocftv";
     };
 
-    systemd.services.cage-tty1 = {
-      # TODO: Fix this
-      # serviceConfig.ExecStartPost = lib.mkIf
-      #   (cfg.wlrRandrOptions != null)
-      #   "${lib.getExe pkgs.wlr-randr} ${cfg.wlrRandrOptions}";
+    security.pam = {
+      services.cage.makeHomeDir = true;
+    };
 
-      after = [ "network-online.target" "systemd-resolved.service" ];
+    systemd.services = {
+      cage-tty1 = {
+        # Patch the provided service to start only after network is online
+        after = [ "network-online.target" "systemd-resolved.service" ];
+      };
+
+      wlr-randr = {
+        description = "Rotate display after cage startup";
+        after = [ "cage-tty1.service" ];
+        wantedBy = [ "cage-tty1.service" ];
+
+        serviceConfig = {
+          ExecStartPre = "${pkgs.coreutils}/bin/sleep 10";
+          ExecStart = "${lib.getExe pkgs.wlr-randr} ${cfg.wlrRandrOptions}";
+          User = "ocftv";
+          PAMName = "cage";
+        };
+      };
     };
   };
 }
