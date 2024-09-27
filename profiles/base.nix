@@ -123,6 +123,17 @@
 
     fwupd.enable = true;
     avahi.enable = true;
+
+    prometheus = {
+      exporters = {
+        node = {
+          enable = true;
+          enabledCollectors = [ "systemd" ];
+          port = 9100;
+          extraFlags = [ "--collector.ethtool" "--collector.softirqs" "--collector.tcpstat" "--collector.wifi" ];
+        };
+      };
+    };
   };
 
   security.rtkit.enable = true;
