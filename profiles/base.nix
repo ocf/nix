@@ -134,7 +134,7 @@
         };
       };
     };
-};
+  };
 
   security.rtkit.enable = true;
   hardware.pulseaudio.enable = false;
