@@ -51,8 +51,8 @@ in
           "2607:f140:8801::1:${toString cfg.lastOctet}/64"
         ];
         routes = [
-          { routeConfig.Gateway = "169.229.226.1"; }
-          { routeConfig.Gateway = "2607:f140:8801::1"; }
+          { Gateway = "169.229.226.1"; }
+          { Gateway = "2607:f140:8801::1"; }
         ] ++ cfg.extraRoutes;
         dns = [ "169.229.226.22" "2607:f140:8801::1:22" "1.1.1.1" ];
         domains = [ "ocf.berkeley.edu" "ocf.io" ];

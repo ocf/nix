@@ -168,13 +168,13 @@ in
 
     fonts.packages = with pkgs; [ meslo-lgs-nf noto-fonts noto-fonts-cjk noto-fonts-extra ];
 
-    services.xserver = {
-      enable = true;
-
-      # KDE is our primary DE, but have others available
+    services = {
+      # KDE Plasma is our primary DE, but have others available
       desktopManager.plasma6.enable = true;
-      desktopManager.gnome.enable = true;
-      desktopManager.xfce.enable = true;
+      xserver.desktopManager = {
+        gnome.enable = true;
+        xfce.enable = true;
+      };
 
       displayManager = {
         defaultSession = "plasma";
@@ -188,11 +188,6 @@ in
             RememberLastSession = false;
           };
         };
-      };
-
-      xkb = {
-        layout = "us";
-        variant = "";
       };
     };
 
