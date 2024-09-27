@@ -39,22 +39,18 @@
       # ============== #
 
       overlays = [
+        self.overlays.default
         ocflib.overlays.default
         ocf-sync-etc.overlays.default
         ocf-pam-trimspaces.overlays.default
         nix-index-database.overlays.nix-index
-        (final: prev: {
-          ocf.utils = ocf-utils.packages.${final.system}.default;
-          ocf.wayout = wayout.packages.${final.system}.default;
-          ocf.plasma-applet-commandoutput = prev.callPackage ./pkgs/plasma-applet-commandoutput.nix { };
-          ocf.catppuccin-sddm = prev.qt6Packages.callPackage ./pkgs/catppuccin-sddm.nix { };
-        })
+
         # GNOME 46: triple-buffering-v4-46
         # See: https://nixos.wiki/wiki/GNOME#Dynamic_triple_buffering
         (final: prev: {
           gnome = prev.gnome.overrideScope (gnomeFinal: gnomePrev: {
             mutter = gnomePrev.mutter.overrideAttrs (old: {
-                src = final.fetchFromGitLab  {
+              src = final.fetchFromGitLab {
                 domain = "gitlab.gnome.org";
                 owner = "vanvugt";
                 repo = "mutter";
@@ -124,6 +120,13 @@
       packages = forAllSystems (pkgs: {
         bootstrap = pkgs.callPackage ./bootstrap { };
       });
+
+      overlays.default = final: prev: {
+        ocf-utils = ocf-utils.packages.${final.system}.default;
+        ocf-wayout = wayout.packages.${final.system}.default;
+        plasma-applet-commandoutput = final.callPackage ./pkgs/plasma-applet-commandoutput.nix { };
+        catppuccin-sddm = final.qt6Packages.callPackage ./pkgs/catppuccin-sddm.nix { };
+      };
 
       devShells = forAllSystems (pkgs: {
         default = pkgs.mkShell {

@@ -146,8 +146,8 @@ in
     };
 
     environment.systemPackages = with pkgs; [
-      pkgs.ocf.plasma-applet-commandoutput
-      (pkgs.ocf.catppuccin-sddm.override {
+      plasma-applet-commandoutput
+      (catppuccin-sddm.override {
         themeConfig.General = {
           FontSize = 12;
           Background = "/etc/ocf-assets/images/login.png";
@@ -208,7 +208,7 @@ in
       partOf = [ "graphical-session.target" ];
       wantedBy = [ "graphical-session.target" ];
       serviceConfig = {
-        ExecStart = "${pkgs.ocf.wayout}/bin/wayout";
+        ExecStart = "${pkgs.ocf-wayout}/bin/wayout";
         Type = "simple";
         Restart = "on-failure";
       };

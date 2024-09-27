@@ -38,7 +38,7 @@
     bat
 
     # Other tools
-    ocf.utils
+    ocf-utils
     bar
     tmux
     s-tui
