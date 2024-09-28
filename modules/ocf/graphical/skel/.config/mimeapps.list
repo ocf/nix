@@ -1,0 +1,5 @@
+[Added Associations]
+application/pdf=org.gnome.Papers.desktop;
+
+[Default Applications]
+application/pdf=org.gnome.Papers.desktop;

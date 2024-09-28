@@ -161,6 +161,10 @@ in
       vscode-fhs
       kitty
 
+      # Okular prints PDFs weird, requiring force rasterization. Instead, we use
+      # the new GNOME viewer called Papers, patched to add a bigger Print button
+      ocf-papers
+
       # temporary ATDP programs
       filezilla
       sublime
