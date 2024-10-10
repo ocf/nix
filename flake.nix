@@ -126,6 +126,7 @@
         ocf-wayout = wayout.packages.${final.system}.default;
         plasma-applet-commandoutput = final.callPackage ./pkgs/plasma-applet-commandoutput.nix { };
         catppuccin-sddm = final.qt6Packages.callPackage ./pkgs/catppuccin-sddm.nix { };
+        ocf-papers = final.callPackage ./pkgs/ocf-papers.nix { };
       };
 
       devShells = forAllSystems (pkgs: {

@@ -1,0 +1,32 @@
+diff --git a/shell/pps-window.ui b/shell/pps-window.ui
+index 851046be..47bdd05e 100644
+--- a/shell/pps-window.ui
++++ b/shell/pps-window.ui
+@@ -119,6 +119,27 @@
+                         <property name="tooltip-text" translatable="yes">Toggle Sidebar</property>
+                       </object>
+                     </child>
++                    <child type="start">
++                      <object class="GtkButton">
++                        <property name="child">
++                          <object class="GtkBox">
++                            <property name="spacing">6</property>
++                            <child>
++                              <object class="GtkImage">
++                                <property name="icon-name">printer-symbolic</property>
++                              </object>
++                            </child>
++                            <child>
++                              <object class="GtkLabel">
++                                <property name="label" translatable="yes">Print…</property>
++                              </object>
++                            </child>
++                          </object>
++                        </property>
++                        <property name="tooltip_text" translatable="yes">Print…</property>
++                        <property name="action-name">win.print</property>
++                      </object>
++                    </child>
+                     <child type="start">
+                       <object class="PpsPageSelector" id="page_selector">
+                         <property name="model">model</property>
