@@ -103,7 +103,7 @@ def main():
     parser.add_argument(
         "--config-repo-url",
         help="The git repository to download configurations from",
-        default="https://github.com/oliver-ni/ocf-nix-desktops.git",
+        default="https://github.com/ocf/nix.git",
     )
     args = parser.parse_args()
 
