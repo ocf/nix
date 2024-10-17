@@ -123,14 +123,13 @@
 
     fwupd.enable = true;
     avahi.enable = true;
-
     prometheus = {
       exporters = {
         node = {
           enable = true;
-          enabledCollectors = [ "systemd" ];
           port = 9100;
-          extraFlags = [ "--collector.ethtool" "--collector.softirqs" "--collector.tcpstat" "--collector.wifi" ];
+          enabledCollectors = [ "systemd" "textfile"];
+          extraFlags = [ "--collector.ethtool" "--collector.softirqs" "--collector.tcpstat" "--collector.wifi" "--collector.textfile.directory=/var/lib/node_exporter/textfile_collector"];
         };
       };
     };
@@ -148,9 +147,45 @@
       ServerName printhost.ocf.berkeley.edu
       Encryption Always
     '';
+    "prometheus_scripts/logged_in_users_exporter.sh" = {
+      mode = "0555";
+      text = ''
+        #!/bin/bash
+        OUTPUT_FILE="/var/lib/node_exporter/textfile_collector/logged_in_users.prom"
+        who | awk '{print $1}' | sort | uniq | awk '{print "node_logged_in_user{name=\"" $1 "\"} 1"}' > "$OUTPUT_FILE"
+      '';
+    };
   };
 
   environment.etc."nixos/configuration.nix".text = ''
     {}: builtins.abort "This machine is not managed by /etc/nixos. Please use colmena instead."
   '';
+
+  # Create the textfile collector directory
+  systemd.tmpfiles.rules = [
+    "d /var/lib/node_exporter/textfile_collector 0755 root root -"
+    "d /etc/prometheus_scripts 0755 root root -"  
+    "z /etc/prometheus_scripts/logged_in_users_exporter.sh 0755 root root -"  
+  ];
+
+ 
+  systemd.timers."logged_in_users_exporter" = {
+    description = "Run logged_in_users_exporter.sh every 5 seconds";
+    wantedBy = [ "multi-user.target" ];
+      timerConfig = {
+        OnBootSec = "5s";
+        OnUnitActiveSec = "5s";
+        Unit = "logged_in_users_exporter.service";
+      };
+  };
+
+  systemd.services."logged_in_users_exporter" = {
+    description = "Logged in users exporter";
+    script = "bash /etc/prometheus_scripts/logged_in_users_exporter.sh";
+    serviceConfig = {
+      Environment = "PATH=/run/current-system/sw/bin";
+      Type = "oneshot";
+    };
+    wantedBy = [ "multi-user.target" ];
+  };
 }
