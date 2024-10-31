@@ -1,6 +1,10 @@
 { pkgs, lib, inputs, ... }:
 
 {
+
+  # Colmena tagging
+  deployment.tags = [ "desktop" ];
+
   ocf = {
     etc.enable = true;
     graphical.enable = true;
