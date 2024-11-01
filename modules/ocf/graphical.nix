@@ -150,7 +150,7 @@ in
       (catppuccin-sddm.override {
         themeConfig.General = {
           FontSize = 12;
-          Background = "/etc/ocf-assets/images/login-test4.jpg";
+          Background = "/etc/ocf-assets/images/login.jpg";
           Logo = "/etc/ocf-assets/images/penguin.svg";
           CustomBackground = true;
         };
