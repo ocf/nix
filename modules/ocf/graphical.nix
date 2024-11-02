@@ -214,13 +214,15 @@ in
       };
     };
 
-    systemd.user.services.desktoprc = {
-      description = "Source custom rc shared across desktops";
-      after = [ "graphical-session.target" ];
-      partOf = [ "graphical-session.target" ];
-      wantedBy = [ "graphical-session.target" ];
+    systemd.user.services.home-manager = {
+      description = "Load custom home manager config if present";
+      wantedBy = [ "default.target" ];
+      before = [ "graphical-session.target" ];
+      environment = {
+        PATH = lib.mkForce "/run/current-system/sw/bin/";
+      };
       script = ''
-        [ -f ~/remote/.desktoprc ] && . ~/remote/.desktoprc
+        [ -d ~/remote/home-manager ] && nix run home-manager -- init --switch ~/remote/home-manager
       '';
     };
 
