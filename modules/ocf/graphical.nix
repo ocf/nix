@@ -216,13 +216,16 @@ in
 
     systemd.user.services.home-manager = {
       description = "Load custom home manager config if present";
-      wantedBy = [ "default.target" ];
-      before = [ "graphical-session.target" ];
+      # Only load when in a graphical session as SSHFS only mounts during graphical login
+      wantedBy = [ "graphical-session.target" ];
       environment = {
         PATH = lib.mkForce "/run/current-system/sw/bin/";
       };
+      # Will create a template directory if it doesn't exist. Maybe look into creating
+      # our own template repo as currently users will need to edit nix files to get 
+      # custom packages etc...
       script = ''
-        [ -d ~/remote/home-manager ] && nix run home-manager -- init --switch ~/remote/home-manager
+        nix run home-manager -- init --switch ~/remote/.home-manager
       '';
     };
 
