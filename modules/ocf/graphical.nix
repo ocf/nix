@@ -182,8 +182,8 @@ in
         };
       };
     };
-    # NOTE: This will need you to export the desktops on dataloss for it to work.
-    # Will need to have a discussion to see if it's worth it.
+
+    # Mount user homes from NFS
     fileSystems."/remote/home" = {
       device = "homes:/home";
       fsType = "nfs";
