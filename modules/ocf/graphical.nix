@@ -184,8 +184,8 @@ in
     };
     # NOTE: This will need you to export the desktops on dataloss for it to work.
     # Will need to have a discussion to see if it's worth it.
-    fileSystems."/remote" = {
-      device = "homes:/opt/homes";
+    fileSystems."/remote/home" = {
+      device = "homes:/home";
       fsType = "nfs";
       # Don't automatically mount, mount when accessed, umount after 10min idle
       options = [ "noauto" "x-systemd.automount" "x-systemd.idle-timeout=600" ];
