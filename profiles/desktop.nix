@@ -14,6 +14,9 @@
 
   boot.loader.systemd-boot.consoleMode = "max";
 
+  # Enable support SANE scanners
+  hardware.sane.enable = true;
+
   environment.systemPackages = with pkgs; [
     # Editors
     emacs
