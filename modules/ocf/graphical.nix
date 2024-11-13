@@ -171,7 +171,7 @@ in
       sublime
     ];
 
-    fonts.packages = with pkgs; [ meslo-lgs-nf noto-fonts noto-fonts-cjk noto-fonts-extra ];
+    fonts.packages = with pkgs; [ meslo-lgs-nf noto-fonts noto-fonts-cjk-sans noto-fonts-extra ];
 
     services = {
       # KDE Plasma is our primary DE, but have others available
