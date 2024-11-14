@@ -15,6 +15,7 @@
     ocf-utils = {
       url = "github:ocf/utils";
       inputs.nixpkgs.follows = "nixpkgs";
+      inputs.ocflib.follows = "ocflib";
     };
     wayout = {
       url = "github:ocf/wayout";
