@@ -50,9 +50,9 @@ def setup_disk(args):
         check_call(["mkdir", "-p", "/mnt/boot"])
         check_call(["mount", f"{args.device}p1", "/mnt/boot"])
     else:
-        check_call(["mount", f"{args.device}1", "/mnt"])
+        check_call(["mount", f"{args.device}2", "/mnt"])
         check_call(["mkdir", "-p", "/mnt/boot"])
-        check_call(["mount", f"{args.device}2", "/mnt/boot"])
+        check_call(["mount", f"{args.device}1", "/mnt/boot"])
 
 
 def get_iface(args):
