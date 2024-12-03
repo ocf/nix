@@ -102,5 +102,5 @@ in
         ExtensionInstallForcelist = [ "cjpalhdlnbpafiamejdnhcphjbkeiagm" ];
       };
     };
-
-  }
+  };
+};
