@@ -20,7 +20,6 @@ in
   config = lib.mkIf cfg.enable {
 
     programs.sway.enable = true;
-    ocf.browsers.enable = true;
 
     services.greetd = {
       enable = true;

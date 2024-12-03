@@ -30,7 +30,7 @@
           transform 90
         }
       '';
-   };
+    };
   };
 
   # This value determines the NixOS release from which the default

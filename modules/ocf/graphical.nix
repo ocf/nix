@@ -51,8 +51,6 @@ in
 
     programs.steam.enable = true;
 
-    ocf.browsers.enable = true;
-
     environment.systemPackages = with pkgs; [
       plasma-applet-commandoutput
       (catppuccin-sddm.override {

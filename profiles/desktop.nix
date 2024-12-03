@@ -8,6 +8,7 @@
   ocf = {
     etc.enable = true;
     graphical.enable = true;
+    browsers.enable = true;
     tmpfsHome.enable = true;
     network.wakeOnLan.enable = true;
   };
