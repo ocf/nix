@@ -14,6 +14,17 @@
       enable = true;
       lastOctet = 90;
     };
+
+    kiosk = {
+      enable = true;
+      url = "https://labmap.ocf.berkeley.edu";
+      swayOutputConfig = ''
+        output HDMI-A-1 {
+          mode 3840x2160@60Hz
+          scale 2
+        }
+      '';
+    };
   };
 
   fonts.packages = [ pkgs.helvetica-neue-lt-std ];
@@ -33,12 +44,7 @@
       { cmd = "load-module"; args = "module-native-protocol-tcp auth-ip-acl=169.229.226.0/24 auth-anonymous=1"; }
       { cmd = "load-module"; args = "module-zeroconf-publish"; }
     ];
-  };
 
-  services.cage = {
-    enable = true;
-    program = "${lib.getExe pkgs.chromium} --noerrdialogs --disable-infobars --kiosk https://labmap.ocf.berkeley.edu";
-    user = "ocftv";
   };
 
   systemd = {
@@ -46,11 +52,6 @@
       pipewire.wantedBy = [ "default.target" ];
       pipewire-pulse.wantedBy = [ "default.target" ];
     };
-
-    services.cage-tty1.after = [
-      "network-online.target"
-      "systemd-resolved.service"
-    ];
   };
 
   # This value determines the NixOS release from which the default
