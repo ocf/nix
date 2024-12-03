@@ -19,7 +19,7 @@
     kiosk = {
       enable = true;
       url = "https://labmap.ocf.berkeley.edu";
-      swayOutputConfig = ''
+      extraConfig = ''
         output HDMI-A-1 {
           mode 3840x2160@60Hz
           scale 2

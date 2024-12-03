@@ -23,7 +23,7 @@
     kiosk = {
       enable = true;
       url = "https://printlist.ocf.berkeley.edu/home";
-      swayOutputConfig = ''
+      extraConfig = ''
         output Unknown-1 {
           mode 1920x1200@60Hz
           scale 1
