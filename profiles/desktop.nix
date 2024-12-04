@@ -9,7 +9,6 @@ let
   '';
   # override ocf-tv from util
   ocf-tv = pkgs.hiPrio vncScript;
-
 in
 {
 
