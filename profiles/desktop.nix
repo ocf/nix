@@ -9,7 +9,6 @@ let
   '';
   # override ocf-tv from util
   ocf-tv = pkgs.hiPrio vncScript;
-
 in
 {
 
@@ -30,7 +29,6 @@ in
   hardware.sane.enable = true;
 
   environment.systemPackages = with pkgs; [
-
     # Editors
     emacs
     neovim
@@ -67,7 +65,6 @@ in
     # Cosmetics
     neofetch
     pfetch-rs
-
   ];
 
   services = {
