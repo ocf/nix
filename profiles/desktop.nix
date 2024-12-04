@@ -29,7 +29,6 @@ in
   hardware.sane.enable = true;
 
   environment.systemPackages = with pkgs; [
-
     # Editors
     emacs
     neovim
