@@ -102,5 +102,11 @@ in
         ExtensionInstallForcelist = [ "cjpalhdlnbpafiamejdnhcphjbkeiagm" ];
       };
     };
+
+    environment.systemPackages = with pkgs; [
+      google-chrome
+      firefox
+    ];
+
   };
 }

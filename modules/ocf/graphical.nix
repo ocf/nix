@@ -61,8 +61,6 @@ in
           CustomBackground = true;
         };
       })
-      google-chrome
-      firefox
       libreoffice
       vscode-fhs
       kitty
