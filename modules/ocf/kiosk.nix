@@ -2,6 +2,12 @@
 
 let
   cfg = config.ocf.kiosk;
+  swayConfig = pkgs.writeText "kiosk-sway-config" ''
+    ${cfg.extraConfig}
+    include /etc/sway/config
+    exec "${lib.getExe pkgs.chromium} --noerrdialogs --disable-infobars --kiosk ${cfg.url}";
+    exec "${lib.getExe pkgs.wayvnc} localhost";                                    
+  '';
 in
 {
   options.ocf.kiosk = {
@@ -18,30 +24,17 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-
-    programs.sway.enable = true;
-
     services.greetd = {
       enable = true;
       settings = rec {
         initial_session = {
-          command =
-            let
-              swayConfig = pkgs.writeText "kiosk-sway-config" ''                             
-                                                                                               
-                ${cfg.extraConfig}
-                
-                include /etc/sway/config                                                       
-                                                                                               
-                exec "${lib.getExe pkgs.chromium} --noerrdialogs --disable-infobars --kiosk ${cfg.url}";                                                                 
-                exec "${lib.getExe pkgs.wayvnc} localhost";                                    
-              '';
-            in
-            "${lib.getExe pkgs.sway} --config ${swayConfig}";
+          command = "${lib.getExe pkgs.sway} --config ${swayConfig}";
           user = "ocftv";
         };
         default_session = initial_session;
       };
     };
+
+    programs.sway.enable = true;
   };
 }
