@@ -48,11 +48,9 @@
 
   };
 
-  systemd = {
-    user.services = {
-      pipewire.wantedBy = [ "default.target" ];
-      pipewire-pulse.wantedBy = [ "default.target" ];
-    };
+  systemd.user.services = {
+    pipewire.wantedBy = [ "default.target" ];
+    pipewire-pulse.wantedBy = [ "default.target" ];
   };
 
   # This value determines the NixOS release from which the default
