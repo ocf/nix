@@ -9,6 +9,11 @@ in
   };
 
   config = lib.mkIf cfg.enable {
+    environment.systemPackages = with pkgs; [
+      google-chrome
+      firefox
+    ];
+
     programs.firefox = {
       enable = true;
       policies = {
@@ -102,11 +107,5 @@ in
         ExtensionInstallForcelist = [ "cjpalhdlnbpafiamejdnhcphjbkeiagm" ];
       };
     };
-
-    environment.systemPackages = with pkgs; [
-      google-chrome
-      firefox
-    ];
-
   };
 }
