@@ -15,7 +15,6 @@ let
       openssh = pkgs.openssh_gssapi;
     };
   };
-
 in
 {
   options.ocf.graphical = {
