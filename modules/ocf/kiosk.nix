@@ -11,9 +11,9 @@ in
       description = "URL to open the Kiosk with";
     };
     extraConfig = lib.mkOption {
-      type = lib.types.str;
+      type = lib.types.lines;
       description = "Extra config to pass on to sway";
-      default = "";
+      default = '''';
     };
   };
 
