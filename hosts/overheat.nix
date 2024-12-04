@@ -23,7 +23,13 @@
     kiosk = {
       enable = true;
       url = "https://printlist.ocf.berkeley.edu/home";
-      wlrRandrOptions = "--output Unknown-1 --transform 270";
+      extraConfig = ''
+        output Unknown-1 {
+          mode 1920x1200@60Hz
+          scale 1
+          transform 90
+        }
+      '';
     };
   };
 

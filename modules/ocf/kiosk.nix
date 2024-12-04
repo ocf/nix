@@ -2,6 +2,12 @@
 
 let
   cfg = config.ocf.kiosk;
+  swayConfig = pkgs.writeText "kiosk-sway-config" ''
+    ${cfg.extraConfig}
+    include /etc/sway/config
+    exec "${lib.getExe pkgs.chromium} --noerrdialogs --disable-infobars --kiosk ${cfg.url}";
+    exec "${lib.getExe pkgs.wayvnc} localhost";                                    
+  '';
 in
 {
   options.ocf.kiosk = {
@@ -10,42 +16,25 @@ in
       type = lib.types.str;
       description = "URL to open the Kiosk with";
     };
-    wlrRandrOptions = lib.mkOption {
-      type = lib.types.str;
-      description = "Flags to pass to wlr-randr";
-      default = null;
+    extraConfig = lib.mkOption {
+      type = lib.types.lines;
+      description = "Extra config to pass on to sway";
+      default = '''';
     };
   };
 
   config = lib.mkIf cfg.enable {
-    services.cage = {
+    services.greetd = {
       enable = true;
-      program = "${lib.getExe pkgs.chromium} --enable-features=UseOzonePlatform --ozone-platform=wayland --noerrdialogs --disable-infobars --kiosk ${cfg.url}";
-      user = "ocftv";
-    };
-
-    security.pam = {
-      services.cage.makeHomeDir = true;
-    };
-
-    systemd.services = {
-      cage-tty1 = {
-        # Patch the provided service to start only after network is online
-        after = [ "network-online.target" "systemd-resolved.service" ];
-      };
-
-      wlr-randr = {
-        description = "Rotate display after cage startup";
-        after = [ "cage-tty1.service" ];
-        wantedBy = [ "cage-tty1.service" ];
-
-        serviceConfig = {
-          ExecStartPre = "${pkgs.coreutils}/bin/sleep 10";
-          ExecStart = "${lib.getExe pkgs.wlr-randr} ${cfg.wlrRandrOptions}";
-          User = "ocftv";
-          PAMName = "cage";
+      settings = rec {
+        initial_session = {
+          command = "${lib.getExe pkgs.sway} --config ${swayConfig}";
+          user = "ocftv";
         };
+        default_session = initial_session;
       };
     };
+
+    programs.sway.enable = true;
   };
 }

@@ -64,6 +64,7 @@
 
       commonModules = [
         ./modules/ocf/auth.nix
+        ./modules/ocf/browsers.nix
         ./modules/ocf/etc.nix
         ./modules/ocf/graphical.nix
         ./modules/ocf/kiosk.nix

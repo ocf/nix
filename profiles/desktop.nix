@@ -1,5 +1,15 @@
 { pkgs, lib, inputs, ... }:
 
+# TODO: Move this to pkgs/ or come up with a better way to manage custom scripts
+let
+  vncScript = pkgs.writeShellScriptBin "ocf-tv" ''
+    ${lib.getExe pkgs.openssh_gssapi} -M -S /tmp/ocftv-ssh-ctl -fNT -L 5900:localhost:5900 tornado
+    ${lib.getExe pkgs.remmina} --no-tray-icon --disable-news --disable-stats --enable-extra-hardening -c vnc://localhost
+    ${lib.getExe pkgs.openssh_gssapi} -S /tmp/ocftv-ssh-ctl -O exit tornado
+  '';
+  # override ocf-tv from util
+  ocf-tv = pkgs.hiPrio vncScript;
+in
 {
 
   # Colmena tagging
@@ -8,6 +18,7 @@
   ocf = {
     etc.enable = true;
     graphical.enable = true;
+    browsers.enable = true;
     tmpfsHome.enable = true;
     network.wakeOnLan.enable = true;
   };
@@ -49,6 +60,7 @@
     bar
     tmux
     s-tui
+    ocf-tv
 
     # Cosmetics
     neofetch
