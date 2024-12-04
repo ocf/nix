@@ -12,7 +12,7 @@ in
     };
     extraConfig = lib.mkOption {
       type = lib.types.str;
-      description = "extra config to pass on to sway";
+      description = "Extra config to pass on to sway";
       default = "";
     };
   };
