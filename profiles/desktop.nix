@@ -66,7 +66,6 @@ in
     # Cosmetics
     neofetch
     pfetch-rs
-
   ];
 
   services = {
