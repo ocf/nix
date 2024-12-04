@@ -43,7 +43,5 @@ in
         default_session = initial_session;
       };
     };
-
-
   };
 }
