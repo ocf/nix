@@ -5,16 +5,6 @@
 
 let
   cfg = config.ocf.graphical;
-
-  # Default openssh doesn't include GSSAPI support, so we need to override sshfs
-  # to use the openssh_gssapi package instead. This is annoying because the
-  # sshfs package's openssh argument is nested in another layer of callPackage,
-  # so we override callPackage instead to override openssh.
-  sshfs = pkgs.sshfs.override {
-    callPackage = fn: args: (pkgs.callPackage fn args).override {
-      openssh = pkgs.openssh_gssapi;
-    };
-  };
 in
 {
   options.ocf.graphical = {
@@ -23,11 +13,6 @@ in
 
   config = lib.mkIf cfg.enable {
     security.pam = {
-      # Mount ~/remote
-      services.login.pamMount = true;
-      services.login.rules.session.mount.order = config.security.pam.services.login.rules.session.krb5.order + 50;
-      mount.extraVolumes = [ ''<volume fstype="fuse" path="${lib.getExe sshfs}#%(USER)@tsunami:" mountpoint="~/remote/" options="follow_symlinks,UserKnownHostsFile=/dev/null,StrictHostKeyChecking=no" pgrp="ocf" />'' ];
-
       # Trim spaces from username
       services.login.rules.auth.trimspaces = {
         control = "requisite";
@@ -42,6 +27,8 @@ in
     boot = {
       loader.timeout = 0;
       initrd.systemd.enable = true;
+      initrd.supportedFilesystems = [ "nfs" ];
+      kernelModules = [ "nfs" ];
     };
 
     environment.etc = {
@@ -100,6 +87,14 @@ in
       };
     };
 
+    # Mount user homes from NFS
+    fileSystems."/remote/home" = {
+      device = "homes:/home";
+      fsType = "nfs";
+      # Don't automatically mount, mount when accessed, umount after 10min idle
+      options = [ "noauto" "x-systemd.automount" "x-systemd.idle-timeout=600" ];
+    };
+
     # KDE 6.0.3 has a bug that breaks logging out within the first 60 seconds.
     # This is caused by the DrKonqi service's ExecStartPre command, which sleeps
     # for 60 seconds to let the system settle before monitoring coredumps. We
@@ -125,6 +120,29 @@ in
       wantedBy = [ "graphical-session.target" ];
       script = ''
         [ -f ~/remote/.desktoprc ] && . ~/remote/.desktoprc
+      '';
+    };
+
+    systemd.user.services.link-user-remote = {
+      description = "SymLink ~/remote from NFS mount";
+      script = ''
+        if [[ ! -h "$HOME/remote" ]]; then
+          ln -s "/remote$HOME" "$HOME/remote"
+        fi
+      '';
+    };
+
+    systemd.user.services.home-manager = {
+      description = "load custom home manager config if present";
+      requires = [ "link-user-remote.service" ];
+      after = [ "link-user-remote.service" ];
+      wantedBy = [ "default.target" ];
+      path = [ pkgs.nix pkgs.git ];
+      script = ''
+        # Will create a template directory if it doesn't exist. Maybe look into creating
+        # our own template repo as currently users will need to edit nix files to get 
+        # custom packages etc...
+        nix run home-manager -- init --switch ~/remote/.home-manager
       '';
     };
 
