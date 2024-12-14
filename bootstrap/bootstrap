@@ -32,27 +32,20 @@ def setup_disk(args):
     # NOTE: nvme devices can have multiple namespaces, each with their own partitions,
     # use p1 and p2 for this case specifically - not true for SATA SSDs
 
+    def partition(number: int):
+        part_separator = "p" if args.device.startswith("/dev/nvme") else ""
+        return f"{args.device}{part_separator}{number}"
+
     print("Creating filesystems...")
-    if args.device.startswith("/dev/nvme"):
-        check_call(["wipefs", "-a", f"{args.device}p1"])
-        check_call(["wipefs", "-a", f"{args.device}p2"])
-        check_call(["mkfs.fat", f"{args.device}p1", "-n", "boot"])
-        check_call(["mkfs.ext4", f"{args.device}p2", "-L", "nixos"])
-    else:
-        check_call(["wipefs", "-a", f"{args.device}1"])
-        check_call(["wipefs", "-a", f"{args.device}2"])
-        check_call(["mkfs.fat", f"{args.device}1", "-n", "boot"])
-        check_call(["mkfs.ext4", f"{args.device}2", "-L", "nixos"])
+    check_call(["wipefs", "-a", partition(1)])
+    check_call(["wipefs", "-a", partition(2)])
+    check_call(["mkfs.fat", partition(1), "-n", "boot"])
+    check_call(["mkfs.ext4", partition(2), "-L", "nixos"])
 
     print("Mounting filesystems...")
-    if args.device.startswith("/dev/nvme"):
-        check_call(["mount", f"{args.device}p2", "/mnt"])
-        check_call(["mkdir", "-p", "/mnt/boot"])
-        check_call(["mount", f"{args.device}p1", "/mnt/boot"])
-    else:
-        check_call(["mount", f"{args.device}2", "/mnt"])
-        check_call(["mkdir", "-p", "/mnt/boot"])
-        check_call(["mount", f"{args.device}1", "/mnt/boot"])
+    check_call(["mount", partition(2), "/mnt"])
+    check_call(["mkdir", "-p", "/mnt/boot"])
+    check_call(["mount", partition(1), "/mnt/boot"])
 
 
 def get_iface(args):
