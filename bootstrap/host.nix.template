@@ -2,7 +2,7 @@
 
 {
   imports = [
-    ../hardware/{{{ hostname }}}.nix
+    ../../hardware/{{{ hostname }}}.nix
   ];
 
   networking.hostName = "{{{ hostname }}}";

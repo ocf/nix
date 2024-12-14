@@ -2,7 +2,7 @@
 
 {
   imports = [
-    ../hardware/minisforum-new.nix
+    ../../hardware/minisforum-new.nix
   ];
 
   networking.hostName = "tornado";

@@ -2,19 +2,15 @@
 
 {
   imports = [
-    ../hardware/ridge-pc.nix
-    ../profiles/desktop.nix
+    ../../hardware/ridge-pc.nix
+    ../../profiles/desktop.nix
   ];
 
-  networking.hostName = "shadow";
-
-  services.xserver.videoDrivers = [ "nvidia" ];
-  hardware.nvidia.modesetting.enable = true;
-  hardware.nvidia.open = false;
+  networking.hostName = "sunny";
 
   ocf.network = {
     enable = true;
-    lastOctet = 143;
+    lastOctet = 144;
   };
 
   # This value determines the NixOS release from which the default

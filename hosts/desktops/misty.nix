@@ -2,8 +2,8 @@
 
 {
   imports = [
-    ../hardware/ridge-pc.nix
-    ../profiles/desktop.nix
+    ../../hardware/ridge-pc.nix
+    ../../profiles/desktop.nix
   ];
 
   networking.hostName = "misty";

@@ -2,15 +2,15 @@
 
 {
   imports = [
-    ../hardware/ridge-pc.nix
-    ../profiles/desktop.nix
+    ../../hardware/ridge-pc.nix
+    ../../profiles/desktop.nix
   ];
 
-  networking.hostName = "bolt";
+  networking.hostName = "marshmallow";
 
   ocf.network = {
     enable = true;
-    lastOctet = 154;
+    lastOctet = 151;
   };
 
   # This value determines the NixOS release from which the default

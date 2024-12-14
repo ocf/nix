@@ -1,13 +1,13 @@
 { ... }:
 
 {
-  imports = [ ../hardware/nucleus.nix ];
+  imports = [ ../../hardware/nucleus.nix ];
 
-  networking.hostName = "thymine";
+  networking.hostName = "adenine";
 
   ocf.network = {
     enable = true;
-    lastOctet = 10;
+    lastOctet = 7;
     extraRoutes = [
       # We use these subnets for Kubernetes, they aren't part of the main /64
       { Destination = "2607:f140:8801:1::/64"; Scope = "link"; }
@@ -21,7 +21,7 @@
   };
 
   services.ocfKubernetes.enable = true;
-  services.ocfKubernetes.isLeader = false;
+  services.ocfKubernetes.isLeader = true;
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions

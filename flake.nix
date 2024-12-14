@@ -91,16 +91,24 @@
         (import systems)
         (system: fn (pkgsFor system));
 
-      hosts = nixpkgs.lib.mapAttrs'
+      readGroup = group: nixpkgs.lib.mapAttrs'
         (filename: _: {
           name = nixpkgs.lib.nameFromURL filename ".";
-          value = [ ./hosts/${filename} ];
+          value = {
+            inherit group;
+            modules = [ ./hosts/${group}/${filename} ];
+          };
         })
+        (builtins.readDir ./hosts/${group});
+
+      hosts = nixpkgs.lib.concatMapAttrs
+        (group: _: readGroup group)
         (builtins.readDir ./hosts);
 
       colmenaHosts = builtins.mapAttrs
-        (host: modules: {
+        (host: { modules, group }: {
           imports = commonModules ++ modules;
+          deployment.tags = [ group ];
           deployment.targetHost = "${host}.ocf.berkeley.edu";
           deployment.targetUser = "root";
           deployment.allowLocalDeployment = true;

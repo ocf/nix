@@ -2,7 +2,7 @@
 
 {
   imports = [
-    ../hardware/raspberry-pi-4b.nix
+    ../../hardware/raspberry-pi-4b.nix
   ];
 
   networking.hostName = "overheat";

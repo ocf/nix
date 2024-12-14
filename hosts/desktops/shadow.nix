@@ -2,11 +2,11 @@
 
 {
   imports = [
-    ../hardware/snowball.nix
-    ../profiles/desktop.nix
+    ../../hardware/ridge-pc.nix
+    ../../profiles/desktop.nix
   ];
 
-  networking.hostName = "snowball";
+  networking.hostName = "shadow";
 
   services.xserver.videoDrivers = [ "nvidia" ];
   hardware.nvidia.modesetting.enable = true;
@@ -14,7 +14,7 @@
 
   ocf.network = {
     enable = true;
-    lastOctet = 140;
+    lastOctet = 143;
   };
 
   # This value determines the NixOS release from which the default

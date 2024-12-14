@@ -2,15 +2,15 @@
 
 {
   imports = [
-    ../hardware/ridge-pc.nix
-    ../profiles/desktop.nix
+    ../../hardware/ridge-pc.nix
+    ../../profiles/desktop.nix
   ];
 
-  networking.hostName = "patches";
+  networking.hostName = "gozer";
 
   ocf.network = {
     enable = true;
-    lastOctet = 159;
+    lastOctet = 160;
   };
 
   # This value determines the NixOS release from which the default

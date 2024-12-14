@@ -1,7 +1,7 @@
 { ... }:
 
 {
-  imports = [ ../hardware/nucleus.nix ];
+  imports = [ ../../hardware/nucleus.nix ];
 
   networking.hostName = "cytosine";
 

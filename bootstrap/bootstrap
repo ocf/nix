@@ -88,7 +88,7 @@ def write_configs(args):
     print("Writing configurations...")
     with open(CONFIG_PATH / "hardware" / f"{args.hostname}.nix", "w") as f:
         f.write(hardware_config)
-    with open(CONFIG_PATH / "hosts" / f"{args.hostname}.nix", "w") as f:
+    with open(CONFIG_PATH / "hosts" / "bootstrap" / f"{args.hostname}.nix", "w") as f:
         f.write(system_config)
 
     check_call(["git", "add", "."], cwd=CONFIG_PATH)
