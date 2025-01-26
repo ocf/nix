@@ -1,5 +1,5 @@
-diff --git a/shell/pps-window.ui b/shell/pps-window.ui
-index 4344ffc6..00000000 100644
+diff --git a/shell/pps-document-view.ui b/shell/pps-document-view.ui
+index 6c1c89cea..c8e59fead 100644
 --- a/shell/pps-document-view.ui
 +++ b/shell/pps-document-view.ui
 @@ -211,6 +211,27 @@
