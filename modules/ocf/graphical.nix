@@ -56,7 +56,7 @@ in
       (catppuccin-sddm.override {
         themeConfig.General = {
           FontSize = 12;
-          Background = "/etc/ocf-assets/images/login-winter.png";
+          Background = "/etc/ocf-assets/images/login.png";
           #Logo = "/etc/ocf-assets/images/penguin.svg";
           CustomBackground = true;
         };
@@ -65,6 +65,7 @@ in
       vscode-fhs
       kitty
       prismlauncher
+      unciv
 
       # Okular prints PDFs weird, requiring force rasterization. Instead, we use
       # the new GNOME viewer called Papers, patched to add a bigger Print button
@@ -75,7 +76,7 @@ in
       sublime
     ];
 
-    fonts.packages = with pkgs; [ meslo-lgs-nf noto-fonts noto-fonts-cjk noto-fonts-extra ];
+    fonts.packages = with pkgs; [ meslo-lgs-nf noto-fonts noto-fonts-cjk-sans noto-fonts-extra ];
 
     services = {
       # KDE Plasma is our primary DE, but have others available

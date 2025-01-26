@@ -1,70 +1,23 @@
 {
   "nodes": {
-    "cargo2nix": {
-      "inputs": {
-        "flake-compat": "flake-compat",
-        "flake-utils": [
-          "wayout",
-          "flake-utils"
-        ],
-        "nixpkgs": [
-          "wayout",
-          "nixpkgs"
-        ],
-        "rust-overlay": "rust-overlay"
-      },
+    "crane": {
       "locked": {
-        "lastModified": 1705129117,
-        "narHash": "sha256-LgdDHibvimzYhxBK3kxCk2gAL7k4Hyigl5KI0X9cijA=",
-        "owner": "cargo2nix",
-        "repo": "cargo2nix",
-        "rev": "ae19a9e1f8f0880c088ea155ab66cee1fa001f59",
+        "lastModified": 1729273024,
+        "narHash": "sha256-Mb5SemVsootkn4Q2IiY0rr9vrXdCCpQ9HnZeD/J3uXs=",
+        "owner": "ipetkov",
+        "repo": "crane",
+        "rev": "fa8b7445ddadc37850ed222718ca86622be01967",
         "type": "github"
       },
       "original": {
-        "owner": "cargo2nix",
-        "ref": "release-0.11.0",
-        "repo": "cargo2nix",
-        "type": "github"
-      }
-    },
-    "flake-compat": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1696426674,
-        "narHash": "sha256-kvjfFW7WAETZlt09AgDn1MrtKzP7t90Vf7vypd3OL1U=",
-        "owner": "edolstra",
-        "repo": "flake-compat",
-        "rev": "0f9255e01c2351cc7d116c072cb317785dd33b33",
-        "type": "github"
-      },
-      "original": {
-        "owner": "edolstra",
-        "repo": "flake-compat",
+        "owner": "ipetkov",
+        "repo": "crane",
         "type": "github"
       }
     },
     "flake-utils": {
       "inputs": {
         "systems": "systems"
-      },
-      "locked": {
-        "lastModified": 1710146030,
-        "narHash": "sha256-SZ5L6eA7HJ/nmkzGG7/ISclqe6oZdOZTNoesiInkXPQ=",
-        "owner": "numtide",
-        "repo": "flake-utils",
-        "rev": "b1d9ab70662946ef0850d488da1c9019f3a9752a",
-        "type": "github"
-      },
-      "original": {
-        "owner": "numtide",
-        "repo": "flake-utils",
-        "type": "github"
-      }
-    },
-    "flake-utils_2": {
-      "inputs": {
-        "systems": "systems_3"
       },
       "locked": {
         "lastModified": 1710146030,
@@ -87,11 +40,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1725765290,
-        "narHash": "sha256-hwX53i24KyWzp2nWpQsn8lfGQNCP0JoW/bvQmcR1DPY=",
+        "lastModified": 1737861961,
+        "narHash": "sha256-LIRtMvAwLGb8pBoamzgEF67oKlNPz4LuXiRPVZf+TpE=",
         "owner": "nix-community",
         "repo": "nix-index-database",
-        "rev": "642275444c5a9defce57219c944b3179bf2adaa9",
+        "rev": "79b7b8eae3243fc5aa9aad34ba6b9bbb2266f523",
         "type": "github"
       },
       "original": {
@@ -102,11 +55,11 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1725432240,
-        "narHash": "sha256-+yj+xgsfZaErbfYM3T+QvEE2hU7UuE+Jf0fJCJ8uPS0=",
+        "lastModified": 1737746512,
+        "narHash": "sha256-nU6AezEX4EuahTO1YopzueAXfjFfmCHylYEFCagduHU=",
         "owner": "nixos",
         "repo": "nixpkgs",
-        "rev": "ad416d066ca1222956472ab7d0555a6946746a80",
+        "rev": "825479c345a7f806485b7f00dbe3abb50641b083",
         "type": "github"
       },
       "original": {
@@ -133,11 +86,11 @@
     },
     "ocf-sync-etc": {
       "locked": {
-        "lastModified": 1725494700,
-        "narHash": "sha256-ksi4WuUqf3F2hmsDoXcwyqYcp4OG7xlQB98YbzT45i8=",
+        "lastModified": 1737577819,
+        "narHash": "sha256-T17PBhzcA/+ctSsKy6PF+eJzEutBkXzvLPRzC41W8YY=",
         "owner": "ocf",
         "repo": "etc",
-        "rev": "b0e58027c6d1f820a69f2d62c634847d7a59b73c",
+        "rev": "299fe0efe56fb5f817b1c3efcbdf47e4adcae6df",
         "type": "github"
       },
       "original": {
@@ -155,11 +108,11 @@
         "ocflib": "ocflib"
       },
       "locked": {
-        "lastModified": 1725593804,
-        "narHash": "sha256-qk0fdxphVWYInUJBTDJdvDA1Bar3cgj/+nPQwSi7INM=",
+        "lastModified": 1727328598,
+        "narHash": "sha256-xFZ/tmDAFgPjy/wWDw0f/1SGJRAnsHaRz2GTpemy/14=",
         "owner": "ocf",
         "repo": "utils",
-        "rev": "d81d45e8beff4b9033daa7c361bface7b4ca0f76",
+        "rev": "2df263b2af76cf5dc4017265d708a945186872eb",
         "type": "github"
       },
       "original": {
@@ -185,11 +138,11 @@
     },
     "ocflib_2": {
       "locked": {
-        "lastModified": 1725593703,
-        "narHash": "sha256-Dr7JLUrCS1yqigBrTsoW8mi4gyxju0WQMr9y8Dw7kiA=",
+        "lastModified": 1731556321,
+        "narHash": "sha256-nbfwCM8FCwi2G61X3nNq4hP5W2HOgdXwFoPRmgAFPmI=",
         "owner": "ocf",
         "repo": "ocflib",
-        "rev": "7722514cb67160cee0e66fa8851add98b20453cc",
+        "rev": "c306739c418ccb7ed2690a0412ac0e4218e325a8",
         "type": "github"
       },
       "original": {
@@ -208,33 +161,6 @@
         "ocflib": "ocflib_2",
         "systems": "systems_2",
         "wayout": "wayout"
-      }
-    },
-    "rust-overlay": {
-      "inputs": {
-        "flake-utils": [
-          "wayout",
-          "cargo2nix",
-          "flake-utils"
-        ],
-        "nixpkgs": [
-          "wayout",
-          "cargo2nix",
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "lastModified": 1705112162,
-        "narHash": "sha256-IAM0+Uijh/fwlfoeDrOwau9MxcZW3zeDoUHc6Z3xfqM=",
-        "owner": "oxalica",
-        "repo": "rust-overlay",
-        "rev": "9e0af26ffe52bf955ad5575888f093e41fba0104",
-        "type": "github"
-      },
-      "original": {
-        "owner": "oxalica",
-        "repo": "rust-overlay",
-        "type": "github"
       }
     },
     "systems": {
@@ -284,18 +210,18 @@
     },
     "wayout": {
       "inputs": {
-        "cargo2nix": "cargo2nix",
-        "flake-utils": "flake-utils_2",
+        "crane": "crane",
         "nixpkgs": [
           "nixpkgs"
-        ]
+        ],
+        "systems": "systems_3"
       },
       "locked": {
-        "lastModified": 1712024116,
-        "narHash": "sha256-XPA+4cxeqYuMnma7rPuqGQ5CukNq+snIYZeDgqUseD0=",
+        "lastModified": 1729631936,
+        "narHash": "sha256-DihwkA66/QuE3JEL39wgcCHM0ckByyM/cXA4V4SYb4E=",
         "owner": "ocf",
         "repo": "wayout",
-        "rev": "b9f8a8d2e2cf643eaba403922dd28500c0eccd4a",
+        "rev": "7a156496688a44aab1a2dbc8230087e5265ff3a6",
         "type": "github"
       },
       "original": {
