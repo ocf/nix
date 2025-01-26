@@ -1,7 +1,7 @@
 diff --git a/shell/pps-window.ui b/shell/pps-window.ui
 index 4344ffc6..00000000 100644
---- a/shell/resources/pps-document-view.ui
-+++ b/shell/resources/pps-document-view.ui
+--- a/shell/pps-document-view.ui
++++ b/shell/pps-document-view.ui
 @@ -211,6 +211,27 @@
                      <property name="tooltip-text" translatable="yes">Toggle Sidebar</property>
                    </object>
