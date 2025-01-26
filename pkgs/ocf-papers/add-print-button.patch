@@ -28,5 +28,5 @@ index 4344ffc6..00000000 100644
 +                  </object>
 +                </child>
                  <child type="end">
-                  <object class="GtkMenuButton" id="document_menu_button">
-                    <property name="icon-name">view-more-symbolic</property>
+                   <object class="GtkMenuButton" id="document_menu_button">
+                     <property name="icon-name">view-more-symbolic</property>
