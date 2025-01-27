@@ -1,6 +1,6 @@
-{ kdePackages.okular }:
+{ okular }:
 
-kdePackages.okular.overrideAttrs {
+okular.overrideAttrs {
   # toggle force rasterization by default
   patches = [ ./ocf-okular/force-rasterization.patch ];
 }
