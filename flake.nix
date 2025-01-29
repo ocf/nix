@@ -141,7 +141,7 @@
 
       devShells = forAllSystems (pkgs: {
         default = pkgs.mkShell {
-          packages = [ pkgs.colmena ];
+          packages = with pkgs; [ colmena git ];
         };
       });
 
