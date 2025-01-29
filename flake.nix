@@ -4,6 +4,11 @@
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     systems.url = "github:nix-systems/default";
+
+    colmena = {
+      url = "github:zhaofengli/colmena";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     nix-index-database = {
       url = "github:nix-community/nix-index-database";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -26,6 +31,7 @@
     { self
     , nixpkgs
     , systems
+    , colmena
     , nix-index-database
     , ocflib
     , ocf-sync-etc
@@ -141,7 +147,10 @@
 
       devShells = forAllSystems (pkgs: {
         default = pkgs.mkShell {
-          packages = with pkgs; [ colmena git ];
+          packages = [
+            pkgs.git
+            colmena.packages.${pkgs.system}.colmena
+          ];
         };
       });
 
