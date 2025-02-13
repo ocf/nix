@@ -53,6 +53,7 @@
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILOaJJvOUG08qr3yeeQRB71M30cdPMuO69nsf0CodALa" # jaysa
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHPeJeRNwcPaZupbmCEtUIOuLDfhow35byMp548TUDYP" # rjz
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIO6zftyMUeIQVYkRag6CxWqYShjWnErQ24NeaU95Bp2z" # laksith
+    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDJ12A/hT19X7al32GiCWa4OYIp5kC+pC0YeeccIi+BQ" # ronitnath
   ];
 
   programs.ssh = {
@@ -150,20 +151,20 @@
     "prometheus_scripts/logged_in_users_exporter.sh" = {
       mode = "0555";
       text = ''
-	#!/bin/bash
-	OUTPUT_FILE="/var/lib/node_exporter/textfile_collector/logged_in_users.prom"
-	> "$OUTPUT_FILE"
-	loginctl list-sessions --no-legend | while read -r session_id uid user seat leader class tty idle since; do
-	   if [[ $class == "user" ]] && [[ $seat == "seat0" ]] && [[ $idle == "no" ]]; then
-	      state=$(loginctl show-session "$session_id" -p State --value)
-	      if [[ $state == "active" ]]; then
-		 locked_status="unlocked"
-	      else
-		 locked_status="locked"
-	      fi
-	   echo "node_logged_in_user{name=\"$user\", state=\"$locked_status\"} 1" > $OUTPUT_FILE
-	   fi
-	done
+        #!/bin/bash
+        OUTPUT_FILE="/var/lib/node_exporter/textfile_collector/logged_in_users.prom"
+        > "$OUTPUT_FILE"
+        loginctl list-sessions --no-legend | while read -r session_id uid user seat leader class tty idle since; do
+          if [[ $class == "user" ]] && [[ $seat == "seat0" ]] && [[ $idle == "no" ]]; then
+            state=$(loginctl show-session "$session_id" -p State --value)
+            if [[ $state == "active" ]]; then
+              locked_status="unlocked"
+            else
+              locked_status="locked"
+            fi
+          echo "node_logged_in_user{name=\"$user\", state=\"$locked_status\"} 1" > $OUTPUT_FILE
+          fi
+        done
       '';
     };
   };

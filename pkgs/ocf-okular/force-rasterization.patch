@@ -1,0 +1,12 @@
+diff --git a/generators/poppler/generator_pdf.cpp b/generators/poppler/generator_pdf.cpp
+index 95442f6..b218cd4 100644
+--- a/generators/poppler/generator_pdf.cpp
++++ b/generators/poppler/generator_pdf.cpp
+@@ -121,6 +121,7 @@ public:
+         layout->addStretch(1);
+ 
+         setPrintAnnots(true); // Default value
++        setPrintForceRaster(true); // OCF patch
+     }
+ 
+     bool ignorePrintMargins() const override

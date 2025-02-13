@@ -4,6 +4,11 @@
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     systems.url = "github:nix-systems/default";
+
+    colmena = {
+      url = "github:zhaofengli/colmena";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     nix-index-database = {
       url = "github:nix-community/nix-index-database";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -26,6 +31,7 @@
     { self
     , nixpkgs
     , systems
+    , colmena
     , nix-index-database
     , ocflib
     , ocf-sync-etc
@@ -64,6 +70,7 @@
 
       commonModules = [
         ./modules/ocf/auth.nix
+        ./modules/ocf/browsers.nix
         ./modules/ocf/etc.nix
         ./modules/ocf/graphical.nix
         ./modules/ocf/kiosk.nix
@@ -90,16 +97,24 @@
         (import systems)
         (system: fn (pkgsFor system));
 
-      hosts = nixpkgs.lib.mapAttrs'
+      readGroup = group: nixpkgs.lib.mapAttrs'
         (filename: _: {
           name = nixpkgs.lib.nameFromURL filename ".";
-          value = [ ./hosts/${filename} ];
+          value = {
+            inherit group;
+            modules = [ ./hosts/${group}/${filename} ];
+          };
         })
+        (builtins.readDir ./hosts/${group});
+
+      hosts = nixpkgs.lib.concatMapAttrs
+        (group: _: readGroup group)
         (builtins.readDir ./hosts);
 
       colmenaHosts = builtins.mapAttrs
-        (host: modules: {
+        (host: { modules, group }: {
           imports = commonModules ++ modules;
+          deployment.tags = [ group ];
           deployment.targetHost = "${host}.ocf.berkeley.edu";
           deployment.targetUser = "root";
           deployment.allowLocalDeployment = true;
@@ -127,11 +142,15 @@
         plasma-applet-commandoutput = final.callPackage ./pkgs/plasma-applet-commandoutput.nix { };
         catppuccin-sddm = final.qt6Packages.callPackage ./pkgs/catppuccin-sddm.nix { };
         ocf-papers = final.callPackage ./pkgs/ocf-papers.nix { };
+        ocf-okular = final.callPackage ./pkgs/ocf-okular.nix { };
       };
 
       devShells = forAllSystems (pkgs: {
         default = pkgs.mkShell {
-          packages = [ pkgs.colmena ];
+          packages = [
+            pkgs.git
+            colmena.packages.${pkgs.system}.colmena
+          ];
         };
       });
 
