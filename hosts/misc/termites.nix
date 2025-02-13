@@ -2,7 +2,7 @@
 
 {
   imports = [
-    ../hardware/termites.nix
+    ../../hardware/termites.nix
   ];
 
   networking.hostName = "termites";
