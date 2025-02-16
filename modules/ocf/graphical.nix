@@ -66,12 +66,13 @@ in
       kitty
       prismlauncher
       unciv
+      rstudio
 
       ocf-okular
 
       # temporary ATDP programs
       filezilla
-      sublime
+      # sublime
     ];
 
     fonts.packages = with pkgs; [ meslo-lgs-nf noto-fonts noto-fonts-cjk-sans noto-fonts-extra ];
