@@ -20,6 +20,17 @@
       enable = true;
       lastOctet = 95;
     };
+
+    kiosk = {
+      enable = true;
+      url = "https://ocf.berkeley.edu";
+      extraConfig = ''
+        output Unknown-1 {
+          mode 2560x1440@60Hz
+          scale 1.5
+        }
+      '';
+    };
   };
 
   # This value determines the NixOS release from which the default
