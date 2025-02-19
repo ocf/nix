@@ -15,6 +15,7 @@
 
   ocf = {
     auth.enable = true;
+    browsers.enable = true;
 
     network = {
       enable = true;
