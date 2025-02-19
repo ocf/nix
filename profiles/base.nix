@@ -8,6 +8,10 @@
       experimental-features = "nix-command flakes";
       nix-path = lib.mapAttrsToList (name: _: "${name}=flake:${name}") inputs;
     };
+    gc = {
+      automatic = true;
+      dates = "weekly";
+    };
   };
 
   ocf = {
@@ -200,5 +204,33 @@
       Type = "oneshot";
     };
     wantedBy = [ "multi-user.target" ];
+  };
+
+  systemd.services.nix-remove-profiles = {
+    description = "Remove old NixOS generations but leave store cleanup to nix.gc";
+    script = ''
+      keepGenerations=5
+      profile="/nix/var/nix/profiles/system"
+
+      to_delete=$(nix-env --list-generations --profile "$profile" | awk '{print $1}' | head -n -$keepGenerations)
+
+      if [ -n "$to_delete" ]; then
+        to_delete=$(echo "$to_delete" | tr '\n' ' ')
+        nix-env --delete-generations $to_delete --profile "$profile"
+      fi
+    '';
+    serviceConfig = {
+      Environment = "PATH=/run/current-system/sw/bin";
+      Type = "oneshot";
+    };
+  };
+
+  systemd.timers.nix-remove-profiles = {
+    description = "Run NixOS profile cleanup periodically";
+    wantedBy = [ "timers.target" ];
+    timerConfig = {
+      OnCalendar = "weekly"; # Runs once a week
+      Persistent = true;
+    };
   };
 }
