@@ -25,7 +25,7 @@
       enable = true;
       url = "https://ocf.berkeley.edu";
       extraConfig = ''
-        output Unknown-1 {
+        output HDMI-A-1 {
           mode 2560x1440@60Hz
           scale 1.5
         }
