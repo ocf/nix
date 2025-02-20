@@ -11,7 +11,6 @@
     gc = {
       automatic = true;
       dates = "weekly";
-      options = "--delete-older-than 30d";
     };
   };
 
@@ -204,5 +203,36 @@
       Type = "oneshot";
     };
     wantedBy = [ "multi-user.target" ];
+  };
+
+  systemd.services.nix-remove-profiles = {
+    description = "Remove old NixOS generations but leave store cleanup to nix.gc";
+    script = ''
+      # Keep the last N generations
+      keepGenerations=5
+      profile="/nix/var/nix/profiles/system"
+
+      # Get a list of generations (Flake-based)
+      to_delete=$(nix profile list --profile "$profile" | awk 'NR>1 {print $1}' | head -n -$keepGenerations)
+
+      # Delete them if any exist
+      if [ -n "$to_delete" ]; then
+        to_delete=$(echo "$to_delete" | tr '\n' ' ')  # Convert to space-separated
+        nix profile remove $to_delete --profile "$profile"
+      fi
+    '';
+    serviceConfig = {
+      Environment = "PATH=/run/current-system/sw/bin";
+      Type = "oneshot";
+    };
+  };
+
+  systemd.timers.nix-remove-profiles = {
+    description = "Run NixOS profile cleanup periodically";
+    wantedBy = [ "timers.target" ];
+    timerConfig = {
+      OnCalendar = "weekly"; # Runs once a week
+      Persistent = true;
+    };
   };
 }
