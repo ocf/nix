@@ -208,17 +208,14 @@
   systemd.services.nix-remove-profiles = {
     description = "Remove old NixOS generations but leave store cleanup to nix.gc";
     script = ''
-      # Keep the last N generations
       keepGenerations=5
       profile="/nix/var/nix/profiles/system"
 
-      # Get a list of generations (Flake-based)
-      to_delete=$(nix profile list --profile "$profile" | awk 'NR>1 {print $1}' | head -n -$keepGenerations)
+      to_delete=$(nix-env --list-generations --profile "$profile" | awk '{print $1}' | head -n -$keepGenerations)
 
-      # Delete them if any exist
       if [ -n "$to_delete" ]; then
-        to_delete=$(echo "$to_delete" | tr '\n' ' ')  # Convert to space-separated
-        nix profile remove $to_delete --profile "$profile"
+        to_delete=$(echo "$to_delete" | tr '\n' ' ')
+        nix-env --delete-generations $to_delete --profile "$profile"
       fi
     '';
     serviceConfig = {
