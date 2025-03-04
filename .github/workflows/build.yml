@@ -1,6 +1,7 @@
 name: build nixos hosts
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - ci
