@@ -26,6 +26,9 @@ jobs:
     steps:
       - run: echo ${{ needs.define-matrix.outputs.hosts }}
       - uses: DeterminateSystems/nix-installer-action@v14
+        with:
+          extra_nix_config: |
+            extra-platforms = aarch64-linux i686-linux
       - run: cat /etc/nix/nix.conf
 
   build:
