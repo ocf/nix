@@ -25,6 +25,8 @@ jobs:
     needs: define-matrix
     steps:
       - run: echo ${{ needs.define-matrix.outputs.hosts }}
+      - uses: DeterminateSystems/nix-installer-action@v14
+      - run: cat /etc/nix/nix.conf
 
   build:
     runs-on: ubuntu-latest
