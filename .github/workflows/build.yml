@@ -25,7 +25,7 @@ jobs:
     needs: define-matrix
     steps:
       - run: echo ${{ needs.define-matrix.outputs.hosts }}
-      - uses: DeterminateSystems/nix-installer-action@v14
+      - uses: cachix/install-nix-action@v30
         with:
           extra_nix_config: |
             extra-platforms = aarch64-linux i686-linux
@@ -39,8 +39,10 @@ jobs:
         host: ${{ fromJSON(needs.define-matrix.outputs.hosts) }}
     steps:
       - uses: actions/checkout@v4
-      - uses: DeterminateSystems/nix-installer-action@v14
-
+      - uses: cachix/install-nix-action@v30
+        with:
+          extra_nix_config: |
+            extra-platforms = aarch64-linux i686-linux
       - name: Build NixOS hosts
         run: nix develop -c colmena build --on ${{ matrix.host }}
 
