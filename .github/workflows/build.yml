@@ -16,7 +16,6 @@ jobs:
       hosts: ${{ steps.hosts.outputs.hosts }}
     steps:
       - uses: actions/checkout@v4
-      - uses: cachix/install-nix-action@v30
       - uses: DeterminateSystems/flake-checker-action@v9
       - id: hosts
         run: echo "hosts=$(nix eval .#colmena --apply builtins.attrNames --json)" >> "$GITHUB_OUTPUT"
@@ -35,13 +34,6 @@ jobs:
         host: ${{ fromJSON(needs.define-matrix.outputs.hosts) }}
     steps:
       - uses: actions/checkout@v4
-      - run: sudo apt update && sudo apt install binfmt-support qemu-user-static
-      - uses: cachix/install-nix-action@v30
-        with:
-          extra_nix_config: |
-            extra-platforms = aarch64-linux i686-linux
-            extra-sandbox-paths = /usr/libexec/qemu-binfmt /usr/bin/qemu-aarch64-static /usr/bin/qemu-aarch64-static /usr/bin/qemu-arm-static
-
       - name: Build NixOS hosts
         run: nix develop -c colmena build --on ${{ matrix.host }}
 
