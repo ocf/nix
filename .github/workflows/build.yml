@@ -11,7 +11,7 @@ permissions:
 
 jobs:
   define-matrix:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     outputs:
       hosts: ${{ steps.hosts.outputs.hosts }}
     steps:
