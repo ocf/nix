@@ -138,7 +138,7 @@
   };
 
   security.rtkit.enable = true;
-  hardware.pulseaudio.enable = false;
+  services.pulseaudio.enable = false;
 
   networking.firewall.enable = false;
 
