@@ -118,13 +118,16 @@ in
       };
     };
 
-    systemd.user.services.desktoprc = {
-      description = "Source custom rc shared across desktops";
-      after = [ "graphical-session.target" ];
-      partOf = [ "graphical-session.target" ];
+    systemd.user.services.home-manager = {
+      description = "Load custom home manager config if present";
+      # Only load when in a graphical session as SSHFS only mounts during graphical login
       wantedBy = [ "graphical-session.target" ];
+      path = [ pkgs.nix pkgs.git ];
       script = ''
-        [ -f ~/remote/.desktoprc ] && . ~/remote/.desktoprc
+        # Will create a template directory if it doesn't exist. Maybe look into creating
+        # our own template repo as currently users will need to edit nix files to get 
+        # custom packages etc...
+        nix run home-manager -- init --switch ~/remote/.home-manager
       '';
     };
 
