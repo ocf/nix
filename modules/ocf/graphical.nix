@@ -54,6 +54,7 @@ in
         {
           settings = {
             "org/gnome/login-screen" = { disable-user-list = true; };
+            "org/gnome/desktop/interface" = { scaling-factor = 2; };
           };
         }
       ];
