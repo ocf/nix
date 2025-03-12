@@ -49,23 +49,27 @@ in
       ocf-assets.source = ./graphical/assets;
     };
 
-    programs.dconf.profiles = {
-      gdm.databases = [
-        {
-          settings = {
+    programs.dconf = {
+      enable = true;
+      profiles = {
+        gdm.databases = [
+          {
+            lockAll = true;
+            settings = {
 
-            "org/gnome/desktop/interface" = {
-              text-scaling-factor = "5";
-            };
+              "org/gnome/desktop/interface" = {
+                scaling-factor = lib.gvariant.mkValue 4;
+              };
 
-            "org/gnome/login-screen" = {
-              disable-user-list = true;
-              banner-message-enable = true;
-              banner-message-text = "Welcome to the OCF!";
+              "org/gnome/login-screen" = {
+                disable-user-list = true;
+                banner-message-enable = true;
+                banner-message-text = "Welcome to the OCF!";
+              };
             };
-          };
-        }
-      ];
+          }
+        ];
+      };
     };
 
 
