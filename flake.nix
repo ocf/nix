@@ -123,10 +123,7 @@
       overlays.default = final: prev: {
         ocf-utils = ocf-utils.packages.${final.system}.default;
         ocf-wayout = wayout.packages.${final.system}.default;
-        plasma-applet-commandoutput = final.callPackage ./pkgs/plasma-applet-commandoutput.nix { };
-        catppuccin-sddm = final.qt6Packages.callPackage ./pkgs/catppuccin-sddm.nix { };
         ocf-papers = final.callPackage ./pkgs/ocf-papers.nix { };
-        ocf-okular = final.kdePackages.callPackage ./pkgs/ocf-okular.nix { };
       };
 
       devShells = forAllSystems (pkgs: {

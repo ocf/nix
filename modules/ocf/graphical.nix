@@ -52,15 +52,6 @@ in
     programs.steam.enable = true;
 
     environment.systemPackages = with pkgs; [
-      plasma-applet-commandoutput
-      (catppuccin-sddm.override {
-        themeConfig.General = {
-          FontSize = 12;
-          Background = "/etc/ocf-assets/images/login.png";
-          #Logo = "/etc/ocf-assets/images/penguin.svg";
-          CustomBackground = true;
-        };
-      })
       libreoffice
       vscode-fhs
       kitty
@@ -78,26 +69,6 @@ in
     fonts.packages = with pkgs; [ meslo-lgs-nf noto-fonts noto-fonts-cjk-sans noto-fonts-extra ];
 
     services = {
-      # KDE Plasma is our primary DE, but have others available
-      desktopManager.plasma6.enable = true;
-      xserver.desktopManager = {
-        gnome.enable = true;
-        xfce.enable = true;
-      };
-
-      displayManager = {
-        defaultSession = "plasma";
-
-        sddm = {
-          enable = true;
-          theme = "catppuccin-latte";
-          wayland.enable = true;
-          settings.Users = {
-            RememberLastUser = false;
-            RememberLastSession = false;
-          };
-        };
-      };
     };
 
     systemd.user.services.wayout = {
