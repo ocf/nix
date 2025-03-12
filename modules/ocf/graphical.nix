@@ -59,8 +59,6 @@ in
       unciv
       rstudio
 
-      ocf-okular
-
       # temporary ATDP programs
       filezilla
       # sublime
