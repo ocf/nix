@@ -54,7 +54,7 @@ in
         {
           settings = {
             "org/gnome/login-screen" = { disable-user-list = true; };
-            "org/gnome/desktop/interface" = { scaling-factor = "uint32 4"; };
+            "org/gnome/login-screen/interface" = { scaling-factor = "uint32 4"; };
           };
         }
       ];
