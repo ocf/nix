@@ -47,7 +47,11 @@ in
     environment.etc = {
       skel.source = ./graphical/skel;
       ocf-assets.source = ./graphical/assets;
-      "dconf/db".source = ./graphical/dconf/db;
+      "dconf/db/gdm.d/00-login-screen".text = ''
+        [org/gnome/login-screen]
+        # Do not show the user list
+        disable-user-list=true
+      '';
     };
 
     programs.steam.enable = true;
