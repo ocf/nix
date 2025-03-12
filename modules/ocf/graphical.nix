@@ -53,7 +53,12 @@ in
       gdm.databases = [
         {
           settings = {
-            "org/gnome/login-screen" = { 
+
+            "org/gnome/desktop/interface" = {
+              text-scaling-factor = "5";
+            };
+
+            "org/gnome/login-screen" = {
               disable-user-list = true;
               banner-message-enable = true;
               banner-message-text = "Welcome to the OCF!";
