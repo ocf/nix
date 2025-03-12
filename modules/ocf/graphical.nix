@@ -68,9 +68,31 @@ in
 
     fonts.packages = with pkgs; [ meslo-lgs-nf noto-fonts noto-fonts-cjk-sans noto-fonts-extra ];
 
-    services = {
+    # Enable GNOME
+    services.xserver = {
+      enable = true;
+      displayManager.gdm.enable = true;
+      desktopManager.gnome.enable = true;
     };
 
+    # Exclude extra gnome applications
+    environment.gnome.excludePackages = (with pkgs; [
+      atomix
+      cheese
+      epiphany
+      evince
+      geary
+      gedit
+      gnome-characters
+      gnome-music
+      gnome-photos
+      gnome-terminal
+      gnome-tour
+      hitori
+      iagno
+      tali
+      totem
+    ]);
     systemd.user.services.wayout = {
       description = "Automatic idle logout manager";
       after = [ "graphical-session.target" ];
