@@ -53,7 +53,11 @@ in
       gdm.databases = [
         {
           settings = {
-            "org/gnome/login-screen" = { disable-user-list = true; };
+            "org/gnome/login-screen" = { 
+              disable-user-list = true;
+              banner-message-enable = true;
+              banner-message-text = "Welcome to the OCF!";
+            };
           };
         }
       ];
