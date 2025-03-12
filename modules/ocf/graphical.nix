@@ -58,7 +58,7 @@ in
             settings = {
 
               "org/gnome/desktop/interface" = {
-                scaling-factor = lib.gvariant.mkValue 4;
+                scaling-factor = "${lib.gvariant.mkValue 4}";
               };
 
               "org/gnome/login-screen" = {
