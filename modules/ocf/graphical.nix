@@ -52,8 +52,8 @@ in
     programs.dconf.profiles = {
       gdm.databases = [
         {
-          settings = { 
-            "org/gnome/login-screen/disable-user-list" = true;
+          settings = {
+            "org/gnome/login-screen" = { disable-user-list = true; };
           };
         }
       ];
