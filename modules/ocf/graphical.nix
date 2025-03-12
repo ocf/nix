@@ -47,7 +47,7 @@ in
     environment.etc = {
       skel.source = ./graphical/skel;
       ocf-assets.source = ./graphical/assets;
-      dconf.source = ./graphical/dconf;
+      "dconf/db".source = ./graphical/dconf/db;
     };
 
     programs.steam.enable = true;
