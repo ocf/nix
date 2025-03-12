@@ -52,6 +52,23 @@ in
     programs.dconf = {
       enable = true;
       profiles = {
+        user.databases = [
+          {
+            lockAll = true;
+            settings = {
+
+              "org/gnome/desktop/interface" = {
+                scaling-factor = "${lib.gvariant.mkUint32 3}";
+              };
+
+              "org/gnome/login-screen" = {
+                disable-user-list = true;
+                banner-message-enable = true;
+                banner-message-text = "Welcome to the OCF!";
+              };
+            };
+          }
+        ];
         gnome-initial-setup.databases = [
           {
             lockAll = true;
