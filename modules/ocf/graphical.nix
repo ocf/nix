@@ -117,8 +117,14 @@ in
       after = [ "graphical-session.target" ];
       partOf = [ "graphical-session.target" ];
       wantedBy = [ "graphical-session.target" ];
+      environment = { PATH = lib.mkForce "/run/current-system/sw/bin"; };
       script = ''
-        [ -f ~/remote/.desktoprc ] && . ~/remote/.desktoprc
+        if [ -f ~/remote/.desktoprc ]; then
+          . ~/remote/.desktoprc
+        else
+          echo "User doesn't have a ~/remote/.desktoprc file"
+        fi
+          
       '';
     };
 
