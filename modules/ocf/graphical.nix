@@ -56,7 +56,7 @@ in
       (catppuccin-sddm.override {
         themeConfig.General = {
           FontSize = 12;
-          Background = "/etc/ocf-assets/images/login.png";
+          Background = "/etc/ocf-assets/images/login-afool.png";
           #Logo = "/etc/ocf-assets/images/penguin.svg";
           CustomBackground = true;
         };
