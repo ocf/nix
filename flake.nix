@@ -59,6 +59,7 @@
         ./modules/ocf/graphical.nix
         ./modules/ocf/kiosk.nix
         ./modules/ocf/kubernetes.nix
+        ./modules/ocf/nvidia.nix
         ./modules/ocf/network.nix
         ./modules/ocf/shell.nix
         ./modules/ocf/tmpfs-home.nix

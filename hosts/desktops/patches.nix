@@ -8,6 +8,7 @@
 
   networking.hostName = "patches";
 
+  ocf.nvidia.enable = true;
   ocf.network = {
     enable = true;
     lastOctet = 159;
