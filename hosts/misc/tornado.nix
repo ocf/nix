@@ -18,7 +18,7 @@
 
     kiosk = {
       enable = true;
-      url = "https://labmap.ocf.berkeley.edu";
+      url = "https://kinn.dev/labmap2"; # https://labmap.ocf.berkeley.edu";
       extraConfig = ''
         output HDMI-A-1 {
           mode 3840x2160@60Hz
@@ -33,6 +33,16 @@
   security.rtkit.enable = true;
 
   services = {
+    mpd = {
+      enable = true;
+      user = "ocftv";
+      group = "ocf";
+      network.port = 6600;
+      network.listenAddress = "0.0.0.0";
+      playlistDirectory = "/home/o/oc/ocftv/.mpd/playlists";
+      musicDirectory = "/home/o/oc/ocftv/Music";
+    };
+
     avahi.publish = {
       enable = true;
       userServices = true;
