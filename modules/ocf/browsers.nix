@@ -59,8 +59,15 @@ in
       };
     };
 
+    # Force Chrome to use Wayland, rather than XWayland
+    environment.sessionVariables.NIXOS_OZONE_WL = "1";
     programs.chromium = {
       enable = true;
+
+      extensions = [
+        "cjpalhdlnbpafiamejdnhcphjbkeiagm" # ublock origin
+      ];
+
       extraOpts = {
         # https://chromeenterprise.google/policies/
 
@@ -103,8 +110,6 @@ in
         PrivacySandboxAdTopicsEnabled = false;
         PrivacySandboxSiteEnabledAdsEnabled = false;
 
-        # uBlock Origin
-        ExtensionInstallForcelist = [ "cjpalhdlnbpafiamejdnhcphjbkeiagm" ];
       };
     };
   };

@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, lib, ... }:
 
 {
   imports = [
@@ -18,7 +18,7 @@
 
     kiosk = {
       enable = true;
-      url = "https://kinn.dev/labmap2"; # https://labmap.ocf.berkeley.edu";
+      url = "https://labmap.ocf.berkeley.edu"; # https://kinn.dev/labmap2;
       extraConfig = ''
         output HDMI-A-1 {
           mode 3840x2160@60Hz
@@ -35,12 +35,15 @@
   services = {
     mpd = {
       enable = true;
-      user = "ocftv";
-      group = "ocf";
       network.port = 6600;
       network.listenAddress = "0.0.0.0";
-      playlistDirectory = "/home/o/oc/ocftv/.mpd/playlists";
-      musicDirectory = "/home/o/oc/ocftv/Music";
+      extraConfig = ''
+        audio_output {
+          type		"pulse"
+          name		"Local Music Player Daemon"
+          server		"127.0.0.1"
+        }
+      '';
     };
 
     avahi.publish = {
@@ -63,9 +66,11 @@
     pipewire-pulse.wantedBy = [ "default.target" ];
   };
 
+
+
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
-  # on your system were taken. It‘s perfectly fine and recommended to leave
+  # on your system were taken. It's perfectly fine and recommended to leave
   # this value at the release version of the first install of this system.
   # Before changing this value read the documentation for this option
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
