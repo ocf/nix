@@ -2,19 +2,20 @@
 
 {
   imports = [
-    ../../hardware/snowball.nix
+    ../../hardware/old-pc.nix
     ../../profiles/desktop.nix
   ];
 
-  networking.hostName = "snowball";
+  networking.hostName = "melange";
 
-  ocf.nvidia.enable = true;
+  ocf.nvidia = {
+    enable = true;
+    open = false;
+  };
+
   ocf.network = {
     enable = true;
-    # DNS lookup returns 99 but not sure why, was supposed to be configured as 140
-    # 140 has now been assigned to ./melange.nix
-    # TODO: Figure out what happend to snowball...
-    lastOctet = 99;
+    lastOctet = 140;
   };
 
   # This value determines the NixOS release from which the default
@@ -23,5 +24,5 @@
   # this value at the release version of the first install of this system.
   # Before changing this value read the documentation for this option
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
-  system.stateVersion = "23.11"; # Did you read the comment?
+  system.stateVersion = "25.05"; # Did you read the comment?
 }
