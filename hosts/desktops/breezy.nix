@@ -8,12 +8,7 @@
 
   networking.hostName = "breezy";
 
-  ocf.nvidia = {
-    enable = true;
-    open = false;
-  };
-
-  ocf.network = {
+ ocf.network = {
     enable = true;
     lastOctet = 155;
   };
