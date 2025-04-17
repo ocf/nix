@@ -130,16 +130,6 @@
 
     fwupd.enable = true;
     avahi.enable = true;
-    prometheus = {
-      exporters = {
-        node = {
-          enable = true;
-          port = 9100;
-          enabledCollectors = [ "systemd" "textfile" ];
-          extraFlags = [ "--collector.ethtool" "--collector.softirqs" "--collector.tcpstat" "--collector.wifi" "--collector.textfile.directory=/var/lib/node_exporter/textfile_collector" ];
-        };
-      };
-    };
   };
 
   security.rtkit.enable = true;
@@ -154,58 +144,11 @@
       ServerName printhost.ocf.berkeley.edu
       Encryption Always
     '';
-    "prometheus_scripts/logged_in_users_exporter.sh" = {
-      mode = "0555";
-      text = ''
-        #!/bin/bash
-        OUTPUT_FILE="/var/lib/node_exporter/textfile_collector/logged_in_users.prom"
-        > "$OUTPUT_FILE"
-        loginctl list-sessions --no-legend | while read -r session_id uid user seat leader class tty idle since; do
-          if [[ $class == "user" ]] && [[ $seat == "seat0" ]] && [[ $idle == "no" ]]; then
-            state=$(loginctl show-session "$session_id" -p State --value)
-            if [[ $state == "active" ]]; then
-              locked_status="unlocked"
-            else
-              locked_status="locked"
-            fi
-          echo "node_logged_in_user{name=\"$user\", state=\"$locked_status\"} 1" > $OUTPUT_FILE
-          fi
-        done
-      '';
-    };
   };
 
   environment.etc."nixos/configuration.nix".text = ''
     {}: builtins.abort "This machine is not managed by /etc/nixos. Please use colmena instead."
   '';
-
-  # Create the textfile collector directory
-  systemd.tmpfiles.rules = [
-    "d /var/lib/node_exporter/textfile_collector 0755 root root -"
-    "d /etc/prometheus_scripts 0755 root root -"
-    "z /etc/prometheus_scripts/logged_in_users_exporter.sh 0755 root root -"
-  ];
-
-
-  systemd.timers."logged_in_users_exporter" = {
-    description = "Run logged_in_users_exporter.sh every 5 seconds";
-    wantedBy = [ "multi-user.target" ];
-    timerConfig = {
-      OnBootSec = "5s";
-      OnUnitActiveSec = "5s";
-      Unit = "logged_in_users_exporter.service";
-    };
-  };
-
-  systemd.services."logged_in_users_exporter" = {
-    description = "Logged in users exporter";
-    script = "bash /etc/prometheus_scripts/logged_in_users_exporter.sh";
-    serviceConfig = {
-      Environment = "PATH=/run/current-system/sw/bin";
-      Type = "oneshot";
-    };
-    wantedBy = [ "multi-user.target" ];
-  };
 
   systemd.services.nix-remove-profiles = {
     description = "Remove old NixOS generations but leave store cleanup to nix.gc";
