@@ -58,7 +58,7 @@ def get_iface(args):
 def get_nixos_version(args):
     # Get the NixOS installer version to put into system.stateVersion
     output = check_output(["nixos-version"]).decode("utf-8")
-    return output[:4]
+    return output[:5]
 
 
 def write_configs(args):
