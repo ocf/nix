@@ -59,7 +59,7 @@
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIO6zftyMUeIQVYkRag6CxWqYShjWnErQ24NeaU95Bp2z" # laksith
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDJ12A/hT19X7al32GiCWa4OYIp5kC+pC0YeeccIi+BQ" # ronitnath
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMdAe7sPMxaidnqOah3UVrjt41KFHHOYleS1VWGH+ZUc" # storce
-    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINHNVkeZacxk6rI/BnsxqbwllFo/Vtu92LMFoQbsbJ05" # sbwilliams
+    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAID/4nHyz4zaL2g7o7oLQqdLnz02JFniBOXjZ6gSrtUlO" # sbwilliams
   ];
 
   programs.ssh = {
