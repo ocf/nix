@@ -61,6 +61,7 @@ in
     tmux
     s-tui
     ocf-tv
+    remmina
 
     # Cosmetics
     neofetch
