@@ -1,0 +1,42 @@
+name: build nixos hosts
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - add-ci-host-spike
+
+permissions:
+  contents: write
+
+jobs:
+  define-matrix:
+    runs-on: spike
+    outputs:
+      hosts: ${{ steps.hosts.outputs.hosts }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: DeterminateSystems/nix-installer-action@v14
+      - uses: DeterminateSystems/flake-checker-action@v9
+      - id: hosts
+        run: echo "hosts=$(nix eval .#colmena --apply builtins.attrNames --json)" >> "$GITHUB_OUTPUT"
+
+  test:
+    runs-on: spike
+    needs: define-matrix
+    steps:
+      - run: echo ${{ needs.define-matrix.outputs.hosts }}
+
+  build:
+    runs-on: spike
+    needs: define-matrix
+    strategy:
+      matrix:
+        host: ${{ fromJSON(needs.define-matrix.outputs.hosts) }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: DeterminateSystems/nix-installer-action@v14
+
+      - name: Build NixOS hosts
+        run: nix develop -c colmena build --on ${{ matrix.host }}
+
