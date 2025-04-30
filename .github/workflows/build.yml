@@ -11,7 +11,7 @@ permissions:
 
 jobs:
   define-matrix:
-    runs-on: spike
+    runs-on: self-hosted
     outputs:
       hosts: ${{ steps.hosts.outputs.hosts }}
     steps:
@@ -22,13 +22,13 @@ jobs:
         run: echo "hosts=$(nix eval .#colmena --apply builtins.attrNames --json)" >> "$GITHUB_OUTPUT"
 
   test:
-    runs-on: spike
+    runs-on: self-hosted
     needs: define-matrix
     steps:
       - run: echo ${{ needs.define-matrix.outputs.hosts }}
 
   build:
-    runs-on: spike
+    runs-on: self-hosted
     needs: define-matrix
     strategy:
       matrix:
