@@ -1,13 +1,24 @@
 { ... }:
 
 {
-  imports = [ ../../hardware/virtualized.nix];
+  imports = [ ../../hardware/virtualized.nix ];
 
   networking.hostName = "spike";
 
   ocf.network = {
     enable = true;
     lastOctet = 24;
+  };
+
+  services.github-runners = {
+    "nix-build-ci" = {
+      enable = true;
+      ephemeral = true;
+      replace = true;
+      name = "spike";
+      url = "https://github.com/ocf/nix";
+      tokenFile = "/run/secrets/spike-nix-build.token";
+    };
   };
 
   # This value determines the NixOS release from which the default
