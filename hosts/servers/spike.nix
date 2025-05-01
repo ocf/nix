@@ -1,4 +1,4 @@
-{ ... }:
+{ pkgs, ... }:
 
 {
   imports = [ ../../hardware/virtualized.nix ];
@@ -18,6 +18,7 @@
       name = "spike";
       url = "https://github.com/ocf/nix";
       tokenFile = "/run/secrets/spike-nix-build.token";
+      extraPackages = [ pkgs.sudo-rs ];
     };
   };
 
