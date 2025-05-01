@@ -25,7 +25,6 @@ jobs:
       hosts: ${{ steps.hosts.outputs.hosts }}
     steps:
       - uses: actions/checkout@v4
-      - uses: DeterminateSystems/nix-installer-action@v14
       - uses: DeterminateSystems/flake-checker-action@v9
       - id: hosts
         run: echo "hosts=$(nix eval .#colmena --apply builtins.attrNames --json)" >> "$GITHUB_OUTPUT"
@@ -38,7 +37,6 @@ jobs:
         host: ${{ fromJSON(needs.define-matrix.outputs.hosts) }}
     steps:
       - uses: actions/checkout@v4
-      - uses: DeterminateSystems/nix-installer-action@v14
 
       - name: Build NixOS hosts
         run: nix develop -c colmena build --on ${{ matrix.host }}
