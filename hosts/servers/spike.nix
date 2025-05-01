@@ -18,8 +18,9 @@
       name = "spike";
       url = "https://github.com/ocf/nix";
       tokenFile = "/run/secrets/spike-nix-build.token";
-      extraPackages = [ pkgs.sudo ];
-      serviceOverrides = { NoNewPrivileges = false; };
+      extraPackages = with pkgs; [ 
+          nix
+      ];
     };
   };
 
