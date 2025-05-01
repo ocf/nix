@@ -20,6 +20,7 @@
       tokenFile = "/run/secrets/spike-nix-build.token";
       extraPackages = with pkgs; [ 
           nix
+          sudo
       ];
     };
   };
