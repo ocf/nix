@@ -10,6 +10,14 @@ permissions:
   contents: write
 
 jobs:
+  test:
+    runs-on: self-hosted
+    needs: define-matrix
+    steps:
+      - run: echo ${{ needs.define-matrix.outputs.hosts }}
+        run: whoami
+        run: id
+
   define-matrix:
     runs-on: self-hosted
     outputs:
@@ -20,12 +28,6 @@ jobs:
       - uses: DeterminateSystems/flake-checker-action@v9
       - id: hosts
         run: echo "hosts=$(nix eval .#colmena --apply builtins.attrNames --json)" >> "$GITHUB_OUTPUT"
-
-  test:
-    runs-on: self-hosted
-    needs: define-matrix
-    steps:
-      - run: echo ${{ needs.define-matrix.outputs.hosts }}
 
   build:
     runs-on: self-hosted
