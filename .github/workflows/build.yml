@@ -14,9 +14,10 @@ jobs:
     runs-on: self-hosted
     needs: define-matrix
     steps:
-      - run: echo ${{ needs.define-matrix.outputs.hosts }}
-        run: whoami
-        run: id
+      - run: |
+          echo ${{ needs.define-matrix.outputs.hosts }}
+          whoami
+          id
 
   define-matrix:
     runs-on: self-hosted
