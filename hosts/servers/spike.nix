@@ -10,19 +10,31 @@
     lastOctet = 24;
   };
 
-  services.github-runners = {
-    "nix-build-ci" = {
-      enable = true;
-      ephemeral = true;
-      replace = true;
-      name = "spike";
-      url = "https://github.com/ocf/nix";
-      tokenFile = "/run/secrets/spike-nix-build.token";
-      extraPackages = with pkgs; [ 
-          nix
-          sudo
-      ];
-    };
+  containers = {
+    ci-ocf-nix =
+      {
+        ephemeral = true;
+        autoStart = true;
+        config =
+          {  pkgs, ... }:
+          {
+            boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
+            services.github-runners = {
+              "nix-build-ci" = {
+                enable = true;
+                ephemeral = true;
+                replace = true;
+                url = "https://github.com/ocf/nix";
+                tokenFile = "/run/secrets/spike-nix-build.token";
+                extraPackages = with pkgs; [
+                  nix
+                  sudo
+                ];
+              };
+            };
+            system.stateVersion = "24.11";
+          };
+      };
   };
 
   # This value determines the NixOS release from which the default
