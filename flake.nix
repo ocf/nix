@@ -109,6 +109,8 @@
     {
       formatter = forAllSystems (pkgs: pkgs.nixpkgs-fmt);
 
+      colmenaHive = colmena.lib.makeHive self.outputs.colmena;
+
       colmena = colmenaHosts // {
         meta = {
           nixpkgs = pkgsFor defaultSystem;
