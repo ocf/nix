@@ -15,6 +15,13 @@
       {
         ephemeral = true;
         autoStart = true;
+        bindMounts = { 
+          "github-token" = { 
+            hostPath = "/run/secrets/spike-nix-build.token";
+            mountPoint = "/run/runner.token";
+            isReadOnly = true;
+          };
+        };
         config =
           {  pkgs, ... }:
           {
@@ -25,7 +32,7 @@
                 ephemeral = true;
                 replace = true;
                 url = "https://github.com/ocf/nix";
-                tokenFile = "/run/secrets/spike-nix-build.token";
+                tokenFile = "/run/runner.token";
                 extraPackages = with pkgs; [
                   nix
                   sudo
