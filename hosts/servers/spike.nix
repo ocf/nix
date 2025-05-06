@@ -32,6 +32,7 @@
               config =
                 { pkgs, ... }:
                 {
+                  nix.settings.experimental-features = "nix-command flakes";
                   boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
                   services.github-runners = {
                     "nix-build-ci" = {
