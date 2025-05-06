@@ -29,9 +29,54 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Build NixOS hosts
-        run: nix develop -c colmena build --on ${{ matrix.host }} >> ${{ matrix.host }}.log 2>&1
+        run: |
+          nix develop -c colmena build --on ${{ matrix.host }} >> ${{ matrix.host }}.log 2>&1
+          echo $? > ${{ matrix.host }}.exitcode
+        continue-on-error: true
       - uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: ${{ matrix.host }}.log
-          path: ${{ matrix.host }}.log
+          path: |
+            ${{ matrix.host }}.log
+            ${{ matrix.host }}.exitcode
+
+  post-process:
+    runs-on: self-hosted
+    needs: build
+    if: always()
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+      - name: Check for failed hosts
+        run: |
+          set -euo pipefail
+          failed=false
+          echo "Checking build results:"
+          for exitcodefile in artifacts/*/*.exitcode; do
+            host=$(basename "$exitcodefile" .exitcode)
+            exitcode=$(cat "$exitcodefile")
+            if [[ $exitcode -ne 0 ]]; then
+              echo "$host failed with exit code $exitcode"
+              failed=true
+            else
+              echo "$host built successfully"
+            fi
+          done
+
+          if $failed; then
+            echo "Some hosts failed to build"
+            exit 1
+          else
+            echo "All hosts built successfully"
+          fi
+      - name: Upload combined logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: 00-complete-build-logs
+          path: artifacts/*/*.log
+
+              
 
