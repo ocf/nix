@@ -36,7 +36,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: ${{ matrix.host }}.log
+          name: ${{ matrix.host }}
           path: |
             ${{ matrix.host }}.log
             ${{ matrix.host }}.exitcode
@@ -53,6 +53,7 @@ jobs:
       - name: Check for failed hosts
         run: |
           set -euo pipefail
+          set -x
           failed=false
           echo "Checking build results:"
           for exitcodefile in artifacts/*/*.exitcode; do
@@ -76,7 +77,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: ocf-nix-build
+          name: nix-build-log
           path: artifacts/*/*.log
 
               
