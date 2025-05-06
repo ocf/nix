@@ -10,39 +10,49 @@
     lastOctet = 24;
   };
 
-  containers = {
-    ci-ocf-nix =
-      {
-        ephemeral = true;
-        autoStart = true;
-        bindMounts = { 
-          "github-token" = { 
-            hostPath = "/run/secrets/spike-nix-build.token";
-            mountPoint = "/run/runner.token";
-            isReadOnly = true;
-          };
-        };
-        config =
-          {  pkgs, ... }:
-          {
-            boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
-            services.github-runners = {
-              "nix-build-ci" = {
-                enable = true;
-                ephemeral = true;
-                replace = true;
-                url = "https://github.com/ocf/nix";
-                tokenFile = "/run/runner.token";
-                extraPackages = with pkgs; [
-                  nix
-                  sudo
-                ];
+  containers = builtins.listToAttrs (
+    builtins.genList
+      (i:
+        let
+          name = "ci-ocf-nix-${toString (i+1)}";
+        in
+        {
+          name = name;
+          value =
+            {
+              ephemeral = true;
+              autoStart = true;
+              bindMounts = {
+                "github-token" = {
+                  hostPath = "/run/secrets/spike-nix-build.token";
+                  mountPoint = "/run/runner.token";
+                  isReadOnly = true;
+                };
               };
+              config =
+                { pkgs, ... }:
+                {
+                  boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
+                  services.github-runners = {
+                    "nix-build-ci" = {
+                      enable = true;
+                      ephemeral = true;
+                      replace = true;
+                      url = "https://github.com/ocf/nix";
+                      tokenFile = "/run/runner.token";
+                      extraPackages = with pkgs; [
+                        nix
+                        sudo
+                      ];
+                    };
+                  };
+                  system.stateVersion = "24.11";
+                };
             };
-            system.stateVersion = "24.11";
-          };
-      };
-  };
+        }
+      ) 4
+  );
+
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
