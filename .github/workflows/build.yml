@@ -10,15 +10,6 @@ permissions:
   contents: write
 
 jobs:
-  test:
-    runs-on: self-hosted
-    needs: define-matrix
-    steps:
-      - run: |
-          echo ${{ needs.define-matrix.outputs.hosts }}
-          whoami
-          id
-
   define-matrix:
     runs-on: self-hosted
     outputs:
@@ -37,7 +28,6 @@ jobs:
         host: ${{ fromJSON(needs.define-matrix.outputs.hosts) }}
     steps:
       - uses: actions/checkout@v4
-
       - name: Build NixOS hosts
         run: nix develop -c colmena build --on ${{ matrix.host }}
 
