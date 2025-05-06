@@ -40,6 +40,7 @@ jobs:
           path: |
             ${{ matrix.host }}.log
             ${{ matrix.host }}.exitcode
+          retention-days: 1
 
   post-process:
     runs-on: self-hosted
@@ -75,7 +76,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: 00-complete-build-logs
+          name: ocf-nix-build
           path: artifacts/*/*.log
 
               
