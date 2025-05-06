@@ -5,6 +5,8 @@
 
   networking.hostName = "spike";
 
+  boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
+
   ocf.network = {
     enable = true;
     lastOctet = 24;
@@ -30,11 +32,10 @@
                 };
               };
               config =
-                { config, pkgs, ... }:
+                { pkgs, ... }:
                 {
                   boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
                   nix.settings.experimental-features = "nix-command flakes";
-                  nix.settings.extra-platforms = config.boot.binfmt.emulatedSystems;
                   services.github-runners = {
                     "nix-build-ci-${toString (i+1)}" = {
                       enable = true;
