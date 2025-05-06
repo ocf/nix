@@ -29,5 +29,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Build NixOS hosts
-        run: nix develop -c colmena build --on ${{ matrix.host }}
+        run: nix develop -c colmena build --on ${{ matrix.host }} >> ${{ matrix.host }}.log 2>&1
+      - uses: actions/upload-artifact@v4
+        with:
+          path: ${{ matrix.host }}.log
 
