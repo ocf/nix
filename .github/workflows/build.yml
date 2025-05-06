@@ -30,6 +30,7 @@ jobs:
       - uses: actions/checkout@v4
       - name: Build NixOS hosts
         run: |
+          set +e
           nix develop -c colmena build --on ${{ matrix.host }} >> ${{ matrix.host }}.log 2>&1
           echo $? > ${{ matrix.host }}.exitcode
         continue-on-error: true
@@ -53,7 +54,6 @@ jobs:
       - name: Check for failed hosts
         run: |
           set -euo pipefail
-          set -x
           failed=false
           echo "Checking build results:"
           for exitcodefile in artifacts/*/*.exitcode; do
