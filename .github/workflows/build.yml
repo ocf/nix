@@ -32,5 +32,6 @@ jobs:
         run: nix develop -c colmena build --on ${{ matrix.host }} >> ${{ matrix.host }}.log 2>&1
       - uses: actions/upload-artifact@v4
         with:
+          name: ${{ matrix.host }}.log
           path: ${{ matrix.host }}.log
 
