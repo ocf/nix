@@ -35,7 +35,7 @@
                   nix.settings.experimental-features = "nix-command flakes";
                   boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
                   services.github-runners = {
-                    "nix-build-ci" = {
+                    "nix-build-ci-${toString (i+1)}" = {
                       enable = true;
                       ephemeral = true;
                       replace = true;
