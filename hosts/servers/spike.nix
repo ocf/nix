@@ -34,7 +34,6 @@
               config =
                 { pkgs, ... }:
                 {
-                  boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
                   nix.settings.experimental-features = "nix-command flakes";
                   services.github-runners = {
                     "nix-build-ci-${toString (i+1)}" = {
@@ -45,7 +44,6 @@
                       tokenFile = "/run/runner.token";
                       extraPackages = with pkgs; [
                         nix
-                        sudo
                       ];
                     };
                   };
