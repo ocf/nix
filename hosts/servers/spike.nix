@@ -30,10 +30,11 @@
                 };
               };
               config =
-                { pkgs, ... }:
+                { config, pkgs, ... }:
                 {
-                  nix.settings.experimental-features = "nix-command flakes";
                   boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
+                  nix.settings.experimental-features = "nix-command flakes";
+                  nix.settings.extra-platforms = config.boot.binfmt.emulatedSystems;
                   services.github-runners = {
                     "nix-build-ci-${toString (i+1)}" = {
                       enable = true;
