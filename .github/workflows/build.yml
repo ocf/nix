@@ -6,17 +6,19 @@ on:
     branches:
       - add-ci-host-spike
 
-permissions:
-  contents: write
-
 jobs:
+  check-flake:
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v4
+      - uses: DeterminateSystems/flake-checker-action@v9
+
   define-matrix:
     runs-on: self-hosted
     outputs:
       hosts: ${{ steps.hosts.outputs.hosts }}
     steps:
       - uses: actions/checkout@v4
-      - uses: DeterminateSystems/flake-checker-action@v9
       - id: hosts
         run: echo "hosts=$(nix eval .#colmena --apply builtins.attrNames --json)" >> "$GITHUB_OUTPUT"
 
@@ -31,9 +33,6 @@ jobs:
       - uses: actions/checkout@v4
       - name: build host
         run: nix develop -c colmena build --on ${{ matrix.host }} >> ${{ matrix.host }}.log 2>&1
-      - uses: actions/upload-artifact@v4
+      - name: display logs
         if: always()
-        with:
-          name: ${{ matrix.host }}
-          path: ${{ matrix.host }}.log
-
+        run: cat ${{ matrix.host }}.log
