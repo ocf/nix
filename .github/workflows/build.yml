@@ -1,4 +1,4 @@
-name: build nixos hosts
+name: Build Hosts
 
 on:
   workflow_dispatch:
