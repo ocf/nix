@@ -20,7 +20,7 @@ jobs:
       - id: hosts
         run: echo "hosts=$(nix eval .#colmena --apply builtins.attrNames --json)" >> "$GITHUB_OUTPUT"
 
-  build-hosts:
+  build:
     runs-on: self-hosted
     needs: define-matrix
     strategy:
@@ -29,7 +29,7 @@ jobs:
         host: ${{ fromJSON(needs.define-matrix.outputs.hosts) }}
     steps:
       - uses: actions/checkout@v4
-      - id: build
+      - name: build host
         run: nix develop -c colmena build --on ${{ matrix.host }} >> ${{ matrix.host }}.log 2>&1
       - uses: actions/upload-artifact@v4
         if: always()
