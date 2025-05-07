@@ -30,14 +30,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - id: build
-        run: |
-          set +e
-          nix develop -c colmena build --on ${{ matrix.host }} >> ${{ matrix.host }}.log 2>&1
-          echo "exitcode=$?" >> "$GITHUB_OUTPUT"
+        run: nix develop -c colmena build --on ${{ matrix.host }} >> ${{ matrix.host }}.log 2>&1
       - uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: ${{ matrix.host }}
           path: ${{ matrix.host }}.log
-      - name: Set correct host build status
-        run: exit ${{ steps.build.outputs.exitcode }}
 
