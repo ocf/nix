@@ -20,7 +20,7 @@ jobs:
       - id: hosts
         run: echo "hosts=$(nix eval .#colmena --apply builtins.attrNames --json)" >> "$GITHUB_OUTPUT"
 
-  build:
+  build-hosts:
     runs-on: self-hosted
     needs: define-matrix
     strategy:
@@ -28,57 +28,15 @@ jobs:
         host: ${{ fromJSON(needs.define-matrix.outputs.hosts) }}
     steps:
       - uses: actions/checkout@v4
-      - name: Build NixOS hosts
+      - id: build
         run: |
           set +e
           nix develop -c colmena build --on ${{ matrix.host }} >> ${{ matrix.host }}.log 2>&1
-          echo $? > ${{ matrix.host }}.exitcode
-        continue-on-error: true
+          echo "exitcode=$?" >> "$GITHUB_OUTPUT"
       - uses: actions/upload-artifact@v4
-        if: always()
         with:
           name: ${{ matrix.host }}
-          path: |
-            ${{ matrix.host }}.log
-            ${{ matrix.host }}.exitcode
-          retention-days: 1
-
-  post-process:
-    runs-on: self-hosted
-    needs: build
-    if: always()
-    steps:
-      - uses: actions/download-artifact@v4
-        with:
-          path: artifacts
-      - name: Check for failed hosts
-        run: |
-          set -euo pipefail
-          failed=false
-          echo "Checking build results:"
-          for exitcodefile in artifacts/*/*.exitcode; do
-            host=$(basename "$exitcodefile" .exitcode)
-            exitcode=$(cat "$exitcodefile")
-            if [[ $exitcode -ne 0 ]]; then
-              echo "$host failed with exit code $exitcode"
-              failed=true
-            else
-              echo "$host built successfully"
-            fi
-          done
-
-          if $failed; then
-            echo "Some hosts failed to build"
-            exit 1
-          else
-            echo "All hosts built successfully"
-          fi
-      - name: Upload combined logs
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: nix-build-log
-          path: artifacts/*/*.log
-
-              
+          path: ${{ matrix.host }}.log
+      - name: Set correct host build status
+        run: exit ${{ steps.build.outputs.exitcode }}
 
