@@ -31,8 +31,8 @@ jobs:
         host: ${{ fromJSON(needs.define-matrix.outputs.hosts) }}
     steps:
       - uses: actions/checkout@v4
-      - name: build host
+      - name: Build with colmena
         run: nix develop -c colmena build --on ${{ matrix.host }} >> ${{ matrix.host }}.log 2>&1
-      - name: display logs
+      - name: Display logs
         if: always()
         run: cat ${{ matrix.host }}.log
