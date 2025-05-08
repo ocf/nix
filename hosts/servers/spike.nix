@@ -31,6 +31,7 @@
               {
                 ephemeral = true;
                 autoStart = true;
+                privateNetwork = true;
                 bindMounts = {
                   "github-token" = {
                     hostPath = githubTokenPath;
@@ -38,10 +39,16 @@
                     isReadOnly = true;
                   };
                 };
+                # See: https://man.archlinux.org/man/systemd-nspawn.1#User_Namespacing_Options
+                extraFlags = [
+                  "--private-users=pick"
+                  "--private-users-ownership=auto"
+                ];
                 config =
                   { pkgs, ... }:
                   {
                     nix.settings.experimental-features = "nix-command flakes";
+                    networking.firewall.enable = true;
                     services.github-runners = {
                       "${name}" = {
                         enable = true;
