@@ -1,4 +1,4 @@
-{ ... }:
+{ pkgs, ... }:
 
 {
   imports = [ ../../hardware/virtualized.nix ];
@@ -16,14 +16,16 @@
     let
       owner = "ocf";
       repo = "nix";
+      workflow = "build";
       githubTokenPath = "/run/secrets/spike-nix-build.token";
       instances = 4;
+      extraPackages = [ pkgs.nix ];
     in
     builtins.listToAttrs (
       builtins.genList
         (i:
           let
-            name = "ci-${owner}-${repo}-${toString (i+1)}";
+            name = "ci-${owner}-${repo}-${workflow}-${toString (i+1)}";
           in
           {
             name = name;
@@ -38,9 +40,14 @@
                     mountPoint = "/run/runner.token";
                     isReadOnly = true;
                   };
+                  "host-notify" = {
+                    hostPath = "/run/container-finished";
+                    mountPoint = "/mnt/host-notify";
+                    isReadOnly = false;
+                  };
                 };
                 config =
-                  { pkgs, ... }:
+                  { pkgs, lib, ... }:
                   {
                     nix.settings.experimental-features = "nix-command flakes";
                     networking.firewall.enable = true;
@@ -51,7 +58,14 @@
                         replace = true;
                         url = "https://github.com/${owner}/${repo}";
                         tokenFile = "/run/runner.token";
-                        extraPackages = [ pkgs.nix ];
+                        extraPackages = extraPackages;
+                      };
+                    };
+                    systemd.services = {
+                      "test-service" = {
+                        enable = true;
+                        wantedBy = [ "multi-user.target" ];
+                          serviceConfig = { ExecStart = "${lib.getExe' pkgs.coreutils "touch"} /mnt/host-notify/${name}"; };
                       };
                     };
                     system.stateVersion = "24.11";
