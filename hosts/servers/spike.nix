@@ -12,47 +12,53 @@
     lastOctet = 24;
   };
 
-  containers = builtins.listToAttrs (
-    builtins.genList
-      (i:
-        let
-          name = "ci-ocf-nix-${toString (i+1)}";
-        in
-        {
-          name = name;
-          value =
-            {
-              ephemeral = true;
-              autoStart = true;
-              bindMounts = {
-                "github-token" = {
-                  hostPath = "/run/secrets/spike-nix-build.token";
-                  mountPoint = "/run/runner.token";
-                  isReadOnly = true;
-                };
-              };
-              config =
-                { pkgs, ... }:
-                {
-                  nix.settings.experimental-features = "nix-command flakes";
-                  services.github-runners = {
-                    "nix-build-ci-${toString (i+1)}" = {
-                      enable = true;
-                      ephemeral = true;
-                      replace = true;
-                      url = "https://github.com/ocf/nix";
-                      tokenFile = "/run/runner.token";
-                      extraPackages = with pkgs; [
-                        nix
-                      ];
-                    };
+  containers =
+    let
+      owner = "ocf";
+      repo = "nix";
+      githubTokenPath = "/run/secrets/spike-nix-build.token";
+      instances = 4;
+    in
+    builtins.listToAttrs (
+      builtins.genList
+        (i:
+          let
+            name = "ci-${owner}-${repo}-${toString (i+1)}";
+          in
+          {
+            name = name;
+            value =
+              {
+                ephemeral = true;
+                autoStart = true;
+                bindMounts = {
+                  "github-token" = {
+                    hostPath = githubTokenPath;
+                    mountPoint = "/run/runner.token";
+                    isReadOnly = true;
                   };
-                  system.stateVersion = "24.11";
                 };
-            };
-        }
-      ) 4
-  );
+                config =
+                  { pkgs, ... }:
+                  {
+                    nix.settings.experimental-features = "nix-command flakes";
+                    services.github-runners = {
+                      "${name}" = {
+                        enable = true;
+                        ephemeral = true;
+                        replace = true;
+                        url = "https://github.com/${owner}/${repo}";
+                        tokenFile = "/run/runner.token";
+                        extraPackages = [ pkgs.nix ];
+                      };
+                    };
+                    system.stateVersion = "24.11";
+                  };
+              };
+          }
+        )
+        instances
+    );
 
 
   # This value determines the NixOS release from which the default
