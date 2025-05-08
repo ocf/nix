@@ -62,10 +62,8 @@
                       };
                     };
                     systemd.services = {
-                      "test-service" = {
-                        enable = true;
-                        wantedBy = [ "multi-user.target" ];
-                          serviceConfig = { ExecStart = "${lib.getExe' pkgs.coreutils "touch"} /mnt/host-notify/${name}"; };
+                      "github-runner-${name}" = {
+                          serviceConfig = { ExecStop = "${lib.getExe' pkgs.coreutils "touch"} /mnt/host-notify/${name}"; };
                       };
                     };
                     system.stateVersion = "24.11";
