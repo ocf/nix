@@ -31,7 +31,6 @@
               {
                 ephemeral = true;
                 autoStart = true;
-                privateNetwork = true;
                 bindMounts = {
                   "github-token" = {
                     hostPath = githubTokenPath;
