@@ -66,7 +66,7 @@
                     };
                     systemd.services = {
                       "github-runner-${name}" = {
-                          serviceConfig = { ExecStop = "${lib.getExe' pkgs.coreutils "touch"} /mnt/host-notify/${name}"; };
+                        serviceConfig = { ExecStop = "${lib.getExe' pkgs.coreutils "touch"} /mnt/host-notify/${name}"; };
                       };
                     };
                     system.stateVersion = "24.11";
