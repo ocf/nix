@@ -59,6 +59,9 @@
                         url = "https://github.com/${owner}/${repo}";
                         tokenFile = "/run/runner.token";
                         extraPackages = extraPackages;
+                        serviceOverrides = {
+                          BindPaths = [ "/mnt/host-notify" ];
+                        };
                       };
                     };
                     systemd.services = {
