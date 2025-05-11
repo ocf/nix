@@ -1,5 +1,13 @@
 { pkgs, ... }:
 
+let
+  owner = "ocf";
+  repo = "nix";
+  workflow = "build";
+  githubTokenPath = "/run/secrets/spike-nix-build.token";
+  instances = 4;
+  extraPackages = [ pkgs.nix ];
+in
 {
   imports = [ ../../hardware/virtualized.nix ];
 
@@ -13,14 +21,6 @@
   };
 
   containers =
-    let
-      owner = "ocf";
-      repo = "nix";
-      workflow = "build";
-      githubTokenPath = "/run/secrets/spike-nix-build.token";
-      instances = 4;
-      extraPackages = [ pkgs.nix ];
-    in
     builtins.listToAttrs (
       builtins.genList
         (i:
