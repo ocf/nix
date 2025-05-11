@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, lib, ... }:
 
 let
   owner = "ocf";
@@ -21,7 +21,7 @@ in
   };
 
   virtualisation.vmVariant = {
-    ocf.network.enable = false;
+    ocf.network.enable = lib.mkForce false;
   };
 
   containers =
