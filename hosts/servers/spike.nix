@@ -20,10 +20,6 @@ in
     lastOctet = 24;
   };
 
-  virtualisation.vmVariant = {
-    ocf.network.enable = lib.mkForce false;
-  };
-
   containers =
     builtins.listToAttrs (
       builtins.genList

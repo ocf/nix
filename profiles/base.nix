@@ -176,4 +176,8 @@
       Persistent = true;
     };
   };
+
+  virtualisation.vmVariant = {
+    ocf.network.enable = lib.mkForce false;
+  };
 }
