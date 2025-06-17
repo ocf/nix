@@ -51,6 +51,8 @@
                       value = {
                         enable = true;
                         ephemeral = true;
+                        user = null;
+                        group = null;
                         replace = true;
                         noDefaultLabels = true;
                         extraLabels = [ "ci-${owner}-${repo}-${workflow}" ];
