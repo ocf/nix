@@ -8,13 +8,13 @@ on:
 
 jobs:
   check-flake:
-    runs-on: self-hosted
+    runs-on: ci-ocf-nix-build
     steps:
       - uses: actions/checkout@v4
       - uses: DeterminateSystems/flake-checker-action@v9
 
   define-matrix:
-    runs-on: self-hosted
+    runs-on: ci-ocf-nix-build
     outputs:
       hosts: ${{ steps.hosts.outputs.hosts }}
     steps:
@@ -23,7 +23,7 @@ jobs:
         run: echo "hosts=$(nix eval .#colmena --apply builtins.attrNames --json)" >> "$GITHUB_OUTPUT"
 
   build:
-    runs-on: self-hosted
+    runs-on: ci-ocf-nix-build
     needs: define-matrix
     strategy:
       fail-fast: false
@@ -38,7 +38,7 @@ jobs:
         run: cat ${{ matrix.host }}.log
 
   check-all-hosts:
-    runs-on: self-hosted
+    runs-on: ci-ocf-nix-build
     needs: build
     steps:
       - name: Combined GitHub status check

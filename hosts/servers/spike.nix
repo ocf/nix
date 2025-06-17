@@ -52,6 +52,8 @@
                         enable = true;
                         ephemeral = true;
                         replace = true;
+                        noDefaultLabels = true;
+                        extraLabels = [ "ci-${owner}-${repo}-${workflow}" ];
                         url = "https://github.com/${owner}/${repo}";
                         tokenFile = "/run/runner.token";
                         extraPackages = extraPackages;
