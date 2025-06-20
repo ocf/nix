@@ -38,7 +38,7 @@ lib.mkIf runner.enable
                     extraLabels = [ "ci-${runner.owner}-${runner.repo}-${runner.workflow}" ];
                     url = "https://github.com/${runner.owner}/${runner.repo}";
                     tokenFile = "/run/runner.token";
-                    extraPackages = runner.extraPackages;
+                    extraPackages = runner.packages;
                   };
                 }
               )
