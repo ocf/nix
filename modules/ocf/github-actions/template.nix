@@ -1,15 +1,16 @@
-{ lib, runner, ... }:
+{ enable, owner, repo, workflow, tokenPath, packages, instances }:
 
-lib.mkIf runner.enable
+if enable
+then
 {
-  "ci-${runner.owner}-${runner.repo}-${runner.workflow}" = {
+  "ci-${owner}-${repo}-${workflow}" = {
     ephemeral = true;
     autoStart = true;
     privateUsers = "pick";
     bindMounts = {
       "github-token" = {
-        hostPath = runner.tokenPath;
-        mountPoint = "/run/runner.token";
+        hostPath = tokenPath;
+        mountPoint = "/run/token";
         isReadOnly = true;
       };
     };
@@ -24,7 +25,7 @@ lib.mkIf runner.enable
               (
                 i:
                 let
-                  name = "ci-${runner.owner}-${runner.repo}-${runner.workflow}-${toString (i+1)}";
+                  name = "ci-${owner}-${repo}-${workflow}-${toString (i+1)}";
                 in
                 {
                   name = name;
@@ -35,17 +36,19 @@ lib.mkIf runner.enable
                     group = null;
                     replace = true;
                     noDefaultLabels = true;
-                    extraLabels = [ "ci-${runner.owner}-${runner.repo}-${runner.workflow}" ];
-                    url = "https://github.com/${runner.owner}/${runner.repo}";
-                    tokenFile = "/run/runner.token";
-                    extraPackages = runner.packages;
+                    extraLabels = [ "ci-${owner}-${repo}-${workflow}" ];
+                    url = "https://github.com/${owner}/${repo}";
+                    tokenFile = "/run/token";
+                    extraPackages = packages;
                   };
                 }
               )
-              runner.instances
+              instances
           );
         system.stateVersion = "24.11";
       };
   };
 }
+else {}
+
 
