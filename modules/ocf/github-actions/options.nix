@@ -36,16 +36,16 @@
           '';
         };
 
-        instances = lib.mkOption {
-          type = lib.types.int;
-          description = "Number of parallel instances for this workflow";
-          default = 1;
-        };
-
         packages = lib.mkOption {
           type = lib.types.listOf lib.types.package;
           description = "Packages to be installed in the runner enviornment";
           default = [ ];
+        };
+
+        instances = lib.mkOption {
+          type = lib.types.int;
+          description = "Number of parallel instances for this workflow";
+          default = 1;
         };
 
       };
