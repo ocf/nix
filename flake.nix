@@ -52,19 +52,8 @@
         nix-index-database.overlays.nix-index
       ];
 
-      commonModules = [
-        ./modules/ocf/auth.nix
-        ./modules/ocf/browsers.nix
-        ./modules/ocf/etc.nix
-        ./modules/ocf/graphical.nix
-        ./modules/ocf/kiosk.nix
-        ./modules/ocf/kubernetes.nix
-        ./modules/ocf/nvidia.nix
-        ./modules/ocf/network.nix
-        ./modules/ocf/shell.nix
-        ./modules/ocf/tmpfs-home.nix
-        ./profiles/base.nix
-      ];
+      commonModules = with nixpkgs.lib; [
+        ./profiles/base.nix      ] ++ filter (hasSuffix ".nix") (filesystem.listFilesRecursive ./modules);
 
       defaultSystem = "x86_64-linux";
       overrideSystem = { overheat = "aarch64-linux"; };
