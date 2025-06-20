@@ -8,6 +8,6 @@ in
 
   imports = [ ./options.nix ];
   config = lib.mkIf cfg.enable {
-    containers = builtins.map template cfg.runners;
+    containers = lib.mergeAttrsList (builtins.map (runner: template { inherit lib runner; }) cfg.runners);
   };
 }
