@@ -16,6 +16,7 @@ lib.mkIf runner.enable
     config =
       { ... }:
       {
+       inherit runner;
         nix.settings.experimental-features = "nix-command flakes";
         networking.firewall.enable = true;
         services.github-runners =
