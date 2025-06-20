@@ -53,7 +53,8 @@
       ];
 
       commonModules = with nixpkgs.lib; [
-        ./profiles/base.nix      ] ++ filter (hasSuffix ".nix") (filesystem.listFilesRecursive ./modules);
+        ./profiles/base.nix
+      ] ++ filter (hasSuffix ".nix") (filesystem.listFilesRecursive ./modules);
 
       defaultSystem = "x86_64-linux";
       overrideSystem = { overheat = "aarch64-linux"; };
