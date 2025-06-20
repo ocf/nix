@@ -38,11 +38,11 @@ lib.mkIf runner.enable
                     extraLabels = [ "ci-${runner.owner}-${runner.repo}-${runner.workflow}" ];
                     url = "https://github.com/${runner.owner}/${runner.repo}";
                     tokenFile = "/run/runner.token";
-                    inherit extraPackages;
+                    extraPackages = runner.extraPackages;
                   };
                 }
               )
-              instances
+              runner.instances
           );
         system.stateVersion = "24.11";
       };
