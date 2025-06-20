@@ -21,7 +21,7 @@
         workflow = "build";
         tokenPath = "/run/secrets/spike-nix-build.token";
         instances = 4;
-        extraPackages = [ pkgs.nix ];
+        packages = [ pkgs.nix ];
       }
     ];
   };
