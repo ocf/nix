@@ -6,6 +6,7 @@
     runners = lib.mkOption {
       type = lib.types.listOf (lib.types.submodule {
 
+        options = {
         enable = lib.mkEnableOption "Enable this self-hosted runner";
 
         owner = lib.mkOption {
@@ -48,6 +49,7 @@
           default = 1;
         };
 
+      };
       }
       );
       default = [ ];
