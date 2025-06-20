@@ -4,7 +4,7 @@ let
   cfg = config.ocf.network;
 in
 {
-  imports = [ ./network/bond.nix ];
+  imports = [ ./bond.nix ];
 
   options.ocf.network = {
     enable = lib.mkEnableOption "Enable OCF network configuration";

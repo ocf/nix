@@ -26,8 +26,8 @@ in
 
   config = lib.mkIf config.services.ocfKubernetes.enable {
     environment.etc = {
-      "kubernetes/manifests/kubevip.yaml" = lib.mkIf config.services.ocfKubernetes.isLeader { source = ./kubernetes/kubevip.yaml; };
-      "kubernetes/kubeadm.yaml".source = ./kubernetes/kubeadm.yaml;
+      "kubernetes/manifests/kubevip.yaml" = lib.mkIf config.services.ocfKubernetes.isLeader { source = ./kubevip.yaml; };
+      "kubernetes/kubeadm.yaml".source = ./kubeadm.yaml;
     };
 
     # From an OCF alumni, some of these might be unnecessary.
@@ -131,7 +131,7 @@ in
     # <https://github.com/rook/rook/issues/11474#issuecomment-1365523469>
     boot.kernelPatches = [{
       name = "ceph-hack";
-      patch = ./kubernetes/ceph-hack.patch;
+      patch = ./ceph-hack.patch;
     }];
 
     virtualisation.cri-o.enable = true;

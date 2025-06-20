@@ -11,7 +11,7 @@ in
   config = lib.mkIf cfg.enable {
     environment = {
       enableAllTerminfo = true;
-      etc."p10k.zsh".source = ./shell/p10k.zsh;
+      etc."p10k.zsh".source = ./p10k.zsh;
 
       systemPackages = with pkgs; [
         bash
