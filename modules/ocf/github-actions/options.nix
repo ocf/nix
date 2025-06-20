@@ -4,7 +4,7 @@
   options.ocf.github-actions = {
     enable = lib.mkEnableOption "Enable Containerized OCF GitHub Actions Runners";
     runners = lib.mkOption {
-      type = lib.types.listOf lib.mkOption {
+      type = lib.types.listOf (lib.types.submodule {
 
         enable = lib.mkEnableOption "Enable this self-hosted runner";
 
@@ -48,7 +48,8 @@
           default = 1;
         };
 
-      };
+      }
+      );
       default = [ ];
     };
   };
