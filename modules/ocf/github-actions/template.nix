@@ -1,4 +1,4 @@
-{ enable, owner, repo, workflow, tokenPath, packages, instances }:
+{ enable, owner, repo, workflow, tokenPath, packages, instances, ... }:
 
 if enable
 then
