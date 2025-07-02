@@ -31,7 +31,7 @@ let
                     (
                       i:
                       {
-                        name = "${name}-${lib.toString i}";
+                        name = "${name}-${builtins.toString i}";
                         value = {
                           enable = true;
                           ephemeral = true;
