@@ -1,32 +1,32 @@
 { lib, ... }:
 
 {
-  options.ocf.github-actions = {
-    enable = lib.mkEnableOption "Enable Containerized OCF GitHub Actions Runners";
-    runners = lib.mkOption {
-      type = lib.types.listOf (lib.types.submodule {
+  options.ocf.github-actions = with lib; {
+    enable = mkEnableOption "Enable Containerized OCF GitHub Actions Runners";
+    runners = mkOption {
+      type = with types; listOf (submodule {
 
         options = {
-        enable = lib.mkEnableOption "Enable this self-hosted runner";
+        enable = mkEnableOption "Enable this self-hosted runner";
 
-        owner = lib.mkOption {
-          type = lib.types.string;
+        owner = mkOption {
+          type = str;
           description = "Owner of the GitHub Repository";
           default = "ocf";
         };
 
-        repo = lib.mkOption {
-          type = lib.types.string;
+        repo = mkOption {
+          type = str;
           description = "Name of the GitHub Repository";
         };
 
-        workflow = lib.mkOption {
-          type = lib.types.string;
+        workflow = mkOption {
+          type = str;
           description = "Name of the GitHub Actions Workflow";
         };
 
-        tokenPath = lib.mkOption {
-          type = lib.types.path;
+        tokenPath = mkOption {
+          type = path;
           description = ''
             Path to GitHub fine grained PAT with the following permissions:
               Organization:
@@ -37,14 +37,14 @@
           '';
         };
 
-        packages = lib.mkOption {
-          type = lib.types.listOf lib.types.package;
+        packages = mkOption {
+          type = listOf package;
           description = "Packages to be installed in the runner enviornment";
           default = [ ];
         };
 
-        instances = lib.mkOption {
-          type = lib.types.int;
+        instances = mkOption {
+          type =int;
           description = "Number of parallel instances for this workflow";
           default = 1;
         };
@@ -52,7 +52,6 @@
       };
       }
       );
-      default = [ ];
     };
   };
 
