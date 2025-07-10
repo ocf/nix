@@ -2,9 +2,10 @@ name: Build Hosts
 
 on:
   workflow_dispatch:
+  pull_request:
   push:
     branches:
-      - add-ci-host-spike
+      - main
 
 jobs:
   check-flake:
@@ -33,7 +34,7 @@ jobs:
       - uses: actions/checkout@v4
       - name: Build with colmena
         run: nix develop -c colmena build --on ${{ matrix.host }} >> ${{ matrix.host }}.log 2>&1
-      - name: Display logs
+      - name: Display log
         if: always()
         run: cat ${{ matrix.host }}.log
 
