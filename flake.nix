@@ -165,10 +165,10 @@
 
         # TODO: Remove this patch when fixed upstream
         # https://github.com/nixos/nixpkgs/issues/425323
-        openjdk8 = prev.openjdk8.overrideAttrs (old: { 
+        openjdk8 = prev.openjdk8.overrideAttrs  { 
           separateDebugInfo = false;
           __structuredAttrs = false;
-        });
+        };
       };
 
       devShells = forAllSystems (pkgs: {
