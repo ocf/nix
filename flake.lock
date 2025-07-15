@@ -185,7 +185,9 @@
         "nixpkgs": [
           "nixpkgs"
         ],
-        "ocflib": "ocflib"
+        "ocflib": [
+          "ocflib"
+        ]
       },
       "locked": {
         "lastModified": 1752459223,
@@ -213,21 +215,6 @@
       },
       "original": {
         "owner": "ocf",
-        "repo": "ocflib",
-        "type": "github"
-      }
-    },
-    "ocflib_2": {
-      "locked": {
-        "lastModified": 1752459199,
-        "narHash": "sha256-cNK7hdAJD9J8ItCehfNiTgoCslzUHfYOXgH67cQ+2c4=",
-        "owner": "ocf",
-        "repo": "ocflib",
-        "rev": "82afdc23276e04f80a94edc0c9ab585467f47299",
-        "type": "github"
-      },
-      "original": {
-        "owner": "ocf",
         "ref": "master",
         "repo": "ocflib",
         "type": "github"
@@ -241,7 +228,7 @@
         "ocf-pam-trimspaces": "ocf-pam-trimspaces",
         "ocf-sync-etc": "ocf-sync-etc",
         "ocf-utils": "ocf-utils",
-        "ocflib": "ocflib_2",
+        "ocflib": "ocflib",
         "systems": "systems_2",
         "wayout": "wayout"
       }

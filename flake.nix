@@ -59,6 +59,7 @@
       repo = "utils";
       ref = "master";
       inputs.nixpkgs.follows = "nixpkgs";
+      inputs.ocflib.follows = "ocflib";
     };
 
     wayout = {
