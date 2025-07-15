@@ -1,31 +1,74 @@
 {
   description = "NixOS desktop configuration for the Open Computing Facility";
 
-  inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
-    systems.url = "github:nix-systems/default";
-
-    colmena = {
-      url = "github:zhaofengli/colmena";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-    nix-index-database = {
-      url = "github:nix-community/nix-index-database";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    ocflib.url = "github:ocf/ocflib";
-    ocf-sync-etc.url = "github:ocf/etc";
-    ocf-pam-trimspaces.url = "github:ocf/pam_trimspaces";
-    ocf-utils = {
-      url = "github:ocf/utils";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-    wayout = {
-      url = "github:ocf/wayout";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+inputs = {
+  nixpkgs = {
+    type = "github";
+    owner = "nixos";
+    repo = "nixpkgs";
+    ref  = "nixos-unstable";
   };
+
+  systems = {
+    type = "github";
+    owner = "nix-systems";
+    repo = "default";
+    ref  = "main";
+  };
+
+  colmena = {
+    type = "github";
+    owner = "zhaofengli";
+    repo = "colmena";
+    ref  = "main";
+    inputs.nixpkgs.follows = "nixpkgs";
+  };
+
+  "nix-index-database" = {
+    type = "github";
+    owner = "nix-community";
+    repo = "nix-index-database";
+    ref  = "main";
+    inputs.nixpkgs.follows = "nixpkgs";
+  };
+
+  ocflib = {
+    type = "github";
+    owner = "ocf";
+    repo = "ocflib";
+    ref  = "master";
+  };
+
+  "ocf-sync-etc" = {
+    type = "github";
+    owner = "ocf";
+    repo = "etc";
+    ref  = "master";
+  };
+
+  "ocf-pam-trimspaces" = {
+    type = "github";
+    owner = "ocf";
+    repo = "pam_trimspaces";
+    ref  = "master";
+  };
+
+  "ocf-utils" = {
+    type = "github";
+    owner = "ocf";
+    repo = "utils";
+    ref  = "master";
+    inputs.nixpkgs.follows = "nixpkgs";
+  };
+
+  wayout = {
+    type = "github";
+    owner = "ocf";
+    repo = "wayout";
+    ref  = "main";
+    inputs.nixpkgs.follows = "nixpkgs";
+  };
+};
 
   outputs =
     { self
