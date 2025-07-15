@@ -1,74 +1,74 @@
 {
   description = "NixOS desktop configuration for the Open Computing Facility";
 
-inputs = {
-  nixpkgs = {
-    type = "github";
-    owner = "nixos";
-    repo = "nixpkgs";
-    ref  = "nixos-unstable";
-  };
+  inputs = {
+    nixpkgs = {
+      type = "github";
+      owner = "nixos";
+      repo = "nixpkgs";
+      ref = "nixos-unstable";
+    };
 
-  systems = {
-    type = "github";
-    owner = "nix-systems";
-    repo = "default";
-    ref  = "main";
-  };
+    systems = {
+      type = "github";
+      owner = "nix-systems";
+      repo = "default";
+      ref = "main";
+    };
 
-  colmena = {
-    type = "github";
-    owner = "zhaofengli";
-    repo = "colmena";
-    ref  = "main";
-    inputs.nixpkgs.follows = "nixpkgs";
-  };
+    colmena = {
+      type = "github";
+      owner = "zhaofengli";
+      repo = "colmena";
+      ref = "main";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
-  "nix-index-database" = {
-    type = "github";
-    owner = "nix-community";
-    repo = "nix-index-database";
-    ref  = "main";
-    inputs.nixpkgs.follows = "nixpkgs";
-  };
+    nix-index-database = {
+      type = "github";
+      owner = "nix-community";
+      repo = "nix-index-database";
+      ref = "main";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
-  ocflib = {
-    type = "github";
-    owner = "ocf";
-    repo = "ocflib";
-    ref  = "master";
-  };
+    ocflib = {
+      type = "github";
+      owner = "ocf";
+      repo = "ocflib";
+      ref = "master";
+    };
 
-  "ocf-sync-etc" = {
-    type = "github";
-    owner = "ocf";
-    repo = "etc";
-    ref  = "master";
-  };
+    ocf-sync-etc = {
+      type = "github";
+      owner = "ocf";
+      repo = "etc";
+      ref = "master";
+    };
 
-  "ocf-pam-trimspaces" = {
-    type = "github";
-    owner = "ocf";
-    repo = "pam_trimspaces";
-    ref  = "master";
-  };
+    ocf-pam-trimspaces = {
+      type = "github";
+      owner = "ocf";
+      repo = "pam_trimspaces";
+      ref = "master";
+    };
 
-  "ocf-utils" = {
-    type = "github";
-    owner = "ocf";
-    repo = "utils";
-    ref  = "master";
-    inputs.nixpkgs.follows = "nixpkgs";
-  };
+    ocf-utils = {
+      type = "github";
+      owner = "ocf";
+      repo = "utils";
+      ref = "master";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
-  wayout = {
-    type = "github";
-    owner = "ocf";
-    repo = "wayout";
-    ref  = "main";
-    inputs.nixpkgs.follows = "nixpkgs";
+    wayout = {
+      type = "github";
+      owner = "ocf";
+      repo = "wayout";
+      ref = "main";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
-};
 
   outputs =
     { self
@@ -142,15 +142,13 @@ inputs = {
     {
       formatter = forAllSystems (pkgs: pkgs.nixpkgs-fmt);
 
-      colmenaHive = colmena.lib.makeHive self.outputs.colmena;
-
-      colmena = colmenaHosts // {
+      colmenaHive = colmena.lib.makeHive (colmenaHosts // {
         meta = {
           nixpkgs = pkgsFor defaultSystem;
           nodeNixpkgs = nixpkgs.lib.mapAttrs (name: pkgsFor) overrideSystem;
           specialArgs = { inherit inputs; };
         };
-      };
+      });
 
       packages = forAllSystems (pkgs: {
         bootstrap = pkgs.callPackage ./bootstrap { };
