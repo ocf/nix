@@ -166,7 +166,6 @@
         # TODO: Remove this patch when fixed upstream
         # https://github.com/nixos/nixpkgs/issues/425323
         openjdk8 = prev.openjdk8.overrideAttrs (old: { 
-          outputs = [ "out" ]; 
           separateDebugInfo = false;
           __structuredAttrs = false;
         });
