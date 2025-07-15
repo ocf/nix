@@ -162,6 +162,14 @@
         catppuccin-sddm = final.qt6Packages.callPackage ./pkgs/catppuccin-sddm.nix { };
         ocf-papers = final.callPackage ./pkgs/ocf-papers.nix { };
         ocf-okular = final.kdePackages.callPackage ./pkgs/ocf-okular.nix { };
+
+        # TODO: Remove this patch when fixed upstream
+        # https://github.com/nixos/nixpkgs/issues/425323
+        openjdk8 = prev.openjdk8.overrideAttrs (old: { 
+          outputs = [ "out" ]; 
+          separateDebugInfo = false;
+          __structuredAttrs = false;
+        });
       };
 
       devShells = forAllSystems (pkgs: {
