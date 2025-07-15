@@ -10,7 +10,6 @@ let
       ${name} = {
         ephemeral = true;
         autoStart = true;
-        privateUsers = "pick";
 
         bindMounts = {
           "github-token" = {
