@@ -38,9 +38,3 @@ jobs:
         if: always()
         run: cat ${{ matrix.host }}.log
 
-  check-all-hosts:
-    runs-on: ci-ocf-nix-build
-    needs: build
-    steps:
-      - name: Combined GitHub status check
-        run: echo "All hosts built successfully!"
