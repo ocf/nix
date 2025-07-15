@@ -4,8 +4,6 @@ let
   cfg = config.ocf.network;
 in
 {
-  imports = [ ./bond.nix ];
-
   options.ocf.network = {
     enable = lib.mkEnableOption "Enable OCF network configuration";
     interface = lib.mkOption {
