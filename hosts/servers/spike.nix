@@ -12,6 +12,11 @@
     lastOctet = 24;
   };
 
+  ocf.secrets = {
+    enable = true;
+    hostKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKdD3u9lBJbWbNeQEHX+WvqgQLSAGrh9CF6dQdxfu6uE";
+  };
+
   ocf.github-actions = {
     enable = true;
     runners = [

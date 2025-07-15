@@ -24,6 +24,20 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    agenix = {
+      type = "github";
+      owner = "ryantm";
+      repo = "agenix";
+      ref = "main";
+    };
+
+    agenix-rekey = {
+      type = "github";
+      owner = "oddlama";
+      repo = "agenix-rekey";
+      ref = "main";
+    };
+
     nix-index-database = {
       type = "github";
       owner = "nix-community";
@@ -76,6 +90,8 @@
     , nixpkgs
     , systems
     , colmena
+    , agenix
+    , agenix-rekey
     , nix-index-database
     , ocflib
     , ocf-sync-etc
@@ -94,11 +110,17 @@
         ocf-sync-etc.overlays.default
         ocf-pam-trimspaces.overlays.default
         nix-index-database.overlays.nix-index
+        agenix-rekey.overlays.default
       ];
 
-      commonModules = with nixpkgs.lib; [
+      customModules =
+        (with nixpkgs.lib; filter (hasSuffix ".nix") (filesystem.listFilesRecursive ./modules));
+
+      commonModules = customModules ++ [
         ./profiles/base.nix
-      ] ++ filter (hasSuffix ".nix") (filesystem.listFilesRecursive ./modules);
+        agenix.nixosModules.default
+        agenix-rekey.nixosModules.default
+      ];
 
       defaultSystem = "x86_64-linux";
       overrideSystem = { overheat = "aarch64-linux"; };
@@ -165,16 +187,23 @@
 
         # TODO: Remove this patch when fixed upstream
         # https://github.com/nixos/nixpkgs/issues/425323
-        openjdk8 = prev.openjdk8.overrideAttrs  { 
+        openjdk8 = prev.openjdk8.overrideAttrs {
           separateDebugInfo = false;
           __structuredAttrs = false;
         };
+      };
+
+      agenix-rekey = agenix-rekey.configure {
+        userFlake = self;
+        nixosConfigurations = self.colmenaHive.nodes;
       };
 
       devShells = forAllSystems (pkgs: {
         default = pkgs.mkShell {
           packages = [
             pkgs.git
+            pkgs.agenix-rekey
+            pkgs.age-plugin-fido2-hmac
             colmena.packages.${pkgs.system}.colmena
           ];
         };
