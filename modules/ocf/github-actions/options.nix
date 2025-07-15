@@ -1,32 +1,32 @@
 { lib, ... }:
 
 {
-  options.ocf.github-actions = with lib; {
-    enable = mkEnableOption "Enable Containerized OCF GitHub Actions Runners";
-    runners = mkOption {
-      type = with types; listOf (submodule {
+  options.ocf.github-actions =  {
+    enable = lib.mkEnableOption "Enable Containerized OCF GitHub Actions Runners";
+    runners = lib.mkOption {
+       type =  lib.types.listOf (lib.types.submodule {
 
         options = {
-          enable = mkEnableOption "Enable this self-hosted runner";
+          enable = lib.mkEnableOption "Enable this self-hosted runner";
 
-          owner = mkOption {
-            type = str;
+          owner = lib.mkOption {
+             type = lib.types.str;
             description = "Owner of the GitHub Repository";
             default = "ocf";
           };
 
-          repo = mkOption {
-            type = str;
+          repo = lib.mkOption {
+             type = lib.types.str;
             description = "Name of the GitHub Repository";
           };
 
-          workflow = mkOption {
-            type = str;
+          workflow = lib.mkOption {
+             type = lib.types.str;
             description = "Name of the GitHub Actions Workflow";
           };
 
-          tokenPath = mkOption {
-            type = path;
+          tokenPath = lib.mkOption {
+             type = lib.types.path;
             description = ''
               Path to GitHub fine grained PAT with the following permissions:
                 Organization:
@@ -37,14 +37,14 @@
             '';
           };
 
-          packages = mkOption {
-            type = listOf package;
+          packages = lib.mkOption {
+             type = with lib.types; listOf package;
             description = "Packages to be installed in the runner enviornment";
             default = [ ];
           };
 
-          instances = mkOption {
-            type = int;
+          instances = lib.mkOption {
+             type = lib.types.int;
             description = "Number of parallel instances for this workflow";
             default = 1;
           };
