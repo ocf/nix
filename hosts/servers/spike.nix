@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, config, ... }:
 
 {
   imports = [ ../../hardware/virtualized.nix ];
@@ -12,9 +12,9 @@
     lastOctet = 24;
   };
 
-  ocf.secrets = {
-    enable = true;
-    hostKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKdD3u9lBJbWbNeQEHX+WvqgQLSAGrh9CF6dQdxfu6uE";
+  age = {
+    rekey.hostPubkey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKdD3u9lBJbWbNeQEHX+WvqgQLSAGrh9CF6dQdxfu6uE";
+    secrets.nix-ci-token.rekeyFile = ../../secrets/master-keyed/nix-ci-token.age;
   };
 
   ocf.github-actions = {
@@ -24,7 +24,7 @@
         enable = true;
         repo = "nix";
         workflow = "build";
-        tokenPath = "/run/secrets/spike-nix-build.token";
+        tokenPath = config.age.secrets.nix-ci-token.path;
         instances = 4;
         packages = [ pkgs.nix ];
       }

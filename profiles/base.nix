@@ -1,4 +1,4 @@
-{ pkgs, lib, inputs, ... }:
+{ pkgs, lib, inputs, config, ... }:
 
 {
   nix = {
@@ -17,6 +17,12 @@
   ocf = {
     auth.enable = lib.mkDefault true;
     shell.enable = lib.mkDefault true;
+  };
+
+  age.rekey = {
+    masterIdentities = lib.filesystem.listFilesRecursive ../secrets/master-identities;
+    storageMode = "local";
+    localStorageDir =  inputs.self + "/secrets/rekeyed/${config.networking.hostName}";
   };
 
   boot.loader = {
