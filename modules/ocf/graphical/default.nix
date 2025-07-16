@@ -45,8 +45,8 @@ in
     };
 
     environment.etc = {
-      skel.source = ./graphical/skel;
-      ocf-assets.source = ./graphical/assets;
+      skel.source = ./skel;
+      ocf-assets.source = ./assets;
     };
 
     programs.steam.enable = true;

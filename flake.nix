@@ -2,27 +2,85 @@
   description = "NixOS desktop configuration for the Open Computing Facility";
 
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
-    systems.url = "github:nix-systems/default";
+    nixpkgs = {
+      type = "github";
+      owner = "nixos";
+      repo = "nixpkgs";
+      ref = "nixos-unstable";
+    };
+
+    systems = {
+      type = "github";
+      owner = "nix-systems";
+      repo = "default";
+      ref = "main";
+    };
 
     colmena = {
-      url = "github:zhaofengli/colmena";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-    nix-index-database = {
-      url = "github:nix-community/nix-index-database";
+      type = "github";
+      owner = "zhaofengli";
+      repo = "colmena";
+      ref = "main";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    ocflib.url = "github:ocf/ocflib";
-    ocf-sync-etc.url = "github:ocf/etc";
-    ocf-pam-trimspaces.url = "github:ocf/pam_trimspaces";
-    ocf-utils = {
-      url = "github:ocf/utils";
+    agenix = {
+      type = "github";
+      owner = "ryantm";
+      repo = "agenix";
+      ref = "main";
+    };
+
+    agenix-rekey = {
+      type = "github";
+      owner = "oddlama";
+      repo = "agenix-rekey";
+      ref = "main";
+    };
+
+    nix-index-database = {
+      type = "github";
+      owner = "nix-community";
+      repo = "nix-index-database";
+      ref = "main";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    ocflib = {
+      type = "github";
+      owner = "ocf";
+      repo = "ocflib";
+      ref = "master";
+    };
+
+    ocf-sync-etc = {
+      type = "github";
+      owner = "ocf";
+      repo = "etc";
+      ref = "master";
+    };
+
+    ocf-pam-trimspaces = {
+      type = "github";
+      owner = "ocf";
+      repo = "pam_trimspaces";
+      ref = "master";
+    };
+
+    ocf-utils = {
+      type = "github";
+      owner = "ocf";
+      repo = "utils";
+      ref = "master";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.ocflib.follows = "ocflib";
+    };
+
     wayout = {
-      url = "github:ocf/wayout";
+      type = "github";
+      owner = "ocf";
+      repo = "wayout";
+      ref = "main";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
@@ -32,6 +90,8 @@
     , nixpkgs
     , systems
     , colmena
+    , agenix
+    , agenix-rekey
     , nix-index-database
     , ocflib
     , ocf-sync-etc
@@ -50,20 +110,16 @@
         ocf-sync-etc.overlays.default
         ocf-pam-trimspaces.overlays.default
         nix-index-database.overlays.nix-index
+        agenix-rekey.overlays.default
       ];
 
-      commonModules = [
-        ./modules/ocf/auth.nix
-        ./modules/ocf/browsers.nix
-        ./modules/ocf/etc.nix
-        ./modules/ocf/graphical.nix
-        ./modules/ocf/kiosk.nix
-        ./modules/ocf/kubernetes.nix
-        ./modules/ocf/nvidia.nix
-        ./modules/ocf/network.nix
-        ./modules/ocf/shell.nix
-        ./modules/ocf/tmpfs-home.nix
+      customModules =
+        (with nixpkgs.lib; filter (hasSuffix ".nix") (filesystem.listFilesRecursive ./modules));
+
+      commonModules = customModules ++ [
         ./profiles/base.nix
+        agenix.nixosModules.default
+        agenix-rekey.nixosModules.default
       ];
 
       defaultSystem = "x86_64-linux";
@@ -109,13 +165,13 @@
     {
       formatter = forAllSystems (pkgs: pkgs.nixpkgs-fmt);
 
-      colmena = colmenaHosts // {
+      colmenaHive = colmena.lib.makeHive (colmenaHosts // {
         meta = {
           nixpkgs = pkgsFor defaultSystem;
           nodeNixpkgs = nixpkgs.lib.mapAttrs (name: pkgsFor) overrideSystem;
           specialArgs = { inherit inputs; };
         };
-      };
+      });
 
       packages = forAllSystems (pkgs: {
         bootstrap = pkgs.callPackage ./bootstrap { };
@@ -128,12 +184,26 @@
         catppuccin-sddm = final.qt6Packages.callPackage ./pkgs/catppuccin-sddm.nix { };
         ocf-papers = final.callPackage ./pkgs/ocf-papers.nix { };
         ocf-okular = final.kdePackages.callPackage ./pkgs/ocf-okular.nix { };
+
+        # TODO: Remove this patch when fixed upstream
+        # https://github.com/nixos/nixpkgs/issues/425323
+        openjdk8 = prev.openjdk8.overrideAttrs {
+          separateDebugInfo = false;
+          __structuredAttrs = false;
+        };
+      };
+
+      agenix-rekey = agenix-rekey.configure {
+        userFlake = self;
+        nixosConfigurations = self.colmenaHive.nodes;
       };
 
       devShells = forAllSystems (pkgs: {
         default = pkgs.mkShell {
           packages = [
             pkgs.git
+            pkgs.agenix-rekey
+            pkgs.age-plugin-fido2-hmac
             colmena.packages.${pkgs.system}.colmena
           ];
         };
