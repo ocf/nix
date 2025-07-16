@@ -1,0 +1,34 @@
+{ pkgs, config, ... }:
+
+{
+  imports = [ ../../hardware/virtualized.nix ];
+
+  networking.hostName = "spike";
+
+  boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
+
+  ocf.network = {
+    enable = true;
+    lastOctet = 24;
+  };
+
+  age = {
+    rekey.hostPubkey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKdD3u9lBJbWbNeQEHX+WvqgQLSAGrh9CF6dQdxfu6uE";
+    secrets.nix-ci-token.rekeyFile = ../../secrets/master-keyed/nix-ci-token.age;
+  };
+
+  ocf.github-actions = {
+    enable = true;
+    runners = [
+      {
+        enable = true;
+        repo = "nix";
+        workflow = "build";
+        tokenPath = config.age.secrets.nix-ci-token.path;
+        instances = 4;
+        packages = [ pkgs.nix ];
+      }
+    ];
+  };
+  system.stateVersion = "24.11";
+}

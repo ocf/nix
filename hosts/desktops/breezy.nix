@@ -8,7 +8,7 @@
 
   networking.hostName = "breezy";
 
- ocf.network = {
+  ocf.network = {
     enable = true;
     lastOctet = 155;
   };
