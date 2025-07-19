@@ -13,15 +13,10 @@
       { Destination = "2607:f140:8801:1::/64"; Scope = "link"; }
       { Destination = "2607:f140:8801:2::/64"; Scope = "link"; }
     ];
-
-    bond = {
-      enable = true;
-      interfaces = [ "enp66s0f0np0" "enp66s0f1np1" ];
-    };
   };
 
-  services.ocfKubernetes.enable = true;
-  services.ocfKubernetes.isLeader = true;
+  services.ocfDevKubernetes.enable = true;
+  services.ocfDevKubernetes.isLeader = true;
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
