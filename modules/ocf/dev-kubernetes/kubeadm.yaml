@@ -1,0 +1,31 @@
+kind: ClusterConfiguration
+apiVersion: kubeadm.k8s.io/v1beta3
+kubernetesVersion: v1.25.3
+controlPlaneEndpoint: "gravitywell.ocf.io:6443"
+networking:
+  podSubnet: 10.244.0.0/16,2607:f140:8801:1::/112
+  serviceSubnet: 10.96.0.0/16,2607:f140:8801:2::/112
+apiServer:
+  certSANs:
+  - gravitywell.ocf.io
+  - gravitywell.ocf.berkeley.edu
+clusterName: ocf-dna
+controllerManager:
+  extraArgs:
+    node-cidr-mask-size-ipv6: "120" # match ipv4 for pods/node
+    node-cidr-mask-size-ipv4: "24"  # default
+---
+kind: KubeletConfiguration
+apiVersion: kubelet.config.k8s.io/v1beta1
+cgroupDriver: systemd
+staticPodPath: "/etc/kubernetes/manifests"
+clusterDNS:
+- 10.96.0.10
+---
+apiVersion: kubeadm.k8s.io/v1beta3
+kind: InitConfiguration
+nodeRegistration:
+  criSocket: "unix:///var/run/crio/crio.sock"
+skipPhases:
+  - addon/kube-proxy
+  - addon/coredns

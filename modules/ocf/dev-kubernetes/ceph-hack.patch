@@ -1,0 +1,30 @@
+From aee4898ebfac07c153fff7c538e56055b1e252b5 Mon Sep 17 00:00:00 2001
+From: Nikhil Jha <hi@nikhiljha.com>
+Date: Tue, 27 Dec 2022 18:43:59 -0800
+Subject: [PATCH] hack: dont detect as removable
+
+---
+ drivers/scsi/scsi_scan.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/scsi/scsi_scan.c b/drivers/scsi/scsi_scan.c
+index 7a6904a39..50380af0a 100644
+--- a/drivers/scsi/scsi_scan.c
++++ b/drivers/scsi/scsi_scan.c
+@@ -901,10 +901,11 @@ static int scsi_add_lun(struct scsi_device *sdev, unsigned char *inq_result,
+ 
+ 	if (*bflags & BLIST_ISROM) {
+ 		sdev->type = TYPE_ROM;
+-		sdev->removable = 1;
++		sdev->removable = 0;
+ 	} else {
+ 		sdev->type = (inq_result[0] & 0x1f);
+-		sdev->removable = (inq_result[1] & 0x80) >> 7;
++		// TODO: remove me, hack
++		sdev->removable = 0;
+ 
+ 		/*
+ 		 * some devices may respond with wrong type for
+-- 
+2.38.1
+
