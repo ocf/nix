@@ -7,7 +7,7 @@
 
   ocf.network = {
     enable = true;
-    lastOctet = 50;
+    lastOctet = 101;
     extraRoutes = [
       # We use these subnets for Kubernetes, they aren't part of the main /64
       { Destination = "2607:f140:8801:1::/64"; Scope = "link"; }
