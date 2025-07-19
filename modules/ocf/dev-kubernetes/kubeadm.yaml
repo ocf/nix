@@ -1,6 +1,6 @@
 kind: ClusterConfiguration
 apiVersion: kubeadm.k8s.io/v1beta3
-kubernetesVersion: v1.25.3
+kubernetesVersion: v1.30.0
 controlPlaneEndpoint: "gravitywell.ocf.io:6443"
 networking:
   podSubnet: 10.244.0.0/16,2607:f140:8801:1::/112
@@ -9,7 +9,7 @@ apiServer:
   certSANs:
   - gravitywell.ocf.io
   - gravitywell.ocf.berkeley.edu
-clusterName: ocf-dna
+clusterName: ocf-gravitywell
 controllerManager:
   extraArgs:
     node-cidr-mask-size-ipv6: "120" # match ipv4 for pods/node
