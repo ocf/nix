@@ -16,7 +16,7 @@ spec:
     - name: port
       value: "6443"
     - name: vip_interface
-      value: bond0
+      value: enp3s0
     - name: vip_cidr
       value: "32"
     - name: cp_enable
