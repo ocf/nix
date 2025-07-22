@@ -26,7 +26,7 @@ in
 
   config = lib.mkIf config.services.ocfDevKubernetes.enable {
     environment.etc = {
-      "kubernetes/manifests/kubevip.yaml" = lib.mkIf config.services.ocfKubernetes.isLeader { source = ./kubevip.yaml; };
+      "kubernetes/manifests/kubevip.yaml" = lib.mkIf config.services.ocfDevKubernetes.isLeader { source = ./kubevip.yaml; };
       "kubernetes/kubeadm.yaml".source = ./kubeadm.yaml;
     };
 
