@@ -16,6 +16,7 @@
 
   ocf = {
     auth.enable = lib.mkDefault true;
+    acme.enable = lib.mkDefault true;
     shell.enable = lib.mkDefault true;
   };
 

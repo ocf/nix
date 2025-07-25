@@ -16,6 +16,9 @@ in
   deployment.tags = [ "desktop" ];
 
   ocf = {
+    # TODO: need ensure host keys can't be stolen by booting an external drive...
+    acme.enable = false;
+
     etc.enable = true;
     graphical.enable = true;
     browsers.enable = true;
