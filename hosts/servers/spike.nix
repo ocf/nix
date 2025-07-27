@@ -14,6 +14,7 @@
   };
 
   age.secrets.nix-ci-token.rekeyFile = ../../secrets/master-keyed/nix-ci-token.age;
+  age.secrets.nix-mkdocs-token.rekeyFile = ../../secrets/master-keyed/nix-mkdocs-token.age;
 
   ocf.github-actions = {
     enable = true;
@@ -25,6 +26,13 @@
         tokenPath = config.age.secrets.nix-ci-token.path;
         instances = 4;
         packages = [ pkgs.nix ];
+      }
+      {
+        enable = true;
+	repo = "mkdocs";
+	workflow = "build";
+	tokenPath = config.age.secrets.nix-mkdocs-token.path;
+	packages = [ pkgs.nix ];
       }
     ];
   };

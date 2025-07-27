@@ -28,12 +28,12 @@
           tokenPath = lib.mkOption {
             type = lib.types.path;
             description = ''
-              Path to GitHub fine grained PAT with the following permissions:
-                Organization:
-                  - Read and Write access to organization self hosted runners
+              Path to GitHub fine grained Personal Access Token with the following permissions:
                 Repository:
                   - Read access to metadata
                   - Read and Write access to administration
+                Organization:
+                  - Read and Write access to organization self hosted runners
             '';
           };
 
