@@ -24,7 +24,8 @@
     masterIdentities = lib.filesystem.listFilesRecursive ../secrets/master-identities;
     storageMode = "local";
     localStorageDir = inputs.self + "/secrets/rekeyed/${config.networking.hostName}";
-    hostPubkey = builtins.readFile (inputs.self + "/secrets/host-keys/${config.networking.hostName}.pub");
+    # TODO(@laksith19): Clean this up 
+    hostPubkey = lib.mkIf (builtins.pathExists (inputs.self + "/secrets/host-keys/${config.networking.hostName}.pub")) (builtins.readFile (inputs.self + "/secrets/host-keys/${config.networking.hostName}.pub"));
   };
 
   boot.loader = {
