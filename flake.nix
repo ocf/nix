@@ -38,6 +38,14 @@
       ref = "main";
     };
 
+    disko = {
+      type = "github";
+      owner = "nix-community";
+      repo = "disko";
+      ref = "latest";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     nix-index-database = {
       type = "github";
       owner = "nix-community";
@@ -92,6 +100,7 @@
     , colmena
     , agenix
     , agenix-rekey
+    , disko
     , nix-index-database
     , ocflib
     , ocf-sync-etc
@@ -120,6 +129,7 @@
         ./profiles/base.nix
         agenix.nixosModules.default
         agenix-rekey.nixosModules.default
+        disko.nixosModules.disko
       ];
 
       defaultSystem = "x86_64-linux";
@@ -173,10 +183,6 @@
         };
       });
 
-      packages = forAllSystems (pkgs: {
-        bootstrap = pkgs.callPackage ./bootstrap { };
-      });
-
       overlays.default = final: prev: {
         ocf-utils = ocf-utils.packages.${final.system}.default;
         ocf-wayout = wayout.packages.${final.system}.default;
@@ -208,10 +214,6 @@
           ];
         };
       });
-
-      # We usually deploy hosts with colmena, but bootstrap currently uses the
-      # nixosConfigurations flake output... this isn't exactly the same, because
-      # colmena adds a couple of things to it, but it's OK for now...
 
       nixosConfigurations = builtins.mapAttrs
         (host: colmenaConfig: nixpkgs.lib.nixosSystem rec {

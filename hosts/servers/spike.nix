@@ -1,7 +1,7 @@
 { pkgs, config, ... }:
 
 {
-  imports = [ ../../hardware/virtualized.nix ];
+  imports = [ ../../hardware/virtualized.nix ../../disko/spike.nix ];
 
   networking.hostName = "spike";
 
