@@ -14,7 +14,6 @@
   services.nginx = {
     enable = true;
     virtualHosts."bestdocs.ocf.berkeley.edu" = {
-      addSSL = true;
       forceSSL = true;
       enableACME = true;
       serverAliases = [ "bestdocs.ocf.io" ];
