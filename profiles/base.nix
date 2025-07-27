@@ -1,5 +1,10 @@
 { pkgs, lib, inputs, config, ... }:
 
+let
+  secretsDir = inputs.self + "/secrets";
+  hostKeyFile = secretsDir + "/host-keys/${config.networking.hostName}.pub";
+in
+
 {
   nix = {
     channel.enable = false;
@@ -21,11 +26,10 @@
   };
 
   age.rekey = {
-    masterIdentities = lib.filesystem.listFilesRecursive ../secrets/master-identities;
+    masterIdentities = lib.filesystem.listFilesRecursive (secretsDir + "/master-identities");
     storageMode = "local";
     localStorageDir = inputs.self + "/secrets/rekeyed/${config.networking.hostName}";
-    # TODO(@laksith19): Clean this up 
-    hostPubkey = lib.mkIf (builtins.pathExists (inputs.self + "/secrets/host-keys/${config.networking.hostName}.pub")) (builtins.readFile (inputs.self + "/secrets/host-keys/${config.networking.hostName}.pub"));
+    hostPubkey = lib.mkIf (builtins.pathExists hostKeyFile) (builtins.readFile hostKeyFile);
   };
 
   boot.loader = {

@@ -1,7 +1,13 @@
-{ lib, config, ... }:
+{ inputs, lib, config, ... }:
 
 let
   cfg = config.ocf.github-actions;
+
+  getSecrets = runner-cfg: lib.mkIf runner-cfg.enable {
+    ${runner-cfg.token}.rekeyFile =
+      inputs.self + "/secrets/master-keyed/github/ci-tokens/${runner-cfg.token}.age";
+  };
+
   makeContainer = runner-cfg:
     let
       name = "ci-${runner-cfg.owner}-${runner-cfg.repo}-${runner-cfg.workflow}";
@@ -13,7 +19,7 @@ let
 
         bindMounts = {
           "github-token" = {
-            hostPath = runner-cfg.tokenPath;
+            hostPath = config.age.secrets.${runner-cfg.token}.path;
             mountPoint = "/run/token";
             isReadOnly = true;
           };
@@ -57,6 +63,7 @@ in
 {
   imports = [ ./options.nix ];
   config = lib.mkIf cfg.enable {
+    age.secrets = lib.mkMerge (builtins.map getSecrets cfg.runners);
     containers = lib.mkMerge (builtins.map makeContainer cfg.runners);
   };
 }
