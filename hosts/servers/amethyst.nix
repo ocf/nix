@@ -13,7 +13,7 @@
   # TODO add SSH key for user nginx that workflow can use to deploy
   services.nginx = {
     enable = true;
-    virtualHosts."bestdocs.ocf.berkeley.edu" {
+    virtualHosts."bestdocs.ocf.berkeley.edu" = {
       addSSL = true;
       forceSSL = true;
       enableACME = true;
