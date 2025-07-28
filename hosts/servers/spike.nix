@@ -25,7 +25,6 @@
       {
         enable = true;
         repo = "mkdocs";
-        workflow = "build";
       }
     ];
   };

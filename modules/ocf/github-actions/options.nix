@@ -21,8 +21,9 @@
           };
 
           workflow = lib.mkOption {
-            type = lib.types.str;
-            description = "Name of the GitHub Actions Workflow";
+            type = lib.types.nullOr lib.types.str;
+            description = "Name of the GitHub Actions Workflow - only needed if you want to have independent runners per workflow";
+            default = null;
           };
 
           token = lib.mkOption {

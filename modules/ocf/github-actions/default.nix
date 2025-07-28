@@ -10,7 +10,9 @@ let
 
   makeContainer = runner-cfg:
     let
-      name = "ci-${runner-cfg.owner}-${runner-cfg.repo}-${runner-cfg.workflow}";
+      name =
+        if (builtins.isNull runner-cfg.workflow) then
+          "ci-${runner-cfg.owner}-${runner-cfg.repo}" else "ci-${runner-cfg.owner}-${runner-cfg.repo}-${runner-cfg.workflow}";
     in
     lib.mkIf runner-cfg.enable {
       ${name} = {
