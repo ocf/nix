@@ -13,6 +13,7 @@
   users.users = {
     "deploy-bestdocs" = {
       group = "nginx";
+      isSystemUser = true;
       openssh.authorizedKeys.keys = [
         "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPFUy5jvotIFajdAbwnqYAcMZMlwAxTZ3wPq44fmZ4v2"
       ];
