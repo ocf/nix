@@ -23,7 +23,7 @@
   };
 
   systemd.tmpfiles.rules = [
-    "d /var/www/bestdocs 775 nginx nginx"
+    "d /var/www/bestdocs 775 deploy-bestdocs nginx"
   ];
 
   services.nginx = {
