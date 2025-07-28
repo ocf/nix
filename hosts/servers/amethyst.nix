@@ -10,6 +10,8 @@
     lastOctet = 50;
   };
 
+  ocf.acme.extraCerts = [ "bestdocs.ocf.berkeley.edu" "bestdocs.ocf.io" ];
+
   users.users = {
     "deploy-bestdocs" = {
       group = "nginx";

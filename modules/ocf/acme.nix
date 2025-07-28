@@ -4,7 +4,14 @@ let
   cfg = config.ocf.acme;
 in
 {
-  options.ocf.acme.enable = lib.mkEnableOption "Enable OCF ACME";
+  options.ocf.acme = {
+    enable = lib.mkEnableOption "Enable OCF ACME";
+    extraCerts = lib.mkOption {
+      type = lib.types.listOf lib.types.str;
+      description = "Additional domains to add to cert";
+      default = [ ];
+    };
+  };
 
   config = lib.mkIf cfg.enable {
 
@@ -28,7 +35,7 @@ in
 
       certs.primary = {
         domain = "${config.networking.hostName}.ocf.berkeley.edu";
-        extraDomainNames = [ "${config.networking.hostName}.ocf.io" ];
+        extraDomainNames = [ "${config.networking.hostName}.ocf.io" ] ++ cfg.extraCerts;
       };
     };
   };
