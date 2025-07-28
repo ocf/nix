@@ -10,6 +10,15 @@
     lastOctet = 50;
   };
 
+  users.users = {
+    "deploy-bestdocs" = {
+      group = "nginx";
+      openssh.authorizedKeys.keys = [
+        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPFUy5jvotIFajdAbwnqYAcMZMlwAxTZ3wPq44fmZ4v2"
+      ];
+    };
+  };
+
   # TODO add SSH key for user nginx that workflow can use to deploy
   services.nginx = {
     enable = true;
