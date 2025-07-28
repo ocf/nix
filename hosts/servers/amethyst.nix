@@ -20,7 +20,10 @@
     };
   };
 
-  # TODO add SSH key for user nginx that workflow can use to deploy
+  systemd.tmpfiles.rules = [
+    "d /var/www/bestdocs 775 nginx nginx"
+  ];
+
   services.nginx = {
     enable = true;
     virtualHosts."bestdocs.ocf.berkeley.edu" = {
