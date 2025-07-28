@@ -33,7 +33,7 @@ in
         };
       };
 
-      certs.primary = {
+      certs."${config.networking.hostName}.ocf.berkeley.edu" = {
         domain = "${config.networking.hostName}.ocf.berkeley.edu";
         extraDomainNames = [ "${config.networking.hostName}.ocf.io" ] ++ cfg.extraCerts;
       };

@@ -10,6 +10,7 @@
     lastOctet = 50;
   };
 
+  security.acme.certs."${config.networking.hostName}.ocf.berkeley.edu".group = "nginx";
   ocf.acme.extraCerts = [ "bestdocs.ocf.berkeley.edu" "bestdocs.ocf.io" ];
 
   users.users = {
@@ -30,7 +31,7 @@
     enable = true;
     virtualHosts."bestdocs.ocf.berkeley.edu" = {
       forceSSL = true;
-      enableACME = true;
+      useACMEHost = "${config.networking.hostName}.ocf.berkeley.edu";
       serverAliases = [ "bestdocs.ocf.io" ];
       root = "/var/www/bestdocs";
     };
