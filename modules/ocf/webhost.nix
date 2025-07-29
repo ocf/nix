@@ -23,10 +23,10 @@ in
     users.users = {
       "deploy-${cfg.subdomain}" = {
         group = "nginx";
-	isNormalUser = true;
-	openssh.authorizedKeys.keys = [
-	  "${cfg.githubActionsPubkey}"
-	];
+        isNormalUser = true;
+        openssh.authorizedKeys.keys = [
+          "${cfg.githubActionsPubkey}"
+        ];
       };
     };
 
@@ -36,11 +36,19 @@ in
 
     services.nginx = {
       enable = true;
+      virtualHosts.default-server = {
+        default = true;
+        serverName = "_";
+        forceSSL = true;
+        useACMEHost = "${config.networking.hostName}.ocf.berkeley.edu";
+        locations."/".return = 444;
+
+      };
       virtualHosts."${cfg.subdomain}.ocf.berkeley.edu" = {
         forceSSL = true;
-	useACMEHost = "${config.networking.hostName}.ocf.berkeley.edu";
-	serverAliases = [ "${cfg.subdomain}.ocf.io" ];
-	root = "/var/www/${cfg.subdomain}";
+        useACMEHost = "${config.networking.hostName}.ocf.berkeley.edu";
+        serverAliases = [ "${cfg.subdomain}.ocf.io" ];
+        root = "/var/www/${cfg.subdomain}";
       };
     };
 

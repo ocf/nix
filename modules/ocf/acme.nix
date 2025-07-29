@@ -45,20 +45,20 @@ in
           };
         }
 
-        ( lib.mkIf cfg.shortlived {
-            # TODO:  Currently still being rolled out and restriced to a allowlist so 
-            # we can't request these certs but def worth moving over once it's available.
+        (lib.mkIf cfg.shortlived {
+          # TODO:  Currently still being rolled out and restriced to a allowlist so 
+          # we can't request these certs but def worth moving over once it's available.
 
-            # https://letsencrypt.org/2025/01/16/6-day-and-ip-certs/
-            # https://letsencrypt.org/2025/02/20/first-short-lived-cert-issued/
-            extraLegoRunFlags = lib.mkForce [ "--profile" "shortlived" ];
-            extraLegoRenewFlags = lib.mkForce [ "--profile" "shortlived" ];
+          # https://letsencrypt.org/2025/01/16/6-day-and-ip-certs/
+          # https://letsencrypt.org/2025/02/20/first-short-lived-cert-issued/
+          extraLegoRunFlags = lib.mkForce [ "--profile" "shortlived" ];
+          extraLegoRenewFlags = lib.mkForce [ "--profile" "shortlived" ];
 
-            # TODO: Remove this when Lego moves to v5 and uses --dynamic by default instead
-            # of having to manually set --days. This will automatically renew shortlived 
-            # certs in 3 days. https://go-acme.github.io/lego/usage/cli/options/index.html
-            validMinDays = 3;
-          }
+          # TODO: Remove this when Lego moves to v5 and uses --dynamic by default instead
+          # of having to manually set --days. This will automatically renew shortlived 
+          # certs in 3 days. https://go-acme.github.io/lego/usage/cli/options/index.html
+          validMinDays = 3;
+        }
         )
       ];
 
