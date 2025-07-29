@@ -24,6 +24,7 @@ in
       "deploy-${cfg.subdomain}" = {
         group = "nginx";
         isNormalUser = true;
+        createHome = false;
         openssh.authorizedKeys.keys = [
           "${cfg.githubActionsPubkey}"
         ];
