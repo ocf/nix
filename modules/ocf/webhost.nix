@@ -2,8 +2,13 @@
 
 let
   cfg = config.ocf.webhost;
+  baseDomain = "ocf.berkeley.edu";
+  shortDomain = "ocf.io";
+  fqdn = "${config.networking.hostName}.${baseDomain}";
 
-  makeUsers = website-cfg: lib.mkIf website-cfg.enable {
+  enabledSites = builtins.filter (website-cfg: website-cfg.enable) cfg.websites;
+
+  makeUsers = website-cfg: {
     "deploy-${website-cfg.name}" = {
       group = "nginx";
       isNormalUser = true;
@@ -14,35 +19,42 @@ let
     };
   };
 
-  makeVirtHosts = website-cfg: lib.mkIf website-cfg.enable {
-    "${website-cfg.name}.ocf.berkeley.edu" = {
+  makeVirtHosts = website-cfg: {
+    "${website-cfg.name}.${baseDomain}" = {
       forceSSL = true;
-      useACMEHost = "${config.networking.hostName}.ocf.berkeley.edu";
-      serverAliases = [ "${website-cfg.name}.ocf.io" ];
+      useACMEHost = "${fqdn}";
+      serverAliases = [ "${website-cfg.name}.${shortDomain}" ];
       root = "/var/www/${website-cfg.name}";
     };
   };
 
-  defaultVirtHost =  [
+  defaultVirtHost = [
     {
       default-server = {
         default = true;
         serverName = "_";
         forceSSL = true;
-        useACMEHost = "${config.networking.hostName}.ocf.berkeley.edu";
+        useACMEHost = "${fqdn}";
         locations."/".return = 444;
       };
     }
   ];
 
-  makeDirs = website-cfg:
-    if website-cfg.enable then [ "d /var/www/${website-cfg.name} 775 deploy-${website-cfg.name} nginx" ]
-    else [ ];
+  makeTmpFileRules = website-cfg: {
+    "/var/www/${website-cfg.name}" = {
+      d = {
+        mode = "0775";
+        user = "deploy-${website-cfg.name}";
+        group = "nginx";
+      };
+    };
+  };
 
 
-  makeExtraCerts = website-cfg:
-    if website-cfg.enable then [ "${website-cfg.name}.ocf.berkeley.edu" "${website-cfg.name}.ocf.io" ]
-    else [ ];
+  makeExtraCerts = website-cfg: [
+    "${website-cfg.name}.${baseDomain}"
+    "${website-cfg.name}.${shortDomain}"
+  ];
 
 in
 {
@@ -73,16 +85,18 @@ in
   };
   config = lib.mkIf cfg.enable {
 
-    security.acme.certs."${config.networking.hostName}.ocf.berkeley.edu".group = "nginx";
-    users.users = lib.mkMerge (builtins.map makeUsers cfg.websites);
-
-    systemd.tmpfiles.rules = lib.flatten (builtins.map makeDirs cfg.websites);
-    ocf.acme.extraCerts = lib.flatten (builtins.map makeExtraCerts cfg.websites);
+    security.acme.certs."${fqdn}".group = "nginx";
+    users.users = lib.mkMerge (builtins.map makeUsers enabledSites);
+    systemd.tmpfiles.settings."web-roots" = lib.mkMerge (builtins.map makeTmpFileRules enabledSites);
+    ocf.acme.extraCerts = (builtins.concatMap makeExtraCerts enabledSites);
 
 
     services.nginx = {
       enable = true;
-      virtualHosts = lib.mkMerge ((builtins.map makeVirtHosts cfg.websites) ++ defaultVirtHost);
+      virtualHosts = lib.mkMerge (
+        (builtins.map makeVirtHosts enabledSites)
+        ++ defaultVirtHost
+      );
     };
 
   };
