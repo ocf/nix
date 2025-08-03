@@ -167,8 +167,6 @@
           imports = commonModules ++ modules;
           deployment.tags = [ group ];
           deployment.targetHost = "${host}.ocf.berkeley.edu";
-          deployment.targetUser = "root";
-          deployment.allowLocalDeployment = true;
         })
         hosts;
     in

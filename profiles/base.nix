@@ -19,8 +19,10 @@ in
     };
   };
 
+
   ocf = {
     auth.enable = lib.mkDefault true;
+    managed-deployment.enable = lib.mkDefault true;
     acme.enable = lib.mkDefault true;
     shell.enable = lib.mkDefault true;
   };
@@ -60,20 +62,6 @@ in
     LC_TELEPHONE = "en_US.UTF-8";
     LC_TIME = "en_US.UTF-8";
   };
-
-  # Temporary, make dedicated deploy user later
-  users.users.root.openssh.authorizedKeys.keys = [
-    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGlViRB5HH1bTaS1S7TcqVBSuxKdrbdhL2CmhDqc/t6A" # oliverni
-    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGiiq/rSfG+bKmqKZfCSl1z2r7rc3Wt/Paya/JYmjdSO" # njha
-    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHC9Yh1qdHa9rq28Ki0i53vtHgg9ksKq8vg9M+9GGPA5" # etw
-    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILOssvEhZ5BG96yH4fsjYhY6xKt3AKyuyAD5TXapdQUw" # lemurseven
-    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILOaJJvOUG08qr3yeeQRB71M30cdPMuO69nsf0CodALa" # jaysa
-    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHPeJeRNwcPaZupbmCEtUIOuLDfhow35byMp548TUDYP" # rjz
-    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIO6zftyMUeIQVYkRag6CxWqYShjWnErQ24NeaU95Bp2z" # laksith
-    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDJ12A/hT19X7al32GiCWa4OYIp5kC+pC0YeeccIi+BQ" # ronitnath
-    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMdAe7sPMxaidnqOah3UVrjt41KFHHOYleS1VWGH+ZUc" # storce
-    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAID/4nHyz4zaL2g7o7oLQqdLnz02JFniBOXjZ6gSrtUlO" # sbwilliams
-  ];
 
   programs.ssh = {
     package = pkgs.openssh_gssapi;
