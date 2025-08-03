@@ -26,5 +26,6 @@ jobs:
           " >> ${{ github.workspace }}/ssh_config
 
       - name: Deploy with Colmena
-        env: SSH_CONFIG_FILE: ${{ github.workspace }}/ssh_config
+        env:
+          SSH_CONFIG_FILE: ${{ github.workspace }}/ssh_config
         run: nix develop -c colmena apply --on ${{ inputs.hosts }}
