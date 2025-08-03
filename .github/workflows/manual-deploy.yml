@@ -1,0 +1,30 @@
+name: Manually Deploy to Host
+
+on:
+  workflow_dispatch:
+    inputs:
+      hosts:
+        description: 'Comma separated hostnames or tags (ex: @desktops) to deploy'
+        required: true
+        type: string
+jobs:
+  deploy-on-hosts:
+    runs-on: ci-ocf-nix-deploy
+    steps:
+      - name: Checkout 
+        uses: actions/checkout@v4
+
+      - name: Setup SSH Private Key
+        run: |
+          echo '${{ secrets.COLMENA_APPLY_SSH_KEY }}' > ${{ github.workspace }}/id_ed25519
+          chmod 400 ${{ github.workspace }}/id_ed25519
+
+      - name: Setup SSH Config File
+        run: |
+          echo "Host *
+            Identityfile $GITHUB_WORKSPACE/id_ed25519
+          " >> ${{ github.workspace }}/ssh_config
+
+      - name: Deploy with Colmena
+        env: SSH_CONFIG_FILE: ${{ github.workspace }}/ssh_config
+        run: nix develop -c colmena apply --on ${{ inputs.hosts }}
