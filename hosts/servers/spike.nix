@@ -19,6 +19,11 @@
       {
         enable = true;
         repo = "nix";
+        workflow = "deploy";
+      }
+      {
+        enable = true;
+        repo = "nix";
         workflow = "build";
         instances = 4;
       }
