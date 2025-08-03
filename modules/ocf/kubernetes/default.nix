@@ -10,7 +10,7 @@ let
       hash = "sha256-7xRRpchjwtV3dGbZ2hN9qj6soAuiF/K7vTY0LzE6Z5w=";
     };
   });
-  kubePkgs = with pkgs; [ kubernetes util-linux iproute2 ethtool cri-o iptables-legacy socat conntrack-tools gvisor cri-tools ebtables ];
+  kubePkgs = with pkgs; [ kubernetes util-linux iproute2 ethtool cri-o iptables-legacy socat conntrack-tools gvisor cri-tools ebtables k9s ];
 in
 {
   # Configuration for Nodes
