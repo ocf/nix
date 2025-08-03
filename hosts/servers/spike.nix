@@ -31,6 +31,10 @@
         enable = true;
         repo = "mkdocs";
       }
+      {
+        enable = true;
+        repo = "hugo-decal-web";
+      }
     ];
   };
   system.stateVersion = "24.11";
