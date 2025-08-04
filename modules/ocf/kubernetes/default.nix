@@ -127,13 +127,6 @@ in
       };
     };
 
-    # TODO: Remove when this is fixed in upstream Ceph, or if there's a better workaround.
-    # <https://github.com/rook/rook/issues/11474#issuecomment-1365523469>
-    boot.kernelPatches = [{
-      name = "ceph-hack";
-      patch = ./ceph-hack.patch;
-    }];
-
     virtualisation.cri-o.enable = true;
 
     # NixOS cri-o config does weird stuff... reverting these
