@@ -20,7 +20,7 @@
       }
       {
         enable = true;
-        name = "bestdocs";
+        name = "decal";
         githubActionsPubkey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBcmT7hG2lb4HigSYs7NoXfZx31vmBxheglR4ryv/LgK";
       }
     ];
