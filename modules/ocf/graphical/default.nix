@@ -50,6 +50,8 @@ in
     };
 
     programs.steam.enable = true;
+    programs.zoom-us.enable = true;
+    programs.sway.enable = true;
 
     environment.systemPackages = with pkgs; [
       plasma-applet-commandoutput
@@ -61,29 +63,39 @@ in
           CustomBackground = true;
         };
       })
+
       libreoffice
-      vscode-fhs
       kitty
-      prismlauncher
-      unciv
-      rstudio
+
+      irssi
+      weechat
+      gimp3
+      inkscape
+      blender
+      xournalpp
+      fastfetch
 
       ocf-okular
 
-      # temporary ATDP programs
-      filezilla
-      # sublime
+      #TEXT & CODE EDITORS
+      vscode-fhs
+      rstudio
+      zed-editor
+      jetbrains.idea-community
+
+      # GAMES
+      dwarf-fortress
+      prismlauncher
+      unciv
+      superTuxKart
+      tetris
+
     ];
 
     fonts.packages = with pkgs; [ meslo-lgs-nf noto-fonts noto-fonts-cjk-sans noto-fonts-extra ];
 
     services = {
-      # KDE Plasma is our primary DE, but have others available
       desktopManager.plasma6.enable = true;
-      xserver.desktopManager = {
-        gnome.enable = true;
-        xfce.enable = true;
-      };
 
       displayManager = {
         defaultSession = "plasma";
