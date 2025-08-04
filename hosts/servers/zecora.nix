@@ -7,7 +7,7 @@
 
   ocf.network = {
     enable = true;
-    lastOctet = 50;
+    lastOctet = 44;
   };
 
   services.ergochat = {
