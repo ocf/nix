@@ -162,11 +162,14 @@
         (group: _: readGroup group)
         (builtins.readDir ./hosts);
 
+      deploy-user = "ocf-nix-deploy-user";
       colmenaHosts = builtins.mapAttrs
         (host: { modules, group }: {
           imports = commonModules ++ modules;
           deployment.tags = [ group ];
           deployment.targetHost = "${host}.ocf.berkeley.edu";
+          # TODO: Think of a less ugly way of doing this
+          deployment.targetUser = nixpkgs.lib.mkIf self.colmenaHive.nodes.${host}.config.ocf.managed-deployment.enable deploy-user;
         })
         hosts;
     in

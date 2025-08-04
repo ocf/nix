@@ -10,7 +10,6 @@ in
   config = lib.mkIf cfg.enable {
     nix.settings.trusted-users = [ deploy-user ];
 
-    deployment.targetUser = deploy-user;
     users.users.${deploy-user} = {
       isNormalUser = true;
       createHome = false;
