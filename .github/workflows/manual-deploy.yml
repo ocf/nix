@@ -7,6 +7,9 @@ on:
         description: 'Comma separated hostnames or tags (ex: @desktops) to deploy'
         required: true
         type: string
+
+run-name: Deploy to ${{ inputs.hosts }} from ${{ github.ref_name }} by @${{ github.actor }}
+
 jobs:
   deploy-on-hosts:
     runs-on: ci-ocf-nix-deploy
