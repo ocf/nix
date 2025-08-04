@@ -12,11 +12,9 @@
 
   services.ergochat = {
     enable = true;
-    network.name = "OCF";
-    server.name = "dev-irc.ocf.berkeley.edu";
+    settings.network.name = "OCF";
+    settings.server.name = "dev-irc.ocf.berkeley.edu";
   };
-
-  ocf.acme.extraCerts = [ irc.ocf.io ];
 
   # make ssl certs visible to ircd user
 
