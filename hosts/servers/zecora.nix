@@ -12,15 +12,32 @@
 
   services.ergochat = {
     enable = true;
-    settings.network.name = "OCF";
-    settings.server.name = "dev-irc.ocf.berkeley.edu";
+    settings = {
+      network.name = "OCF";
+      server = {
+         name = "dev-irc.ocf.berkeley.edu";
+	 sts.enabled = true;
+      };
+    };
   };
 
   ocf.acme.extraCerts = [ "dev-irc.ocf.berkeley.edu" "dev-irc.ocf.io" ];
 
-  # make ssl certs visible to ircd user
+  security.acme.certs."dev-irc.ocf.berkeley.edu".group = "ergochat";
+  security.acme.certs."dev-irc.ocf.berkeley.edu".user = "ergochat";
+  users.users."ergo" {
+    createHome = true;
+  };
 
-  # enable SSL in ircd.conf
+  system.ActivationScripts = {
+    link-ergochat-certs = {
+    text =
+      ''
+        ln -sfn /var/lib/acme/zecora.ocf.berkeley.edu/fullchain.pem /home/ergo/fullchain.pem
+        ln -sfn /var/lib/acme/zecora.ocf.berkeley.edu/key.pem /home/ergo/privkey.pem
+      '';
+    };
+  };
 
   system.stateVersion = "24.11";
 }
