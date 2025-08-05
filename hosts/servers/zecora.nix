@@ -16,6 +16,8 @@
     settings.server.name = "dev-irc.ocf.berkeley.edu";
   };
 
+  ocf.acme.extraCerts = [ "dev-irc.ocf.berkeley.edu" "dev-irc.ocf.io" ];
+
   # make ssl certs visible to ircd user
 
   # enable SSL in ircd.conf
