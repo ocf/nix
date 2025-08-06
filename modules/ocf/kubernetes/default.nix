@@ -2,7 +2,7 @@
 
 let
   kubernetes = pkgs.kubernetes.overrideAttrs (oldAttrs: rec {
-    version = "1.30.0";
+    version = "1.33.3";
     src = pkgs.fetchFromGitHub {
       owner = "kubernetes";
       repo = "kubernetes";
