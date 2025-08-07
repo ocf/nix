@@ -2,12 +2,13 @@
 
 let
   kubernetes = pkgs.kubernetes.overrideAttrs (oldAttrs: rec {
-    version = "1.30.0";
+    version = "1.33.3";
     src = pkgs.fetchFromGitHub {
       owner = "kubernetes";
       repo = "kubernetes";
       rev = "v${version}";
-      hash = "sha256-7xRRpchjwtV3dGbZ2hN9qj6soAuiF/K7vTY0LzE6Z5w=";
+      # make sure to update hash if changing kubernetes version
+      hash = "sha256-UZdrfQEEx0RRe4Bb4EAWcjgCCLq4CJL06HIriYuk1Io=";
     };
   });
   kubePkgs = with pkgs; [ kubernetes util-linux iproute2 ethtool cri-o iptables-legacy socat conntrack-tools gvisor cri-tools ebtables ];
