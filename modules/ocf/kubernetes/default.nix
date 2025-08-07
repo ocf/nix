@@ -7,7 +7,8 @@ let
       owner = "kubernetes";
       repo = "kubernetes";
       rev = "v${version}";
-      hash = "";
+      # make sure to update hash if changing kubernetes version
+      hash = "sha256-UZdrfQEEx0RRe4Bb4EAWcjgCCLq4CJL06HIriYuk1Io=";
     };
   });
   kubePkgs = with pkgs; [ kubernetes util-linux iproute2 ethtool cri-o iptables-legacy socat conntrack-tools gvisor cri-tools ebtables ];
