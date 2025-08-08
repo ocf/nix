@@ -23,26 +23,26 @@
     settings = {
     oper-classes = {
       "server-admin" = {
-        title: Server Admin
+        title = "Server Admin";
+        "capabilities" = [
+          "kill"      # disconnect user sessions
+          "ban"   # ban IPs, CIDRs, NUH masks, and suspend accounts (UBAN / DLINE / KLINE)
+          "nofakelag" # exempted from fakelag restrictions on rate of message sending
+          "relaymsg" # use RELAYMSG in any channel (see the `relaymsg` config block)
+          "vhosts" # add and remove vhosts from users
+          "sajoin" # join arbitrary channels, including private channels
+          "samode" # modify arbitrary channel and user modes
+          "snomasks" # subscribe to arbitrary server notice masks
+          "roleplay" # use the (deprecated) roleplay commands in any channel
+          "rehash"   # rehash the server, i.e. reload the config at runtime
+          "accreg"  # modify arbitrary account registrations
+          "chanreg" # modify arbitrary channel registrations
+          "history" # modify or delete history messages
+          "defcon" # use the DEFCON command (restrict server capabilities)
+          "massmessage" # message all users on the server
+          "metadata" # modify arbitrary metadata on channels and users
+        ];
       };
-      "capabilities" = [
-        "kill"      # disconnect user sessions
-        "ban"       # ban IPs, CIDRs, NUH masks, and suspend accounts (UBAN / DLINE / KLINE)
-        "nofakelag" # exempted from "fakelag" restrictions on rate of message sending
-        "relaymsg"  # use RELAYMSG in any channel (see the `relaymsg` config block)
-        "vhosts"    # add and remove vhosts from users
-        "sajoin"    # join arbitrary channels, including private channels
-        "samode"    # modify arbitrary channel and user modes
-        "snomasks"  # subscribe to arbitrary server notice masks
-        "roleplay"  # use the (deprecated) roleplay commands in any channel
-        "rehash"       # rehash the server, i.e. reload the config at runtime
-        "accreg"       # modify arbitrary account registrations
-        "chanreg"      # modify arbitrary channel registrations
-        "history"      # modify or delete history messages
-        "defcon"       # use the DEFCON command (restrict server capabilities)
-        "massmessage"  # message all users on the server
-        "metadata"     # modify arbitrary metadata on channels and users
-      ];
     };
       opers = {
         admin = {
