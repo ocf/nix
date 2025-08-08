@@ -13,13 +13,14 @@
   services.ergochat = {
     enable = true;
     settings = {
+      opers = "jaysa";
       network.name = "OCF";
       server = {
         name = "dev-irc.ocf.berkeley.edu";
         sts.enabled = true;
 	listeners.":6697".tls = {
-	  cert = "/home/ergochat/fullchain.pem";
-	  key = "/home/ergochat/privkey.pem";
+	  cert = "/var/lib/acme/zecora.ocf.berkeley.edu/fullchain.pem";
+	  key = "/var/lib/acme/zecora.ocf.berkeley.edu/key.pem";
 	};
       };
     };
@@ -31,16 +32,6 @@
     isNormalUser = true;
     createHome = true;
     group = "acme";
-  };
-
-  system.activationScripts = {
-    link-ergochat-certs = {
-      text =
-        ''
-          ln -sfn /var/lib/acme/zecora.ocf.berkeley.edu/fullchain.pem /home/ergochat/fullchain.pem
-          ln -sfn /var/lib/acme/zecora.ocf.berkeley.edu/key.pem /home/ergochat/privkey.pem
-        '';
-    };
   };
 
   system.stateVersion = "24.11";

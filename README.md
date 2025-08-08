@@ -53,3 +53,7 @@ pixiecore boot /dev/null --ipxe-efi64 netboot.xyz.efi
 > [!NOTE]
 > You can also use [netboot.xyz's server](https://netboot.xyz/docs/docker) instead of Pixiecore.
 
+
+## TODO
+
+ - different way of doing admin for IRC. tls certs on yubikey, LDAP, etc..
