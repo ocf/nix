@@ -36,7 +36,7 @@ in
           ensureDBOwnership = true;
         }
       ];
-      services.postgresql.initialScript = pkgs.writeText "init-sql-script" ''
+      initialScript = pkgs.writeText "init-sql-script" ''
         alter user synapse with password '$(cat "${config.age.synapse-postgres-passwd.path}")';
       '';
     };
