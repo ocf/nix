@@ -8,9 +8,9 @@
   age.secrets.irc-passwd.rekeyFile = ../../secrets/master-keyed/irc-passwd.age;
 
   system.activationScripts."irc-passwd" = ''
-    secret=$(cat "${config.age.secrets.irc-pass.path}")
+    secret=$(cat "${config.age.secrets.irc-passwd.path}")
     configFile=/etc/ergo.yaml
-    ${lib.getExe pkgs.gnused} -i "s#@irc-passwd@#$secret" "$configFile"
+    ${lib.getExe pkgs.gnused} -i "s/@irc-passwd@/$secret/g" "$configFile"
   '';
 
   ocf.network = {
