@@ -21,14 +21,38 @@
   services.ergochat = {
     enable = true;
     settings = {
+    oper-classes = {
+      "server-admin" = {
+        title: Server Admin
+      };
+      "capabilities" = [
+        "kill"      # disconnect user sessions
+        "ban"       # ban IPs, CIDRs, NUH masks, and suspend accounts (UBAN / DLINE / KLINE)
+        "nofakelag" # exempted from "fakelag" restrictions on rate of message sending
+        "relaymsg"  # use RELAYMSG in any channel (see the `relaymsg` config block)
+        "vhosts"    # add and remove vhosts from users
+        "sajoin"    # join arbitrary channels, including private channels
+        "samode"    # modify arbitrary channel and user modes
+        "snomasks"  # subscribe to arbitrary server notice masks
+        "roleplay"  # use the (deprecated) roleplay commands in any channel
+        "rehash"       # rehash the server, i.e. reload the config at runtime
+        "accreg"       # modify arbitrary account registrations
+        "chanreg"      # modify arbitrary channel registrations
+        "history"      # modify or delete history messages
+        "defcon"       # use the DEFCON command (restrict server capabilities)
+        "massmessage"  # message all users on the server
+        "metadata"     # modify arbitrary metadata on channels and users
+      ];
+    };
       opers = {
         admin = {
+	  class = "server-admin";
 	  password = "@irc-passwd@";
 	};
       };
       network.name = "OCF";
       server = {
-        name = "dev-irc.ocf.berkeley.edu";
+        name = "irc.ocf.berkeley.edu";
         sts.enabled = true;
 	listeners.":6697".tls = {
 	  cert = "/var/lib/acme/zecora.ocf.berkeley.edu/fullchain.pem";
@@ -38,7 +62,7 @@
     };
   };
 
-  ocf.acme.extraCerts = [ "dev-irc.ocf.berkeley.edu" "dev-irc.ocf.io" ];
+  ocf.acme.extraCerts = [ "irc.ocf.berkeley.edu" "irc.ocf.io" ];
 
   users.users."ergochat" = {
     isNormalUser = true;

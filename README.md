@@ -56,4 +56,5 @@ pixiecore boot /dev/null --ipxe-efi64 netboot.xyz.efi
 
 ## TODO
 
- - different way of doing admin for IRC. tls certs on yubikey, LDAP, etc..
+ - maybe different way of doing admin for IRC. tls certs on yubikey, LDAP, etc..
+ - use agenix rekey generators in place of manually generating irc pass hash with ergo
