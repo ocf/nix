@@ -7,6 +7,8 @@
   
   age.secrets.irc-passwd.rekeyFile = ../../secrets/master-keyed/irc-passwd.age;
 
+  security.acme.defaults.reloadServices = [ "ergochat.service" ];
+
   system.activationScripts."irc-passwd" = ''
     secret=$(cat "${config.age.secrets.irc-passwd.path}")
     configFile=/etc/ergo.yaml
