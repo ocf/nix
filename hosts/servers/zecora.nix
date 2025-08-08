@@ -1,9 +1,15 @@
-{ pkgs, config, ... }:
+{ pkgs, lib, config, ... }:
 
 {
   imports = [ ../../hardware/virtualized.nix ];
 
   networking.hostName = "zecora";
+
+  system.activationScripts."irc-passwd" = ''
+    secret=$(cat "${config.age.secrets.irc-pass.path}")
+    configFile=/etc/ergo.yaml
+    ${lib.getExe pkgs.gnused} -i "s#@irc-passwd@#$secret" "$configFile"
+  '';
 
   ocf.network = {
     enable = true;
@@ -13,7 +19,11 @@
   services.ergochat = {
     enable = true;
     settings = {
-      opers = "jaysa";
+      opers = {
+        admin = {
+	  password = "@irc-passwd@";
+	};
+      };
       network.name = "OCF";
       server = {
         name = "dev-irc.ocf.berkeley.edu";
