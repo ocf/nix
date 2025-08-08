@@ -5,7 +5,7 @@
 
   networking.hostName = "zecora";
   
-  age.secrets.irc-passwd.rekeyFile = ../../secrets/master-keyed/irc-passwd.age
+  age.secrets.irc-passwd.rekeyFile = ../../secrets/master-keyed/irc-passwd.age;
 
   system.activationScripts."irc-passwd" = ''
     secret=$(cat "${config.age.secrets.irc-pass.path}")
