@@ -30,8 +30,13 @@ in
       enable = true;
       package = cfg.postgresPackage;
 
+      ensureUsers = [
+        {
+          name = "matrix-synapse";
+        }
+      ];
+
       initialScript = pkgs.writeText "init-sql-script" ''
-        create role "matrix-synapse";
         create database "matrix-synapse" with owner "matrix-synapse"
           template template0
           lc_collate = "C"
