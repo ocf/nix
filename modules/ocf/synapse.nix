@@ -48,7 +48,7 @@ in
     services.matrix-synapse = {
       enable = true;
       settings.server_name = cfg.serverName;
-      settings.public_baseurl = cfg.baseUrl;
+      settings.public_baseurl = "https://${cfg.baseUrl}";
 
       settings.listeners = [
         {
@@ -68,6 +68,33 @@ in
           ];
         }
       ];
+    };
+
+    users.users."nginx".extraGroups = [ "acme" ];
+
+    services.nginx = {
+      enable = true;
+
+      recommendedTlsSettings = true;
+      recommendedOptimisation = true;
+      recommendedGzipSettings = true;
+      recommendedProxySettings = true;
+      
+
+      virtualHosts = {
+        "${cfg.baseUrl}" = {
+          useACMEHost = "${config.networking.hostName}.${cfg.serverName}";
+          forceSSL = true;
+
+          locations."/".extraConfig = ''
+            return 404;
+          '';
+
+          locations."/_matrix".proxyPass = "http://[::1]:8008";
+
+          locations."/_synapse/client".proxyPass = "http://[::1]:8008";
+        };
+      };
     };
   };
 }
