@@ -8,7 +8,7 @@ in
     enable = lib.mkEnableOption "Enable Synapse";
     
     postgresPackage = lib.mkOption {
-      type = lib.types.str;
+      type = lib.types.package;
       description = "PostgreSQL package version, incremented only after manual upgrade.";
     };
 
