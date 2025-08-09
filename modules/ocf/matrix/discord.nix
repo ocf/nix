@@ -34,6 +34,8 @@ in
       "matrix-synapse/discord-registration.yaml" = { 
         source = "/var/lib/matrix-appservice-discord/discord-registration.yaml";
         mode = "0440";
+        user = "matrix-synapse";
+        group = "matrix-synapse";
       };
     };
   };
