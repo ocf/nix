@@ -32,13 +32,9 @@ in
       enable = true;
       package = cfg.postgresPackage;
 
-      ensureUsers = [
-        {
-          name = "matrix-synapse";
-        }
-      ];
-
+      # this feels hacky but i don't know a better way to do it
       initialScript = pkgs.writeText "init-sql-script" ''
+        create user "matrix-synapse";
         create database "matrix-synapse" with owner "matrix-synapse"
           template template0
           lc_collate = "C"
