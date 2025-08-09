@@ -24,7 +24,7 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    age.secrets.synapse-client-secret.rekeyFile = ../../secrets/master-keyed/synapse/client-secret.age;
+    age.secrets.synapse-client-secret.rekeyFile = ../../secrets/master-keyed/matrix/client-secret.age;
     age.secrets.synapse-client-secret.owner = "matrix-synapse";
 
     services.postgresql = {
