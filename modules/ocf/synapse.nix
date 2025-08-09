@@ -55,7 +55,7 @@ in
           idp_name = "OCF Keycloak";
           issuer = "https://idm.ocf.berkeley.edu/realms/ocf";
           client_id = "matrix";
-          client_secret = "$(cat ${config.age.secrets.synapse-client-secret.path})";
+          client_secret_path = config.age.secrets.synapse-client-secret.path;
           scopes = [ "openid" "profile" ];
           user_mapping_provider = {
             config = {
