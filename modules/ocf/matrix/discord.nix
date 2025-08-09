@@ -26,6 +26,10 @@ in
       };
     };
 
+    services.matrix-synapse.app_service_config_files = [
+      "/var/lib/matrix-synapse/discord-registration.yaml"
+    ];
+
     # this feels like a hack
     systemd.services.matrix-appservice-discord.postStart = lib.mkAfter ''
       cp /var/lib/matrix-appservice-discord/discord-registration.yaml /var/lib/matrix-synapse/
