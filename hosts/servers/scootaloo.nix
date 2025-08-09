@@ -13,7 +13,7 @@
   ocf.acme.extraCerts = [ "matrix.ocf.berkeley.edu" "matrix.ocf.io" ];
 
   ocf.synapse = {
-    enable = true;
+    enable = false;
     postgresPackage = pkgs.postgresql_16;
     baseUrl = "https://matrix.ocf.berkeley.edu";
     serverName = "ocf.berkeley.edu";
