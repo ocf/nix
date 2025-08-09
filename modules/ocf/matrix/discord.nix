@@ -9,10 +9,10 @@ in
   };
 
   config = lib.mkIf cfg.discord.enable {
-    age.secrets.discord-bot-token.rekeyFile = ../../secrets/master-keyed/matrix/bot-token.age;
+    age.secrets.discord-auth-env.rekeyFile = ../../../secrets/master-keyed/matrix/discord-auth-env.age;
 
     services.matrix-appservice-discord = {
-      environmentFile = config.age.secrets.discord-bot-token.path;
+      environmentFile = config.age.secrets.discord-auth-env.path;
 
       settings = {
         bridge = {
