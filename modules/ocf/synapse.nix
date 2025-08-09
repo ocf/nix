@@ -50,20 +50,22 @@ in
       enable = true;
 
       settings = {
-        oidc_providers = {
-          idp_id = "keycloak";
-          idp_name = "OCF Keycloak";
-          issuer = "https://idm.ocf.berkeley.edu/realms/ocf";
-          client_id = "matrix";
-          client_secret_path = config.age.secrets.synapse-client-secret.path;
-          scopes = [ "openid" "profile" ];
-          user_mapping_provider = {
-            config = {
-              localpart_template = "{{ user.preferred_username }}";
-              display_name_template = "{{ user.name }}"; 
+        oidc_providers = [
+          {
+            idp_id = "keycloak";
+            idp_name = "OCF Keycloak";
+            issuer = "https://idm.ocf.berkeley.edu/realms/ocf";
+            client_id = "matrix";
+            client_secret_path = config.age.secrets.synapse-client-secret.path;
+            scopes = [ "openid" "profile" ];
+            user_mapping_provider = {
+              config = {
+                localpart_template = "{{ user.preferred_username }}";
+                display_name_template = "{{ user.name }}"; 
+              };
             };
-          };
-        };
+          }
+        ];
 
         server_name = cfg.serverName;
         public_baseurl = "https://${cfg.baseUrl}";
