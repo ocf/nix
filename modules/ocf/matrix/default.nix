@@ -47,6 +47,8 @@ in
       settings = {
         password_config.enabled = false;
 
+        auto_join_rooms = [ "rebuild" "decal-general" ];
+
         oidc_providers = [
           {
             idp_id = "keycloak";
