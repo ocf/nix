@@ -51,6 +51,8 @@ in
       enable = true;
 
       settings = {
+        password_config.enabled = false;
+
         oidc_providers = [
           {
             idp_id = "keycloak";
