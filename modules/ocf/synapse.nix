@@ -100,8 +100,18 @@ in
       
 
       virtualHosts = {
-        "${cfg.baseUrl}" = {
+        "synapse" = {
           listen = [
+            {
+              addr = "0.0.0.0";
+              port = 443;
+              ssl = true;
+            }
+            {
+              addr = "[::0]";
+              port = 443;
+              ssl = true;
+            }
             {
               addr = "0.0.0.0";
               port = 8448;
@@ -114,8 +124,9 @@ in
             }
           ];
 
+          serverName = cfg.baseUrl;
+
           useACMEHost = "${config.networking.hostName}.ocf.berkeley.edu";
-          forceSSL = true;
 
           locations."/".extraConfig = ''
             return 404;
@@ -124,6 +135,22 @@ in
           locations."/_matrix".proxyPass = "http://[::1]:8008";
 
           locations."/_synapse/client".proxyPass = "http://[::1]:8008";
+        };
+
+        "force-ssl" = {
+          listen = [
+            {
+              addr = "0.0.0.0";
+              port = 80;
+            }
+            {
+              addr = "[::0]";
+              port = 80;
+            }
+          ];
+
+          serverName = cfg.baseUrl;
+          globalRedirect = "https://${cfg.baseUrl}";
         };
       };
     };
