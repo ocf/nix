@@ -19,7 +19,7 @@ in
       settings = {
         bridge = {
           domain = cfg.serverName;
-          homeserverUrl = cfg.baseUrl;
+          homeserverUrl = "https://${cfg.baseUrl}";
   
           enableSelfServiceBridging = true;
         };
