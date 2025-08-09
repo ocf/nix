@@ -22,19 +22,14 @@ in
     age.secrets.discord-bot-token.rekeyFile = ../../secrets/master-keyed/matrix/bot-token.age;
 
     services.matrix-appservice-discord = {
+      environmentFile = config.age.secrets.discord-bot-token.path;
+
       settings = {
         bridge = {
           domain = cfg.serverName;
           homeserverUrl = cfg.baseUrl;
   
           enableSelfServiceBridging = true;
-        };
-
-        auth = {
-          clientID = "1403658564685402203";
-          # this is an anti-pattern, but i'm not sure there's an alternative
-          botToken = builtins.readFile config.age.secrets.discord-bot-token.path;
-          usePrivilegedIntents = true;
         };
       };
     };
