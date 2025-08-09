@@ -14,10 +14,10 @@
 
   ocf.synapse = {
     enable = true;
-    postgresPackage = pkgs.postgresql_17;
+    postgresPackage = pkgs.postgresql_16;
     baseUrl = "https://matrix.ocf.berkeley.edu";
     serverName = "ocf.berkeley.edu";
   }
 
-  system.stateVersion = "25.11";
+  system.stateVersion = "25.05";
 }
