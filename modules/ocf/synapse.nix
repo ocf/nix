@@ -24,7 +24,6 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    age.secrets.synapse-postgres-passwd.rekeyFile = ../../secrets/master-keyed/synapse/postgres-passwd.age;
     age.secrets.synapse-client-secret.rekeyFile = ../../secrets/master-keyed/synapse/client-secret.age;
     age.secrets.synapse-client-secret.owner = "matrix-synapse";
 
@@ -39,7 +38,6 @@ in
           template template0
           lc_collate = "C"
           lc_ctype = "C";
-        alter user matrix-synapse with password '$(cat "${config.age.secrets.synapse-postgres-passwd.path}")';
       '';
     };
 
