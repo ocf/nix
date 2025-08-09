@@ -47,7 +47,10 @@ in
       settings = {
         password_config.enabled = false;
 
-        auto_join_rooms = [ "rebuild" "decal-general" ];
+        auto_join_rooms = [
+          "#rebuild:ocf.io"
+          "#decal-general:ocf.io"
+        ];
 
         oidc_providers = [
           {
