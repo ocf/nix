@@ -1,11 +1,11 @@
 { pkgs, lib, config, ... }:
 
 let 
-  cfg = config.ocf.synapse;
+  cfg = config.ocf.matrix;
 in
 {
-  options.ocf.synapse = {
-    enable = lib.mkEnableOption "Enable Synapse";
+  options.ocf.matrix = {
+    enable = lib.mkEnableOption "Enable Matrix server";
     
     postgresPackage = lib.mkOption {
       type = lib.types.package;
@@ -14,12 +14,12 @@ in
 
     baseUrl = lib.mkOption {
       type = lib.types.str;
-      description = "Synapse base URL.";
+      description = "Matrix base URL.";
     };
 
     serverName = lib.mkOption {
       type = lib.types.str;
-      description = "Synapse server name.";
+      description = "Matrix server name.";
     };
   };
 
