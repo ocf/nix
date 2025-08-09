@@ -22,6 +22,8 @@ in
           homeserverUrl = "https://${cfg.baseUrl}";
   
           enableSelfServiceBridging = true;
+          disableJoinLeaveNotifications = true;
+          disableInviteNotifications = true;
         };
       };
     };
