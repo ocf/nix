@@ -29,15 +29,14 @@ in
     services.postgresql = {
       enable = true;
       package = cfg.postgresPackage;
-      ensureDatabases = [ "synapse" ];
-      ensureUsers = [
-        {
-          name = "synapse";
-          ensureDBOwnership = true;
-        }
-      ];
+
       initialScript = pkgs.writeText "init-sql-script" ''
-        alter user synapse with password '$(cat "${config.age.secrets.synapse-postgres-passwd.path}")';
+        create role "matrix-synapse";
+        create database "matrix-synapse" with owner "matrix-synapse"
+          template template0
+          lc_collate = "C"
+          lc_ctype = "C";
+        alter user matrix-synapse with password '$(cat "${config.age.secrets.synapse-postgres-passwd.path}")';
       '';
     };
 
