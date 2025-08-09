@@ -101,6 +101,19 @@ in
 
       virtualHosts = {
         "${cfg.baseUrl}" = {
+          listen = [
+            {
+              addr = "0.0.0.0";
+              port = "8448";
+              ssl = true;
+            }
+            {
+              addr = "[::0]";
+              port = "8448";
+              ssl = true;
+            }
+          ];
+
           useACMEHost = "${config.networking.hostName}.ocf.berkeley.edu";
           forceSSL = true;
 
