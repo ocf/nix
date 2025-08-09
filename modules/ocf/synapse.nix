@@ -24,7 +24,8 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    age.secrets.synapse-postgres-passwd.rekeyFile = ../../secrets/master-keyed/synapse-postgres-passwd.age;
+    age.secrets.synapse-postgres-passwd.rekeyFile = ../../secrets/master-keyed/synapse/postgres-passwd.age;
+    age.secrets.synapse-client-secret.rekeyFile = ../../secrets/master-keyed/synapse/client-secret.age;
 
     services.postgresql = {
       enable = true;
@@ -47,27 +48,45 @@ in
 
     services.matrix-synapse = {
       enable = true;
-      settings.server_name = cfg.serverName;
-      settings.public_baseurl = "https://${cfg.baseUrl}";
 
-      settings.listeners = [
-        {
-          port = 8008;
-          bind_addresses = [ "::1" ];
-          type = "http";
-          tls = false;
-          x_forwarded = true;
-          resources = [
-            {
-              names = [
-                "client"
-                "federation"
-              ];
-              compress = true;
-            }
-          ];
-        }
-      ];
+      settings = {
+        oidc_providers = {
+          idp_id = "keycloak";
+          idp_name = "OCF Keycloak";
+          issuer = "https://idm.ocf.berkeley.edu/realms/ocf";
+          client_id = "matrix";
+          client_secret = "$(cat ${config.age.secrets.synapse-client-secret.path})";
+          scopes = [ "openid" "profile" ];
+          user_mapping_provider = {
+            config = {
+              localpart_template = "{{ user.preferred_username }}";
+              display_name_template = "{{ user.name }}"; 
+            };
+          };
+        };
+
+        server_name = cfg.serverName;
+        public_baseurl = "https://${cfg.baseUrl}";
+
+        listeners = [
+          {
+            port = 8008;
+            bind_addresses = [ "::1" ];
+            type = "http";
+            tls = false;
+            x_forwarded = true;
+            resources = [
+              {
+                names = [
+                  "client"
+                  "federation"
+                ];
+                compress = true;
+              }
+            ];
+          }
+        ];
+      };
     };
 
     users.users."nginx".extraGroups = [ "acme" ];
