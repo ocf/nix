@@ -17,6 +17,8 @@
     postgresPackage = pkgs.postgresql_16;
     baseUrl = "matrix.ocf.io";
     serverName = "ocf.io";
+
+    discord.enable = true;
   };
 
   system.stateVersion = "25.05";
