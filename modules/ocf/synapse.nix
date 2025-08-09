@@ -107,7 +107,7 @@ in
 
       virtualHosts = {
         "${cfg.baseUrl}" = {
-          useACMEHost = "${config.networking.hostName}.${cfg.serverName}";
+          useACMEHost = "${config.networking.hostName}.ocf.berkeley.edu";
           forceSSL = true;
 
           locations."/".extraConfig = ''
