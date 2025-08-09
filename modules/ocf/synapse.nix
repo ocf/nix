@@ -127,6 +127,7 @@ in
           serverName = cfg.baseUrl;
 
           useACMEHost = "${config.networking.hostName}.ocf.berkeley.edu";
+          onlySSL = true;
 
           locations."/".extraConfig = ''
             return 404;
