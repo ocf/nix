@@ -41,6 +41,10 @@ in
         useACMEHost = "${config.networking.hostName}.ocf.berkeley.edu";
         forceSSL = true;
       };
+
+      "synapse".locations."/".extraConfig = ''
+        return 301 https://${cfg.element.url};
+      '';
     };
   };
 }
