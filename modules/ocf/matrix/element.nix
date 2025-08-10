@@ -38,7 +38,7 @@ in
         serverName = "*.ocf.berkeley.edu";
         globalRedirect = "https://${cfg.element.url}";
 
-        useACMEHost = "${config.networking.hostname}.ocf.berkeley.edu";
+        useACMEHost = "${config.networking.hostName}.ocf.berkeley.edu";
         forceSSL = true;
       };
     };
