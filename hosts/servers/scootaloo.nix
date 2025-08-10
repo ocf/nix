@@ -10,7 +10,7 @@
     lastOctet = 29;
   };
 
-  ocf.acme.extraCerts = [ "matrix.ocf.berkeley.edu" "matrix.ocf.io" ];
+  ocf.acme.extraCerts = [ "matrix.ocf.berkeley.edu" "matrix.ocf.io" "chat.ocf.berkeley.edu" "chat.ocf.io" ];
 
   ocf.matrix = {
     enable = true;
@@ -21,7 +21,7 @@
     discord.enable = true;
 
     element.enable = true;
-    element.url = "chat.ocf.io";
+    element.url = "chat.ocf.berkeley.edu";
   };
 
   system.stateVersion = "25.05";
