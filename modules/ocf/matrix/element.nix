@@ -26,6 +26,9 @@ in
           default_server_config = {
             "m.homeserver".base_url = "https://${cfg.baseUrl}";
           };
+
+          default_theme = "dark";
+          brand = "OCF Chat";
         };
       };
     };
