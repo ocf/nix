@@ -14,7 +14,7 @@ in
     };
   };
 
-  config = lib.mkIf cfg.discord.enable {
+  config = lib.mkIf cfg.element.enable {
     services.nginx.virtualHosts = {
       "element-web" = {
         serverName = cfg.element.url;
