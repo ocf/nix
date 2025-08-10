@@ -4,6 +4,7 @@
   imports = [ ../../hardware/virtualized.nix ];
 
   networking.hostName = "zecora";
+  # TODO: Move IRC related config into a custom OCF module
   
   age.secrets.irc-passwd.rekeyFile = ../../secrets/master-keyed/irc-passwd.age;
 
