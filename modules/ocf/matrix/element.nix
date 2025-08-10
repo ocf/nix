@@ -15,21 +15,31 @@ in
   };
 
   config = lib.mkIf cfg.discord.enable {
-    services.nginx.virtualHosts."element-web" = {
-      serverName = cfg.element.url;
+    services.nginx.virtualHosts = {
+      "element-web" = {
+        serverName = cfg.element.url;
 
-      useACMEHost = "${config.networking.hostName}.ocf.berkeley.edu";
-      forceSSL = true;
+        useACMEHost = "${config.networking.hostName}.ocf.berkeley.edu";
+        forceSSL = true;
 
-      root = pkgs.element-web.override {
-        conf = {
-          default_server_config = {
-            "m.homeserver".base_url = "https://${cfg.baseUrl}";
+        root = pkgs.element-web.override {
+          conf = {
+            default_server_config = {
+              "m.homeserver".base_url = "https://${cfg.baseUrl}";
+            };
+
+            default_theme = "dark";
+            brand = "OCF Chat";
           };
-
-          default_theme = "dark";
-          brand = "OCF Chat";
         };
+      };
+
+      "redirect" = {
+        serverName = "*.ocf.berkeley.edu";
+        globalRedirect = "https://${cfg.element.url}";
+
+        useACMEHost = "${config.networking.hostname}.ocf.berkeley.edu";
+        forceSSL = true;
       };
     };
   };
