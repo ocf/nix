@@ -43,7 +43,7 @@ in
       };
 
       "synapse".locations."/".extraConfig = ''
-        return 301 ${cfg.element.url};
+        return 301 https://${cfg.element.url};
       '';
     };
   };
