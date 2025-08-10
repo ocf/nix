@@ -21,7 +21,7 @@
     discord.enable = true;
 
     element.enable = true;
-    element.url = "chat.ocf.berkeley.edu";
+    element.url = "chat.ocf.io";
   };
 
   system.stateVersion = "25.05";
