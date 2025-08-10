@@ -36,14 +36,14 @@ in
 
       "redirect" = {
         serverName = "*.ocf.berkeley.edu";
-        globalRedirect = "https://${cfg.element.url}";
+        globalRedirect = "${cfg.element.url}";
 
         useACMEHost = "${config.networking.hostName}.ocf.berkeley.edu";
         forceSSL = true;
       };
 
       "synapse".locations."/".extraConfig = ''
-        return 301 https://${cfg.element.url};
+        return 301 ${cfg.element.url};
       '';
     };
   };
