@@ -20,7 +20,6 @@ in
 
       useACMEHost = "${config.networking.hostName}.ocf.berkeley.edu";
       forceSSL = true;
-      serverAliases = [ "element.${config.networking.domain}" ];
 
       root = pkgs.element-web.override {
         conf = {
