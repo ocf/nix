@@ -65,10 +65,19 @@ in
       })
 
       libreoffice
-      kitty
 
+      # terminal emulators
+      foot
+      kitty
+      alacritty
+      st
+      ghostty
+
+      # IRC Clients
       irssi
       weechat
+      hexchat
+
       gimp3
       inkscape
       blender
