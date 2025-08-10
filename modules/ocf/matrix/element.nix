@@ -23,7 +23,7 @@ in
 
       root = pkgs.element-web.override {
         conf = {
-          default_server_name = cfg.baseUrl;
+          default_server_name = "https://${cfg.baseUrl}";
         };
       };
     };
