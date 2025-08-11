@@ -92,7 +92,7 @@ in
         ];
       };
     };
-
+# TODO(@laksith19): Expose adding users to acme group as a part of the ocf.amce module. And expose reloading acme dependent services using security.acme.defaults.reloadServices = []; (not important here as Nginx options in Nix handle that for us, but should be easily accessed from the ocf.acme module)
     users.users."nginx".extraGroups = [ "acme" ];
 
     services.nginx = {
