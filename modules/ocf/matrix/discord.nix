@@ -1,6 +1,6 @@
 { pkgs, lib, config, ... }:
 
-let 
+let
   cfg = config.ocf.matrix;
 in
 {
@@ -20,7 +20,7 @@ in
         bridge = {
           domain = cfg.serverName;
           homeserverUrl = "https://${cfg.baseUrl}";
-  
+
           enableSelfServiceBridging = true;
           disableJoinLeaveNotifications = true;
           disableInviteNotifications = true;
@@ -32,8 +32,8 @@ in
       "/etc/matrix-synapse/discord-registration.yaml"
     ];
 
-    environment.etc = { 
-      "matrix-synapse/discord-registration.yaml" = { 
+    environment.etc = {
+      "matrix-synapse/discord-registration.yaml" = {
         source = "/var/lib/matrix-appservice-discord/discord-registration.yaml";
         mode = "0440";
         user = "matrix-synapse";

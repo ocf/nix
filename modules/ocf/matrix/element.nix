@@ -1,13 +1,13 @@
 { pkgs, lib, config, ... }:
 
-let 
+let
   cfg = config.ocf.matrix;
 in
 {
   options.ocf.matrix.element = {
     enable = lib.mkEnableOption "Enable Element web client.";
 
-    
+
     url = lib.mkOption {
       type = lib.types.str;
       description = "Element URL.";

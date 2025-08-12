@@ -1,12 +1,12 @@
 { pkgs, lib, config, ... }:
 
-let 
+let
   cfg = config.ocf.matrix;
 in
 {
   options.ocf.matrix = {
     enable = lib.mkEnableOption "Enable Matrix server";
-    
+
     postgresPackage = lib.mkOption {
       type = lib.types.package;
       description = "PostgreSQL package version, incremented only after manual upgrade.";
@@ -63,7 +63,7 @@ in
             user_mapping_provider = {
               config = {
                 localpart_template = "{{ user.preferred_username }}";
-                display_name_template = "{{ user.name }}"; 
+                display_name_template = "{{ user.name }}";
               };
             };
           }
@@ -92,7 +92,7 @@ in
         ];
       };
     };
-# TODO(@laksith19): Expose adding users to acme group as a part of the ocf.amce module. And expose reloading acme dependent services using security.acme.defaults.reloadServices = []; (not important here as Nginx options in Nix handle that for us, but should be easily accessed from the ocf.acme module)
+    # TODO(@laksith19): Expose adding users to acme group as a part of the ocf.amce module. And expose reloading acme dependent services using security.acme.defaults.reloadServices = []; (not important here as Nginx options in Nix handle that for us, but should be easily accessed from the ocf.acme module)
     users.users."nginx".extraGroups = [ "acme" ];
 
     services.nginx = {
@@ -102,7 +102,7 @@ in
       recommendedOptimisation = true;
       recommendedGzipSettings = true;
       recommendedProxySettings = true;
-      
+
 
       virtualHosts = {
         "synapse" = {
