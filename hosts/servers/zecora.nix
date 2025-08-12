@@ -24,6 +24,20 @@
   services.ergochat = {
     enable = true;
     settings = {
+      channels = {
+        operator-only-creation = true;
+	auto-join = [
+	  "#announcements"
+	  "#introduce-yourself"
+	  "#rebuild"
+	  "#off-topic"
+	  "#board-games"
+	  "#hack-day"
+	  "#decal"
+	  "#administrivia"
+	  "#opstaff"
+	];
+      };
       oper-classes = {
         "server-admin" = {
           title = "Server Admin";
