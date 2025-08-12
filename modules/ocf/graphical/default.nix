@@ -77,6 +77,7 @@ in
       irssi
       weechat
       hexchat
+      halloy
 
       gimp3
       inkscape
