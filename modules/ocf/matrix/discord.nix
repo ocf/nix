@@ -17,10 +17,11 @@ in
       environmentFile = config.age.secrets.discord-auth-env.path;
 
       settings = {
+        channel.namePattern = ":name";
+
         bridge = {
           domain = cfg.serverName;
           homeserverUrl = "https://${cfg.baseUrl}";
-
           enableSelfServiceBridging = true;
           disableJoinLeaveNotifications = true;
           disableInviteNotifications = true;

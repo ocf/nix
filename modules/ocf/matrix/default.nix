@@ -21,6 +21,12 @@ in
       type = lib.types.str;
       description = "Matrix server name.";
     };
+
+    initialRooms = lib.mkOption {
+      type = lib.types.listOf lib.types.str;
+      description = "Rooms to auto join on registration.";
+      default = [ ];
+    };
   };
 
   config = lib.mkIf cfg.enable {
@@ -47,9 +53,13 @@ in
       settings = {
         password_config.enabled = false;
 
-        auto_join_rooms = [
-          "#rebuild:ocf.io"
-          "#decal-general:ocf.io"
+        auto_join_rooms = cfg.initialRooms;
+
+        alias_creation_rules = [
+          {
+            room_id = "#*:${cfg.serverName}";
+            action = "deny";
+          }
         ];
 
         oidc_providers = [
