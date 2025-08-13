@@ -22,12 +22,16 @@ in
   config = lib.mkIf cfg.irc.enable {
     services.matrix-appservice-irc = {
       enable = true;
-      registrationUrl = "localhost:8010";
+      registrationUrl = "http://localhost:8010";
       port = 8010;
 
       settings = {
-        homeserver.url = "https://${cfg.baseUrl}";
-        homeserver.domain = cfg.serverName;
+
+        homeserver = {
+	  url = "https://${cfg.baseUrl}";
+          domain = cfg.serverName;
+	  enablePresence = true;
+	};
 
         ircService.mediaProxy.publicUrl = "https://${cfg.baseUrl}/media";
 
@@ -35,8 +39,6 @@ in
           name = "OCF IRC";
           port = 6697;
           ssl = true;
-
-          dynamicChannels.enabled = false;
 
           mappings = cfg.irc.initialRooms;
 
@@ -49,7 +51,31 @@ in
             allowNickChanges = true;
           };
 
-          membershipLists.enabled = false;
+          botConfig = {
+	    enabled = true;
+	    nick = "MatrixBot";
+	    username = "matrixbot";
+	    joinChannelsIfNoUsers = true;
+	  };
+
+          dynamicChannels = {
+	    enable = true;
+	  };
+
+          membershipLists = {
+	    enabled = true;
+	    global = {
+	      ircToMatrix = {
+	        initial = true;
+	        incremental = true;
+	      };
+	      matrixToIrc = {
+	        initial = true;
+		incremental = true;
+	      };
+	    };
+	    ignoreIdleUsersOnStartup.enabled = true;
+	  };
         };
       };
     };
