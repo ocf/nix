@@ -41,7 +41,7 @@ jobs:
 
       - name: Setup SSH Known Hosts
         run: |
-          keyfile = ${{ github.workspace }}/secrets/host-keys/${{ matrix.host }}.pub
+          keyfile=${{ github.workspace }}/secrets/host-keys/${{ matrix.host }}.pub
           fqdn="${{ matrix.host }}.ocf.berkeley.edu"
           pubkey=$(cat "$keyfile")
           echo "$fqdn $pubkey" >> ${{ github.workspace }}/known_hosts
@@ -56,7 +56,7 @@ jobs:
           " >> ${{ github.workspace }}/ssh_config
 
       - name: Build with colmena
-        run: nix develop -c colmena apply --on ${{ matrix.host }} dry-activate >> ${{ matrix.host }}.log 2>&1
+        run: nix develop .#deploy -c colmena apply --on ${{ matrix.host }} dry-activate >> ${{ matrix.host }}.log 2>&1
       - name: Display log
         if: always()
         run: cat ${{ matrix.host }}.log
