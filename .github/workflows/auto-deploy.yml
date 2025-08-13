@@ -1,0 +1,69 @@
+name: Build Hosts
+
+on:
+  schedule:
+    - cron: '15 10 * * *' # Everyday at 10:15 UTC - 2:15/2:15 based on day light savings
+  push:
+    branches:
+      - "main"
+      - "add-test-auto-deploy-workflow"
+
+jobs:
+  check-flake:
+    runs-on: ci-ocf-nix-deploy
+    steps:
+      - uses: actions/checkout@v4
+      - uses: DeterminateSystems/flake-checker-action@v9
+
+  define-matrix:
+    runs-on: ci-ocf-nix-deploy
+    outputs:
+      hosts: ${{ steps.hosts.outputs.hosts }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: hosts
+        run: echo "hosts=$(nix eval .#colmenaHive.nodes --apply builtins.attrNames --json)" >> "$GITHUB_OUTPUT"
+
+  deploy:
+    runs-on: ci-ocf-nix-deploy
+    needs: define-matrix
+    strategy:
+      fail-fast: false
+      matrix:
+        host: ${{ fromJSON(needs.define-matrix.outputs.hosts) }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup SSH Private Key
+        run: |
+          echo '${{ secrets.COLMENA_APPLY_SSH_KEY }}' > ${{ github.workspace }}/id_ed25519
+          chmod 400 ${{ github.workspace }}/id_ed25519
+
+      - name: Setup SSH Known Hosts
+        run: |
+          keyfile = ${{ github.workspace }}/secrets/host-keys/${{ matrix.host }}.pub
+          fqdn="${{ matrix.host }}.ocf.berkeley.edu"
+          pubkey=$(cat "$keyfile")
+          echo "$fqdn $pubkey" >> ${{ github.workspace }}/known_hosts
+
+      - name: Setup SSH Config File
+        run: |
+          echo "
+          Identityfile $GITHUB_WORKSPACE/id_ed25519
+          UserKnownHostsFile $GITHUB_WORKSPACE/known_hosts
+          StrictHostKeyChecking yes
+          UpdateHostKeys no
+          " >> ${{ github.workspace }}/ssh_config
+
+      - name: Build with colmena
+        run: nix develop -c colmena apply --on ${{ matrix.host }} dry-activate >> ${{ matrix.host }}.log 2>&1
+      - name: Display log
+        if: always()
+        run: cat ${{ matrix.host }}.log
+
+  check-all-hosts:
+    runs-on: ci-ocf-nix-deploy
+    needs: deploy 
+    steps:
+      - name: Combined GitHub status check
+        run: echo "All hosts deployed successfully!"
