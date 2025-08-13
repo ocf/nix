@@ -1,4 +1,4 @@
-name: Build Hosts
+name: Automated Deploy
 
 on:
   schedule:
