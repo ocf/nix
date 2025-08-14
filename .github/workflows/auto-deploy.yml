@@ -55,8 +55,11 @@ jobs:
           UpdateHostKeys no
           " >> ${{ github.workspace }}/ssh_config
 
-      - name: Build with colmena
-        run: nix develop .#deploy -c colmena apply --on ${{ matrix.host }} dry-activate >> ${{ matrix.host }}.log 2>&1
+      - name: Deploy with colmena
+        env:
+          SSH_CONFIG_FILE: ${{ github.workspace }}/ssh_config
+        run: nix develop .#deploy -c colmena apply --no-substitute --on ${{ matrix.host }} dry-activate >> ${{ matrix.host }}.log 2>&1
+
       - name: Display log
         if: always()
         run: cat ${{ matrix.host }}.log
