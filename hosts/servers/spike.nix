@@ -31,7 +31,6 @@
       {
         enable = true;
         repo = "mkdocs";
-        instances = 2;
       }
       {
         enable = true;
