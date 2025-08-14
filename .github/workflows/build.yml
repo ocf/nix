@@ -36,7 +36,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Build with colmena
-        run: nix develop -c colmena build --on ${{ matrix.host }} >> ${{ matrix.host }}.log 2>&1
+        run: nix develop -c colmena build --keep-result --no-substitute --on ${{ matrix.host }} >> ${{ matrix.host }}.log 2>&1
       - name: Display log
         if: always()
         run: cat ${{ matrix.host }}.log
