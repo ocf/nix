@@ -111,8 +111,8 @@ in
           motd = pkgs.writeText "ircd.motd" cfg.motd;
           sts.enabled = true;
           listeners.":6697".tls = {
-            cert = "/var/lib/acme/zecora.ocf.berkeley.edu/fullchain.pem";
-            key = "/var/lib/acme/zecora.ocf.berkeley.edu/key.pem";
+            cert = "/var/lib/acme/scootaloo.ocf.berkeley.edu/fullchain.pem";
+            key = "/var/lib/acme/scootaloo.ocf.berkeley.edu/key.pem";
           };
         };
       };
