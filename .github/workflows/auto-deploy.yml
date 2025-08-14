@@ -2,18 +2,13 @@ name: Automated Deploy
 
 on:
   schedule:
-    - cron: '15 10 * * *' # Everyday at 10:15 UTC - 2:15/2:15 based on day light savings
+    - cron: '15 * * * *' # Every hour at 15mins
   push:
     branches:
       - "main"
       - "add-test-auto-deploy-workflow"
 
 jobs:
-  check-flake:
-    runs-on: ci-ocf-nix-deploy
-    steps:
-      - uses: actions/checkout@v4
-      - uses: DeterminateSystems/flake-checker-action@v9
 
   define-matrix:
     runs-on: ci-ocf-nix-deploy
@@ -34,20 +29,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup SSH Private Key
+      - name: Setup SSH
         run: |
           echo '${{ secrets.COLMENA_APPLY_SSH_KEY }}' > ${{ github.workspace }}/id_ed25519
           chmod 400 ${{ github.workspace }}/id_ed25519
 
-      - name: Setup SSH Known Hosts
-        run: |
           keyfile=${{ github.workspace }}/secrets/host-keys/${{ matrix.host }}.pub
           fqdn="${{ matrix.host }}.ocf.berkeley.edu"
           pubkey=$(cat "$keyfile")
           echo "$fqdn $pubkey" >> ${{ github.workspace }}/known_hosts
 
-      - name: Setup SSH Config File
-        run: |
           echo "
           Identityfile $GITHUB_WORKSPACE/id_ed25519
           UserKnownHostsFile $GITHUB_WORKSPACE/known_hosts
