@@ -4,12 +4,13 @@ let
   cfg = config.ocf.matrix;
 in
 {
-  options.ocf.matrix.irc = {
+  options.ocf.matrix.irc-bridge = {
     enable = lib.mkEnableOption "Enable Matrix IRC bridge.";
 
     server = lib.mkOption {
       type = lib.types.str;
       description = "IRC server to bridge.";
+      default = "irc.ocf.io";
     };
 
     initialRooms = lib.mkOption {
@@ -19,7 +20,7 @@ in
     };
   };
 
-  config = lib.mkIf cfg.irc.enable {
+  config = lib.mkIf cfg.irc-bridge.enable {
     services.matrix-appservice-irc = {
       enable = true;
       registrationUrl = "http://localhost:8010";
@@ -35,12 +36,12 @@ in
 
         ircService.mediaProxy.publicUrl = "https://${cfg.baseUrl}/media";
 
-        ircService.servers."${cfg.irc.server}" = {
+        ircService.servers."${cfg.irc-bridge.server}" = {
           name = "OCF IRC";
           port = 6697;
           ssl = true;
 
-          mappings = cfg.irc.initialRooms;
+          mappings = cfg.irc-bridge.initialRooms;
 
           matrixClients = {
             userTemplate = "@irc_$NICK";
@@ -59,7 +60,7 @@ in
 	  };
 
           dynamicChannels = {
-	    enable = true;
+	    enable = false;
 	  };
 
           membershipLists = {

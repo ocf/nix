@@ -1,3 +1,5 @@
+{ pkgs, lib, config, ... }:
+
 let
   cfg = config.ocf.irc;
 in
@@ -10,22 +12,39 @@ in
       default = ''
         - Welcome! -
 
-        This is the server for official (TM) Open Computing Facility (OCF) business. It's connected to the rest of the OCF Chat Network (Element, Slack, and Discord).
-	Please use your OCF username as your nickname if you have one, although this isn't strictly required.
+	This is the server for official (TM) Open Computing Facility (OCF)
+	business. It's connected to the rest of the OCF Chat Network (Element,
+	Slack, and Discord). Please use your OCF username as your nickname if
+	you have one, although this isn't strictly required.
 
-        - The Golden Rule -
-        All users of OCF managed facilities (including this server) shall comply with University of California regulations, including the UC Berkeley Student Conduct Code and any OCF regulations.
-	The OCF reserves the right to deny services to any user who fails to follow any such regulations.
+	- The Golden Rule -
+
+	All users of OCF managed facilities (including this server) shall
+	comply with University of California regulations, including the UC
+	Berkeley Student Conduct Code and any OCF regulations. The OCF reserves
+	the right to deny services to any user who fails to follow any such
+	regulations.
 
         - Getting Involved -
-	The OCF is different from many clubs at Berkeley: we have no application process or other requirements to join for any student! All you need to get involved on staff is to start talking to people.
-	We hold socials frequently, and you're always welcome to read #off-topic social discussion, or #rebuild and #administrivia for technical and organizational discussion.
 
-        We understand that not having structure is a little strange, so here's my advice: start reading #rebuild and #administrivia and hop into a conversation.
-	If you'd like, you can mention that you're new so people won't assume you have organizational context.
-	Sending a short message for us in #introduce-yourself also helps, especially if you're not a current Berkeley student.
+	The OCF is different from many clubs at Berkeley: we have no
+	application process or other requirements to join for any student! All
+	you need to get involved on staff is to start talking to people. We
+	hold socials frequently, and you're always welcome to read #off-topic
+	social discussion, or #rebuild and #administrivia for technical and
+	organizational discussion.
 
-        If you'd prefer to start with more guidance, show up to our staff meetings in person (our most up-to-date meeting time will be listed at https://www.ocf.berkeley.edu/about/staff).
+	We understand that not having structure is a little strange, so here's
+	my advice: start reading #rebuild and #administrivia and hop into a
+	conversation. If you'd like, you can mention that you're new so people
+	won't assume you have organizational context. Sending a short message
+	for us in #introduce-yourself also helps, especially if you're not a
+	current Berkeley student.
+
+	If you'd prefer to start with more guidance, show up to our staff
+	meetings in person (our most up-to-date meeting time will be listed at
+	https://www.ocf.berkeley.edu/about/staff).
+
       '';
     };
   };
@@ -89,7 +108,7 @@ in
         network.name = "OCF";
         server = {
           name = "irc.ocf.berkeley.edu";
-          motd = pkgs.writeText "ircd.motd" "hiiiii";
+          motd = pkgs.writeText "ircd.motd" cfg.motd;
           sts.enabled = true;
           listeners.":6697".tls = {
             cert = "/var/lib/acme/zecora.ocf.berkeley.edu/fullchain.pem";
