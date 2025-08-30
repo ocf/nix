@@ -65,6 +65,7 @@ in
     s-tui
     ocf-tv
     remmina
+    simple-scan
 
     # Cosmetics
     neofetch
