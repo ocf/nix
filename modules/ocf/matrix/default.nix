@@ -15,11 +15,13 @@ in
     baseUrl = lib.mkOption {
       type = lib.types.str;
       description = "Matrix base URL.";
+      default = "matrix.ocf.io";
     };
 
     serverName = lib.mkOption {
       type = lib.types.str;
       description = "Matrix server name.";
+      default = "ocf.io";
     };
 
     initialRooms = lib.mkOption {
@@ -30,6 +32,9 @@ in
   };
 
   config = lib.mkIf cfg.enable {
+
+    ocf.acme.extraCerts = [ "matrix.ocf.berkeley.edu" "matrix.ocf.io" "chat.ocf.berkeley.edu" "chat.ocf.io" ];
+
     age.secrets.synapse-client-secret.rekeyFile = ../../../secrets/master-keyed/matrix/client-secret.age;
     age.secrets.synapse-client-secret.owner = "matrix-synapse";
 

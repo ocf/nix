@@ -11,6 +11,7 @@ in
     url = lib.mkOption {
       type = lib.types.str;
       description = "Element URL.";
+      default = "chat.ocf.io";
     };
   };
 

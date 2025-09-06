@@ -10,13 +10,17 @@
     lastOctet = 29;
   };
 
-  ocf.acme.extraCerts = [ "matrix.ocf.berkeley.edu" "matrix.ocf.io" "chat.ocf.berkeley.edu" "chat.ocf.io" ];
+  ocf.irc = {
+    enable = true;
+  };
 
   ocf.matrix = {
     enable = true;
     postgresPackage = pkgs.postgresql_16;
-    baseUrl = "matrix.ocf.io";
-    serverName = "ocf.io";
+
+    discord-bridge.enable = true;
+    element.enable = true;
+    irc-bridge.enable = true;
 
     initialRooms = [
       "#_discord_735620315111096391_761065162450272286:ocf.io"
@@ -30,15 +34,7 @@
       "#_discord_735620315111096391_736005105068802109:ocf.io"
     ];
 
-    discord.enable = true;
-
-    element.enable = true;
-    element.url = "chat.ocf.io";
-
-    irc.enable = true;
-    irc.server = "irc.ocf.io";
-
-    irc.initialRooms = {
+    irc-bridge.initialRooms = {
       "#announcements".roomIds = [ "!cEgfyfEHPMQGtNliqC:ocf.io" ];
       "#introduce-yourself".roomIds = [ "!TLkoqDXRVMyWEMXHva:ocf.io" ];
       "#rebuild".roomIds = [ "!cEgfyfEHPMQGtNliqC:ocf.io" ];
