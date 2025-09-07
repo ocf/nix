@@ -4,11 +4,11 @@ let
   cfg = config.ocf.matrix;
 in
 {
-  options.ocf.matrix.discord = {
+  options.ocf.matrix.discord-bridge = {
     enable = lib.mkEnableOption "Enable Matrix Discord bridge.";
   };
 
-  config = lib.mkIf cfg.discord.enable {
+  config = lib.mkIf cfg.discord-bridge.enable {
     age.secrets.discord-auth-env.rekeyFile = ../../../secrets/master-keyed/matrix/discord-auth-env.age;
 
     services.matrix-appservice-discord = {
