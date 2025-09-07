@@ -10,7 +10,6 @@ in
     server = lib.mkOption {
       type = lib.types.str;
       description = "IRC server to bridge.";
-      default = "irc.ocf.io";
     };
 
     initialRooms = lib.mkOption {
