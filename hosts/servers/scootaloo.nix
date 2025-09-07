@@ -20,6 +20,7 @@
 
     discord-bridge.enable = true;
     element.enable = true;
+    element.url = "chat.ocf.io";
     irc-bridge.enable = true;
 
     initialRooms = [
