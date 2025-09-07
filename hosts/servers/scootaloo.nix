@@ -22,6 +22,7 @@
     element.enable = true;
     element.url = "chat.ocf.io";
     irc-bridge.enable = true;
+    irc-bridge.server = "irc.ocf.io";
 
     initialRooms = [
       # right click channel in discord, "Copy Channel ID"
