@@ -29,10 +29,10 @@ in
       settings = {
 
         homeserver = {
-	  url = "https://${cfg.baseUrl}";
+          url = "https://${cfg.baseUrl}";
           domain = cfg.serverName;
-	  enablePresence = true;
-	};
+          enablePresence = true;
+        };
 
         ircService.mediaProxy.publicUrl = "https://${cfg.baseUrl}/media";
 
@@ -53,30 +53,30 @@ in
           };
 
           botConfig = {
-	    enabled = true;
-	    nick = "MatrixBot";
-	    username = "matrixbot";
-	    joinChannelsIfNoUsers = true;
-	  };
+            enabled = true;
+            nick = "MatrixBot";
+            username = "matrixbot";
+            joinChannelsIfNoUsers = true;
+          };
 
           dynamicChannels = {
-	    enable = false;
-	  };
+            enable = false;
+          };
 
           membershipLists = {
-	    enabled = true;
-	    global = {
-	      ircToMatrix = {
-	        initial = true;
-	        incremental = true;
-	      };
-	      matrixToIrc = {
-	        initial = true;
-		incremental = true;
-	      };
-	    };
-	    ignoreIdleUsersOnStartup.enabled = true;
-	  };
+            enabled = true;
+            global = {
+              ircToMatrix = {
+                initial = true;
+                incremental = true;
+              };
+              matrixToIrc = {
+                initial = true;
+                incremental = true;
+              };
+            };
+            ignoreIdleUsersOnStartup.enabled = true;
+          };
         };
       };
     };
