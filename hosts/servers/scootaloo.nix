@@ -24,6 +24,7 @@
 
     initialRooms = [
       # right click channel in discord, "Copy Channel ID"
+      # first make channels on discord, then bridge to matrix, then finally bridge to irc
       "#_discord_735620315111096391_761065162450272286:ocf.io" # opstaff
       "#_discord_735620315111096391_735624339847643277:ocf.io" # administrivia
       "#_discord_735620315111096391_736066924592758785:ocf.io" # decal
@@ -47,6 +48,7 @@
       "#decal".roomIds = [ "!ZnSuwfpqpNFfUxrmgU:ocf.io" ];
       "#administrivia".roomIds = [ "!NXYBQyfoOVeVIlDMeJ:ocf.io" ];
       "#opstaff".roomIds = [ "!vqmIzqVlZukuyfFEpf:ocf.io" ];
+      "#design".roomIds = [ "!dmmQVQBHkHDuDCrsNv:ocf.io" ];
     };
   };
 
