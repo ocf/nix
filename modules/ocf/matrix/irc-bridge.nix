@@ -4,7 +4,7 @@ let
   cfg = config.ocf.matrix;
 in
 {
-  options.ocf.matrix.irc = {
+  options.ocf.matrix.irc-bridge = {
     enable = lib.mkEnableOption "Enable Matrix IRC bridge.";
 
     server = lib.mkOption {
@@ -19,7 +19,7 @@ in
     };
   };
 
-  config = lib.mkIf cfg.irc.enable {
+  config = lib.mkIf cfg.irc-bridge.enable {
     services.matrix-appservice-irc = {
       enable = true;
       registrationUrl = "http://localhost:8010";
@@ -28,19 +28,19 @@ in
       settings = {
 
         homeserver = {
-	  url = "https://${cfg.baseUrl}";
+          url = "https://${cfg.baseUrl}";
           domain = cfg.serverName;
-	  enablePresence = true;
-	};
+          enablePresence = true;
+        };
 
         ircService.mediaProxy.publicUrl = "https://${cfg.baseUrl}/media";
 
-        ircService.servers."${cfg.irc.server}" = {
+        ircService.servers."${cfg.irc-bridge.server}" = {
           name = "OCF IRC";
           port = 6697;
           ssl = true;
 
-          mappings = cfg.irc.initialRooms;
+          mappings = cfg.irc-bridge.initialRooms;
 
           matrixClients = {
             userTemplate = "@irc_$NICK";
@@ -52,30 +52,30 @@ in
           };
 
           botConfig = {
-	    enabled = true;
-	    nick = "MatrixBot";
-	    username = "matrixbot";
-	    joinChannelsIfNoUsers = true;
-	  };
+            enabled = true;
+            nick = "MatrixBot";
+            username = "matrixbot";
+            joinChannelsIfNoUsers = true;
+          };
 
           dynamicChannels = {
-	    enable = true;
-	  };
+            enable = false;
+          };
 
           membershipLists = {
-	    enabled = true;
-	    global = {
-	      ircToMatrix = {
-	        initial = true;
-	        incremental = true;
-	      };
-	      matrixToIrc = {
-	        initial = true;
-		incremental = true;
-	      };
-	    };
-	    ignoreIdleUsersOnStartup.enabled = true;
-	  };
+            enabled = true;
+            global = {
+              ircToMatrix = {
+                initial = true;
+                incremental = true;
+              };
+              matrixToIrc = {
+                initial = true;
+                incremental = true;
+              };
+            };
+            ignoreIdleUsersOnStartup.enabled = true;
+          };
         };
       };
     };
