@@ -53,6 +53,21 @@ in
     programs.zoom-us.enable = true;
     programs.sway.enable = true;
 
+    i18n.inputMethod = {
+      enable = true;
+      type = "fcitx5";
+      fcitx5.waylandFrontend = true;
+      fcitx5.addons = with pkgs; [
+        fcitx5-gtk
+        fcitx5-mozc
+	fcitx5-rime
+	fcitx5-hangul
+	fcitx5-unikey
+	fcitx5-bamboo
+	fcitx5-m17n
+      ];
+    };
+
     environment.systemPackages = with pkgs; [
       plasma-applet-commandoutput
       (catppuccin-sddm.override {
@@ -87,7 +102,7 @@ in
 
       ocf-okular
 
-      #TEXT & CODE EDITORS
+      # TEXT & CODE EDITORS
       vscode-fhs
       rstudio
       zed-editor
