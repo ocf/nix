@@ -99,8 +99,11 @@ in
       blender
       xournalpp
       fastfetch
+      
+      # temporary substitute for okular landscape printing issue
+      papers
 
-      kdePackages.okular
+      ocf-okular
 
       # TEXT & CODE EDITORS
       vscode-fhs
