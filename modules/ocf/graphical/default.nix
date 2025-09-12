@@ -100,7 +100,7 @@ in
       xournalpp
       fastfetch
 
-      ocf-okular
+      okular
 
       # TEXT & CODE EDITORS
       vscode-fhs
