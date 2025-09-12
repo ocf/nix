@@ -100,7 +100,7 @@ in
       xournalpp
       fastfetch
 
-      okular
+      kdePackages.okular
 
       # TEXT & CODE EDITORS
       vscode-fhs
