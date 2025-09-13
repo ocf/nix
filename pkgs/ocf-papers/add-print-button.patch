@@ -1,15 +1,28 @@
 diff --git a/shell/resources/pps-document-view.ui b/shell/resources/pps-document-view.ui
-index 22a65a1de..bf4d832a3 100644
+index 22a65a1de..5634001d4 100644
 --- a/shell/resources/pps-document-view.ui
 +++ b/shell/resources/pps-document-view.ui
-@@ -209,6 +209,14 @@
+@@ -209,6 +209,27 @@
                      <property name="tooltip-text" translatable="yes">Toggle Sidebar</property>
                    </object>
                  </child>
 +                <child type="start">
 +                  <object class="GtkButton" id="print_shortcut_button">
-+                    <property name="icon-name">print-symbolic</property>
-+                    <property name="label" translatable="yes">Print…</property>
++                    <property name="child">
++                      <object class="GtkBox">
++                        <property name="spacing">6</property>
++                        <child>
++                          <object class="GtkImage">
++                            <property name="icon-name">printer-symbolic</property>
++                          </object>
++                        </child>
++                        <child>
++                          <object class="GtkLabel">
++                            <property name="label" translatable="yes">Print…</property>
++                          </object>
++                        </child>
++                      </object>
++                    </property>
 +                    <property name="action-name">doc.print</property>
 +                    <property name="tooltip-text" translatable="yes">Print…</property>
 +                  </object>
