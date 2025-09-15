@@ -1,13 +1,13 @@
-diff --git a/shell/pps-document-view.ui b/shell/pps-document-view.ui
-index 6c1c89cea..c8e59fead 100644
---- a/shell/pps-document-view.ui
-+++ b/shell/pps-document-view.ui
-@@ -211,6 +211,27 @@
+diff --git a/shell/resources/pps-document-view.ui b/shell/resources/pps-document-view.ui
+index 22a65a1de..5634001d4 100644
+--- a/shell/resources/pps-document-view.ui
++++ b/shell/resources/pps-document-view.ui
+@@ -209,6 +209,27 @@
                      <property name="tooltip-text" translatable="yes">Toggle Sidebar</property>
                    </object>
                  </child>
 +                <child type="start">
-+                  <object class="GtkButton">
++                  <object class="GtkButton" id="print_shortcut_button">
 +                    <property name="child">
 +                      <object class="GtkBox">
 +                        <property name="spacing">6</property>
@@ -23,8 +23,8 @@ index 6c1c89cea..c8e59fead 100644
 +                        </child>
 +                      </object>
 +                    </property>
-+                    <property name="tooltip_text" translatable="yes">Print…</property>
-+                    <property name="action-name">win.print</property>
++                    <property name="action-name">doc.print</property>
++                    <property name="tooltip-text" translatable="yes">Print…</property>
 +                  </object>
 +                </child>
                  <child type="end">
