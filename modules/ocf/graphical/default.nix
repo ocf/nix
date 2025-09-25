@@ -102,6 +102,7 @@ in
 
       ocf-okular
       ocf-papers
+      evince
 
       # TEXT & CODE EDITORS
       vscode-fhs
