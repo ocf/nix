@@ -52,6 +52,7 @@ in
     programs.steam.enable = true;
     programs.zoom-us.enable = true;
     programs.sway.enable = true;
+    programs.sway.extraOptions = [ "--unsupported-gpu" ];
 
     i18n.inputMethod = {
       enable = true;
