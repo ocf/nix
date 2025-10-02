@@ -54,6 +54,8 @@ in
     programs.sway.enable = true;
     programs.sway.extraOptions = [ "--unsupported-gpu" ];
 
+    services.gnome.gcr-ssh-agent.enable = false;
+
     i18n.inputMethod = {
       enable = true;
       type = "fcitx5";
