@@ -11,6 +11,7 @@ let
       +:ALL:cron crond
       +:root:ALL
       +:ocfbackups:hal.ocf.berkeley.edu
+      +:ocf-nix-deploy-user:spike.ocf.berkeley.edu
       +:(ocfroot):ALL
       +:(ocfstaff):ALL
       +:(sys):ALL
