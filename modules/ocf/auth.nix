@@ -34,7 +34,7 @@ in
       server = "ldaps://ldap.ocf.berkeley.edu";
       base = "dc=OCF,dc=Berkeley,dc=EDU";
       daemon.enable = true;
-      extraConfig = ''
+      daemon.extraConfig = ''
         tls_reqcert hard
         tls_cacert /etc/ssl/certs/ca-certificates.crt
 
