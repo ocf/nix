@@ -2,10 +2,29 @@
 
 let
   cfg = config.ocf.auth;
+
+  access_conf_base =
+    ''
+      # format: permission:users/groups:origins
+      #
+      -:(sorry):cron crond
+      +:ALL:cron crond
+      +:root:ALL
+      +:ocfbackups:hal.ocf.berkeley.edu
+      +:(ocfroot):ALL
+      +:(ocfstaff):ALL
+      +:(sys):ALL
+    '';
 in
 {
   options.ocf.auth = {
     enable = lib.mkEnableOption "Enable OCF authentication";
+  };
+
+  options.ocf.auth.extra_access_conf = lib.mkOption {
+    type = lib.types.listOf lib.types.str;
+    description = "Extra lines to be added to /etc/security/access.conf";
+    default = [ ];
   };
 
   config = lib.mkIf cfg.enable {
@@ -72,6 +91,26 @@ in
           default_realm = "OCF.BERKELEY.EDU";
         };
       };
+    };
+
+    # TODO
+    environment.etc."security/access.conf".text = if (lib.length (cfg.extra_access_conf) == 0) then access_conf_base + "-:ALL:ALL\n"
+      else access_conf_base + (lib.concatStringsSep "\n" cfg.extra_access_conf) + "\n-:ALL:ALL\n";
+
+    security.pam.services.login.rules.account.pam_access = {
+      enable = true;
+      control = "required";
+      modulePath = "${pkgs.linux-pam}/lib/security/pam_access.so";
+      order = config.security.pam.services.login.rules.account.ldap.order - 10;
+      args = [ "accessfile=/etc/security/access.conf" ];
+    };
+
+    security.pam.services.sshd.rules.account.pam_access = {
+      enable = true;
+      control = "required";
+      modulePath = "${pkgs.linux-pam}/lib/security/pam_access.so";
+      order = config.security.pam.services.sshd.rules.account.ldap.order - 10;
+      args = [ "accessfile=/etc/security/access.conf" ];
     };
   };
 }

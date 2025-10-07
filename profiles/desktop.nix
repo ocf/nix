@@ -19,6 +19,8 @@ in
     # TODO: need ensure host keys can't be stolen by booting an external drive...
     acme.enable = false;
 
+    auth.extra_access_conf = [ "+:(ocf):ALL" ];
+
     etc.enable = true;
     graphical.enable = true;
     browsers.enable = true;
