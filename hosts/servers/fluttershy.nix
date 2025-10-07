@@ -12,7 +12,8 @@
     lastOctet = 130;
   };
 
-  ocf.auth.extra_access_conf = [ "+:(ocf):ALL" "+:(sorry):ALL" ];
+  # staff-only while wip
+  #ocf.auth.extra_access_conf = [ "+:(ocf):ALL" "+:(sorry):ALL" ];
 
   system.stateVersion = "25.05";
 }
