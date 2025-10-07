@@ -12,8 +12,7 @@
     lastOctet = 130;
   };
 
-  # staff-only while wip
-  #ocf.auth.extra_access_conf = [ "+:(ocf):ALL" "+:(sorry):ALL" ];
+  ocf.ssh.enable = true;
 
   ocf.nfs = {
     enable = true;
