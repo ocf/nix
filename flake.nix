@@ -91,6 +91,31 @@
       ref = "main";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    # trying to install home-manager module by default? need to test?
+    home-manager = {
+      type = "github";
+      owner = "nix-community";
+      repo = "home-manager";
+      ref = "master";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    hyprland = {
+      type = "github";
+      owner = "hyprwm";
+      repo = "Hyprland";
+      ref = "main";
+    };
+
+    hyprland-plugins = {
+      type = "github";
+      owner = "hyprwm";
+      repo = "Hyprland";
+      ref = "main";
+      inputs.hyprland.follows = "hyprland";
+    };
+
   };
 
   outputs =
@@ -106,6 +131,9 @@
     , ocf-sync-etc
     , ocf-pam-trimspaces
     , ocf-utils
+    , home-manager
+    , hyprland
+    , hyprland-plugins
     , wayout
     }@inputs:
     let
@@ -120,6 +148,8 @@
         ocf-pam-trimspaces.overlays.default
         nix-index-database.overlays.nix-index
         agenix-rekey.overlays.default
+	hyprland.overlays.default
+	hyprland-plugins.overlays.default
       ];
 
       customModules =
@@ -130,6 +160,7 @@
         agenix.nixosModules.default
         agenix-rekey.nixosModules.default
         disko.nixosModules.disko
+	hyprland.nixosModules.default
       ];
 
       defaultSystem = "x86_64-linux";

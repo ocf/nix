@@ -53,7 +53,6 @@ in
     programs.zoom-us.enable = true;
     programs.sway.enable = true;
     programs.sway.extraOptions = [ "--unsupported-gpu" ];
-    programs.hyprland.enable = true;
     programs.wayfire.enable = true;
 
     services.gnome.gcr-ssh-agent.enable = false;
@@ -87,8 +86,8 @@ in
       libreoffice
 
       # terminal emulators
-      foot
       kitty
+      foot
       alacritty
       st
       ghostty
