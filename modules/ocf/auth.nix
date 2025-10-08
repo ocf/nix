@@ -43,7 +43,7 @@ in
       };
     };
 
-    environment.etc."ldap.conf".text = 
+    environment.etc."openldap/ldap.conf".text = 
       ''
         tls_reqcert hard
         tls_cacert /etc/ssl/certs/ca-certificates.crt
