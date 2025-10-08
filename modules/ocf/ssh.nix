@@ -15,6 +15,8 @@ in
     environment.systemPackages = with pkgs; [
       (python312.withPackages (ps: [ ps.ocflib ]))
       ocf-utils
+      openldap
+      ldapvi
     ];
   };
 }
