@@ -45,6 +45,7 @@ in
 
     environment.etc."openldap/ldap.conf".text = 
       ''
+        uri ldaps://ldap.ocf.berkeley.edu
         tls_reqcert hard
         tls_cacert /etc/ssl/certs/ca-certificates.crt
 
