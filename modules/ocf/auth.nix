@@ -11,6 +11,8 @@ in
   config = lib.mkIf cfg.enable {
     age.secrets.root-password-hash.rekeyFile = ../../secrets/master-keyed/root-password-hash.age;
 
+    users.mutableUsers = false;
+
     users.users.root.hashedPasswordFile = config.age.secrets.root-password-hash.path;
 
     users.ldap = {
