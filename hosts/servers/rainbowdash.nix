@@ -16,7 +16,7 @@
     mountServices = true;
   };
 
-  environtment.systemPackages = with pkgs; [
+  environment.systemPackages = with pkgs; [
     ipmitool
   ];
 
