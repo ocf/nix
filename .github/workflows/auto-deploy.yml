@@ -49,7 +49,7 @@ jobs:
       - name: Deploy with colmena
         env:
           SSH_CONFIG_FILE: ${{ github.workspace }}/ssh_config
-        run: nix develop .#deploy -c colmena apply --no-substitute --on ${{ matrix.host }} dry-activate >> ${{ matrix.host }}.log 2>&1
+        run: nix develop .#deploy -c colmena apply --no-substitute --on ${{ matrix.host }} switch >> ${{ matrix.host }}.log 2>&1
 
       - name: Display log
         if: always()
