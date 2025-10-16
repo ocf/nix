@@ -1,8 +1,6 @@
 name: Automated Deploy
 
 on:
-  schedule:
-    - cron: '15 * * * *' # Every hour at 15mins
   push:
     branches:
       - "main"
