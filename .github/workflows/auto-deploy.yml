@@ -17,7 +17,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - id: hosts
-        run: echo "hosts=$(nix eval .#colmenaHive.nodes --apply builtins.attrNames --json)" >> "$GITHUB_OUTPUT"
+        run: echo "hosts=$(nix eval .#automatedDeployNodes --json)" >> "$GITHUB_OUTPUT"
 
   deploy:
     runs-on: ci-ocf-nix-deploy
