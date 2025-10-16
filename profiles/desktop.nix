@@ -26,7 +26,7 @@ in
     network.wakeOnLan.enable = true;
 
     # temporary
-    ocf.managed-deployment.automated-deploy = true;
+    managed-deployment.automated-deploy = true;
   };
 
   boot.loader.systemd-boot.consoleMode = "max";
