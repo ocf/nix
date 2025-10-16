@@ -31,11 +31,11 @@
         "treefmt-nix": "treefmt-nix"
       },
       "locked": {
-        "lastModified": 1759255832,
-        "narHash": "sha256-+8RmfVC7+9bYwUnodGSbRaSGyvkGB/lkFe03xvyvu38=",
+        "lastModified": 1759699908,
+        "narHash": "sha256-kYVGY8sAfqwpNch706Fy2+/b+xbtfidhXSnzvthAhIQ=",
         "owner": "oddlama",
         "repo": "agenix-rekey",
-        "rev": "cdf62e6ee25c0bba7bf391dace328346a7c27609",
+        "rev": "42362b12f59978aabf3ec3334834ce2f3662013d",
         "type": "github"
       },
       "original": {
@@ -306,11 +306,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1759032422,
-        "narHash": "sha256-WZf+FhebP2/1pK2np5xj/NuDjD6fXK2BHnq/tPUN18o=",
+        "lastModified": 1760241904,
+        "narHash": "sha256-OD7QnaGEVNdukYEbJbUNWPsvnDrpbZOZxVIk6Pt9Jhw=",
         "owner": "nix-community",
         "repo": "nix-index-database",
-        "rev": "ec7a78cb0e098832d8acac091a4df393259c4839",
+        "rev": "c9f5ea45f25652ec2f771f9426ccacb21cbbaeaa",
         "type": "github"
       },
       "original": {
@@ -354,11 +354,11 @@
     },
     "nixpkgs_3": {
       "locked": {
-        "lastModified": 1759381078,
-        "narHash": "sha256-gTrEEp5gEspIcCOx9PD8kMaF1iEmfBcTbO0Jag2QhQs=",
+        "lastModified": 1760524057,
+        "narHash": "sha256-EVAqOteLBFmd7pKkb0+FIUyzTF61VKi7YmvP1tw4nEw=",
         "owner": "nixos",
         "repo": "nixpkgs",
-        "rev": "7df7ff7d8e00218376575f0acdcc5d66741351ee",
+        "rev": "544961dfcce86422ba200ed9a0b00dd4b1486ec5",
         "type": "github"
       },
       "original": {
@@ -386,11 +386,11 @@
     },
     "ocf-sync-etc": {
       "locked": {
-        "lastModified": 1759529367,
-        "narHash": "sha256-YdgX27tu3Ri5aVp1WLlWIb44DEBoDwpBSJ4C+bHNso0=",
+        "lastModified": 1760555002,
+        "narHash": "sha256-z/s/VL/c0hHar38EgvOmKCXDSQxfg/lrkmy0lVmsczE=",
         "owner": "ocf",
         "repo": "etc",
-        "rev": "573778a39647ad041e152496d1359df437e4cb58",
+        "rev": "75a97ac5238e0e8216afcf211e919169d5d121a9",
         "type": "github"
       },
       "original": {
@@ -427,11 +427,11 @@
     },
     "ocflib": {
       "locked": {
-        "lastModified": 1759553410,
-        "narHash": "sha256-UVlIwTlpZIg8bY7Xn0MmhvNGn0B5Kbq8Roe9BHUWgmc=",
+        "lastModified": 1760634109,
+        "narHash": "sha256-FoKf3OAFa6gBt9PmJp4DeZ73QtwDxzuaYgoceo9gaR4=",
         "owner": "ocf",
         "repo": "ocflib",
-        "rev": "d4ddaf6cf4e7a060c6b6cf532099efc7cf80a250",
+        "rev": "af113ab36a88c0d72a6bdca5ecc8799e37ae06b4",
         "type": "github"
       },
       "original": {
