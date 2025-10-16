@@ -24,6 +24,9 @@ in
     browsers.enable = true;
     tmpfsHome.enable = true;
     network.wakeOnLan.enable = true;
+
+    # temporary
+    ocf.managed-deployment.automated-deploy = true;
   };
 
   boot.loader.systemd-boot.consoleMode = "max";

@@ -8,9 +8,6 @@
 
   networking.hostName = "bandit";
 
-  # temporary for testing
-  ocf.managed-deployment.automated-deploy = true;
-
   ocf.network = {
     enable = true;
     lastOctet = 149;
