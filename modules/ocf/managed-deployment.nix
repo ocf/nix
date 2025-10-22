@@ -10,8 +10,7 @@ in
   options.ocf.managed-deployment.automated-deploy = lib.mkOption {
     type = lib.types.bool;
     description = "Whether to enable automated deployments from GitHub. The default setting of true is recommended to ensure nodes are kept up-to-date.";
-    # TODO change default back to true after testing
-    default = false;
+    default = true;
   };
 
   config = lib.mkIf cfg.enable {
