@@ -26,6 +26,9 @@ in
   };
 
   config = lib.mkIf config.services.ocfKubernetes.enable {
+    # add exemption: automated deployments has caused failures due to the control plane all going down at once
+    ocf.managed-deployment.automated-deploy = false;
+
     environment.etc = {
       "kubernetes/manifests/kubevip.yaml" = lib.mkIf config.services.ocfKubernetes.isLeader { source = ./kubevip.yaml; };
       "kubernetes/kubeadm.yaml".source = ./kubeadm.yaml;

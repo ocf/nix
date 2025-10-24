@@ -7,6 +7,12 @@ in
 {
   options.ocf.managed-deployment.enable = lib.mkEnableOption "Enable OCF Colmena / GitHub Actions Managed Deployment";
 
+  options.ocf.managed-deployment.automated-deploy = lib.mkOption {
+    type = lib.types.bool;
+    description = "Whether to enable automated deployments from GitHub. The default setting of true is recommended to ensure nodes are kept up-to-date.";
+    default = true;
+  };
+
   config = lib.mkIf cfg.enable {
     nix.settings.trusted-users = [ deploy-user ];
 
