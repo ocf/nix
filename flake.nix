@@ -184,6 +184,9 @@
         };
       });
 
+      # list of nodes with automated deploy enabled, to be consumed by github actions
+      automatedDeployNodes = builtins.filter (node: self.colmenaHive.nodes.${node}.config.ocf.managed-deployment.automated-deploy) (builtins.attrNames self.colmenaHive.nodes);
+
       overlays.default = final: prev: {
         ocf-utils = ocf-utils.packages.${final.system}.default;
         ocf-wayout = wayout.packages.${final.system}.default;

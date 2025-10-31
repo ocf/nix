@@ -17,15 +17,23 @@ jobs:
       - name: Checkout 
         uses: actions/checkout@v4
 
-      - name: Setup SSH Private Key
+      - name: Setup SSH
         run: |
           echo '${{ secrets.COLMENA_APPLY_SSH_KEY }}' > ${{ github.workspace }}/id_ed25519
           chmod 400 ${{ github.workspace }}/id_ed25519
 
-      - name: Setup SSH Config File
-        run: |
-          echo "Host *
-            Identityfile $GITHUB_WORKSPACE/id_ed25519
+          for keyfile in ${{ github.workspace }}/secrets/host-keys/*.pub; do
+            hostname=$(basename "$keyfile" .pub)
+            fqdn="$hostname.ocf.berkeley.edu"
+            pubkey=$(cat "$keyfile")
+            echo "$fqdn $pubkey"
+          done > ${{ github.workspace }}/known_hosts
+
+          echo "
+          Identityfile $GITHUB_WORKSPACE/id_ed25519
+          UserKnownHostsFile $GITHUB_WORKSPACE/known_hosts
+          StrictHostKeyChecking yes
+          UpdateHostKeys no
           " >> ${{ github.workspace }}/ssh_config
 
       - name: Deploy with Colmena

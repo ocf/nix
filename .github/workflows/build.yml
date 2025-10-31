@@ -7,6 +7,9 @@ on:
     branches:
       - "*"
 
+concurrency:
+  group: build-${{ github.ref || github.head_ref }}
+  cancel-in-progress: true
 jobs:
   check-flake:
     runs-on: ci-ocf-nix-build
@@ -33,7 +36,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Build with colmena
-        run: nix develop -c colmena build --on ${{ matrix.host }} >> ${{ matrix.host }}.log 2>&1
+        run: nix develop -c colmena build --keep-result --on ${{ matrix.host }} >> ${{ matrix.host }}.log 2>&1
       - name: Display log
         if: always()
         run: cat ${{ matrix.host }}.log
