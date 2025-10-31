@@ -1,0 +1,3 @@
+[Wayland]
+InputMethod=[$e]=/run/current-system/sw/share/applications/fcitx5-wayland-launcher.desktop
+VirtualKeyboardEnable=true
