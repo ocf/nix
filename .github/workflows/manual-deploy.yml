@@ -39,4 +39,4 @@ jobs:
       - name: Deploy with Colmena
         env:
           SSH_CONFIG_FILE: ${{ github.workspace }}/ssh_config
-        run: nix develop .#deploy -c colmena apply --no-substitute --on ${{ inputs.hosts }}
+        run: nix develop .#deploy -c colmena apply --on ${{ inputs.hosts }}
