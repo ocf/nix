@@ -12,6 +12,10 @@ in
     # staff-only while wip
     #ocf.auth.extra_access_conf = [ "+:(ocf):ALL" "+:(sorry):ALL" ];
 
+    security.sudo.extraRules = [
+      { groups = [ "ocf" ]; runAs = "mysql"; commands = [{ command = "/run/current-system/sw/bin/makemysql-real"; options = [ "NOPASSWD" ]; }]; }
+    ];
+
     environment.systemPackages = with pkgs; [
       (python312.withPackages (ps: [ ps.ocflib ]))
       ocf-utils
