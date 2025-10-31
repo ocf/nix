@@ -65,6 +65,9 @@ in
 {
   imports = [ ./options.nix ];
   config = lib.mkIf cfg.enable {
+    # add exemption: automated deployments may cause failures if deploying to themself
+    ocf.managed-deployment.automated-deploy = false;
+
     age.secrets = lib.mkMerge (builtins.map getSecrets cfg.runners);
     containers = lib.mkMerge (builtins.map makeContainer cfg.runners);
   };
