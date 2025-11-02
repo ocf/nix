@@ -101,6 +101,8 @@ in
     vim
     git
     killall
+    ldapvi
+    openldap
 
     comma-with-db
     
