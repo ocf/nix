@@ -103,6 +103,10 @@ in
     killall
 
     comma-with-db
+    
+    # OCF utilities
+    (python312.withPackages (ps: [ ps.ocflib ]))
+    ocf-utils
   ];
 
   services = {
