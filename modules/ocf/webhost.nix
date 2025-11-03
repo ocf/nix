@@ -25,7 +25,7 @@ let
       useACMEHost = "${fqdn}";
       serverAliases = [ "${website-cfg.name}.${shortDomain}" ];
       root = "/var/www/${website-cfg.name}";
-      add_header = "Cache-Control \"public, max-age=${website-cfg.cacheTime}\""
+      add_header = "Cache-Control \"public, max-age=${website-cfg.cacheTime}\"";
     };
   };
 
