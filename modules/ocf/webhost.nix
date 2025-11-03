@@ -26,6 +26,7 @@ let
       serverAliases = [ "${website-cfg.name}.${shortDomain}" ];
       root = "/var/www/${website-cfg.name}";
       extraConfig = ''
+        add_header Last-Modified "";
       	add_header Cache-Control "public, max-age=${website-cfg.cacheTime}";
 	'';
     };
