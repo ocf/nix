@@ -26,7 +26,7 @@ let
       serverAliases = [ "${website-cfg.name}.${shortDomain}" ];
       root = "/var/www/${website-cfg.name}";
       extraConfig = ''
-      	Cache-Control \"public, max-age=${website-cfg.cacheTime}\"
+      	Cache-Control \"public, max-age=${website-cfg.cacheTime}\";
 	'';
     };
   };
