@@ -65,7 +65,7 @@ in
       enable = true;
 
       extensions = [
-        "cjpalhdlnbpafiamejdnhcphjbkeiagm" # ublock origin
+        "ddkjiahejlhfcafbddmgiahcphecmpfh" # ublock origin lite
       ];
 
       extraOpts = {
