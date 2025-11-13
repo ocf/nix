@@ -411,11 +411,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1762995962,
-        "narHash": "sha256-jFgsfRdDvsoqL9lOnIvJdFSnbajsTDl2JzPCtzNm9Dg=",
+        "lastModified": 1763007737,
+        "narHash": "sha256-rMYDP0Sc/KzTycyeM97WwhQHNbmrOgQ4IfOwMHbl5mk=",
         "owner": "ocf",
         "repo": "utils",
-        "rev": "469774602b25661f1765b302fe741ff8c3f892ef",
+        "rev": "7cdf92905ad05775fe5b10d63d5a34b6ac527f2d",
         "type": "github"
       },
       "original": {
