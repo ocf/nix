@@ -67,7 +67,7 @@ in
         fcitx5-mozc
         fcitx5-rime
         fcitx5-hangul
-        fcitx5-unikey
+        kdePackages.fcitx5-unikey
         fcitx5-bamboo
         fcitx5-m17n
       ];
@@ -123,7 +123,7 @@ in
 
     ];
 
-    fonts.packages = with pkgs; [ meslo-lgs-nf noto-fonts noto-fonts-cjk-sans noto-fonts-extra ];
+    fonts.packages = with pkgs; [ meslo-lgs-nf noto-fonts noto-fonts-cjk-sans ];
 
     services = {
       # KDE Plasma is our primary DE, but have others available

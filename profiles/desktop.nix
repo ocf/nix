@@ -39,7 +39,6 @@ in
     kakoune
 
     # Languages
-    (python312.withPackages (ps: [ ps.ocflib ]))
     poetry
     ruby
     elixir
@@ -59,7 +58,6 @@ in
     bat
 
     # Other tools
-    ocf-utils
     bar
     tmux
     s-tui
