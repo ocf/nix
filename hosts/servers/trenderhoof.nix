@@ -1,0 +1,42 @@
+{ ... }:
+
+{
+  imports = [ ../../hardware/virtualized.nix ];
+
+  networking.hostName = "trenderhoof";
+
+  ocf.network = {
+    enable = true;
+    lastOctet = 77;
+  };
+
+  ocf.nfs = {
+    enable = true;
+    # https://github.com/ocf/puppet/blob/a081b2210691bd46d585accc8548c985188486a0/modules/ocf_filehost/manifests/init.pp#L10-L16
+    exports = [
+      {
+        directory = "/opt/homes";
+        hosts = [
+          "admin"
+          "www"
+          "ssh"
+          "apphost"
+          "adenine"
+          "guanine"
+          "cytosine"
+          "thymine"
+          "fluttershy"
+          "rainbowdash"
+        ];
+        options = [
+          "rw"
+          "fsid=0"
+          "no_subtree_check"
+          "no_root_squash"
+        ];
+      }
+    ];
+  };
+
+  system.stateVersion = "25.11";
+}
