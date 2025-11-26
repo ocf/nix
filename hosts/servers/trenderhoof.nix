@@ -7,7 +7,7 @@
 
   ocf.network = {
     enable = true;
-    lastOctet = 77;
+    lastOctet = 128;
   };
 
   ocf.nfs = {
