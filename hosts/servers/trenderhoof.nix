@@ -38,5 +38,23 @@
     ];
   };
 
+  fileSystems = {
+    # Bind mount /opt/homes/home to /home. This allows running
+    #     mount trenderhoof:/home /home
+    # In fact, since home is CNAMEd to filehost is CNAMEd to trenderhoof, even
+    #     mount homes:/home /home
+    # works and that's what the Puppet config in modules/ocf/manifests/nfs.pp does.
+    "/home" = {
+      device = "/opt/homes/home";
+      fsType = "none";
+      options = [ "bind" ];
+    };
+    "/services" = {
+      device = "/opt/homes/services";
+      fsType = "none";
+      options = [ "bind" ];
+    };
+  };
+
   system.stateVersion = "25.11";
 }
