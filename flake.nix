@@ -29,6 +29,7 @@
       owner = "ryantm";
       repo = "agenix";
       ref = "main";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
 
     agenix-rekey = {
@@ -36,6 +37,7 @@
       owner = "oddlama";
       repo = "agenix-rekey";
       ref = "main";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
 
     disko = {
