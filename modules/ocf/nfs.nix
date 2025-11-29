@@ -50,7 +50,7 @@ in
         concatMapStrings (export: ''
           ${export.directory} \
             ${concatMapStringsSep " \\\n  " (
-              host: "${host}(${concatStringsSep " " export.options})"
+              host: "${host}(${concatStringsSep "," export.options})"
             ) export.hosts}
         '') cfg.exports
       );
