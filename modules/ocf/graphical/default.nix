@@ -121,6 +121,9 @@ in
       superTuxKart
       tetris
 
+      #OTHER
+      cum
+
     ];
 
     fonts.packages = with pkgs; [ meslo-lgs-nf noto-fonts noto-fonts-cjk-sans ];

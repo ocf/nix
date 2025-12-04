@@ -103,12 +103,15 @@ in
     killall
     ldapvi
     openldap
+    direnv
+    devenv
 
     comma-with-db
     
     # OCF utilities
     (python312.withPackages (ps: [ ps.ocflib ]))
     ocf-utils
+
   ];
 
   services = {
