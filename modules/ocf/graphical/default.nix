@@ -49,12 +49,15 @@ in
       ocf-assets.source = ./assets;
     };
 
-    programs.steam.enable = true;
-    programs.zoom-us.enable = true;
-    programs.sway.enable = true;
-    programs.sway.extraOptions = [ "--unsupported-gpu" ];
-    programs.hyprland.enable = true;
-    programs.wayfire.enable = true;
+    programs = {
+      steam.enable = true;
+      zoom-us.enable = true;
+      sway.enable = true;
+      sway.extraOptions = [ "--unsupported-gpu" ];
+      hyprland.enable = true;
+      wayfire.enable = true;
+      niri.enable = true;
+    };
 
     services.gnome.gcr-ssh-agent.enable = false;
 
