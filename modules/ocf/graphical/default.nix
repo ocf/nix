@@ -109,7 +109,6 @@ in
       fastfetch
 
       ocf-okular
-      ocf-papers
 
       # TEXT & CODE EDITORS
       vscode-fhs
