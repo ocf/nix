@@ -16,7 +16,7 @@ in
       systemPackages = with pkgs; [
         bash
         zsh
-        #fish
+        fish
         xonsh
         zsh-powerlevel10k
       ];
@@ -34,7 +34,7 @@ in
         '';
       };
 
-      #fish.enable = true;
+      fish.enable = true;
       xonsh.enable = true;
     };
 
