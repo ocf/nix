@@ -6,7 +6,7 @@
       type = "github";
       owner = "nixos";
       repo = "nixpkgs";
-      ref = "nixos-unstable";
+      ref = "nixos-25.11";
     };
 
     systems = {
