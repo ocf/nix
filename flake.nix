@@ -148,6 +148,8 @@
             "code"
             "dwarf-fortress"
             "google-chrome"
+            "helvetica-neue-lt-std" #tornado
+	          "mongodb" #zecora for unifi
             "nvidia-settings"
             "nvidia-x11"
             "steam"
@@ -159,8 +161,7 @@
         };
       };
 
-      forAllSystems = fn: nixpkgs.lib.genAttrs
-        (import systems)
+      forAllSystems = fn: nixpkgs.lib.genAttrs (import systems)
         (system: fn (pkgsFor system));
 
       readGroup = group: nixpkgs.lib.mapAttrs'
