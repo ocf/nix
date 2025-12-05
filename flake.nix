@@ -1,4 +1,4 @@
-{
+git@github.com:dotlambda/ocf-nix.git{
   description = "NixOS configuration for the Open Computing Facility";
 
   inputs = {
@@ -149,7 +149,7 @@
             "dwarf-fortress"
             "google-chrome"
             "helvetica-neue-lt-std" #tornado
-	          "mongodb" #zecora for unifi
+	        "mongodb" #zecora for unifi
             "nvidia-settings"
             "nvidia-x11"
             "steam"
