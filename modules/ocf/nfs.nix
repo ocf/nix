@@ -46,14 +46,12 @@ in
     services.nfs.server = {
       enable = true;
       # https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/5/html/deployment_guide/s1-nfs-server-config-exports
-      exports = lib.traceValSeq (
-        concatMapStrings (export: ''
-          ${export.directory} \
-            ${concatMapStringsSep " \\\n  " (
-              host: "${host}(${concatStringsSep "," export.options})"
-            ) export.hosts}
-        '') cfg.exports
-      );
+      exports = concatMapStrings (export: ''
+        ${export.directory} \
+          ${concatMapStringsSep " \\\n  " (
+            host: "${host}(${concatStringsSep "," export.options})"
+          ) export.hosts}
+      '') cfg.exports;
     };
   };
 }
