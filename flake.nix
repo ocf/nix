@@ -1,4 +1,4 @@
-git@github.com:dotlambda/ocf-nix.git{
+{
   description = "NixOS configuration for the Open Computing Facility";
 
   inputs = {
