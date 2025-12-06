@@ -34,6 +34,15 @@
     ];
   };
 
+
+  boot.loader = {
+    grub.enable = true;
+    systemd-boot.enable = false;
+  };
+
+  # FIXME remove and make sure it still boots
+  hardware.enableAllHardware = true;
+
   disko.devices = {
     disk = {
       main = {
@@ -42,6 +51,11 @@
         content = {
           type = "gpt";
           partitions = {
+            MBR = {
+              type = "EF02";
+              size = "1M";
+              priority = 1;
+            };
             ESP = {
               size = "1G";
               type = "EF00";
