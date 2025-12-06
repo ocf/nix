@@ -1,4 +1,4 @@
-{
+git@github.com:dotlambda/ocf-nix.git{
   description = "NixOS configuration for the Open Computing Facility";
 
   inputs = {
@@ -29,6 +29,7 @@
       owner = "ryantm";
       repo = "agenix";
       ref = "main";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
 
     agenix-rekey = {
@@ -36,6 +37,7 @@
       owner = "oddlama";
       repo = "agenix-rekey";
       ref = "main";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
 
     disko = {
@@ -141,11 +143,25 @@
 
       pkgsFor = system: import nixpkgs {
         inherit overlays system;
-        config = { allowUnfree = true; };
+        config = {
+          allowUnfreePredicate = pkg: builtins.elem (nixpkgs.lib.getName pkg) [
+            "code"
+            "dwarf-fortress"
+            "google-chrome"
+            "helvetica-neue-lt-std" #tornado
+	        "mongodb" #zecora for unifi
+            "nvidia-settings"
+            "nvidia-x11"
+            "steam"
+            "steam-unwrapped"
+            "unifi-controller"
+            "vscode"
+            "zoom"
+          ];
+        };
       };
 
-      forAllSystems = fn: nixpkgs.lib.genAttrs
-        (import systems)
+      forAllSystems = fn: nixpkgs.lib.genAttrs (import systems)
         (system: fn (pkgsFor system));
 
       readGroup = group: nixpkgs.lib.mapAttrs'
@@ -194,6 +210,14 @@
         catppuccin-sddm = final.qt6Packages.callPackage ./pkgs/catppuccin-sddm.nix { };
         ocf-papers = final.callPackage ./pkgs/ocf-papers.nix { };
         ocf-okular = final.kdePackages.callPackage ./pkgs/ocf-okular.nix { };
+
+        # FIXME remove once https://github.com/NixOS/nixpkgs/pull/465400 reaches our version of nixpkgs
+        termbench-pro = prev.termbench-pro.overrideAttrs {
+          buildInputs = [
+            final.fmt
+            (final.glaze.override { enableSSL = false; })
+          ];
+        };
       };
 
       agenix-rekey = agenix-rekey.configure {
