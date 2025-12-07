@@ -53,5 +53,10 @@ in
           ) export.hosts}
       '') cfg.exports;
     };
+
+    networking.firewall.allowedTCPPorts = [
+      # sufficient for NFSv4
+      2049
+    ];
   };
 }
