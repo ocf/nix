@@ -10,10 +10,10 @@ let
     mkOption
     types
     ;
-  cfg = config.ocf.nfs;
+  cfg = config.ocf.nfs-export;
 in
 {
-  options.ocf.nfs = {
+  options.ocf.nfs-export = {
     enable = mkEnableOption "NFS exports";
     exports = mkOption {
       type = types.listOf (

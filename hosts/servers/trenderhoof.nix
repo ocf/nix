@@ -6,7 +6,7 @@
     lastOctet = 128;
   };
 
-  ocf.nfs = {
+  ocf.nfs-export = {
     enable = true;
     # https://github.com/ocf/puppet/blob/a081b2210691bd46d585accc8548c985188486a0/modules/ocf_filehost/manifests/init.pp#L10-L16
     exports = [
