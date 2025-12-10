@@ -64,6 +64,14 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    home-manager = {
+      type = "github";
+      owner = "nix-community";
+      repo = "home-manager";
+      ref = "master";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     ocflib = {
       type = "github";
       owner = "ocf";
@@ -111,6 +119,7 @@
     , agenix
     , agenix-rekey
     , disko
+    , home-manager
     , nix-index-database
     , nix4nvchad
     , ocflib
