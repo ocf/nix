@@ -56,22 +56,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    nix4nvchad = {
-      type = "github";
-      owner = "nix-community";
-      repo = "nix4nvchad";
-      ref = "main";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    home-manager = {
-      type = "github";
-      owner = "nix-community";
-      repo = "home-manager";
-      ref = "master";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
     ocflib = {
       type = "github";
       owner = "ocf";
@@ -119,9 +103,7 @@
     , agenix
     , agenix-rekey
     , disko
-    , home-manager
     , nix-index-database
-    , nix4nvchad
     , ocflib
     , ocf-sync-etc
     , ocf-pam-trimspaces
@@ -228,7 +210,6 @@
         catppuccin-sddm = final.qt6Packages.callPackage ./pkgs/catppuccin-sddm.nix { };
         ocf-papers = final.callPackage ./pkgs/ocf-papers.nix { };
         ocf-okular = final.kdePackages.callPackage ./pkgs/ocf-okular.nix { };
-        nvchad = nix4nvchad.packages."${final.system}".nvchad;
 
         # FIXME remove once https://github.com/NixOS/nixpkgs/pull/465400 reaches our version of nixpkgs
         termbench-pro = prev.termbench-pro.overrideAttrs {
