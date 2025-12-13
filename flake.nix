@@ -224,6 +224,7 @@
             pkgs.agenix-rekey
             pkgs.age-plugin-fido2-hmac
             colmena.packages.${pkgs.system}.colmena
+            disko.packages.${pkgs.system}.disko
           ];
         };
         deploy = pkgs.mkShell {
