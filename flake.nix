@@ -210,14 +210,6 @@
         catppuccin-sddm = final.qt6Packages.callPackage ./pkgs/catppuccin-sddm.nix { };
         ocf-papers = final.callPackage ./pkgs/ocf-papers.nix { };
         ocf-okular = final.kdePackages.callPackage ./pkgs/ocf-okular.nix { };
-
-        # FIXME remove once https://github.com/NixOS/nixpkgs/pull/465400 reaches our version of nixpkgs
-        termbench-pro = prev.termbench-pro.overrideAttrs {
-          buildInputs = [
-            final.fmt
-            (final.glaze.override { enableSSL = false; })
-          ];
-        };
       };
 
       agenix-rekey = agenix-rekey.configure {
