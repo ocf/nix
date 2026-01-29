@@ -29,6 +29,7 @@
       owner = "ryantm";
       repo = "agenix";
       ref = "main";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
 
     agenix-rekey = {
@@ -36,6 +37,7 @@
       owner = "oddlama";
       repo = "agenix-rekey";
       ref = "main";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
 
     disko = {
@@ -141,11 +143,25 @@
 
       pkgsFor = system: import nixpkgs {
         inherit overlays system;
-        config = { allowUnfree = true; };
+        config = {
+          allowUnfreePredicate = pkg: builtins.elem (nixpkgs.lib.getName pkg) [
+            "code"
+            "dwarf-fortress"
+            "google-chrome"
+            "helvetica-neue-lt-std" #tornado
+	        "mongodb" #zecora for unifi
+            "nvidia-settings"
+            "nvidia-x11"
+            "steam"
+            "steam-unwrapped"
+            "unifi-controller"
+            "vscode"
+            "zoom"
+          ];
+        };
       };
 
-      forAllSystems = fn: nixpkgs.lib.genAttrs
-        (import systems)
+      forAllSystems = fn: nixpkgs.lib.genAttrs (import systems)
         (system: fn (pkgsFor system));
 
       readGroup = group: nixpkgs.lib.mapAttrs'

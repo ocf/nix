@@ -88,6 +88,8 @@ in
     ipmitool
     smartmontools
     nvme-cli
+    ripgrep
+    lsd
 
     # Networking tools
     rsync
@@ -105,6 +107,11 @@ in
     openldap
 
     comma-with-db
+
+    # k8s
+    teleport
+    k9s
+    kubectl
     
     # OCF utilities
     (python312.withPackages (ps: [ ps.ocflib ]))

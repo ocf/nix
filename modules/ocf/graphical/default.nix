@@ -73,6 +73,10 @@ in
       ];
     };
 
+    environment.cosmic.excludePackages = [
+      pkgs.cosmic-initial-setup
+    ];
+
     environment.systemPackages = with pkgs; [
       plasma-applet-commandoutput
       (catppuccin-sddm.override {
@@ -128,12 +132,14 @@ in
     services = {
       # KDE Plasma is our primary DE, but have others available
       desktopManager.plasma6.enable = true;
+      desktopManager.cosmic.enable = true;
       xserver.desktopManager = {
         gnome.enable = true;
         xfce.enable = true;
       };
 
       displayManager = {
+
         defaultSession = "plasma";
 
         sddm = {

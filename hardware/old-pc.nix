@@ -32,6 +32,10 @@
 
   swapDevices = [ ];
 
+  services.udev.extraRules = ''
+    SUBSYSTEM=="block", KERNEL=="sr[0-9]*", RUN+="${pkgs.coreutils}/bin/chgrp 1000 /dev/%k", RUN+="${pkgs.coreutils}/bin/chmod 0660 /dev/%k"
+  '';
+
   # Enables DHCP on each ethernet and wireless interface. In case of scripted networking
   # (the default) this is the recommended approach. When using systemd-networkd it's
   # still possible to use this option, but it's recommended to use it in conjunction
