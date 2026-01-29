@@ -30,6 +30,8 @@ in
         "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMdAe7sPMxaidnqOah3UVrjt41KFHHOYleS1VWGH+ZUc" # storce
         "sk-ssh-ed25519@openssh.com AAAAGnNrLXNzaC1lZDI1NTE5QG9wZW5zc2guY29tAAAAICW8L5pydSCGwBstSlXWNSQh//wmRB03RmAWaT3u7+8hAAAABHNzaDo=" # sbwilliams primary hardware token
         "sk-ssh-ed25519@openssh.com AAAAGnNrLXNzaC1lZDI1NTE5QG9wZW5zc2guY29tAAAAIIsQXwbC4lVR8qMbduDWHVNvjfqD1m8yYbjdEOGCNVNPAAAABHNzaDo=" # sbwilliams secondary hardware token
+        "sk-ssh-ed25519@openssh.com AAAAGnNrLXNzaC1lZDI1NTE5QG9wZW5zc2guY29tAAAAIIe3xdiMA4u6OhEEa8gw1w26G8mBvAC6SXbbgR0sSWO7AAAABHNzaDo=" # michaelzls primary hardware token
+        "sk-ssh-ed25519@openssh.com AAAAGnNrLXNzaC1lZDI1NTE5QG9wZW5zc2guY29tAAAAICWs4Daof6LfwMw6376xOfuPgBnZNxnPWpoUvcWdlql5AAAABHNzaDo=" # michaelzls secondary hardware token
       ];
     };
 
