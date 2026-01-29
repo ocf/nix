@@ -150,7 +150,7 @@
             "dwarf-fortress"
             "google-chrome"
             "helvetica-neue-lt-std" #tornado
-	    "mongodb" #zecora for unifi
+            "mongodb" #zecora for unifi
             "nvidia-settings"
             "nvidia-x11"
             "steam"
