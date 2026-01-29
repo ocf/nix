@@ -146,6 +146,7 @@
         config = {
           allowUnfreePredicate = pkg: builtins.elem (nixpkgs.lib.getName pkg) [
             "code"
+            "claude-code"
             "dwarf-fortress"
             "google-chrome"
             "helvetica-neue-lt-std" #tornado
