@@ -71,6 +71,7 @@ in
 
     # devtools
     devenv
+    claude-code
 
   ];
 
