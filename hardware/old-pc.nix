@@ -33,7 +33,7 @@
   swapDevices = [ ];
 
   services.udev.extraRules = ''
-    SUBSYSTEM=="block", KERNEL=="sr[0-9]*", GROUP="1000", MODE="0660"
+    SUBSYSTEM=="block", KERNEL=="sr[0-9]*", RUN+="${pkgs.coreutils}/bin/chgrp 1000 /dev/%k", RUN+="${pkgs.coreutils}/bin/chmod 0660 /dev/%k"
   '';
 
   # Enables DHCP on each ethernet and wireless interface. In case of scripted networking
