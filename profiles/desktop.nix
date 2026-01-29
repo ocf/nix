@@ -64,6 +64,7 @@ in
     ocf-tv
     remmina
     simple-scan
+    wiremix
 
     # Cosmetics
     neofetch
@@ -73,6 +74,10 @@ in
     devenv
     claude-code
 
+    fastfetch
+    onefetch
+    cpufetch
+    gpufetch
   ];
 
 
