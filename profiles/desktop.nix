@@ -68,6 +68,11 @@ in
     # Cosmetics
     neofetch
     pfetch-rs
+
+    # devtools
+    devenv
+    claude-code
+
   ];
 
 
