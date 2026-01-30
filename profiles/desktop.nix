@@ -58,9 +58,11 @@ in
     bat
     ranger
     lf
+    fd
 
     # Other tools
     bar
+    fzf
     tmux
     s-tui
     ocf-tv
