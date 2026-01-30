@@ -56,6 +56,8 @@ in
     tree
     dua
     bat
+    ranger
+    lf
 
     # Other tools
     bar
