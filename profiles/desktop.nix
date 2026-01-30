@@ -67,6 +67,7 @@ in
     remmina
     simple-scan
     wiremix
+    yubikey-manager
 
     # Cosmetics
     neofetch
