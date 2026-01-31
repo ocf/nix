@@ -559,11 +559,11 @@
         "systems": "systems_4"
       },
       "locked": {
-        "lastModified": 1729631936,
-        "narHash": "sha256-DihwkA66/QuE3JEL39wgcCHM0ckByyM/cXA4V4SYb4E=",
+        "lastModified": 1769837614,
+        "narHash": "sha256-OGCc+xi9hZG97NRX+lVrvHpNyHZaei0OX5PtZDNVEOs=",
         "owner": "ocf",
         "repo": "wayout",
-        "rev": "7a156496688a44aab1a2dbc8230087e5265ff3a6",
+        "rev": "7cfa4f53c53b008487d90e1260f7273ec2b81c4f",
         "type": "github"
       },
       "original": {
