@@ -27,7 +27,7 @@ jobs:
           echo '${{ secrets.COLMENA_APPLY_SSH_KEY }}' > ${{ github.workspace }}/id_ed25519
           chmod 400 id_ed25519
 
-          for host in $HOSTS; do
+          for host in ${HOSTS}; do
             cat secrets/host-keys/$host.pub | sed "s/^/$host.ocf.berkeley.edu /" >> known_hosts
           done
 
