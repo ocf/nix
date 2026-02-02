@@ -56,14 +56,20 @@ in
     tree
     dua
     bat
+    ranger
+    lf
+    fd
 
     # Other tools
     bar
+    fzf
     tmux
     s-tui
     ocf-tv
     remmina
     simple-scan
+    wiremix
+    yubikey-manager
 
     # Cosmetics
     neofetch
@@ -73,6 +79,10 @@ in
     devenv
     claude-code
 
+    fastfetch
+    onefetch
+    cpufetch
+    gpufetch
   ];
 
 
