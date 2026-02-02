@@ -43,9 +43,32 @@ jobs:
           sh -c "
             if nix develop .#deploy -c colmena apply --on {} switch > {}.log 2>&1; then
               echo '✅ Successfully deployed to {}'
+              echo 'SUCCESS:{}' >> results.txt
             else
               echo '❌ Failed to deploy to {}'
-              cat {}.log
-              exit 1
+              echo 'FAILURE:{}' >> results.txt
             fi
           "
+
+      - name: Display successful logs
+        if: always()
+        run: |
+          grep "SUCCESS:" results.txt | cut -d':' -f2 | while read host; do
+            echo "--- $host ---"
+            cat "${host}.log"
+          done
+
+      - name: Display failed logs
+        if: always()
+        run: |
+          grep "FAILURE:" results.txt | cut -d':' -f2 | while read host; do
+            echo "--- $host ---"
+            cat "${host}.log"
+          done
+
+      - name: Check status
+        if: always()
+        run: |
+          if grep -q "FAILURE:" results.txt; then
+            exit 1
+          fi
