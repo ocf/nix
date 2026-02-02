@@ -153,7 +153,6 @@ in
 
   security.rtkit.enable = true;
   services.pulseaudio.enable = false;
-  services.dbus.implementation = "broker";
 
   networking.firewall.enable = false;
 
