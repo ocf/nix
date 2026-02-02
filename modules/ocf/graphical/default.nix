@@ -82,13 +82,15 @@ in
       (catppuccin-sddm.override {
         themeConfig.General = {
           FontSize = 12;
-          Background = "/etc/ocf-assets/images/login-winter.png";
+          Background = "/etc/ocf-assets/images/login.png";
           #Logo = "/etc/ocf-assets/images/penguin.svg";
           CustomBackground = true;
         };
       })
 
       libreoffice
+      drawio
+      xournalpp
 
       # terminal emulators
       foot
@@ -103,11 +105,29 @@ in
       hexchat
       halloy
 
+      krita
       gimp3
       inkscape
       blender
-      xournalpp
-      fastfetch
+      kdePackages.kdenlive
+
+      audacity
+      mpv
+      vlc
+
+      # pipewire
+      easyeffects
+      helvum
+
+      freecad
+      kicad
+      openscad
+
+      mission-center
+
+      # useful for iso files even without a cd drive
+      brasero
+      kdePackages.k3b
 
       ocf-okular
       ocf-papers
@@ -117,6 +137,10 @@ in
       rstudio
       zed-editor
       jetbrains.idea-community
+      gnome-builder
+
+      gitg
+      meld
 
       # GAMES
       dwarf-fortress
@@ -125,6 +149,11 @@ in
       superTuxKart
       tetris
 
+      # misc wayland utils
+      wl-clipboard
+      libnotify
+      antimicrox
+      yubioath-flutter
     ];
 
     fonts.packages = with pkgs; [ meslo-lgs-nf noto-fonts noto-fonts-cjk-sans ];
