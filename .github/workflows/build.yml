@@ -22,5 +22,22 @@ jobs:
     needs: check-flake
     steps:
       - uses: actions/checkout@v4
+
+      - name: Setup hosts
+        run: |
+          HOSTS=$(nix eval .#nixosConfigurations --apply 'nodes: builtins.concatStringsSep " " (builtins.attrNames nodes)' --raw)
+          echo "HOSTS=$HOSTS" >> $GITHUB_ENV
+
       - name: Build with colmena
-        run: nix develop -c colmena build --keep-result --nix-option keep-going true
+        run: |
+          echo "$HOSTS" | tr ' ' '\n' | \
+          xargs -P 10 -n 1 -I {} \
+          sh -c "
+            if nix develop -c colmena build --on {} --keep-result > {}.log 2>&1; then
+              echo '✅ Successfully built on {}'
+            else
+              echo '❌ Failed to build on {}'
+              cat {}.log
+              exit 1
+            fi
+          "
