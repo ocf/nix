@@ -64,6 +64,7 @@ in
     ocf-tv
     remmina
     simple-scan
+    cdrtools # useful for iso files even without a cd drive
 
     # Cosmetics
     neofetch

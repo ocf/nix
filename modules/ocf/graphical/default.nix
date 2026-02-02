@@ -109,6 +109,10 @@ in
       xournalpp
       fastfetch
 
+      # useful for iso files even without a cd drive
+      brasero
+      kdePackages.k3b
+
       ocf-okular
       ocf-papers
 
