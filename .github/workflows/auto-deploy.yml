@@ -4,9 +4,10 @@ on:
   push:
     branches:
       - "main"
+  schedule:
+    - cron: "0 8 * * *"
 
 jobs:
-
   define-matrix:
     runs-on: ci-ocf-nix-deploy
     outputs:
