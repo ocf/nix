@@ -8,7 +8,7 @@ let
     ${lib.getExe pkgs.openssh_gssapi} -S /tmp/ocftv-ssh-ctl -O exit tornado
   '';
   # override ocf-tv from util
-  ocf-tv = pkgs.hiPrio vncScript;
+  ocf-tv = lib.hiPrio vncScript;
 in
 {
 
