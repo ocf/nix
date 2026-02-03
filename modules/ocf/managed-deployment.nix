@@ -38,6 +38,8 @@ in
       ];
     };
 
+    # note: this breaks colmena exec, which runs the given command with sudo,
+    # but sudo cant ask for a password without a proper terminal
     security.sudo.extraRules = [
       {
         users = [ deploy-user ];
