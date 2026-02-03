@@ -13,6 +13,12 @@ in
     default = true;
   };
 
+  options.ocf.managed-deployment.mac-address = lib.mkOption {
+    type = lib.types.str;
+    description = "MAC address of the host so that it can be woken up with WoL during deploy";
+    default = "";
+  };
+
   config = lib.mkIf cfg.enable {
     nix.settings.trusted-users = [ deploy-user ];
 

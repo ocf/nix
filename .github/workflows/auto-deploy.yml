@@ -22,6 +22,12 @@ jobs:
           HOSTS=$(nix eval .#automatedDeployNodes --apply 'builtins.concatStringsSep " "' --raw)
           echo "HOSTS=$HOSTS" >> $GITHUB_ENV
 
+      - name: Wake up hosts
+        run: |
+          HOST_MACS=$(nix eval .#automatedDeployNodeMACs --apply 'builtins.concatStringsSep " "' --raw)
+          # not using quotes here so that each mac address is a separate argument
+          wol $HOST_MACS
+
       - name: Setup SSH
         run: |
           echo '${{ secrets.COLMENA_APPLY_SSH_KEY }}' > ${{ github.workspace }}/id_ed25519

@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       hosts:
-        description: 'Comma separated hostnames or tags (ex: @desktops) to deploy'
+        description: 'Comma separated hostnames or tags (ex: @desktop) to deploy'
         required: true
         type: string
 
