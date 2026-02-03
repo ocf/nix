@@ -136,7 +136,7 @@ in
       vscode-fhs
       rstudio
       zed-editor
-      jetbrains.idea-community
+      jetbrains.idea-oss
       gnome-builder
 
       gitg
@@ -160,12 +160,16 @@ in
 
     services = {
       # KDE Plasma is our primary DE, but have others available
-      desktopManager.plasma6.enable = true;
-      desktopManager.cosmic.enable = true;
-      xserver.desktopManager = {
+      desktopManager = {
+        plasma6.enable = true;
         gnome.enable = true;
-        xfce.enable = true;
+
+        cosmic = {
+          enable = true;
+          showExcludedPkgsWarning = false;
+        };
       };
+      xserver.desktopManager.xfce.enable = true;
 
       displayManager = {
 
