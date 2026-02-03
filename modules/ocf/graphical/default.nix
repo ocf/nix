@@ -136,7 +136,7 @@ in
       vscode-fhs
       rstudio
       zed-editor
-      jetbrains.idea-community
+      jetbrains.idea-oss
       gnome-builder
 
       gitg
