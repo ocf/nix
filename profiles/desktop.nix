@@ -162,6 +162,9 @@ in
   security.rtkit.enable = true;
   services.pulseaudio.enable = false;
 
+  # needed for accessing totp codes on yubikey via yubico authenticator
+  services.pcscd.enable = true;
+
   # Needed for generic Linux programs
   # More info: https://nix.dev/guides/faq#how-to-run-non-nix-executables
   programs.nix-ld.enable = true;
