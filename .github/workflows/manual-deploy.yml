@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       hosts:
-        description: 'Comma separated hostnames or tags (ex: @desktops) to deploy'
+        description: 'Comma separated hostnames or tags (ex: @desktop) to deploy'
         required: true
         type: string
 
@@ -14,7 +14,7 @@ jobs:
   deploy-on-hosts:
     runs-on: ci-ocf-nix-deploy
     steps:
-      - name: Checkout 
+      - name: Checkout
         uses: actions/checkout@v4
 
       - name: Setup SSH

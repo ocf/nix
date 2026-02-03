@@ -166,7 +166,7 @@ in
   };
 
   environment.etc."nixos/configuration.nix".text = ''
-    {}: builtins.abort "This machine is not managed by /etc/nixos. Please use colmena instead."
+    {}: builtins.abort "This machine is not managed by /etc/nixos. Please use configs at ocf.io/gh/nix with Colmena."
   '';
 
   systemd.services.nix-remove-profiles = {

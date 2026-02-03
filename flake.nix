@@ -205,6 +205,11 @@
       # list of nodes with automated deploy enabled, to be consumed by github actions
       automatedDeployNodes = builtins.filter (node: self.colmenaHive.nodes.${node}.config.ocf.managed-deployment.automated-deploy) (builtins.attrNames self.colmenaHive.nodes);
 
+      # list of mac addresses of nodes with automated deploy enabled that github actions should wake up on deploy
+      # hosts that do not have mac-address set will be gracefully ignored
+      automatedDeployNodeMACs = builtins.filter (mac: mac != "")
+        (builtins.map (node: self.colmenaHive.nodes.${node}.config.ocf.managed-deployment.mac-address) self.automatedDeployNodes);
+
       overlays.default = final: prev: {
         ocf-utils = ocf-utils.packages.${final.system}.default;
         ocf-wayout = wayout.packages.${final.system}.default;
@@ -225,6 +230,7 @@
             pkgs.git
             pkgs.agenix-rekey
             pkgs.age-plugin-fido2-hmac
+            pkgs.wol
             colmena.packages.${pkgs.system}.colmena
           ];
         };
@@ -232,6 +238,7 @@
           packages = [
             pkgs.git
             pkgs.openssh
+            pkgs.wol
             colmena.packages.${pkgs.system}.colmena
           ];
         };
