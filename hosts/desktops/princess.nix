@@ -10,11 +10,6 @@
 
   networking.hostName = "princess";
 
-  ocf.nvidia = {
-    enable = true;
-    open = false;
-  };
-
   ocf.network = {
     enable = true;
     lastOctet = 162;
