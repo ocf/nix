@@ -45,7 +45,7 @@ jobs:
           echo "$HOSTS" | tr ' ' '\n' | \
           xargs -P 10 -n 1 -I {} \
           sh -c "
-            if nix develop .#deploy -c colmena apply --on {} switch --no-build > {}.log 2>&1; then
+            if nix develop .#deploy -c colmena apply --on {} switch > {}.log 2>&1; then
               echo '✅ Successfully deployed to {}'
               echo 'SUCCESS:{}' >> results.txt
             else
