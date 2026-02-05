@@ -80,5 +80,12 @@ in
         };
       };
     };
+
+    services.openssh.settings = {
+      GSSAPIAuthentication = "yes";
+      GSSAPICleanupCredentials = "yes";
+      GSSAPIStrictAcceptorCheck = "no";
+      GSSAPIKeyExchange = "yes";
+    };
   };
 }
