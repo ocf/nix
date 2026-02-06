@@ -93,6 +93,14 @@
       ref = "main";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    ocf-cosmic-applets = {
+      type = "github";
+      owner = "ocf";
+      repo = "cosmic-applets";
+      ref = "main";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
@@ -109,6 +117,7 @@
     , ocf-pam-trimspaces
     , ocf-utils
     , wayout
+    , ocf-cosmic-applets
     }@inputs:
     let
       # ============== #
@@ -212,6 +221,7 @@
         catppuccin-sddm = final.qt6Packages.callPackage ./pkgs/catppuccin-sddm.nix { };
         ocf-papers = final.callPackage ./pkgs/ocf-papers.nix { };
         ocf-okular = final.kdePackages.callPackage ./pkgs/ocf-okular.nix { };
+        ocf-cosmic-applets = ocf-cosmic-applets.packages.${final.system}.default
       };
 
       agenix-rekey = agenix-rekey.configure {

@@ -84,6 +84,9 @@ in
     onefetch
     cpufetch
     gpufetch
+
+    # COSMIC Applets
+    ocf-cosmic-applets.default
   ];
 
 
