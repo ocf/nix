@@ -86,7 +86,7 @@ in
     gpufetch
 
     # COSMIC Applets
-    ocf-cosmic-applets.default
+    ocf-cosmic-applets
   ];
 
 
