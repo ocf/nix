@@ -39,6 +39,7 @@ in
     kakoune
 
     # Languages
+    (python3.withPackages (ps: [ ps.tkinter ]))
     poetry
     ruby
     elixir
