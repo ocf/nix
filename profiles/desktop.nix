@@ -167,6 +167,9 @@ in
   # needed for accessing totp codes on yubikey via yubico authenticator
   services.pcscd.enable = true;
 
+  # enable secure attention key (also enables unraw/xlate)
+  boot.kernel.sysctl."kernel.sysrq" = 4;
+
   # Needed for generic Linux programs
   # More info: https://nix.dev/guides/faq#how-to-run-non-nix-executables
   programs.nix-ld.enable = true;
