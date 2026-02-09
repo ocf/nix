@@ -59,6 +59,7 @@ in
     ranger
     lf
     fd
+    sshfs
 
     # Other tools
     bar
