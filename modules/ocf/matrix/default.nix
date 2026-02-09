@@ -60,6 +60,9 @@ in
 
         auto_join_rooms = cfg.initialRooms;
 
+        # let people bridging from non-ocf accounts see all the discord rooms
+        allow_public_rooms_over_federation = true;
+
         alias_creation_rules = [
           {
             room_id = "#*:${cfg.serverName}";
