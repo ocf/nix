@@ -92,23 +92,33 @@ in
     ipmitool
     smartmontools
     nvme-cli
-    ripgrep
-    lsd
+    perf
+    strace
 
     # Networking tools
     rsync
     wget
     curl
+    mtr
+    traceroute
+    iperf
+    vnstat
+    nethogs
 
     # Other useful stuff
     tmux
     htop
-    file
-    vim
     git
     killall
     ldapvi
     openldap
+
+    # files
+    dua
+    lf
+    file
+    vim
+    ripgrep
 
     comma-with-db
 
