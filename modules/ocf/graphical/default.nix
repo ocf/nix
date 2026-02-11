@@ -55,6 +55,8 @@ in
     programs.sway.extraOptions = [ "--unsupported-gpu" ];
     programs.hyprland.enable = true;
     programs.wayfire.enable = true;
+    programs.obs-studio.enable = true;
+    programs.obs-studio.enableVirtualCamera = true;
 
     services.gnome.gcr-ssh-agent.enable = false;
 
@@ -134,6 +136,7 @@ in
 
       # TEXT & CODE EDITORS
       vscode-fhs
+      vscodium-fhs
       rstudio
       zed-editor
       jetbrains.idea-oss
@@ -154,6 +157,8 @@ in
       libnotify
       antimicrox
       yubioath-flutter
+      kdiskmark
+      songrec
     ];
 
     fonts.packages = with pkgs; [ meslo-lgs-nf noto-fonts noto-fonts-cjk-sans ];
