@@ -50,30 +50,44 @@ in
     rustup
     clang
     nodejs_22
+    graphviz
+    nix-du
+    nix-output-monitor
+    dix
+    lldb
+    gdb
+    valgrind
+    go
+    sqlite
+    zulu25
 
     # File management tools
     zip
     unzip
     _7zz
     eza
+    lsd
     tree
-    dua
     bat
     ranger
     lf
     fd
+    dua
+    rclone
 
     # Other tools
     bar
     fzf
     tmux
     s-tui
+    fio
     ocf-tv
     remmina
     simple-scan
     cdrtools # useful for iso files even without a cd drive
     wiremix
     yubikey-manager
+    gh
 
     # Cosmetics
     neofetch
