@@ -63,6 +63,12 @@ in
         # let people bridging from non-ocf accounts see all the discord rooms
         allow_public_rooms_over_federation = true;
 
+        room_list_publication_rules = [
+          {
+          action = "allow";
+          }
+        ];
+
         alias_creation_rules = [
           {
             room_id = "#*:${cfg.serverName}";
