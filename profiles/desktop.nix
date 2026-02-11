@@ -88,6 +88,7 @@ in
     wiremix
     yubikey-manager
     gh
+    ffmpeg
 
     # Cosmetics
     neofetch
