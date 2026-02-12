@@ -33,6 +33,10 @@
           pos 0 0
           scale 2
         }
+
+        workspace 1 output HDMI-A-3
+        assign [class="."] 1
+        focus output HDMI-A-3
       '';
     };
   };
