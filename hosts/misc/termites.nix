@@ -23,9 +23,14 @@
       enable = true;
       url = "https://labmap.ocf.berkeley.edu"; # https://kinn.dev/labmap2;
       extraConfig = ''
-        output HDMI-A-1 disable
+        output HDMI-A-1 {
+          mode 1920x1080@60Hz
+          pos 3840 0
+        }
+
         output HDMI-A-3 {
           mode 3840x2160@60Hz
+          pos 0 0
           scale 2
         }
       '';
