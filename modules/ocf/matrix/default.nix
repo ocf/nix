@@ -63,6 +63,12 @@ in
         # let people bridging from non-ocf accounts see all the discord rooms
         allow_public_rooms_over_federation = true;
 
+        room_list_publication_rules = [
+          {
+          action = "allow";
+          }
+        ];
+
         alias_creation_rules = [
           {
             room_id = "#*:${cfg.serverName}";
@@ -159,6 +165,7 @@ in
           locations."/_matrix".proxyPass = "http://[::1]:8008";
 
           locations."/_synapse/client".proxyPass = "http://[::1]:8008";
+          locations."/_synapse/admin".proxyPass = "http://[::1]:8008";
         };
 
         "force-ssl" = {
