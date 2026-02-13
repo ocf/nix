@@ -55,6 +55,7 @@ in
     programs.sway.extraOptions = [ "--unsupported-gpu" ];
     programs.hyprland.enable = true;
     programs.wayfire.enable = true;
+    programs.niri.enable = true;
     programs.obs-studio.enable = true;
     programs.obs-studio.enableVirtualCamera = true;
 
