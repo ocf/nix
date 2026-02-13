@@ -240,7 +240,6 @@ in
           fi
         done
       '';
-      };
     };
 
     # Conflict override since multiple DEs set this option
