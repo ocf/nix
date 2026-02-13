@@ -220,7 +220,7 @@ in
       '';
     };
 
-    systemd.user.services.desktoprc = {
+    systemd.user.services.cosmic-scale = {
       description = "Set COSMIC display scaling";
       after = [ "cosmic-session.target" ];
       partOf = [ "graphical-session.target" ];
