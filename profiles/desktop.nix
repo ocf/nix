@@ -34,6 +34,11 @@ in
   documentation.dev.enable = true;
 
   environment.systemPackages = with pkgs; [
+    element-desktop
+    ncmpcpp
+    yt-dlp
+    hana
+
     # Editors
     emacs
     neovim
@@ -105,6 +110,7 @@ in
 
     # COSMIC Applets
     ocf-cosmic-applets
+
   ];
 
 
