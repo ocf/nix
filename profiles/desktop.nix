@@ -33,6 +33,8 @@ in
 
   zramSwap.enable = true;
 
+  documentation.dev.enable = true;
+
   environment.systemPackages = with pkgs; [
     # Editors
     emacs
@@ -41,6 +43,7 @@ in
     kakoune
 
     # Languages
+    (python3.withPackages (ps: [ ps.tkinter ps.numpy ps.pygobject3 ]))
     poetry
     ruby
     elixir
@@ -49,30 +52,45 @@ in
     rustup
     clang
     nodejs_22
+    graphviz
+    nix-du
+    nix-output-monitor
+    dix
+    lldb
+    gdb
+    valgrind
+    go
+    sqlite
+    zulu25
 
     # File management tools
     zip
     unzip
     _7zz
     eza
+    lsd
     tree
-    dua
     bat
     ranger
     lf
     fd
+    dua
+    rclone
 
     # Other tools
     bar
     fzf
     tmux
     s-tui
+    fio
     ocf-tv
     remmina
     simple-scan
     cdrtools # useful for iso files even without a cd drive
     wiremix
     yubikey-manager
+    gh
+    ffmpeg
 
     # Cosmetics
     neofetch
@@ -166,6 +184,9 @@ in
 
   # needed for accessing totp codes on yubikey via yubico authenticator
   services.pcscd.enable = true;
+
+  # enable secure attention key (also enables unraw/xlate)
+  boot.kernel.sysctl."kernel.sysrq" = 4;
 
   # Needed for generic Linux programs
   # More info: https://nix.dev/guides/faq#how-to-run-non-nix-executables
