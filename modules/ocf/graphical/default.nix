@@ -235,7 +235,7 @@ in
           if [ -n "$mode" ]; then
             width=$(echo "$mode" | cut -d'x' -f1)
             height=$(echo "$mode" | cut -d'x' -f2 | cut -d' ' -f1)
-            ${pkgs.cosmic-randr}/bin/cosmic-randr mode "$output" "$width" "$height" --scale 1.75
+            ${pkgs.cosmic-randr}/bin/cosmic-randr mode "$output" "$width" "$height" --scale 1.5
           fi
         done
       '';
