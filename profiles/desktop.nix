@@ -41,7 +41,7 @@ in
     kakoune
 
     # Languages
-    (python3.withPackages (ps: [ ps.tkinter ]))
+    (python3.withPackages (ps: [ ps.tkinter ps.numpy ps.pygobject3 ]))
     poetry
     ruby
     elixir
