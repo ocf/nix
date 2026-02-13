@@ -37,7 +37,7 @@ in
     element-desktop
     ncmpcpp
     yt-dlp
-    hana
+    kana
 
     # Editors
     emacs
