@@ -1,0 +1,5 @@
+Some([
+    "com.system76.CosmicAppletTime",
+    "ocf-paper-quota-applet",
+    "ocf-logout-applet",
+])

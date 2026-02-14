@@ -108,6 +108,7 @@ in
     # Other useful stuff
     tmux
     htop
+    btop
     git
     killall
     ldapvi

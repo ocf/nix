@@ -1,0 +1,5 @@
+[Desktop Entry]
+Type=Application
+Name=COSMIC Text Editor
+Exec=cosmic-edit
+Icon=com.system76.CosmicEdit

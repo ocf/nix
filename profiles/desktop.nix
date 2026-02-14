@@ -34,6 +34,11 @@ in
   documentation.dev.enable = true;
 
   environment.systemPackages = with pkgs; [
+    element-desktop
+    ncmpcpp
+    yt-dlp
+    kana
+
     # Editors
     emacs
     neovim
@@ -102,6 +107,10 @@ in
     onefetch
     cpufetch
     gpufetch
+
+    # COSMIC Applets
+    ocf-cosmic-applets
+
   ];
 
 

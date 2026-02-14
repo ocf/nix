@@ -221,6 +221,27 @@ in
       '';
     };
 
+    systemd.user.services.cosmic-scale = {
+      description = "Set COSMIC display scaling";
+      after = [ "cosmic-session.target" ];
+      partOf = [ "graphical-session.target" ];
+      wantedBy = [ "cosmic-session.target" ];
+      environment = { PATH = lib.mkForce "/run/current-system/sw/bin"; };
+      script = ''
+        # Set 175% scaling for all enabled displays
+        ${pkgs.cosmic-randr}/bin/cosmic-randr list | grep "(enabled)" | sed 's/\x1b[[0-9;]*m//g' | awk '{print $1}' | while read -r output; do
+        # Get current mode for this output
+        mode=$(${pkgs.cosmic-randr}/bin/cosmic-randr list | awk '/(current)/ {gsub(/\x1b[[0-9;]*m/, ""); print $1, $3;
+  exit}')
+          if [ -n "$mode" ]; then
+            width=$(echo "$mode" | cut -d'x' -f1)
+            height=$(echo "$mode" | cut -d'x' -f2 | cut -d' ' -f1)
+            ${pkgs.cosmic-randr}/bin/cosmic-randr mode "$output" "$width" "$height" --scale 1.5
+          fi
+        done
+      '';
+    };
+
     # Conflict override since multiple DEs set this option
     programs.ssh.askPassword = pkgs.lib.mkForce (lib.getExe pkgs.ksshaskpass.out);
   };
