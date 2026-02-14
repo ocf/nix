@@ -31,6 +31,8 @@ in
   # Enable support SANE scanners
   hardware.sane.enable = true;
 
+  zramSwap.enable = true;
+
   documentation.dev.enable = true;
 
   environment.systemPackages = with pkgs; [
