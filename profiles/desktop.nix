@@ -180,24 +180,6 @@ in
   security.rtkit.enable = true;
   services.pulseaudio.enable = false;
 
-  # Generate Halloy IRC config (replace with home-manager or other nix module eventually)
-  systemd.user.services."halloy-config" = {
-    description = "Generate default halloy IRC config with username";
-    wantedBy = [ "default.target" ];
-    serviceConfig = {
-      Type = "oneshot";
-      RemainAfterExit = true;
-    };
-    script = ''
-      mkdir -p $HOME/.config/halloy
-      cat > $HOME/.config/halloy/config.toml << EOF
-[servers.ocf]
-nickname = "$USER"
-server = "irc.ocf.berkeley.edu"
-EOF
-    '';
-  };
-
   # needed for accessing totp codes on yubikey via yubico authenticator
   services.pcscd.enable = true;
 
