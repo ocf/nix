@@ -66,6 +66,10 @@ in
             Value = "na_letter";
             Status = "default";
           };
+          "print.printer_color-single.print_paper_size_unit" = {
+            Value = 1;
+            Status = "default";
+          };
           "print.printer_color-single.print_paper_width" = {
             Value = "215.9";
             Status = "default";
@@ -78,6 +82,10 @@ in
             Value = "na_letter";
             Status = "default";
           };
+          "print.printer_double.print_paper_size_unit" = {
+            Value = 1;
+            Status = "default";
+          };
           "print.printer_double.print_paper_width" = {
             Value = "215.9";
             Status = "default";
@@ -88,6 +96,10 @@ in
           };
           "print.printer_single.print_paper_id" = {
             Value = "na_letter";
+            Status = "default";
+          };
+          "print.printer_single.print_paper_size_unit" = {
+            Value = 1;
             Status = "default";
           };
           "print.printer_single.print_paper_width" = {
