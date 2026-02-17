@@ -22,7 +22,7 @@ in
     etc.enable = true;
     graphical.enable = true;
     browsers.enable = true;
-    tmpfsHome.enable = true;
+    home.tmpfs = true;
     network.wakeOnLan.enable = true;
   };
 
