@@ -89,6 +89,10 @@ in
     yubikey-manager
     gh
     ffmpeg
+    element-desktop
+    ncmpcpp
+    yt-dlp
+    kana
 
     # Cosmetics
     neofetch
