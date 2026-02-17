@@ -19,7 +19,13 @@ in
 {
   options.ocf.graphical = {
     enable = lib.mkEnableOption "Enable desktop environment configuration";
+    desktop = lib.mkOption {
+      type = lib.types.str;
+      description = "Default desktop environment from display manager";
+      default = "plasma";
+    };
   };
+
 
   config = lib.mkIf cfg.enable {
     security.pam = {
