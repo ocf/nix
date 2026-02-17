@@ -75,6 +75,10 @@ in
             Value = "215.9";
             Status = "default";
           };
+          "print.printer_double.print_in_color" = {
+            Value = false;
+            Status = "default";
+          };
           "print.printer_double.print_paper_height" = {
             Value = "279.4";
             Status = "default";
@@ -90,6 +94,10 @@ in
           };
           "print.printer_double.print_paper_width" = {
             Value = "215.9";
+            Status = "default";
+          };
+          "print.printer_single.print_in_color" = {
+            Value = false;
             Status = "default";
           };
           "print.printer_single.print_paper_height" = {
