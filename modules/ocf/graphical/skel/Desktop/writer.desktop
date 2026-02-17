@@ -1,5 +1,6 @@
 [Desktop Entry]
-Name=Word Processor
-Exec=libreoffice --writer
 Type=Application
-Icon=libreoffice-writer
+Name=LibreOffice Writer
+Exec=libreoffice --writer
+Icon=kwrite
+Terminal=false
