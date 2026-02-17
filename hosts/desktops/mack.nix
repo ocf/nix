@@ -16,7 +16,7 @@
   ocf.graphical = {
     desktop = "cosmic";
     cosmic-scaling = "1.25";
-  }
+  };
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
