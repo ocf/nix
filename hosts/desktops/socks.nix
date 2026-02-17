@@ -19,7 +19,6 @@
   };
 
   ocf.graphical = {
-    desktop = "cosmic";
     cosmic-scaling = "1.25";
   };
 

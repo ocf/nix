@@ -22,7 +22,7 @@ in
     desktop = lib.mkOption {
       type = lib.types.str;
       description = "Default desktop environment from display manager";
-      default = "plasma";
+      default = "cosmic";
     };
     # manually set in hostname config to 1.25 for 2k monitors (say dell on the bottom). 1.5 on 4k
     cosmic-scaling = lib.mkOption {
