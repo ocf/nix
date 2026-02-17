@@ -185,7 +185,7 @@ in
 
       displayManager = {
 
-        defaultSession = "plasma";
+        defaultSession = cfg.desktop;
 
         sddm = {
           enable = true;
