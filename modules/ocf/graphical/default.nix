@@ -19,7 +19,19 @@ in
 {
   options.ocf.graphical = {
     enable = lib.mkEnableOption "Enable desktop environment configuration";
+    desktop = lib.mkOption {
+      type = lib.types.str;
+      description = "Default desktop environment from display manager";
+      default = "cosmic";
+    };
+    # manually set in hostname config to 1.25 for 2k monitors (say dell on the bottom). 1.5 on 4k
+    cosmic-scaling = lib.mkOption {
+      type = lib.types.str;
+      description = "Default display scale on cosmic";
+      default = "1.5";
+    };
   };
+
 
   config = lib.mkIf cfg.enable {
     security.pam = {
@@ -179,7 +191,7 @@ in
 
       displayManager = {
 
-        defaultSession = "plasma";
+        defaultSession = cfg.desktop;
 
         sddm = {
           enable = true;
@@ -220,6 +232,45 @@ in
           
       '';
     };
+
+    systemd.user.services.cosmic-scale = {
+      description = "Set COSMIC display scaling";
+      after = [ "cosmic-session.target" ];
+      partOf = [ "graphical-session.target" ];
+      wantedBy = [ "cosmic-session.target" ];
+      environment = { PATH = lib.mkForce "/run/current-system/sw/bin"; };
+      script = ''
+        # Set 175% scaling for all enabled displays
+        ${pkgs.cosmic-randr}/bin/cosmic-randr list | grep "(enabled)" | sed 's/\x1b[[0-9;]*m//g' | awk '{print $1}' | while read -r output; do
+        # Get current mode for this output
+        mode=$(${pkgs.cosmic-randr}/bin/cosmic-randr list | awk '/(current)/ {gsub(/\x1b[[0-9;]*m/, ""); print $1, $3;
+  exit}')
+          if [ -n "$mode" ]; then
+            width=$(echo "$mode" | cut -d'x' -f1)
+            height=$(echo "$mode" | cut -d'x' -f2 | cut -d' ' -f1)
+            ${pkgs.cosmic-randr}/bin/cosmic-randr mode "$output" "$width" "$height" --scale ${cfg.cosmic-scaling}
+          fi
+        done
+      '';
+    };
+
+      # Generate Halloy IRC config (replace with home-manager or other nix module eventually)
+  systemd.user.services."halloy-config" = {
+    description = "Generate default halloy IRC config with username";
+    wantedBy = [ "default.target" ];
+    serviceConfig = {
+      Type = "oneshot";
+      RemainAfterExit = true;
+    };
+    script = ''
+      mkdir -p $HOME/.config/halloy
+      cat > $HOME/.config/halloy/config.toml << EOF
+[servers.ocf]
+nickname = "$USER"
+server = "irc.ocf.berkeley.edu"
+EOF
+    '';
+  };
 
     # Conflict override since multiple DEs set this option
     programs.ssh.askPassword = pkgs.lib.mkForce (lib.getExe pkgs.ksshaskpass.out);
