@@ -59,7 +59,7 @@ in
 
         Preferences = {
           "print.printer_color-single.print_paper_height" = {
-            Value = 279.4;
+            Value = "279.4";
             Status = "default";
           };
           "print.printer_color-single.print_paper_id" = {
@@ -67,11 +67,11 @@ in
             Status = "default";
           };
           "print.printer_color-single.print_paper_width" = {
-            Value = 215.9;
+            Value = "215.9";
             Status = "default";
           };
           "print.printer_double.print_paper_height" = {
-            Value = 279.4;
+            Value = "279.4";
             Status = "default";
           };
           "print.printer_double.print_paper_id" = {
@@ -79,11 +79,11 @@ in
             Status = "default";
           };
           "print.printer_double.print_paper_width" = {
-            Value = 215.9;
+            Value = "215.9";
             Status = "default";
           };
           "print.printer_single.print_paper_height" = {
-            Value = 279.4;
+            Value = "279.4";
             Status = "default";
           };
           "print.printer_single.print_paper_id" = {
@@ -91,7 +91,7 @@ in
             Status = "default";
           };
           "print.printer_single.print_paper_width" = {
-            Value = 215.9;
+            Value = "215.9";
             Status = "default";
           };
         };
