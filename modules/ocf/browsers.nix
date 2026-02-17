@@ -67,7 +67,7 @@ in
             Status = "default";
           };
           "print.printer_color-single.print_paper_size_unit" = {
-            Value = 1;
+            Value = "1";
             Status = "default";
           };
           "print.printer_color-single.print_paper_width" = {
@@ -83,7 +83,7 @@ in
             Status = "default";
           };
           "print.printer_double.print_paper_size_unit" = {
-            Value = 1;
+            Value = "1";
             Status = "default";
           };
           "print.printer_double.print_paper_width" = {
@@ -99,7 +99,7 @@ in
             Status = "default";
           };
           "print.printer_single.print_paper_size_unit" = {
-            Value = 1;
+            Value = "1";
             Status = "default";
           };
           "print.printer_single.print_paper_width" = {
