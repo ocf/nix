@@ -24,6 +24,12 @@ in
       description = "Default desktop environment from display manager";
       default = "plasma";
     };
+    # manually set in hostname config to 1.25 for 2k monitors (say dell on the bottom). 1.5 on 4k
+    cosmic-scaling = lib.mkOption {
+      type = lib.types.str;
+      description = "Default display scale on cosmic";
+      default = "1.5";
+    };
   };
 
 
@@ -242,7 +248,7 @@ in
           if [ -n "$mode" ]; then
             width=$(echo "$mode" | cut -d'x' -f1)
             height=$(echo "$mode" | cut -d'x' -f2 | cut -d' ' -f1)
-            ${pkgs.cosmic-randr}/bin/cosmic-randr mode "$output" "$width" "$height" --scale 1.5
+            ${pkgs.cosmic-randr}/bin/cosmic-randr mode "$output" "$width" "$height" --scale ${cfg.cosmic-scaling}
           fi
         done
       '';
