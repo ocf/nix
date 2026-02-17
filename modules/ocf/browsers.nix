@@ -56,6 +56,18 @@ in
             install_url = "https://addons.mozilla.org/firefox/downloads/latest/ublock-origin/latest.xpi";
           };
         };
+
+        Preferences = {
+          "print.printer_color-single.print_paper_height" = "279.4";
+          "print.printer_color-single.print_paper_id" = "na_letter";
+          "print.printer_color-single.print_paper_width" = " 215.9";
+          "print.printer_double.print_paper_height" = "279.4";
+          "print.printer_double.print_paper_id" = "na_letter";
+          "print.printer_double.print_paper_width" = " 215.9";
+          "print.printer_single.print_paper_heigh" = "279.4";
+          "print.printer_single.print_paper_id" = "na_letter";
+          "print.printer_single.print_paper_width" = " 215.9";
+        };
       };
     };
 
