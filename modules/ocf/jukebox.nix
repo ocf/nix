@@ -29,12 +29,8 @@ in
       environment = {
         JUKEBOX_MUSIC_DIR = cfg.musicDir;
         SECRET_KEY = cfg.secretKey;
-        DJANGO_STATIC_ROOT = "/var/lib/jukebox/static";
         DJANGO_DB_PATH = "/var/lib/jukebox/db.sqlite3";
       };
-      preStart = ''
-        ${pkgs.ocf-jukebox}/bin/jukebox-manage collectstatic --no-input
-      '';
       serviceConfig = {
         ExecStart = "${pkgs.ocf-jukebox}/bin/daphne -b 0.0.0.0 -p ${toString cfg.port} config.asgi:application";
         User = "ocftv";
