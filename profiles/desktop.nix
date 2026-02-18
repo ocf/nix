@@ -97,6 +97,7 @@ in
     ncmpcpp
     yt-dlp
     kana
+    freerdp
 
     # Cosmetics
     neofetch
