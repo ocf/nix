@@ -21,8 +21,8 @@
 
     jukebox = {
       enable = true;
-      port = 80;
-      musicDir = "/tmp/music";
+      port = 8080;
+      musicDir = "/run/jukebox-music";
     };
 
     kiosk = {
