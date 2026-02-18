@@ -19,6 +19,12 @@
       lastOctet = 95;
     };
 
+    jukebox = {
+      enable = true;
+      port = 80;
+      musicDir = "/tmp/music";
+    };
+
     kiosk = {
       enable = true;
       url = "https://labmap.ocf.berkeley.edu"; # https://kinn.dev/labmap2;
