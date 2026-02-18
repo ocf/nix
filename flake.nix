@@ -103,7 +103,7 @@
     };
 
     ocf-jukebox = {
-      url = "github:ocf/jukebox-django";
+      url = "github:danxliu/jukebox-django";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
