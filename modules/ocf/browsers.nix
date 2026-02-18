@@ -30,8 +30,11 @@ in
           Locked = true;
         };
 
+        DisableTelemetry = true;
         DisableFirefoxAccounts = true;
         DisableFormHistory = true;
+        OfferToSaveLoginsDefault = false;
+        HttpsOnlyMode = "enabled";
 
         SanitizeOnShutdown = {
           Cache = true;
