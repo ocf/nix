@@ -254,9 +254,11 @@ in
       '';
     };
 
-      # Generate Halloy IRC config (replace with home-manager or other nix module eventually)
+  ## Generate Halloy IRC config
+  # First, checks for plaintext password file at ~/remote/.config/hallow/nickserv-password.
+  # If that doesn't exist, prompts for password with kdialog gui.
   systemd.user.services."halloy-config" = {
-    description = "Generate default halloy IRC config with username";
+    description = "Generate default halloy IRC config with OCF username";
     wantedBy = [ "default.target" ];
     serviceConfig = {
       Type = "oneshot";
@@ -265,12 +267,18 @@ in
     script = ''
       mkdir -p $HOME/.config/halloy
       cat > $HOME/.config/halloy/config.toml << EOF
-[servers.ocf]
-nickname = "$USER"
-server = "irc.ocf.berkeley.edu"
-EOF
+  [servers.ocf]
+  nickname = "$USER"
+  server = "irc.ocf.berkeley.edu"
+
+  [servers.ocf.sasl.plain]
+  username = "$USER"
+  password_command = 'sh -c "cat ~/remote/.config/halloy/nickserv-password 2>/dev/null || kdialog --password \"NickServ password (leave blank
+  if not registered)\""'
+  EOF
     '';
   };
+
 
     # Conflict override since multiple DEs set this option
     programs.ssh.askPassword = pkgs.lib.mkForce (lib.getExe pkgs.ksshaskpass.out);

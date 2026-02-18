@@ -113,6 +113,10 @@ in
 
     # COSMIC Applets
     ocf-cosmic-applets
+
+    # IRC password prompt
+    kdePackages.kdialog
+
   ];
 
   services = {
