@@ -32,10 +32,10 @@ in
         STATIC_ROOT = "/var/lib/jukebox/static";
       };
       preStart = ''
-        ${pkgs.jukebox-django}/bin/jukebox-manage collectstatic --no-input
+        ${pkgs.ocf-jukebox}/bin/jukebox-manage collectstatic --no-input
       '';
       serviceConfig = {
-        ExecStart = "${pkgs.jukebox-django}/bin/daphne -b 0.0.0.0 -p ${toString cfg.port} config.asgi:application";
+        ExecStart = "${pkgs.ocf-jukebox}/bin/daphne -b 0.0.0.0 -p ${toString cfg.port} config.asgi:application";
         User = "ocftv";
         StateDirectory = "jukebox";
         WorkingDirectory = "/var/lib/jukebox";
