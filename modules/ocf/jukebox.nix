@@ -33,7 +33,7 @@ in
         XDG_RUNTIME_DIR = "/run/user/%U";
       };
       serviceConfig = {
-        ExecStart = "XDG_RUNTIME_DIR=/run/user/$(id -u ocftv) ${pkgs.ocf-jukebox}/bin/daphne -b 0.0.0.0 -p ${toString cfg.port} config.asgi:application";
+        ExecStart = "${pkgs.ocf-jukebox}/bin/daphne -b 0.0.0.0 -p ${toString cfg.port} config.asgi:application";
         User = "ocftv";
         StateDirectory = "jukebox";
         RuntimeDirectory = "jukebox-music";
