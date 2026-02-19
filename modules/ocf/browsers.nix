@@ -33,16 +33,17 @@ in
         DisableFirefoxAccounts = true;
         DisableFormHistory = true;
 
-        SanitizeOnShutdown = {
-          Cache = true;
-          Cookies = true;
-          Downloads = true;
-          FormData = true;
-          History = true;
-          Sessions = true;
-          SiteSettings = true;
-          OfflineApps = true;
-        };
+        # not needed since home directories are on tmpfs
+        #SanitizeOnShutdown = {
+        #  Cache = true;
+        #  Cookies = true;
+        #  Downloads = true;
+        #  FormData = true;
+        #  History = true;
+        #  Sessions = true;
+        #  SiteSettings = true;
+        #  OfflineApps = true;
+        #};
 
         DontCheckDefaultBrowser = true;
         DisableBuiltinPDFViewer = true;

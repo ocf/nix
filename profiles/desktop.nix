@@ -35,7 +35,7 @@ in
     graphical.enable = true;
     graphical.install-extra-apps = true;
     browsers.enable = true;
-    tmpfsHome.enable = true;
+    home.tmpfs = true;
     network.wakeOnLan.enable = true;
     logged-in-users-exporter.enable = true;
   };
