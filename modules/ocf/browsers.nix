@@ -165,10 +165,6 @@ in
         AuthServerAllowlist = "auth.ocf.berkeley.edu,idm.ocf.berkeley.edu";
         AuthNegotiateDelegateAllowlist = "auth.ocf.berkeley.edu,idm.ocf.berkeley.edu";
 
-        # Printing from Chrome's PDF viewer often results in cut-off pages
-        DisablePrintPreview = true;
-        AlwaysOpenPdfExternally = true;
-
         # Disable Privacy Sandbox popup
         PrivacySandboxAdMeasurementEnabled = false;
         PrivacySandboxPromptEnabled = false;
