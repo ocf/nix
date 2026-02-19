@@ -114,6 +114,7 @@ in
       go
       sqlite
       zulu25
+      godot
 
       # File management tools
       zip
