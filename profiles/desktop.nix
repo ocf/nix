@@ -33,6 +33,7 @@ in
   hardware.sane.enable = true;
 
   hardware.i2c.enable = true;
+  hardware.i2c.group = "ocf";
 
   zramSwap.enable = true;
 
