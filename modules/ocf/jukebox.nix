@@ -37,6 +37,7 @@ in
         StateDirectory = "jukebox";
         RuntimeDirectory = "jukebox-music";
         WorkingDirectory = "/var/lib/jukebox";
+        Environment = "XDG_RUNTIME_DIR=/run/user/%U"'
         Restart = "always";
       };
     };
