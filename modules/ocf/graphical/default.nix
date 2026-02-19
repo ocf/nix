@@ -273,7 +273,7 @@ in
 
   [servers.ocf.sasl.plain]
   username = "$USER"
-  password_command = 'sh -c "cat ~/remote/.config/halloy/nickserv-password 2>/dev/null || kdialog --password \"NickServ password (leave blank if not registered)\""'
+  password_command = 'sh -c "cat ~/remote/.config/ocf/halloy/nickserv-password 2>/dev/null || kdialog --password \"NickServ password (leave blank if not registered)\""'
   EOF
     '';
   };

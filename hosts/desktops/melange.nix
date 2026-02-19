@@ -18,6 +18,8 @@
     lastOctet = 140;
   };
 
+  ocf.managed-deployment.mac-address = "d0:17:c2:d2:07:0c";
+
   ocf.graphical = {
     cosmic-scaling = "1.25";
   };

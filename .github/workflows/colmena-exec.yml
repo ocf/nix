@@ -1,17 +1,21 @@
-name: Manually Deploy to Host
+name: Manually Exec on Host
 
 on:
   workflow_dispatch:
     inputs:
       hosts:
-        description: 'Comma separated hostnames or tags (ex: @desktop) to deploy'
+        description: 'Comma separated hostnames or tags (ex: @desktops) to exec on'
+        required: true
+        type: string
+      argv:
+        description: 'command to exec'
         required: true
         type: string
 
-run-name: Deploy to ${{ inputs.hosts }} from ${{ github.ref_name }} by @${{ github.actor }}
+run-name: exec on ${{ inputs.hosts }} from ${{ github.ref_name }} by @${{ github.actor }}
 
 jobs:
-  deploy-on-hosts:
+  exec-on-hosts:
     runs-on: ci-ocf-nix-deploy
     steps:
       - name: Checkout
@@ -36,7 +40,7 @@ jobs:
           UpdateHostKeys no
           " >> ${{ github.workspace }}/ssh_config
 
-      - name: Deploy with Colmena
+      - name: Exec with Colmena
         env:
           SSH_CONFIG_FILE: ${{ github.workspace }}/ssh_config
-        run: nix develop .#deploy -c colmena apply --on ${{ inputs.hosts }}
+        run: nix develop .#deploy -c colmena exec -v --on "${{ inputs.hosts }}" ${{ inputs.argv }}
