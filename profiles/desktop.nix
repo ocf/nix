@@ -102,6 +102,8 @@ in
   # needed for accessing totp codes on yubikey via yubico authenticator
   services.pcscd.enable = true;
 
+  virtualisation.podman.enable = true;
+
   # enable secure attention key (also enables unraw/xlate)
   boot.kernel.sysctl."kernel.sysrq" = 4;
 
