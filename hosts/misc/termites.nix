@@ -21,7 +21,7 @@
 
     jukebox = {
       enable = true;
-      port = 8080;
+      port = 6767;
       musicDir = "/run/jukebox-music";
     };
 
