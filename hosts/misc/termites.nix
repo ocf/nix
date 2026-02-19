@@ -6,7 +6,6 @@
   ];
 
   networking.hostName = "termites";
-  users.users.ocftv.linger = true;
 
   ocf = {
     # TODO: need ensure host keys can't be stolen by booting an external drive...
