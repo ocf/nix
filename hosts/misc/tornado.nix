@@ -11,6 +11,9 @@
     # TODO: need ensure host keys can't be stolen by booting an external drive...
     acme.enable = false;
 
+    # this machine is not currently in use and cannot be deployed to
+    managed-deployment.automated-deploy = false;
+
     auth.enable = true;
     browsers.enable = true;
 

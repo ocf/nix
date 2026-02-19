@@ -92,23 +92,34 @@ in
     ipmitool
     smartmontools
     nvme-cli
-    ripgrep
-    lsd
+    perf
+    strace
 
     # Networking tools
     rsync
     wget
     curl
+    mtr
+    traceroute
+    iperf
+    vnstat
+    nethogs
 
     # Other useful stuff
     tmux
     htop
-    file
-    vim
+    btop
     git
     killall
     ldapvi
     openldap
+
+    # files
+    dua
+    lf
+    file
+    vim
+    ripgrep
 
     comma-with-db
 
@@ -167,7 +178,7 @@ in
   };
 
   environment.etc."nixos/configuration.nix".text = ''
-    {}: builtins.abort "This machine is not managed by /etc/nixos. Please use colmena instead."
+    {}: builtins.abort "This machine is not managed by /etc/nixos. Please use configs at ocf.io/gh/nix with Colmena."
   '';
 
   systemd.services.nix-remove-profiles = {

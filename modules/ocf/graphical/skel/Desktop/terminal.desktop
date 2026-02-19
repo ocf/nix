@@ -1,5 +1,5 @@
 [Desktop Entry]
 Type=Application
 Name=Terminal
-Exec=konsole
-Icon=utilities-terminal
+Exec=cosmic-term
+Icon=com.system76.CosmicTerm

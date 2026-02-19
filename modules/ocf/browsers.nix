@@ -56,6 +56,68 @@ in
             install_url = "https://addons.mozilla.org/firefox/downloads/latest/ublock-origin/latest.xpi";
           };
         };
+
+        Preferences = {
+          "print.printer_color-single.print_paper_height" = {
+            Value = "279.4";
+            Status = "default";
+          };
+          "print.printer_color-single.print_paper_id" = {
+            Value = "na_letter";
+            Status = "default";
+          };
+          "print.printer_color-single.print_paper_size_unit" = {
+            Value = 1;
+            Status = "default";
+            Type = "number";
+          };
+          "print.printer_color-single.print_paper_width" = {
+            Value = "215.9";
+            Status = "default";
+          };
+          "print.printer_double.print_in_color" = {
+            Value = false;
+            Status = "default";
+          };
+          "print.printer_double.print_paper_height" = {
+            Value = "279.4";
+            Status = "default";
+          };
+          "print.printer_double.print_paper_id" = {
+            Value = "na_letter";
+            Status = "default";
+          };
+          "print.printer_double.print_paper_size_unit" = {
+            Value = 1;
+            Status = "default";
+            Type = "number";
+          };
+          "print.printer_double.print_paper_width" = {
+            Value = "215.9";
+            Status = "default";
+          };
+          "print.printer_single.print_in_color" = {
+            Value = false;
+            Status = "default";
+          };
+          "print.printer_single.print_paper_height" = {
+            Value = "279.4";
+            Status = "default";
+          };
+          "print.printer_single.print_paper_id" = {
+            Value = "na_letter";
+            Status = "default";
+          };
+          "print.printer_single.print_paper_size_unit" = {
+            Value = 1;
+            Status = "default";
+            Type = "number";
+          };
+          "print.printer_single.print_paper_width" = {
+            Value = "215.9";
+            Status = "default";
+          };
+        };
       };
     };
 
