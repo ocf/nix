@@ -33,7 +33,6 @@ in
   hardware.sane.enable = true;
 
   hardware.i2c.enable = true;
-  hardware.i2c.group = "ocf";
 
   zramSwap.enable = true;
 
@@ -132,6 +131,22 @@ in
       pulse.enable = true;
       jack.enable = true;
       alsa.enable = true;
+    };
+
+    actkbd = {
+      enable = true;
+      bindings = [
+        {
+          keys = [ 225 ];
+          events = [ "key" ];
+          command = "${pkgs.ddcutil}/bin/ddcutil setvcp 10 + 10";
+        }
+        {
+          keys = [ 224 ];
+          events = [ "key" ];
+          command = "${pkgs.ddcutil}/bin/ddcutil setvcp 10 - 10";
+        }
+      ];
     };
   };
 
