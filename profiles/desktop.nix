@@ -1,6 +1,6 @@
 # basic minimal profile for desktops
 
-{ pkgs, lib, inputs, ... }:
+{ config, pkgs, lib, inputs, ... }:
 
 # TODO: Move this to pkgs/ or come up with a better way to manage custom scripts
 let
@@ -11,6 +11,16 @@ let
   '';
   # override ocf-tv from util
   ocf-tv = lib.hiPrio vncScript;
+
+  # Default openssh doesn't include GSSAPI support, so we need to override sshfs
+  # to use the openssh_gssapi package instead. This is annoying because the
+  # sshfs package's openssh argument is nested in another layer of callPackage,
+  # so we override callPackage instead to override openssh.
+  sshfs = pkgs.sshfs.override {
+    callPackage = fn: args: (pkgs.callPackage fn args).override {
+      openssh = pkgs.openssh_gssapi;
+    };
+  };
 in
 {
 
@@ -27,6 +37,7 @@ in
     browsers.enable = true;
     home.tmpfs = true;
     network.wakeOnLan.enable = true;
+    logged-in-users-exporter.enable = true;
   };
 
   boot = {
@@ -38,7 +49,26 @@ in
   # Enable support SANE scanners
   hardware.sane.enable = true;
 
+  zramSwap.enable = true;
+
   documentation.dev.enable = true;
+
+  security.pam = {
+    # Mount ~/remote
+    services.login.pamMount = true;
+    services.login.rules.session.mount.order = config.security.pam.services.login.rules.session.krb5.order + 50;
+    mount.extraVolumes = [ ''<volume fstype="fuse" path="${lib.getExe sshfs}#%(USER)@tsunami:" mountpoint="~/remote/" options="follow_symlinks,UserKnownHostsFile=/dev/null,StrictHostKeyChecking=no" pgrp="ocf" />'' ];
+
+    # Trim spaces from username
+    services.login.rules.auth.trimspaces = {
+      control = "requisite";
+      modulePath = "${pkgs.ocf-pam_trimspaces}/lib/security/pam_trimspaces.so";
+      order = 0;
+    };
+
+    # This contains a bunch of KDE, etc. configs
+    makeHomeDir.skelDirectory = "/etc/skel";
+  };
 
   environment.systemPackages = with pkgs; [
     lf
@@ -47,58 +77,13 @@ in
     tmux
 
     ocf-tv
+
+    # COSMIC Applets
+    ocf-cosmic-applets
+
+    # IRC password prompt
+    kdePackages.kdialog
   ];
-
-
-  environment.etc = {
-    "prometheus_scripts/logged_in_users_exporter.sh" = {
-      mode = "0555";
-      text = ''
-        #!/bin/bash
-        OUTPUT_FILE="/var/lib/node_exporter/textfile_collector/logged_in_users.prom"
-        > "$OUTPUT_FILE"
-        loginctl list-sessions --no-legend | while read -r session_id uid user seat leader class tty idle since; do
-          if [[ $class == "user" ]] && [[ $seat == "seat0" ]] && [[ $idle == "no" ]]; then
-            state=$(loginctl show-session "$session_id" -p State --value)
-            if [[ $state == "active" ]]; then
-              locked_status="unlocked"
-            else
-              locked_status="locked"
-            fi
-          echo "node_logged_in_user{name=\"$user\", state=\"$locked_status\"} 1" > $OUTPUT_FILE
-          fi
-        done
-      '';
-    };
-  };
-
-  # Create the textfile collector directory
-  systemd.tmpfiles.rules = [
-    "d /var/lib/node_exporter/textfile_collector 0755 root root -"
-    "d /etc/prometheus_scripts 0755 root root -"
-    "z /etc/prometheus_scripts/logged_in_users_exporter.sh 0755 root root -"
-  ];
-
-
-  systemd.timers."logged_in_users_exporter" = {
-    description = "Run logged_in_users_exporter.sh every 5 seconds";
-    wantedBy = [ "multi-user.target" ];
-    timerConfig = {
-      OnBootSec = "5s";
-      OnUnitActiveSec = "5s";
-      Unit = "logged_in_users_exporter.service";
-    };
-  };
-
-  systemd.services."logged_in_users_exporter" = {
-    description = "Logged in users exporter";
-    script = "bash /etc/prometheus_scripts/logged_in_users_exporter.sh";
-    serviceConfig = {
-      Environment = "PATH=/run/current-system/sw/bin";
-      Type = "oneshot";
-    };
-    wantedBy = [ "multi-user.target" ];
-  };
 
   services = {
     avahi.enable = true;
@@ -108,17 +93,6 @@ in
       pulse.enable = true;
       jack.enable = true;
       alsa.enable = true;
-    };
-
-    prometheus = {
-      exporters = {
-        node = {
-          enable = true;
-          port = 9100;
-          enabledCollectors = [ "systemd" "textfile" ];
-          extraFlags = [ "--collector.ethtool" "--collector.softirqs" "--collector.tcpstat" "--collector.wifi" "--collector.textfile.directory=/var/lib/node_exporter/textfile_collector" ];
-        };
-      };
     };
   };
 

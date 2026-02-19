@@ -13,6 +13,12 @@ in
     default = true;
   };
 
+  options.ocf.managed-deployment.mac-address = lib.mkOption {
+    type = lib.types.str;
+    description = "MAC address of the host so that it can be woken up with WoL during deploy";
+    default = "";
+  };
+
   config = lib.mkIf cfg.enable {
     nix.settings.trusted-users = [ deploy-user ];
 
@@ -38,10 +44,13 @@ in
       ];
     };
 
+    # note: this breaks colmena exec, which runs the given command with sudo,
+    # but sudo cant ask for a password without a proper terminal
     security.sudo.extraRules = [
       {
         users = [ deploy-user ];
         commands = [
+          # needed for colmena apply
           {
             command = "/run/current-system/sw/bin/nix-store --no-gc-warning --realise /nix/store/*";
             options = [ "NOPASSWD" ];
@@ -52,6 +61,12 @@ in
           }
           {
             command = "/nix/store/*/bin/switch-to-configuration *";
+            options = [ "NOPASSWD" ];
+          }
+
+          # extra commands allowed on colmena exec
+          {
+            command = "/run/current-system/sw/bin/systemctl *";
             options = [ "NOPASSWD" ];
           }
         ];

@@ -37,6 +37,8 @@ in
       hexchat
       halloy
 
+      element-desktop
+
       krita
       gimp3
       inkscape
@@ -46,6 +48,9 @@ in
       audacity
       mpv
       vlc
+      ncmpcpp
+      yt-dlp
+      ffmpeg
 
       # pipewire
       easyeffects
@@ -90,7 +95,7 @@ in
       kakoune
 
       # Languages
-      (python3.withPackages (ps: [ ps.tkinter ]))
+      (python3.withPackages (ps: [ ps.tkinter ps.numpy ps.pygobject3 ]))
       poetry
       ruby
       elixir
@@ -109,6 +114,7 @@ in
       go
       sqlite
       zulu25
+      godot
 
       # File management tools
       zip
@@ -120,20 +126,21 @@ in
       ranger
       fd
       rclone
-  
+      sshfs
+
       # Cosmetics
       neofetch
       pfetch-rs
-  
+
       # devtools
       devenv
       claude-code
-  
+
       fastfetch
       onefetch
       cpufetch
       gpufetch
-  
+
       # Other tools
       bar
       fzf
@@ -143,6 +150,8 @@ in
       yubikey-manager
       gh
       cdrtools # useful for iso files even without a cd drive
+      kana
+      freerdp
     ];
   };
 }
