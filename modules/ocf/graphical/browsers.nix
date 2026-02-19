@@ -1,17 +1,20 @@
 { lib, config, pkgs, ... }:
 
 let
-  cfg = config.ocf.browsers;
+  cfg = config.ocf.graphical;
 in
 {
-  options.ocf.browsers = {
-    enable = lib.mkEnableOption "Enable desktop environment configuration";
-  };
+  options.ocf.graphical.browsers = lib.mkEnableOption "Enable desktop environment configuration";
 
-  config = lib.mkIf cfg.enable {
+  config = lib.mkIf cfg.browsers {
     environment.systemPackages = with pkgs; [
-      google-chrome
       firefox
+    ] ++ lib.optionals cfg.install-extra-apps [
+      librewolf
+      tor-browser
+      mullvad-browser
+      google-chrome # absolutely proprietary
+      ungoogled-chromium
     ];
 
     programs.firefox = {

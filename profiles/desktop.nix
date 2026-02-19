@@ -32,12 +32,15 @@ in
     acme.enable = false;
 
     etc.enable = true;
-    graphical.enable = true;
-    graphical.install-extra-apps = true;
-    browsers.enable = true;
     tmpfsHome.enable = true;
     network.wakeOnLan.enable = true;
     logged-in-users-exporter.enable = true;
+
+    graphical = {
+      enable = true;
+      install-extra-apps = true;
+      browsers = true;
+    };
   };
 
   boot = {
