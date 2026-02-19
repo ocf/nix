@@ -18,15 +18,9 @@ jobs:
       - name: Setup hosts
         run: |
           HOSTS=$(nix eval .#autoDeploy.nodes --apply 'builtins.concatStringsSep " "' --raw)
-          echo "HOSTS=$HOSTS" >> $GITHUB_ENV
-
-      - name: Wake up hosts
-        run: |
           HOST_MACS=$(nix eval .#autoDeploy.MACs --apply 'builtins.concatStringsSep " "' --raw)
-          # not using quotes here so that each mac address is a separate argument
-          if ! nix develop .#deploy -c wol $HOST_MACS; then
-            echo '❌ Failed to wakeup nodes'
-          fi
+          echo "HOSTS=$HOSTS" >> $GITHUB_ENV
+          echo "HOST_MACS=$HOST_MACS" >> $GITHUB_ENV
 
       - name: Setup SSH
         run: |
@@ -38,11 +32,22 @@ jobs:
           done
 
           echo "
+          CanonicalizeHostname yes
+          CanonicalDomains ocf.berkeley.edu
           Identityfile $GITHUB_WORKSPACE/id_ed25519
           UserKnownHostsFile $GITHUB_WORKSPACE/known_hosts
           StrictHostKeyChecking yes
           UpdateHostKeys no
+          Host *
+            User ocf-nix-deploy-user
           " >> ${{ github.workspace }}/ssh_config
+
+      - name: Wake up hosts
+        run: |
+          # not using quotes here so that each mac address is a separate argument
+          if ! nix develop .#deploy -c wol $HOST_MACS; then
+            echo '❌ Failed to wakeup nodes'
+          fi
 
       - name: Deploy with colmena
         env:
@@ -53,7 +58,8 @@ jobs:
           nix develop .#deploy -c sh -c "
             # wait for host to be online with a timeout of 5s per attempt and 12
             # total tries, but fail immediately if the error is auth related
-            if ! ssh -o BatchMode=yes \
+            if ! ssh -F \$SSH_CONFIG_FILE \
+                     -o BatchMode=yes \
                      -o ConnectTimeout=5 \
                      -o ConnectionAttempts=12 \
                      {} echo 'continuous deployment ping!' > {}.log 2>&1; then

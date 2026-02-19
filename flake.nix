@@ -101,6 +101,11 @@
       ref = "main";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    ocf-jukebox = {
+      url = "github:ocf/jukebox-django";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
@@ -118,6 +123,7 @@
     , ocf-utils
     , wayout
     , ocf-cosmic-applets
+    , ocf-jukebox
     }@inputs:
     let
       # ============== #
@@ -239,6 +245,7 @@
       overlays.default = final: prev: {
         ocf-utils = ocf-utils.packages.${final.system}.default;
         ocf-wayout = wayout.packages.${final.system}.default;
+        ocf-jukebox = ocf-jukebox.packages.${final.system}.default;
         plasma-applet-commandoutput = final.callPackage ./pkgs/plasma-applet-commandoutput.nix { };
         catppuccin-sddm = final.qt6Packages.callPackage ./pkgs/catppuccin-sddm.nix { };
         ocf-papers = final.callPackage ./pkgs/ocf-papers.nix { };
