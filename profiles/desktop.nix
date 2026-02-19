@@ -101,6 +101,7 @@ in
     yt-dlp
     kana
     freerdp
+    ddcutil
 
     # Cosmetics
     neofetch
