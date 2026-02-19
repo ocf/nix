@@ -1,22 +1,15 @@
-# TODO: Move some of this config to profiles/desktop.nix.
 # This file should contain basic DE setup but not the big KDE config, etc.
 
 { lib, config, pkgs, ... }:
 
 let
   cfg = config.ocf.graphical;
-
-  # Default openssh doesn't include GSSAPI support, so we need to override sshfs
-  # to use the openssh_gssapi package instead. This is annoying because the
-  # sshfs package's openssh argument is nested in another layer of callPackage,
-  # so we override callPackage instead to override openssh.
-  sshfs = pkgs.sshfs.override {
-    callPackage = fn: args: (pkgs.callPackage fn args).override {
-      openssh = pkgs.openssh_gssapi;
-    };
-  };
 in
 {
+  imports = [
+    ./install-extra-apps.nix
+  ];
+
   options.ocf.graphical = {
     enable = lib.mkEnableOption "Enable desktop environment configuration";
     desktop = lib.mkOption {
@@ -34,35 +27,6 @@ in
 
 
   config = lib.mkIf cfg.enable {
-    security.pam = {
-      # Mount ~/remote
-      services.login.pamMount = true;
-      services.login.rules.session.mount.order = config.security.pam.services.login.rules.session.krb5.order + 50;
-      mount.extraVolumes = [ ''<volume fstype="fuse" path="${lib.getExe sshfs}#%(USER)@tsunami:" mountpoint="~/remote/" options="follow_symlinks,UserKnownHostsFile=/dev/null,StrictHostKeyChecking=no" pgrp="ocf" />'' ];
-
-      # Trim spaces from username
-      services.login.rules.auth.trimspaces = {
-        control = "requisite";
-        modulePath = "${pkgs.ocf-pam_trimspaces}/lib/security/pam_trimspaces.so";
-        order = 0;
-      };
-
-      # This contains a bunch of KDE, etc. configs
-      makeHomeDir.skelDirectory = "/etc/skel";
-    };
-
-    boot = {
-      loader.timeout = 0;
-      initrd.systemd.enable = true;
-    };
-
-    environment.etc = {
-      skel.source = ./skel;
-      ocf-assets.source = ./assets;
-    };
-
-    programs.steam.enable = true;
-    programs.zoom-us.enable = true;
     programs.sway.enable = true;
     programs.sway.extraOptions = [ "--unsupported-gpu" ];
     programs.hyprland.enable = true;
@@ -92,6 +56,11 @@ in
       pkgs.cosmic-initial-setup
     ];
 
+    environment.etc = {
+      skel.source = ./skel;
+      ocf-assets.source = ./assets;
+    };
+
     environment.systemPackages = with pkgs; [
       plasma-applet-commandoutput
       (catppuccin-sddm.override {
@@ -103,75 +72,13 @@ in
         };
       })
 
-      libreoffice
-      drawio
-      xournalpp
-
       # terminal emulators
-      foot
       kitty
-      alacritty
-      st
-      ghostty
-
-      # IRC Clients
-      irssi
-      weechat
-      hexchat
-      halloy
-
-      krita
-      gimp3
-      inkscape
-      blender
-      kdePackages.kdenlive
-
-      audacity
-      mpv
-      vlc
-
-      # pipewire
-      easyeffects
-      helvum
-
-      freecad
-      kicad
-      openscad
-
-      mission-center
-
-      # useful for iso files even without a cd drive
-      brasero
-      kdePackages.k3b
-
-      ocf-okular
-      ocf-papers
-
-      # TEXT & CODE EDITORS
-      vscode-fhs
-      vscodium-fhs
-      rstudio
-      zed-editor
-      jetbrains.idea-oss
-      gnome-builder
-
-      gitg
-      meld
-
-      # GAMES
-      dwarf-fortress
-      prismlauncher
-      unciv
-      superTuxKart
-      tetris
+      foot
 
       # misc wayland utils
       wl-clipboard
       libnotify
-      antimicrox
-      yubioath-flutter
-      kdiskmark
-      songrec
     ];
 
     fonts.packages = with pkgs; [ meslo-lgs-nf noto-fonts noto-fonts-cjk-sans ];
@@ -190,7 +97,6 @@ in
       xserver.desktopManager.xfce.enable = true;
 
       displayManager = {
-
         defaultSession = cfg.desktop;
 
         sddm = {
