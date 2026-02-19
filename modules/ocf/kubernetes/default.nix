@@ -26,6 +26,9 @@ in
   };
 
   config = lib.mkIf config.services.ocfKubernetes.enable {
+    # add exemption: automated deployments has caused failures due to the control plane all going down at once
+    ocf.managed-deployment.automated-deploy = false;
+
     environment.etc = {
       "kubernetes/manifests/kubevip.yaml" = lib.mkIf config.services.ocfKubernetes.isLeader { source = ./kubevip.yaml; };
       "kubernetes/kubeadm.yaml".source = ./kubeadm.yaml;
@@ -128,7 +131,10 @@ in
       };
     };
 
-    virtualisation.cri-o.enable = true;
+    virtualisation.cri-o = {
+      enable = true;
+      settings.crio.image.short_name_mode = "disabled";
+    };
 
     # NixOS cri-o config does weird stuff... reverting these
     environment.etc."cni/net.d/10-crio-bridge.conflist".enable = false;

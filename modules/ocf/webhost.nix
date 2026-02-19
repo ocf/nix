@@ -25,6 +25,10 @@ let
       useACMEHost = "${fqdn}";
       serverAliases = [ "${website-cfg.name}.${shortDomain}" ];
       root = "/var/www/${website-cfg.name}";
+      extraConfig = ''
+        add_header Last-Modified "";
+      	add_header Cache-Control "public, max-age=${website-cfg.cacheTime}";
+	'';
     };
   };
 
@@ -76,6 +80,13 @@ in
             type = lib.types.str;
             description = "SSH Public Key of Github Actions Deploy Workflow";
           };
+	  # For some reason Nginx on our nix servers doesn't update the Last Modified header, 
+	  # which leads to content being cached indefinetely.
+	  cacheTime = lib.mkOption {
+	    type = lib.types.str;
+	    description = "Browser file cache time in seconds";
+	    default = "3600";
+	  };
         };
 
 

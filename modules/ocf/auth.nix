@@ -9,19 +9,26 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    users.ldap = {
-      enable = true;
-      server = "ldaps://ldap.ocf.berkeley.edu";
-      base = "dc=OCF,dc=Berkeley,dc=EDU";
-      daemon.enable = true;
-      extraConfig = ''
-        tls_reqcert hard
-        tls_cacert /etc/ssl/certs/ca-certificates.crt
+    age.secrets.root-password-hash.rekeyFile = ../../secrets/master-keyed/root-password-hash.age;
 
-        base dc=ocf,dc=berkeley,dc=edu
-        nss_base_passwd ou=people,dc=ocf,dc=berkeley,dc=edu
-        nss_base_group  ou=group,dc=ocf,dc=berkeley,dc=edu
-      '';
+    users = {
+      mutableUsers = false;
+      users.root.hashedPasswordFile = config.age.secrets.root-password-hash.path;
+
+      ldap = {
+        enable = true;
+        server = "ldaps://ldap.ocf.berkeley.edu";
+        base = "dc=OCF,dc=Berkeley,dc=EDU";
+        daemon.enable = true;
+        extraConfig = ''
+          tls_reqcert hard
+          tls_cacert /etc/ssl/certs/ca-certificates.crt
+
+          base dc=ocf,dc=berkeley,dc=edu
+          nss_base_passwd ou=people,dc=ocf,dc=berkeley,dc=edu
+          nss_base_group  ou=group,dc=ocf,dc=berkeley,dc=edu
+        '';
+      };
     };
 
     security.sudo = {

@@ -8,7 +8,7 @@ let
     ${lib.getExe pkgs.openssh_gssapi} -S /tmp/ocftv-ssh-ctl -O exit tornado
   '';
   # override ocf-tv from util
-  ocf-tv = pkgs.hiPrio vncScript;
+  ocf-tv = lib.hiPrio vncScript;
 in
 {
 
@@ -24,12 +24,17 @@ in
     browsers.enable = true;
     tmpfsHome.enable = true;
     network.wakeOnLan.enable = true;
+    logged-in-users-exporter.enable = true;
   };
 
   boot.loader.systemd-boot.consoleMode = "max";
 
   # Enable support SANE scanners
   hardware.sane.enable = true;
+
+  zramSwap.enable = true;
+
+  documentation.dev.enable = true;
 
   environment.systemPackages = with pkgs; [
     # Editors
@@ -39,7 +44,7 @@ in
     kakoune
 
     # Languages
-    (python312.withPackages (ps: [ ps.ocflib ]))
+    (python3.withPackages (ps: [ ps.tkinter ps.numpy ps.pygobject3 ]))
     poetry
     ruby
     elixir
@@ -48,80 +53,72 @@ in
     rustup
     clang
     nodejs_22
+    graphviz
+    nix-du
+    nix-output-monitor
+    dix
+    lldb
+    gdb
+    valgrind
+    go
+    sqlite
+    zulu25
 
     # File management tools
     zip
     unzip
     _7zz
     eza
+    lsd
     tree
-    dua
     bat
+    ranger
+    lf
+    fd
+    sshfs
+    dua
+    rclone
 
     # Other tools
-    ocf-utils
     bar
+    fzf
     tmux
     s-tui
+    fio
     ocf-tv
     remmina
     simple-scan
+    cdrtools # useful for iso files even without a cd drive
+    wiremix
+    yubikey-manager
+    gh
+    ffmpeg
+    element-desktop
+    ncmpcpp
+    yt-dlp
+    kana
+    freerdp
 
     # Cosmetics
     neofetch
     pfetch-rs
+
+    # devtools
+    devenv
+    claude-code
+
+    fastfetch
+    onefetch
+    cpufetch
+    gpufetch
+
+    # COSMIC Applets
+    ocf-cosmic-applets
+
+    # IRC password prompt
+    kdePackages.kdialog
+
   ];
-
-
-  environment.etc = {
-    "prometheus_scripts/logged_in_users_exporter.sh" = {
-      mode = "0555";
-      text = ''
-        #!/bin/bash
-        OUTPUT_FILE="/var/lib/node_exporter/textfile_collector/logged_in_users.prom"
-        > "$OUTPUT_FILE"
-        loginctl list-sessions --no-legend | while read -r session_id uid user seat leader class tty idle since; do
-          if [[ $class == "user" ]] && [[ $seat == "seat0" ]] && [[ $idle == "no" ]]; then
-            state=$(loginctl show-session "$session_id" -p State --value)
-            if [[ $state == "active" ]]; then
-              locked_status="unlocked"
-            else
-              locked_status="locked"
-            fi
-          echo "node_logged_in_user{name=\"$user\", state=\"$locked_status\"} 1" > $OUTPUT_FILE
-          fi
-        done
-      '';
-    };
-  };
-
-  # Create the textfile collector directory
-  systemd.tmpfiles.rules = [
-    "d /var/lib/node_exporter/textfile_collector 0755 root root -"
-    "d /etc/prometheus_scripts 0755 root root -"
-    "z /etc/prometheus_scripts/logged_in_users_exporter.sh 0755 root root -"
-  ];
-
-
-  systemd.timers."logged_in_users_exporter" = {
-    description = "Run logged_in_users_exporter.sh every 5 seconds";
-    wantedBy = [ "multi-user.target" ];
-    timerConfig = {
-      OnBootSec = "5s";
-      OnUnitActiveSec = "5s";
-      Unit = "logged_in_users_exporter.service";
-    };
-  };
-
-  systemd.services."logged_in_users_exporter" = {
-    description = "Logged in users exporter";
-    script = "bash /etc/prometheus_scripts/logged_in_users_exporter.sh";
-    serviceConfig = {
-      Environment = "PATH=/run/current-system/sw/bin";
-      Type = "oneshot";
-    };
-    wantedBy = [ "multi-user.target" ];
-  };
 
   services = {
     avahi.enable = true;
@@ -132,21 +129,16 @@ in
       jack.enable = true;
       alsa.enable = true;
     };
-
-    prometheus = {
-      exporters = {
-        node = {
-          enable = true;
-          port = 9100;
-          enabledCollectors = [ "systemd" "textfile" ];
-          extraFlags = [ "--collector.ethtool" "--collector.softirqs" "--collector.tcpstat" "--collector.wifi" "--collector.textfile.directory=/var/lib/node_exporter/textfile_collector" ];
-        };
-      };
-    };
   };
 
   security.rtkit.enable = true;
   services.pulseaudio.enable = false;
+
+  # needed for accessing totp codes on yubikey via yubico authenticator
+  services.pcscd.enable = true;
+
+  # enable secure attention key (also enables unraw/xlate)
+  boot.kernel.sysctl."kernel.sysrq" = 4;
 
   # Needed for generic Linux programs
   # More info: https://nix.dev/guides/faq#how-to-run-non-nix-executables

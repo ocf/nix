@@ -1,6 +1,7 @@
 # nix
 
 [![Build Hosts](https://github.com/ocf/nix/actions/workflows/build.yml/badge.svg)](https://github.com/ocf/nix/actions/workflows/build.yml)
+[![Automated Deploy](https://github.com/ocf/nix/actions/workflows/auto-deploy.yml/badge.svg)](https://github.com/ocf/nix/actions/workflows/auto-deploy.yml)
 
 This repository contains the [NixOS] files used to maintain and configure the
 servers and desktops used by the [Open Computing Facility] at UC Berkeley.

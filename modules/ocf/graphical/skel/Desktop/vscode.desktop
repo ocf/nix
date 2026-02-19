@@ -1,0 +1,6 @@
+[Desktop Entry]
+Type=Application
+Name=VS Code
+Exec=code
+Icon=vscode
+Terminal=false
