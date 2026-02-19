@@ -101,6 +101,11 @@
       ref = "main";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    ocf-jukebox = {
+      url = "github:ocf/jukebox-django";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
@@ -118,6 +123,7 @@
     , ocf-utils
     , wayout
     , ocf-cosmic-applets
+    , ocf-jukebox
     }@inputs:
     let
       # ============== #
@@ -211,12 +217,35 @@
         };
       });
 
-      # list of nodes with automated deploy enabled, to be consumed by github actions
-      automatedDeployNodes = builtins.filter (node: self.colmenaHive.nodes.${node}.config.ocf.managed-deployment.automated-deploy) (builtins.attrNames self.colmenaHive.nodes);
+      autoDeploy = let
+        # returns the value of a managed-deployment option (given as a string containing the option name) for the given node
+        getOptionForNode = option: node: self.colmenaHive.nodes.${node}.config.ocf.managed-deployment.${option};
+
+        # returns a list of the MAC addresses for the given list of nodes with automated deploy enabled
+        # hosts that do not have mac-address set will be gracefully ignored
+        getMACs = nodes: builtins.filter (mac: mac != "")
+          (builtins.map
+            (node: getOptionForNode "mac-address" node)
+            nodes);
+      in {
+        # list of nodes with automated deploy enabled, to be consumed by github actions
+        nodes = builtins.filter (node: getOptionForNode "automated-deploy" node) (builtins.attrNames self.colmenaHive.nodes);
+
+        # list of mac addresses of nodes that github actions should wake up on deploy
+        MACs = getMACs self.autoDeploy.nodes;
+
+        # attribute set combining automatedDeployNodes and automatedDeployNodeMACs
+        # get json with `nix eval .#autoDeploy.nodesWithMACs --json`!
+        # TODO: script to wake up hosts with this
+        nodesWithMACs = nixpkgs.lib.listToAttrs (nixpkgs.lib.zipListsWith
+          (name: value: { inherit name value; })
+          self.autoDeploy.nodes self.autoDeploy.MACs);
+      };
 
       overlays.default = final: prev: {
         ocf-utils = ocf-utils.packages.${final.system}.default;
         ocf-wayout = wayout.packages.${final.system}.default;
+        ocf-jukebox = ocf-jukebox.packages.${final.system}.default;
         plasma-applet-commandoutput = final.callPackage ./pkgs/plasma-applet-commandoutput.nix { };
         catppuccin-sddm = final.qt6Packages.callPackage ./pkgs/catppuccin-sddm.nix { };
         ocf-papers = final.callPackage ./pkgs/ocf-papers.nix { };
@@ -235,6 +264,7 @@
             pkgs.git
             pkgs.agenix-rekey
             pkgs.age-plugin-fido2-hmac
+            pkgs.wol
             colmena.packages.${pkgs.system}.colmena
           ];
         };
@@ -242,6 +272,7 @@
           packages = [
             pkgs.git
             pkgs.openssh
+            pkgs.wol
             colmena.packages.${pkgs.system}.colmena
           ];
         };
