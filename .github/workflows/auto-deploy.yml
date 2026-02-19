@@ -1,60 +1,101 @@
 name: Automated Deploy
 
 on:
-  push:
+  workflow_run:
+    workflows:
+      - Build Hosts
+    types:
+      - completed
     branches:
-      - "main"
+      - main
 
 jobs:
-
-  define-matrix:
-    runs-on: ci-ocf-nix-deploy
-    outputs:
-      hosts: ${{ steps.hosts.outputs.hosts }}
-    steps:
-      - uses: actions/checkout@v4
-      - id: hosts
-        run: echo "hosts=$(nix eval .#automatedDeployNodes --json)" >> "$GITHUB_OUTPUT"
-
   deploy:
     runs-on: ci-ocf-nix-deploy
-    needs: define-matrix
-    strategy:
-      fail-fast: false
-      matrix:
-        host: ${{ fromJSON(needs.define-matrix.outputs.hosts) }}
     steps:
       - uses: actions/checkout@v4
+
+      - name: Setup hosts
+        run: |
+          HOSTS=$(nix eval .#autoDeploy.nodes --apply 'builtins.concatStringsSep " "' --raw)
+          HOST_MACS=$(nix eval .#autoDeploy.MACs --apply 'builtins.concatStringsSep " "' --raw)
+          echo "HOSTS=$HOSTS" >> $GITHUB_ENV
+          echo "HOST_MACS=$HOST_MACS" >> $GITHUB_ENV
 
       - name: Setup SSH
         run: |
           echo '${{ secrets.COLMENA_APPLY_SSH_KEY }}' > ${{ github.workspace }}/id_ed25519
-          chmod 400 ${{ github.workspace }}/id_ed25519
+          chmod 400 id_ed25519
 
-          keyfile=${{ github.workspace }}/secrets/host-keys/${{ matrix.host }}.pub
-          fqdn="${{ matrix.host }}.ocf.berkeley.edu"
-          pubkey=$(cat "$keyfile")
-          echo "$fqdn $pubkey" >> ${{ github.workspace }}/known_hosts
+          for host in ${HOSTS}; do
+            cat secrets/host-keys/$host.pub | sed "s/^/$host.ocf.berkeley.edu /" >> known_hosts
+          done
 
           echo "
+          CanonicalizeHostname yes
+          CanonicalDomains ocf.berkeley.edu
           Identityfile $GITHUB_WORKSPACE/id_ed25519
           UserKnownHostsFile $GITHUB_WORKSPACE/known_hosts
           StrictHostKeyChecking yes
           UpdateHostKeys no
+          Host *
+            User ocf-nix-deploy-user
           " >> ${{ github.workspace }}/ssh_config
+
+      - name: Wake up hosts
+        run: |
+          # not using quotes here so that each mac address is a separate argument
+          if ! nix develop .#deploy -c wol $HOST_MACS; then
+            echo '❌ Failed to wakeup nodes'
+          fi
 
       - name: Deploy with colmena
         env:
           SSH_CONFIG_FILE: ${{ github.workspace }}/ssh_config
-        run: nix develop .#deploy -c colmena apply --on ${{ matrix.host }} switch >> ${{ matrix.host }}.log 2>&1
+        run: |
+          echo "$HOSTS" | tr ' ' '\n' | \
+          xargs -P 10 -n 1 -I {} \
+          nix develop .#deploy -c sh -c "
+            # wait for host to be online with a timeout of 5s per attempt and 12
+            # total tries, but fail immediately if the error is auth related
+            if ! ssh -F \$SSH_CONFIG_FILE \
+                     -o BatchMode=yes \
+                     -o ConnectTimeout=5 \
+                     -o ConnectionAttempts=12 \
+                     {} echo 'continuous deployment ping!' > {}.log 2>&1; then
+              echo '❌ Failed to deploy to {} (ssh timeout)'
+              echo 'FAILURE:{}' >> results.txt
+              exit
+            fi
 
-      - name: Display log
+            if colmena apply --on {} switch > {}.log 2>&1; then
+              echo '✅ Successfully deployed to {}'
+              echo 'SUCCESS:{}' >> results.txt
+            else
+              echo '❌ Failed to deploy to {}'
+              echo 'FAILURE:{}' >> results.txt
+            fi
+          "
+
+      - name: Display successful logs
         if: always()
-        run: cat ${{ matrix.host }}.log
+        run: |
+          grep "SUCCESS:" results.txt | cut -d':' -f2 | while read host; do
+            echo "--- $host ---"
+            cat "${host}.log"
+          done
 
-  check-all-hosts:
-    runs-on: ci-ocf-nix-deploy
-    needs: deploy 
-    steps:
-      - name: Combined GitHub status check
-        run: echo "All hosts deployed successfully!"
+      - name: Display failed logs
+        if: always()
+        run: |
+          grep "FAILURE:" results.txt | cut -d':' -f2 | while read host; do
+            echo "--- $host ---"
+            cat "${host}.log"
+          done
+
+      - name: Check status
+        if: always()
+        run: |
+          if grep -q "FAILURE:" results.txt; then
+            exit 1
+          fi

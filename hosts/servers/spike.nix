@@ -20,7 +20,7 @@
         enable = true;
         repo = "nix";
         workflow = "deploy";
-        instances = 4;
+        instances = 1;
       }
       {
         enable = true;

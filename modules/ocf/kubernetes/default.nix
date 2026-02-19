@@ -131,7 +131,10 @@ in
       };
     };
 
-    virtualisation.cri-o.enable = true;
+    virtualisation.cri-o = {
+      enable = true;
+      settings.crio.image.short_name_mode = "disabled";
+    };
 
     # NixOS cri-o config does weird stuff... reverting these
     environment.etc."cni/net.d/10-crio-bridge.conflist".enable = false;

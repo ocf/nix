@@ -1,32 +1,26 @@
-diff --git a/shell/resources/pps-document-view.ui b/shell/resources/pps-document-view.ui
-index 22a65a1de..5634001d4 100644
---- a/shell/resources/pps-document-view.ui
-+++ b/shell/resources/pps-document-view.ui
-@@ -209,6 +209,27 @@
-                     <property name="tooltip-text" translatable="yes">Toggle Sidebar</property>
-                   </object>
-                 </child>
-+                <child type="start">
-+                  <object class="GtkButton" id="print_shortcut_button">
-+                    <property name="child">
-+                      <object class="GtkBox">
-+                        <property name="spacing">6</property>
-+                        <child>
-+                          <object class="GtkImage">
-+                            <property name="icon-name">printer-symbolic</property>
-+                          </object>
-+                        </child>
-+                        <child>
-+                          <object class="GtkLabel">
-+                            <property name="label" translatable="yes">Print…</property>
-+                          </object>
-+                        </child>
-+                      </object>
-+                    </property>
-+                    <property name="action-name">doc.print</property>
-+                    <property name="tooltip-text" translatable="yes">Print…</property>
-+                  </object>
-+                </child>
-                 <child type="end">
-                   <object class="GtkMenuButton" id="document_menu_button">
-                     <property name="icon-name">view-more-symbolic</property>
+diff --git a/shell/resources/pps-document-view.blp b/shell/resources/pps-document-view.blp
+index b839b7ce0..c008bc2e8 100644
+--- a/shell/resources/pps-document-view.blp
++++ b/shell/resources/pps-document-view.blp
+@@ -197,6 +197,21 @@ template $PpsDocumentView: Adw.BreakpointBin {
+           tooltip-text: _("Toggle Sidebar");
+         }
+ 
++        [start]
++        Button print_shortcut_button {
++          child: Box {
++            spacing: 6;
++            Image {
++              icon-name: "printer-symbolic";
++            }
++            Label {
++              label: _("Print…");
++            }
++          };
++          action-name: "doc.print";
++          tooltip-text: _("Print…");
++        }
++
+         [end]
+         MenuButton document_menu_button {
+           icon-name: "view-more-symbolic";

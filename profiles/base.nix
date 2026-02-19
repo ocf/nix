@@ -17,6 +17,10 @@ in
       automatic = true;
       dates = "weekly";
     };
+    settings = { #makes devenv shells build significantly faster
+      trusted-substituters = [ "https://devenv.cachix.org" ];
+      trusted-public-keys = [ "devenv.cachix.org-1:w1cLUi8dv3hnoSPGAuibQv+f9TZLr6cv/Hm9XgU50cw=" ];
+    };
   };
 
   nixpkgs.flake.setNixPath = true;
@@ -88,21 +92,45 @@ in
     ipmitool
     smartmontools
     nvme-cli
+    perf
+    strace
 
     # Networking tools
     rsync
     wget
     curl
+    mtr
+    traceroute
+    iperf
+    vnstat
+    nethogs
 
     # Other useful stuff
     tmux
     htop
-    file
-    vim
+    btop
     git
     killall
+    ldapvi
+    openldap
+
+    # files
+    dua
+    lf
+    file
+    vim
+    ripgrep
 
     comma-with-db
+
+    # k8s
+    teleport
+    k9s
+    kubectl
+    
+    # OCF utilities
+    (python312.withPackages (ps: [ ps.ocflib ]))
+    ocf-utils
   ];
 
   services = {
@@ -149,7 +177,7 @@ in
   };
 
   environment.etc."nixos/configuration.nix".text = ''
-    {}: builtins.abort "This machine is not managed by /etc/nixos. Please use colmena instead."
+    {}: builtins.abort "This machine is not managed by /etc/nixos. Please use configs at ocf.io/gh/nix with Colmena."
   '';
 
   systemd.services.nix-remove-profiles = {
