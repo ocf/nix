@@ -32,7 +32,7 @@ in
         DJANGO_DB_PATH = "/var/lib/jukebox/db.sqlite3";
       };
       serviceConfig = {
-        ExecStart = "/bin/sh -c 'source /etc/profiles && XDG_RUNTIME_DIR=/run/user/$(id -u) exec ${pkgs.ocf-jukebox}/bin/daphne -b 0.0.0.0 -p ${toString cfg.port} config.asgi:application'";
+        ExecStart = "/bin/sh -c 'source /etc/profile && XDG_RUNTIME_DIR=/run/user/$(id -u) exec ${pkgs.ocf-jukebox}/bin/daphne -b 0.0.0.0 -p ${toString cfg.port} config.asgi:application'";
         User = "ocftv";
         StateDirectory = "jukebox";
         RuntimeDirectory = "jukebox-music";
