@@ -32,6 +32,8 @@ in
   # Enable support SANE scanners
   hardware.sane.enable = true;
 
+  hardware.i2c.enable = true;
+
   zramSwap.enable = true;
 
   documentation.dev.enable = true;
