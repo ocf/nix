@@ -30,6 +30,7 @@ in
         JUKEBOX_MUSIC_DIR = cfg.musicDir;
         SECRET_KEY = cfg.secretKey;
         DJANGO_DB_PATH = "/var/lib/jukebox/db.sqlite3";
+        XDG_RUNTIME_DIR = "/run/user/%U";
       };
       serviceConfig = {
         ExecStart = "XDG_RUNTIME_DIR=/run/user/$(id -u ocftv) ${pkgs.ocf-jukebox}/bin/daphne -b 0.0.0.0 -p ${toString cfg.port} config.asgi:application";
@@ -37,7 +38,6 @@ in
         StateDirectory = "jukebox";
         RuntimeDirectory = "jukebox-music";
         WorkingDirectory = "/var/lib/jukebox";
-        Environment = "XDG_RUNTIME_DIR=/run/user/%U"'
         Restart = "always";
       };
     };
