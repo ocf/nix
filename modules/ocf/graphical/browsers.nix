@@ -123,6 +123,10 @@ in
             Value = "215.9";
             Status = "default";
           };
+          "widget.wayland.fractional-scale.enabled" = {
+            Value = false;
+            Status = "default";
+          };
         };
       };
     };
