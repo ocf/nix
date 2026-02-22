@@ -50,7 +50,7 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    age.secrets.irc-passwd.rekeyFile = ../../secrets/master-keyed/irc-passwd.age;
+    age.secrets.irc-passwd.rekeyFile = ../secrets/master-keyed/irc-passwd.age;
     security.acme.defaults.reloadServices = [ "ergochat.service" ];
 
     system.activationScripts."irc-passwd" = ''
