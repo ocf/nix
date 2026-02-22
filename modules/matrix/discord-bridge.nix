@@ -9,7 +9,7 @@ in
   };
 
   config = lib.mkIf cfg.discord-bridge.enable {
-    age.secrets.discord-auth-env.rekeyFile = ../../../secrets/master-keyed/matrix/discord-auth-env.age;
+    age.secrets.discord-auth-env.rekeyFile = ../../secrets/master-keyed/matrix/discord-auth-env.age;
 
     services.matrix-appservice-discord = {
       enable = true;

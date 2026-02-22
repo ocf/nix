@@ -35,7 +35,7 @@ in
 
     ocf.acme.extraCerts = [ "matrix.ocf.berkeley.edu" "matrix.ocf.io" "chat.ocf.berkeley.edu" "chat.ocf.io" ];
 
-    age.secrets.synapse-client-secret.rekeyFile = ../../../secrets/master-keyed/matrix/client-secret.age;
+    age.secrets.synapse-client-secret.rekeyFile = ../../secrets/master-keyed/matrix/client-secret.age;
     age.secrets.synapse-client-secret.owner = "matrix-synapse";
 
     services.postgresql = {
