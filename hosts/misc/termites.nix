@@ -25,7 +25,7 @@
       musicDir = "/run/jukebox-music";
     };
 
-    kiosk = {
+    graphical.kiosk = {
       enable = true;
       url = "https://labmap.ocf.berkeley.edu"; # https://kinn.dev/labmap2;
       extraConfig = ''
