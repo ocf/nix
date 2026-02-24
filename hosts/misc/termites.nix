@@ -12,7 +12,7 @@
     acme.enable = false;
 
     auth.enable = true;
-    browsers.enable = true;
+    graphical.browsers = true;
 
     network = {
       enable = true;
