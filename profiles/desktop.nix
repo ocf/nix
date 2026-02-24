@@ -32,12 +32,15 @@ in
     acme.enable = false;
 
     etc.enable = true;
-    graphical.enable = true;
-    graphical.install-extra-apps = true;
-    browsers.enable = true;
     tmpfsHome.enable = true;
     network.wakeOnLan.enable = true;
     logged-in-users-exporter.enable = true;
+
+    graphical = {
+      enable = true;
+      install-extra-apps = true;
+      browsers = true;
+    };
   };
 
   boot = {
@@ -101,6 +104,8 @@ in
 
   # needed for accessing totp codes on yubikey via yubico authenticator
   services.pcscd.enable = true;
+
+  virtualisation.podman.enable = true;
 
   # enable secure attention key (also enables unraw/xlate)
   boot.kernel.sysctl."kernel.sysrq" = 4;
