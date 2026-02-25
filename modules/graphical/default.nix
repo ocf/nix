@@ -4,6 +4,11 @@
 
 let
   cfg = config.ocf.graphical;
+  vncScript = pkgs.writeShellScriptBin "ocf-tv" ''
+    ${lib.getExe pkgs.remmina} -c ${./ocf-tv.remmina}
+  '';
+  # override ocf-tv from util
+  ocf-tv = lib.hiPrio vncScript;
 in
 {
   imports = [
@@ -73,6 +78,8 @@ in
       # misc wayland utils
       wl-clipboard
       libnotify
+
+      ocf-tv
     ];
 
     fonts.packages = with pkgs; [ meslo-lgs-nf noto-fonts noto-fonts-cjk-sans ];

@@ -1,0 +1,17 @@
+[remmina]
+name=ocf-tv
+protocol=VNC
+server=localhost:5900
+ssh_tunnel_enabled=1
+ssh_tunnel_server=termites
+ssh_tunnel_command_args=-NT -L 5900:localhost:5900
+ssh_tunnel_auth=0
+ssh_tunnel_loopback=0
+disablepasswordstoring=1
+window_maximize=1
+viewmode=1
+scale=2
+quality=2
+colordepth=32
+showcursor=1
+keyboard_grab=1
