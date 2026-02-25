@@ -80,8 +80,8 @@ in
     '';
   };
 
-  environment.variables.EDITOR = "${pkgs.vim}/bin/ex";      # line editor
-  environment.variables.VISUAL = "${pkgs.micro}/bin/micro"; # visual editor
+  environment.variables.EDITOR = "${pkgs.vim}/bin/ex";    # line editor
+  environment.variables.VISUAL = "${pkgs.nano}/bin/nano"; # visual editor
 
   environment.systemPackages = with pkgs; [
     # System utilities
