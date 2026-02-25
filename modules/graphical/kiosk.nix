@@ -4,7 +4,7 @@ let
   cfg = config.ocf.graphical.kiosk;
   swayConfig = pkgs.writeText "kiosk-sway-config" ''
     include /etc/sway/config
-    output * bg /etc/ocf-assets/images/login-afool.png fill
+    output * bg ${./assets/images/login-afool.png} fill
     ${cfg.extraConfig}
     exec "${lib.getExe pkgs.chromium} --noerrdialogs --disable-infobars --kiosk ${cfg.url}";
     exec "${lib.getExe pkgs.wayvnc} localhost";                                    
