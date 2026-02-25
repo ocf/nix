@@ -1,16 +1,17 @@
 { pkgs, lib, config, ... }:
 
 let
-  cfg = config.ocf.kiosk;
+  cfg = config.ocf.graphical.kiosk;
   swayConfig = pkgs.writeText "kiosk-sway-config" ''
-    ${cfg.extraConfig}
     include /etc/sway/config
+    output * bg /etc/ocf-assets/images/login-afool.png fill
+    ${cfg.extraConfig}
     exec "${lib.getExe pkgs.chromium} --noerrdialogs --disable-infobars --kiosk ${cfg.url}";
     exec "${lib.getExe pkgs.wayvnc} localhost";                                    
   '';
 in
 {
-  options.ocf.kiosk = {
+  options.ocf.graphical.kiosk = {
     enable = lib.mkEnableOption "Enable Kiosk configuration";
     url = lib.mkOption {
       type = lib.types.str;
