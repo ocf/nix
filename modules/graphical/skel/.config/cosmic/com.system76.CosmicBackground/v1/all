@@ -1,6 +1,6 @@
 (
     output: "all",
-    source: Path("/etc/ocf-assets/images/od_nixos.png"),
+    source: Path("/etc/ocf-assets/images/rose-pine.png"),
     filter_by_theme: true,
     rotation_frequency: 300,
     filter_method: Lanczos,
