@@ -18,9 +18,20 @@ in
       type = lib.types.path;
       default = "/run/jukebox-music";
     };
+
+    jukeboxUrl = lib.mkOption {
+      type = lib.types.str;
+      description = "Jukebox URL";
+      default = "jukebox.ocf.io";
+    };
   };
 
   config = lib.mkIf cfg.enable {
+
+    ocf.acme.extraCerts = [ "jukebox.ocf.berkeley.edu" "jukebox.ocf.io" ];
+
+    users.users."nginx".extraGroups = [ "acme" ];
+
     systemd.services.jukebox = {
       description = "OCF Jukebox Django Server";
       after = [ "network.target" "nss-lookup.target" ];
@@ -38,6 +49,55 @@ in
         RuntimeDirectory = "jukebox-music";
         WorkingDirectory = "/var/lib/jukebox";
         Restart = "always";
+      };
+    };
+
+    services.nginx = {
+      enable = true;
+      recommendedTlsSettings = true;
+      recommendedOptimisation = true;
+      recommendedGzipSettings = true;
+      recommendedProxySettings = true;
+
+
+      virtualHosts = {
+        "jukebox" = {
+          listen = [
+            {
+              addr = "0.0.0.0";
+              port = 443;
+              ssl = true;
+            }
+            {
+              addr = "[::0]";
+              port = 443;
+              ssl = true;
+            }
+          ];
+
+          serverName = cfg.baseUrl;
+
+          useACMEHost = "${config.networking.hostName}.ocf.berkeley.edu";
+          onlySSL = true;
+
+          locations."/".proxyPass = "http://jukebox:${toString cfg.port}";
+        };
+      
+       "force-ssl" = {
+          listen = [
+            {
+              addr = "0.0.0.0";
+              port = 80;
+            }
+            {
+              addr = "[::0]";
+              port = 80;
+            }
+          ];
+
+          serverName = cfg.baseUrl;
+          globalRedirect = "https://${cfg.baseUrl}";
+        };
       };
     };
   };
