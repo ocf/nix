@@ -41,7 +41,7 @@ index 49b13fe..643dd4e 100644
                  self.flags.user_data.time_applet_config = config;
              }
 diff --git a/src/logind.rs b/src/logind.rs
-index d4f216c..6210211 100644
+index d4f216c..42dd158 100644
 --- a/src/logind.rs
 +++ b/src/logind.rs
 @@ -3,7 +3,7 @@ use cosmic::iced::{
@@ -66,7 +66,7 @@ index d4f216c..6210211 100644
 +pub async fn terminate_session() -> zbus::Result<()> {
 +    let connection = Connection::system().await?;
 +    let manager = ManagerProxy::new(&connection).await?;
-+    let user = (list_sessions().await).unwrap()[0].uid();
++    let user = (list_sessions().await).unwrap()[0].sid();
 +    manager.terminate_session(user).await
 +}
 +
