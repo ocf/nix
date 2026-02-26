@@ -41,9 +41,18 @@ index 49b13fe..643dd4e 100644
                  self.flags.user_data.time_applet_config = config;
              }
 diff --git a/src/logind.rs b/src/logind.rs
-index d4f216c..79f57ec 100644
+index d4f216c..6a8f7b4 100644
 --- a/src/logind.rs
 +++ b/src/logind.rs
+@@ -3,7 +3,7 @@ use cosmic::iced::{
+     futures::{SinkExt, StreamExt, channel::mpsc},
+ };
+ use logind_zbus::{
+-    manager::{InhibitType, ManagerProxy},
++    manager::{InhibitType, ManagerProxy, SessionInfo},
+     session::SessionProxy,
+ };
+ use std::{any::TypeId, error::Error, os::fd::OwnedFd, sync::Arc, time::Duration};
 @@ -29,6 +29,19 @@ pub async fn suspend() -> zbus::Result<()> {
      manager.suspend(false).await
  }
