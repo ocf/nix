@@ -406,11 +406,11 @@
         "uv2nix": "uv2nix"
       },
       "locked": {
-        "lastModified": 1772079766,
-        "narHash": "sha256-sTBJHbWh8B55vHvDxI7G4mqNpN6An4sOfDhyGvqT3Nw=",
+        "lastModified": 1772080236,
+        "narHash": "sha256-IKgsXKRy2Y+R4gT38Gga1xekvEVSTnlNmOmUo+3Em5k=",
         "owner": "ocf",
         "repo": "jukebox-django",
-        "rev": "dbe7d1cc7ed70ce127986c88ba39c8cb07376cd5",
+        "rev": "1247a80b77bbb36a1c1fe0e6e89ce2be048142a4",
         "type": "github"
       },
       "original": {
