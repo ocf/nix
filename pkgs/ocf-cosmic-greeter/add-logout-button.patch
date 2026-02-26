@@ -1,0 +1,51 @@
+diff --git a/src/locker.rs b/src/locker.rs
+index 49b13fe..21e0d84 100644
+--- a/src/locker.rs
++++ b/src/locker.rs
+@@ -211,9 +211,7 @@ impl Conversation {
+ 
+         futures::executor::block_on(async {
+             self.msg_tx
+-                .send(cosmic::Action::App(
+-                    Message::Error(prompt.to_string()),
+-                ))
++                .send(cosmic::Action::App(Message::Error(prompt.to_string())))
+                 .await
+         })
+         .map_err(|err| {
+@@ -285,6 +283,7 @@ pub enum Message {
+     Lock,
+     Unlock,
+     SpinnerTick,
++    LogOut,
+ }
+ 
+ impl From<common::Message> for Message {
+@@ -450,6 +449,13 @@ impl App {
+                     widget::text(fl!("suspend")),
+                     widget::tooltip::Position::Top
+                 ),
++                widget::tooltip(
++                    widget::button::custom(widget::icon::from_name("system-log-out-symbolic"))
++                        .padding(12.0)
++                        .on_press(Message::LogOut),
++                    widget::text("Log Out"),
++                    widget::tooltip::Position::Top
++                ),
+             ]
+             .padding([16.0, 0.0, 0.0, 0.0])
+             .spacing(8.0);
+@@ -1087,6 +1093,12 @@ impl cosmic::Application for App {
+                         cosmic::task::message(cosmic::Action::App(Message::Error(err.to_string())))
+                     });
+             }
++            Message::LogOut => {
++                std::process::Command::new("cosmic-osd")
++                    .args(["log-out"])
++                    .output()
++                    .ok();
++            }
+             Message::TimeAppletConfig(config) => {
+                 self.flags.user_data.time_applet_config = config;
+             }
+
