@@ -80,7 +80,7 @@ in
           useACMEHost = "${config.networking.hostName}.ocf.berkeley.edu";
           onlySSL = true;
 
-          locations."/".proxyPass = "http://jukebox:${toString cfg.port}";
+          locations."/".proxyPass = "http://localhost:${toString cfg.port}";
         };
       
        "force-ssl" = {
