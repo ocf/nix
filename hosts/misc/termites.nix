@@ -8,9 +8,6 @@
   networking.hostName = "termites";
 
   ocf = {
-    # TODO: need ensure host keys can't be stolen by booting an external drive...
-    acme.enable = false;
-
     auth.enable = true;
     graphical.browsers = true;
 

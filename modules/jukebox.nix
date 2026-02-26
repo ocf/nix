@@ -75,7 +75,7 @@ in
             }
           ];
 
-          serverName = cfg.baseUrl;
+          serverName = cfg.jukeboxUrl;
 
           useACMEHost = "${config.networking.hostName}.ocf.berkeley.edu";
           onlySSL = true;
@@ -95,8 +95,8 @@ in
             }
           ];
 
-          serverName = cfg.baseUrl;
-          globalRedirect = "https://${cfg.baseUrl}";
+          serverName = cfg.jukeboxUrl;
+          globalRedirect = "https://${cfg.jukeboxUrl}";
         };
       };
     };
