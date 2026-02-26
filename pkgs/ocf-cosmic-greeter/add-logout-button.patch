@@ -41,14 +41,14 @@ index 49b13fe..643dd4e 100644
                  self.flags.user_data.time_applet_config = config;
              }
 diff --git a/src/logind.rs b/src/logind.rs
-index d4f216c..8645069 100644
+index d4f216c..79f57ec 100644
 --- a/src/logind.rs
 +++ b/src/logind.rs
 @@ -29,6 +29,19 @@ pub async fn suspend() -> zbus::Result<()> {
      manager.suspend(false).await
  }
  
-+pub async fn list_sessions() -> zbus::Result<()> {
++pub async fn list_sessions() -> zbus::Result<Vec<SessionInfo>> {
 +    let connection = Connection::system().await?;
 +    let manager = ManagerProxy::new(&connection).await?;
 +    manager.list_sessions().await
@@ -57,7 +57,7 @@ index d4f216c..8645069 100644
 +pub async fn terminate_session() -> zbus::Result<()> {
 +    let connection = Connection::system().await?;
 +    let manager = ManagerProxy::new(&connection).await?;
-+    let user = (list_users().await)[0][1];
++    let user = (list_sessions().await)[0][1];
 +    manager.terminate_session(user).await
 +}
 +
