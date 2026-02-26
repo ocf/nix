@@ -166,6 +166,7 @@ in
       environment = { PATH = lib.mkForce "/run/current-system/sw/bin"; };
       script = ''
         COSMIC_THEME_FILE="$HOME/.config/cosmic/com.system76.CosmicTheme.Mode/v1/is_dark"
+        COSMIC_BG_FILE="$HOME/.config/cosmic/com.system76.CosmicBackground/v1/all"
         OCF_THEME_FILE="$HOME/remote/.config/ocf/theme"
 
         sync_theme() {
@@ -174,8 +175,10 @@ in
             mkdir -p "$(dirname "$OCF_THEME_FILE")"
             if [ "$content" = "true" ]; then
               echo "dark" > "$OCF_THEME_FILE"
+              sed -i -E 's/bg-(light|dark)/bg-dark/g' $COSMIC_BG_FILE
             else
               echo "light" > "$OCF_THEME_FILE"
+              sed -i -E 's/bg-(light|dark)/bg-light/g' $COSMIC_BG_FILE
             fi
           fi
         }
