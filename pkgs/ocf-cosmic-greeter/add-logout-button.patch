@@ -1,5 +1,5 @@
 diff --git a/src/locker.rs b/src/locker.rs
-index 49b13fe..9dd26ac 100644
+index 49b13fe..643dd4e 100644
 --- a/src/locker.rs
 +++ b/src/locker.rs
 @@ -285,6 +283,7 @@ pub enum Message {
@@ -30,7 +30,7 @@ index 49b13fe..9dd26ac 100644
              }
 +            Message::LogOut => {
 +                #[cfg(feature = "logind")]
-+                return cosmic::Task::future(async move { crate::logind::terminate_session(crate::logind::list_sessions()[0][1]).await.err() })
++                return cosmic::Task::future(async move { crate::logind::terminate_session().await.err() })
 +                    .and_then(|err| {
 +                        tracing::error!("failed to logout: {:?}", err);
 +                        cosmic::task::message(cosmic::Action::App(Message::Error(err.to_string())))
@@ -40,4 +40,28 @@ index 49b13fe..9dd26ac 100644
              Message::TimeAppletConfig(config) => {
                  self.flags.user_data.time_applet_config = config;
              }
+diff --git a/src/logind.rs b/src/logind.rs
+index d4f216c..8645069 100644
+--- a/src/logind.rs
++++ b/src/logind.rs
+@@ -29,6 +29,19 @@ pub async fn suspend() -> zbus::Result<()> {
+     manager.suspend(false).await
+ }
+ 
++pub async fn list_sessions() -> zbus::Result<()> {
++    let connection = Connection::system().await?;
++    let manager = ManagerProxy::new(&connection).await?;
++    manager.list_sessions().await
++}
++
++pub async fn terminate_session() -> zbus::Result<()> {
++    let connection = Connection::system().await?;
++    let manager = ManagerProxy::new(&connection).await?;
++    let user = (list_users().await)[0][1];
++    manager.terminate_session(user).await
++}
++
+ async fn inhibit(manager: &ManagerProxy<'_>) -> zbus::Result<OwnedFd> {
+     let what = InhibitType::Sleep;
+     let who = "COSMIC Greeter";
 
