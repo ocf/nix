@@ -1,5 +1,5 @@
 diff --git a/src/locker.rs b/src/locker.rs
-index 49b13fe..21e0d84 100644
+index 49b13fe..9dd26ac 100644
 --- a/src/locker.rs
 +++ b/src/locker.rs
 @@ -285,6 +283,7 @@ pub enum Message {
@@ -24,15 +24,18 @@ index 49b13fe..21e0d84 100644
              ]
              .padding([16.0, 0.0, 0.0, 0.0])
              .spacing(8.0);
-@@ -1087,6 +1093,12 @@ impl cosmic::Application for App {
+@@ -1087,6 +1093,15 @@ impl cosmic::Application for App {
                          cosmic::task::message(cosmic::Action::App(Message::Error(err.to_string())))
                      });
              }
 +            Message::LogOut => {
-+                std::process::Command::new("cosmic-osd")
-+                    .args(["log-out"])
-+                    .output()
-+                    .ok();
++                #[cfg(feature = "logind")]
++                return cosmic::Task::future(async move { crate::logind::terminate_session(crate::logind::list_sessions()[0][1]).await.err() })
++                    .and_then(|err| {
++                        tracing::error!("failed to logout: {:?}", err);
++                        cosmic::task::message(cosmic::Action::App(Message::Error(err.to_string())))
++                    });
++
 +            }
              Message::TimeAppletConfig(config) => {
                  self.flags.user_data.time_applet_config = config;
