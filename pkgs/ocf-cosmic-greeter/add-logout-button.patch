@@ -1,16 +1,16 @@
 diff --git a/src/locker.rs b/src/locker.rs
-index 49b13fe..643dd4e 100644
+index 49b13fe..f13b60e 100644
 --- a/src/locker.rs
 +++ b/src/locker.rs
-@@ -285,6 +283,7 @@ pub enum Message {
+@@ -285,6 +285,7 @@ pub enum Message {
      Lock,
      Unlock,
      SpinnerTick,
 +    LogOut,
  }
- 
+
  impl From<common::Message> for Message {
-@@ -450,6 +449,13 @@ impl App {
+@@ -450,6 +451,13 @@ impl App {
                      widget::text(fl!("suspend")),
                      widget::tooltip::Position::Top
                  ),
@@ -24,7 +24,7 @@ index 49b13fe..643dd4e 100644
              ]
              .padding([16.0, 0.0, 0.0, 0.0])
              .spacing(8.0);
-@@ -1087,6 +1093,15 @@ impl cosmic::Application for App {
+@@ -1087,6 +1095,15 @@ impl cosmic::Application for App {
                          cosmic::task::message(cosmic::Action::App(Message::Error(err.to_string())))
                      });
              }
@@ -41,7 +41,7 @@ index 49b13fe..643dd4e 100644
                  self.flags.user_data.time_applet_config = config;
              }
 diff --git a/src/logind.rs b/src/logind.rs
-index d4f216c..cd29efb 100644
+index d4f216c..85cdef7 100644
 --- a/src/logind.rs
 +++ b/src/logind.rs
 @@ -3,7 +3,7 @@ use cosmic::iced::{
@@ -53,22 +53,19 @@ index d4f216c..cd29efb 100644
      session::SessionProxy,
  };
  use std::{any::TypeId, error::Error, os::fd::OwnedFd, sync::Arc, time::Duration};
-@@ -29,6 +29,20 @@ pub async fn suspend() -> zbus::Result<()> {
+@@ -29,6 +29,17 @@ pub async fn suspend() -> zbus::Result<()> {
      manager.suspend(false).await
  }
- 
-+pub async fn list_sessions() -> zbus::Result<Vec<SessionInfo>> {
-+    let connection = Connection::system().await?;
-+    let manager = ManagerProxy::new(&connection).await?;
-+    manager.list_sessions().await
-+}
-+
+
 +pub async fn terminate_session() -> zbus::Result<()> {
 +    let connection = Connection::system().await?;
 +    let manager = ManagerProxy::new(&connection).await?;
-+    let sessions = (list_sessions().await).unwrap();
-+    let user = sessions[0].sid();
-+    manager.terminate_session(user).await
++
++    let pid = std::process::id();
++    let session_path = manager.get_session_by_PID(pid).await?;
++    let sid = session_path.as_str().split('/').last().unwrap();
++
++    manager.terminate_session(sid).await
 +}
 +
  async fn inhibit(manager: &ManagerProxy<'_>) -> zbus::Result<OwnedFd> {
