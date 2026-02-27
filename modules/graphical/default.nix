@@ -73,6 +73,9 @@ in
       # misc wayland utils
       wl-clipboard
       libnotify
+
+      # COSMIC greeter override for logout button
+      ocf-cosmic-greeter
     ];
 
     fonts.packages = with pkgs; [ meslo-lgs-nf noto-fonts noto-fonts-cjk-sans ];
