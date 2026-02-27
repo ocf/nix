@@ -41,10 +41,10 @@ index 49b13fe..f13b60e 100644
                  self.flags.user_data.time_applet_config = config;
              }
 diff --git a/src/logind.rs b/src/logind.rs
-index d4f216c..403485d 100644
+index d4f216c..a6cba55 100644
 --- a/src/logind.rs
 +++ b/src/logind.rs
-@@ -29,6 +29,17 @@ pub async fn suspend() -> zbus::Result<()> {
+@@ -29,6 +29,15 @@ pub async fn suspend() -> zbus::Result<()> {
      manager.suspend(false).await
  }
 
@@ -52,11 +52,9 @@ index d4f216c..403485d 100644
 +    let connection = Connection::system().await?;
 +    let manager = ManagerProxy::new(&connection).await?;
 +
-+    let pid = std::process::id();
-+    let session_path = manager.get_session_by_PID(pid).await?;
-+    let sid = session_path.as_str().split('/').last().unwrap();
++    let sid = std::env::var("XDG_SESSION_ID").unwrap();
 +
-+    manager.terminate_session(sid).await
++    manager.terminate_session(&sid).await
 +}
 +
  async fn inhibit(manager: &ManagerProxy<'_>) -> zbus::Result<OwnedFd> {
