@@ -8,9 +8,6 @@
   networking.hostName = "termites";
 
   ocf = {
-    # TODO: need ensure host keys can't be stolen by booting an external drive...
-    acme.enable = false;
-
     auth.enable = true;
     graphical.browsers = true;
 
@@ -25,7 +22,7 @@
       musicDir = "/run/jukebox-music";
     };
 
-    kiosk = {
+    graphical.kiosk = {
       enable = true;
       url = "https://labmap.ocf.berkeley.edu"; # https://kinn.dev/labmap2;
       extraConfig = ''

@@ -7,6 +7,7 @@ Some(([
     "com.system76.CosmicAppletInputSources",
     "com.system76.CosmicAppletStatusArea",
     "com.system76.CosmicAppletA11y",
+    "io.github.cosmic_utils.cosmic-ext-applet-external-monitor-brightness",
     "com.system76.CosmicAppletAudio",
     "com.system76.CosmicAppletBluetooth",
     "com.system76.CosmicAppletTiling",
