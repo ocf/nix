@@ -86,6 +86,9 @@ in
       libnotify
 
       ocf-tv
+
+      # COSMIC greeter override for logout button
+      ocf-cosmic-greeter
     ];
 
     fonts.packages = with pkgs; [ meslo-lgs-nf noto-fonts noto-fonts-cjk-sans ];
@@ -171,6 +174,44 @@ in
       '';
     };
 
+    systemd.user.services.cosmictheme-dark = {
+      description = "Changes the user's persistent preference in ~/remote when the cosmic dark mode setting is changed.";
+      after = [ "cosmic-session.target" ];
+      partOf = [ "graphical-session.target" ];
+      wantedBy = [ "cosmic-session.target" ];
+      environment = { PATH = lib.mkForce "/run/current-system/sw/bin"; };
+      script = ''
+        COSMIC_THEME_FILE="$HOME/.config/cosmic/com.system76.CosmicTheme.Mode/v1/is_dark"
+        COSMIC_BG_FILE="$HOME/.config/cosmic/com.system76.CosmicBackground/v1/all"
+        OCF_THEME_FILE="$HOME/remote/.config/ocf/theme"
+
+        sync_theme() {
+          if [ -f "$COSMIC_THEME_FILE" ]; then
+            content=$(cat "$COSMIC_THEME_FILE")
+            mkdir -p "$(dirname "$OCF_THEME_FILE")"
+            if [ "$content" = "true" ]; then
+              echo "dark" > "$OCF_THEME_FILE"
+              sed -i -E 's/bg-(light|dark)/bg-dark/g' $COSMIC_BG_FILE
+            else
+              echo "light" > "$OCF_THEME_FILE"
+              sed -i -E 's/bg-(light|dark)/bg-light/g' $COSMIC_BG_FILE
+            fi
+          fi
+        }
+
+        # Initial sync
+        sync_theme
+
+        # Watch for changes
+        ${pkgs.inotify-tools}/bin/inotifywait -m -e close_write,moved_to,create \
+          "$(dirname "$COSMIC_THEME_FILE")" 2>/dev/null | while read -r dir events file; do
+          if [ "$file" = "is_dark" ]; then
+            sync_theme
+          fi
+        done
+      '';
+    };
+
   ## Generate Halloy IRC config
   # First, checks for plaintext password file at ~/remote/.config/hallow/nickserv-password.
   # If that doesn't exist, prompts for password with kdialog gui.
@@ -182,8 +223,8 @@ in
       RemainAfterExit = true;
     };
     script = ''
-      mkdir -p $HOME/.config/halloy
       cat > $HOME/.config/halloy/config.toml << EOF
+  theme = "rose-pine-dawn"
   [servers.ocf]
   nickname = "$USER"
   server = "irc.ocf.berkeley.edu"

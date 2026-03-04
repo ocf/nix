@@ -251,6 +251,7 @@
         ocf-papers = final.callPackage ./pkgs/ocf-papers.nix { };
         ocf-okular = final.kdePackages.callPackage ./pkgs/ocf-okular.nix { };
         ocf-cosmic-applets = ocf-cosmic-applets.packages.${final.system}.default;
+        ocf-cosmic-greeter = final.callPackage ./pkgs/ocf-cosmic-greeter.nix { };
       };
 
       agenix-rekey = agenix-rekey.configure {
