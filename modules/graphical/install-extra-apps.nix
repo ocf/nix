@@ -41,6 +41,7 @@ in
 
       krita
       gimp3
+      darktable
       inkscape
       blender
       kdePackages.kdenlive
