@@ -127,6 +127,10 @@ in
             Value = false;
             Status = "default";
           };
+          "toolkit.legacyUserProfileCustomizations.stylesheets" = {
+            Value = true;
+            Status = "default";
+          };
         };
       };
     };
