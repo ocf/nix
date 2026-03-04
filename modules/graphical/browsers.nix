@@ -130,6 +130,19 @@ in
         };
       };
     };
+    
+    # add custom css for the print dialogue
+    programs.firefox.autoConfig = ''
+      try {
+        let sss = Components.classes["@mozilla.org/content/style-sheet-service;1"].getService(Components.interfaces.nsIStyleSheetService);
+        let uri = Services.io.newURI("file://${./userChrome.css}", sss.USER_SHEET);
+        if (!sss.sheetRegistered(uri, sss.USER_SHEET)) {
+          sss.loadAndRegisterSheet(uri, sss.USER_SHEET);
+        }
+      } catch(ex){
+        Components.utils.reportError(ex.message);
+      }
+    '';
 
     # Force Chrome to use Wayland, rather than XWayland
     environment.sessionVariables.NIXOS_OZONE_WL = "1";
