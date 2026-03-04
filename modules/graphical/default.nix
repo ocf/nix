@@ -212,6 +212,7 @@ in
     script = ''
       mkdir -p $HOME/.config/halloy
       cat > $HOME/.config/halloy/config.toml << EOF
+  theme = "rose-pine-dawn"
   [servers.ocf]
   nickname = "$USER"
   server = "irc.ocf.berkeley.edu"
