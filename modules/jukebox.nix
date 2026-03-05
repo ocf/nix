@@ -84,6 +84,10 @@ in
             proxyPass = "http://127.0.0.1:${toString cfg.port}";
             proxyWebsockets = true;
           };
+
+          locations."/api/state" = {
+            proxyPass = "http://127.0.0.1:${toString cfg.port}/api/state";
+          };
           
         };
       
