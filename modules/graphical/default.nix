@@ -4,6 +4,17 @@
 
 let
   cfg = config.ocf.graphical;
+  vncScript = pkgs.writeShellScriptBin "ocf-tv" ''
+    if [ -z $XDG_RUNTIME_DIR ]; then
+      echo "XDG_RUNTIME_DIR must be set"
+      exit 1
+    fi
+    # remmina needs to write to the profile
+    /run/current-system/sw/bin/cp ${./ocf-tv.remmina} "$XDG_RUNTIME_DIR/ocf-tv.remmina"
+    ${pkgs.remmina}/bin/remmina -c "$XDG_RUNTIME_DIR/ocf-tv.remmina"
+  '';
+  # override ocf-tv from util
+  ocf-tv = lib.hiPrio vncScript;
 in
 {
   imports = [
@@ -73,6 +84,8 @@ in
       # misc wayland utils
       wl-clipboard
       libnotify
+
+      ocf-tv
 
       # COSMIC greeter override for logout button
       ocf-cosmic-greeter
