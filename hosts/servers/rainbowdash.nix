@@ -17,6 +17,9 @@
   };
 
   environment.systemPackages = with pkgs; [
+    ocf-utils
+    openldap
+    ldapvi
     ipmitool
   ];
 
