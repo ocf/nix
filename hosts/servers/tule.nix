@@ -27,13 +27,13 @@
   };
 
   age.secrets.printhost-mysql-password = {
-    rekeyFile = ../../secrets/master-keyed/printhost-mysql-password.age;
+    rekeyFile = ../../secrets/master-keyed/printhost/mysql-password.age;
   };
   age.secrets.printhost-redis-password = {
-    rekeyFile = ../../secrets/master-keyed/printhost-redis-password.age;
+    rekeyFile = ../../secrets/master-keyed/printhost/redis-password.age;
   };
   age.secrets.printhost-wayout-password = {
-    rekeyFile = ../../secrets/master-keyed/printhost-wayout-password.age;
+    rekeyFile = ../../secrets/master-keyed/printhost/wayout-password.age;
   };
 
   system.stateVersion = "25.05";
