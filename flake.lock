@@ -406,11 +406,11 @@
         "uv2nix": "uv2nix"
       },
       "locked": {
-        "lastModified": 1772682122,
-        "narHash": "sha256-UPb8Cph++dllgehUvSPGRUtA1idJ4bWtxA2lq/qy3fw=",
+        "lastModified": 1773170440,
+        "narHash": "sha256-/1fRNBUGZJdcgrzklzVei+/xJUxgAW/hBT1N4gzz4Z4=",
         "owner": "ocf",
         "repo": "jukebox-django",
-        "rev": "b443209f9970b7a404bef1eb6242ce2e081a4443",
+        "rev": "c2e6f4dd74accbb25c51bd4db18017f675661c5e",
         "type": "github"
       },
       "original": {
@@ -552,11 +552,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1771518446,
-        "narHash": "sha256-nFJSfD89vWTu92KyuJWDoTQJuoDuddkJV3TlOl1cOic=",
+        "lastModified": 1773190977,
+        "narHash": "sha256-fkJvOxz80cJViPz6GVaayC8BVCs5fclJ8qHDaNUpoEA=",
         "owner": "pyproject-nix",
         "repo": "pyproject.nix",
-        "rev": "eb204c6b3335698dec6c7fc1da0ebc3c6df05937",
+        "rev": "10ebca8a137bf26b7fbd3e94b339bf68cee18693",
         "type": "github"
       },
       "original": {
@@ -708,11 +708,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1772545244,
-        "narHash": "sha256-Ys+5UMOqp2kRvnSjyBcvGnjOhkIXB88On1ZcAstz1vY=",
+        "lastModified": 1773039484,
+        "narHash": "sha256-+boo33KYkJDw9KItpeEXXv8+65f7hHv/earxpcyzQ0I=",
         "owner": "pyproject-nix",
         "repo": "uv2nix",
-        "rev": "482aba340ded40ef557d331315f227d5eba84ced",
+        "rev": "b68be7cfeacbed9a3fa38a2b5adc0cfb81d9bb1f",
         "type": "github"
       },
       "original": {
