@@ -27,12 +27,6 @@ in
 {
   config = lib.mkIf cfg.enable {
 
-    # Give cups access to the ACME TLS cert, and reload cups when it renews.
-    security.acme.certs."${config.networking.hostName}.ocf.berkeley.edu" = {
-      group = "lp";
-      reloadServices = [ "cups.service" ];
-    };
-
     services.printing = {
       enable = true;
       drivers = [ cupsDriverPackage ];
@@ -51,6 +45,15 @@ in
     systemd.services.cups.preStart = ''
       install -m 600 ${./conf/printers.conf} /var/lib/cups/printers.conf
       install -m 600 ${./conf/classes.conf} /var/lib/cups/classes.conf
+
+      # Pre-populate CUPS ssl dir with the LE cert so CUPS doesn't regenerate
+      # a self-signed cert. /var/lib/cups is a tmpfs so this runs every start.
+      mkdir -p /var/lib/cups/ssl
+      cp /var/lib/acme/${config.networking.hostName}.ocf.berkeley.edu/fullchain.pem \
+        /var/lib/cups/ssl/${config.networking.hostName}.ocf.berkeley.edu.crt
+      cp /var/lib/acme/${config.networking.hostName}.ocf.berkeley.edu/key.pem \
+        /var/lib/cups/ssl/${config.networking.hostName}.ocf.berkeley.edu.key
+
       mkdir -p /var/lib/cups/ppd
       for name in logjam-double logjam-single pagefault-double pagefault-single papercut-double papercut-single; do
         case $name in

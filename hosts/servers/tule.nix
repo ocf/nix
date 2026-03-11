@@ -12,10 +12,6 @@
 
   ocf.acme = {
     enable = true;
-    extraCerts = [
-      "printhost-dev.ocf.berkeley.edu"
-      "printhost-dev.ocf.io"
-    ];
   };
 
   ocf.printhost = {

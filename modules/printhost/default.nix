@@ -1,4 +1,4 @@
-{ lib, ... }:
+{ lib, config, ... }:
 
 {
   imports = [
@@ -35,5 +35,16 @@
       internal = true;
       description = "Internal: enforcer CUPS backend script (set by enforcer.nix).";
     };
+  };
+
+  config = lib.mkIf config.ocf.printhost.enable {
+    users.users."cups".extraGroups = [ "acme" ];
+
+    security.acme.defaults.reloadServices = [ "cups.service" ];
+
+    ocf.acme.extraCerts = [
+      "printhost-dev.ocf.berkeley.edu"
+      "printhost-dev.ocf.io"
+    ];
   };
 }
