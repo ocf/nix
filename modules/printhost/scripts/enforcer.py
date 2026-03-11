@@ -435,7 +435,10 @@ def main(argv):
             ),
         )
         syslog(msg)
-        send_problem_report(msg)
+        try:
+            send_problem_report(msg)
+        except Exception:
+            pass
         if job is not None:
             try:
                 send_printer_mail(

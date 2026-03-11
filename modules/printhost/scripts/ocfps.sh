@@ -1,4 +1,3 @@
-#!/usr/bin/env bash
 # ocfps is a CUPS filter which converts PDF documents to rasterized PostScript
 # documents suitable for printing by a PostScript printer.
 #

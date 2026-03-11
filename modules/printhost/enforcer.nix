@@ -3,9 +3,17 @@
 let
   cfg = config.ocf.printhost;
 
-  enforcerPc = pkgs.writeShellScript "enforcer-pc" (builtins.readFile ./scripts/enforcer-pc.sh);
+  enforcerPcPkg = pkgs.writeShellApplication {
+    name = "enforcer-pc";
+    runtimeInputs = [ pkgs.coreutils pkgs.gawk ];
+    text = builtins.readFile ./scripts/enforcer-pc.sh;
+  };
 
-  enforcerSize = pkgs.writeShellScript "enforcer-size" (builtins.readFile ./scripts/enforcer-size.sh);
+  enforcerSizePkg = pkgs.writeShellApplication {
+    name = "enforcer-size";
+    runtimeInputs = [ pkgs.coreutils pkgs.gawk ];
+    text = builtins.readFile ./scripts/enforcer-size.sh;
+  };
 
   pythonEnv = pkgs.python312.withPackages (ps: with ps; [
     ocflib
@@ -17,7 +25,8 @@ let
   ]);
 
   enforcerBackendPy = pkgs.replaceVars ./scripts/enforcer.py {
-    inherit enforcerPc enforcerSize;
+    enforcerPc = lib.getExe enforcerPcPkg;
+    enforcerSize = lib.getExe enforcerSizePkg;
     socketBackend = "${pkgs.cups}/lib/cups/backend/socket";
     ippBackend = "${pkgs.cups}/lib/cups/backend/ipp";
   };
@@ -54,12 +63,18 @@ in
   config = lib.mkIf cfg.enable {
     ocf.printhost._enforcerBackend = enforcerBackend;
 
-    systemd.services.cups.environment = {
-      ENFORCER_MYSQL_PASSWORD = cfg.mysqlPasswordFile;
-      ENFORCER_REDIS_HOST = cfg.redisHost;
-      ENFORCER_REDIS_PASSWORD = cfg.redisPasswordFile;
-      ENFORCER_WAYOUT_PASSWORD = cfg.wayoutPasswordFile;
-    };
+    services.printing.extraFilesConf = ''
+      SetEnv ENFORCER_MYSQL_PASSWORD ${cfg.mysqlPasswordFile}
+      SetEnv ENFORCER_REDIS_HOST ${cfg.redisHost}
+      SetEnv ENFORCER_REDIS_PASSWORD ${cfg.redisPasswordFile}
+      SetEnv ENFORCER_WAYOUT_PASSWORD ${cfg.wayoutPasswordFile}
+    '';
+
+    # ocflib hardcodes /usr/sbin/sendmail; on NixOS postfix provides it at
+    # /run/wrappers/bin/sendmail via security.wrappers.
+    systemd.tmpfiles.rules = [
+      "L /usr/sbin/sendmail - - - - /run/wrappers/bin/sendmail"
+    ];
 
     # Hourly job to NULL out doc_name for jobs older than 14 days (privacy).
     systemd.services.enforcer-privacy-cleanup = {

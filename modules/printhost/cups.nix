@@ -3,10 +3,12 @@
 let
   cfg = config.ocf.printhost;
 
-  ocfpsFilter = pkgs.replaceVars ./scripts/ocfps.sh {
+  ocfpsSubstituted = pkgs.replaceVars ./scripts/ocfps.sh {
     pdftops = "${pkgs.poppler-utils}/bin/pdftops";
     pstops = "${pkgs.cups}/lib/cups/filter/pstops";
   };
+
+  ocfpsFilter = pkgs.writeShellScript "ocfps" (builtins.readFile ocfpsSubstituted);
 
   ppdSingle = ./ppd/m806-single.ppd;
   ppdDouble = ./ppd/m806-double.ppd;
@@ -24,6 +26,12 @@ let
 in
 {
   config = lib.mkIf cfg.enable {
+
+    # Give cups access to the ACME TLS cert, and reload cups when it renews.
+    security.acme.certs."${config.networking.hostName}.ocf.berkeley.edu" = {
+      group = "lp";
+      reloadServices = [ "cups.service" ];
+    };
 
     services.printing = {
       enable = true;
