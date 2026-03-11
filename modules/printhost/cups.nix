@@ -31,7 +31,8 @@ in
       enable = true;
       drivers = [ cupsDriverPackage ];
       listenAddresses = [ "*:80" "*:631" ];
-      extraConf = lib.mkForce (builtins.readFile ./conf/cupsd.conf);
+      extraConf = lib.mkForce (lib.replaceStrings [ "@hostname@" ] [ "${config.networking.hostName}.ocf.berkeley.edu" ]
+        (builtins.readFile ./conf/cupsd.conf));
       extraFilesConf = lib.replaceStrings [ "@hostname@" ] [ "${config.networking.hostName}.ocf.berkeley.edu" ]
         (builtins.readFile ./conf/cups-files.conf);
     };
