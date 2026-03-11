@@ -359,14 +359,8 @@ def do_posthook(c, r, job, quo, success, wayout_pass):
         )
         r.publish("printer-" + printer_name, job.user)
         send_notification(wayout_pass, "Printer Success", msg, job.user)
+        r.publish("user-" + job.user, msg)
     else:
-        msg = NOTIFY_JOB_ERROR.format(document=job.doc_name)
-        send_printer_mail(
-            PRINTER_ERROR_MESSAGE_SUBJECT,
-            PRINTER_ERROR_MESSAGE_BODY,
-            job,
-            quo,
-        )
         err_msg = (
             "enforcer encountered a printer error: job={} user={} printer={}".format(
                 job.doc_name,
@@ -375,9 +369,27 @@ def do_posthook(c, r, job, quo, success, wayout_pass):
             )
         )
         syslog(err_msg)
-        send_problem_report(err_msg)
-        send_notification(wayout_pass, "Printer Error", msg, job.user)
-    r.publish("user-" + job.user, msg)
+        # When printing to a class (CLASS is set), CUPS will retry on other
+        # members before giving up. Suppress user-facing notifications here
+        # so that transient printer failures don't spam the user; only the
+        # final successful printer (or CUPS itself on total failure) notifies.
+        if not os.environ.get("CLASS"):
+            msg = NOTIFY_JOB_ERROR.format(document=job.doc_name)
+            try:
+                send_printer_mail(
+                    PRINTER_ERROR_MESSAGE_SUBJECT,
+                    PRINTER_ERROR_MESSAGE_BODY,
+                    job,
+                    quo,
+                )
+            except Exception:
+                pass
+            send_notification(wayout_pass, "Printer Error", msg, job.user)
+            r.publish("user-" + job.user, msg)
+        try:
+            send_problem_report(err_msg)
+        except Exception:
+            pass
 
 
 def main(argv):
