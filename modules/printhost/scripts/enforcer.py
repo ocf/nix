@@ -216,15 +216,19 @@ def get_job_and_filepath(argv):
     title = argv[3]
     copies = int(argv[4])
 
-    if len(argv) > 6:
+    tmp = tempfile.NamedTemporaryFile(delete=False, suffix=".ps")
+    tmp.write(sys.stdin.buffer.read())
+    tmp.close()
+
+    if os.path.getsize(tmp.name) > 0:
+        filepath = tmp.name
+        tmp_file = filepath
+    elif len(argv) > 6:
+        os.unlink(tmp.name)
         filepath = argv[6]
         tmp_file = None
     else:
-        tmp = tempfile.NamedTemporaryFile(delete=False, suffix=".ps")
-        tmp.write(sys.stdin.buffer.read())
-        tmp.close()
-        filepath = tmp.name
-        tmp_file = filepath
+        raise ValueError("No print data on stdin and no file argument provided")
 
     printer = os.environ.get("PRINTER", "")
     queue = os.environ.get("CLASS", printer)
