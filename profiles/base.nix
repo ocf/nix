@@ -171,7 +171,7 @@ in
     papersize.text = "letter";
     "cups/lpoptions".text = "Default double";
     "cups/client.conf".text = ''
-      ServerName printhost.ocf.berkeley.edu
+      ServerName printhost-dev.ocf.berkeley.edu
       Encryption Always
     '';
   };
