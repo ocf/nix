@@ -34,6 +34,9 @@ in
         '';
       };
 
+      fzf.keybindings = true;
+      fzf.fuzzyCompletion = true;
+
       fish.enable = true;
       xonsh.enable = true;
     };

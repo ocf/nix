@@ -104,6 +104,8 @@ in
     iperf
     vnstat
     nethogs
+    netcat-openbsd
+    nmap
 
     # Other useful stuff
     tmux
