@@ -171,7 +171,7 @@ in
     papersize.text = "letter";
     "cups/lpoptions".text = "Default double";
     "cups/client.conf".text = ''
-      ServerName tule.ocf.berkeley.edu
+      ServerName tule.ocf.berkeley.edu:443
       Encryption Always
     '';
   };
