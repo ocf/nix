@@ -54,6 +54,10 @@ in
         /var/lib/cups/ssl/${config.networking.hostName}.ocf.berkeley.edu.crt
       cp /var/lib/acme/${config.networking.hostName}.ocf.berkeley.edu/key.pem \
         /var/lib/cups/ssl/${config.networking.hostName}.ocf.berkeley.edu.key
+      cp /var/lib/acme/${config.networking.hostName}.ocf.berkeley.edu/fullchain.pem \
+        /var/lib/cups/ssl/${config.networking.hostName}.OCF.Berkeley.EDU.crt
+      cp /var/lib/acme/${config.networking.hostName}.ocf.berkeley.edu/key.pem \
+        /var/lib/cups/ssl/${config.networking.hostName}.OCF.Berkeley.EDU.key
 
       mkdir -p /var/lib/cups/ppd
       for name in logjam-double logjam-single pagefault-double pagefault-single papercut-double papercut-single; do
