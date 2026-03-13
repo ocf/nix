@@ -31,6 +31,7 @@ in
       enable = true;
       drivers = [ cupsDriverPackage ];
       listenAddresses = [ "*:80" "*:443" "*:631" ];
+      startWhenNeeded = false;
       extraConf = lib.mkForce (lib.replaceStrings [ "@cups-url@" ] [ "${config.ocf.printhost.printhostUrl}" ]
         (builtins.readFile ./conf/cupsd.conf));
       extraFilesConf = lib.replaceStrings [ "@hostname@" ] [ "${config.networking.hostName}.ocf.berkeley.edu" ]
