@@ -98,24 +98,23 @@ in
       jack.enable = true;
       alsa.enable = true;
     };
-    
-    printing.enable = true;
+
+    printing = {
+      enable = true;
+      clientConf = ''
+        ServerName printhost-dev.ocf.berkeley.edu
+        AllowAnyRoot No
+        AllowExpiredCerts No
+        Encryption Required
+        SSLOptions DenyTLS1.0
+        TrustOnFirstUse No
+        ValidateCerts Yes
+      '';
+    };
   };
-  
-  # CUPS Config
-  environment.etc = {
-    papersize.text = "letter";
-    "cups/lpoptions".text = "Default double";
-    "cups/client.conf".text = ''
-      ServerName printhost-dev.ocf.berkeley.edu
-      AllowAnyRoot No
-      AllowExpiredCerts No
-      Encryption Required
-      SSLOptions DenyTLS1.0
-      TrustOnFirstUse No
-      ValidateCerts Yes
-    '';
-  };
+
+  # Set default paper size for printing
+  environment.etc.papersize.text = "letter";
 
   security.rtkit.enable = true;
   services.pulseaudio.enable = false;
