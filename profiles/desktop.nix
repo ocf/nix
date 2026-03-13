@@ -87,6 +87,9 @@ in
 
     # IRC password prompt
     kdePackages.kdialog
+    
+    # Add printing packages
+    cups
   ];
 
   services = {
@@ -98,8 +101,6 @@ in
       jack.enable = true;
       alsa.enable = true;
     };
-    
-    printing.enable = true;
   };
   
   # CUPS Config
