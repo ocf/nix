@@ -109,12 +109,7 @@ in
     "cups/lpoptions".text = "Default double";
     "cups/client.conf".text = ''
       ServerName printhost-dev.ocf.berkeley.edu:443
-      AllowAnyRoot No
-      AllowExpiredCerts No
       Encryption Required
-      SSLOptions DenyTLS1.0
-      TrustOnFirstUse No
-      ValidateCerts No
     '';
   };
 
