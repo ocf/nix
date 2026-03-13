@@ -11,6 +11,11 @@ in
   };
 
   config = lib.mkIf cfg.apps.documents {
+    # grammar checker for libreoffice
+    services.languagetool.enable = true;
+    services.languagetool.public = false;
+    environment.etc."libreoffice/registry/languagetool.xcu".source = ./libreoffice-languagetool.xcu;
+
     environment.systemPackages = with pkgs; [
       # scanning
       simple-scan
@@ -20,7 +25,11 @@ in
       ocf-papers
 
       # libreoffice
-      libreoffice
+      libreoffice-still
+      mythes
+      hunspell # spell check
+      hunspellDicts.en_US
+      hyphenDicts.en_US
 
       # editors
       xournalpp
