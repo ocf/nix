@@ -37,12 +37,6 @@ in
         (builtins.readFile ./conf/cups-files.conf);
     };
 
-    # base.nix sets these settings for all machines (for use on dekstops),
-    # but the printing module enabled on tule sets /etc/cups as a symlink to
-    # /var/lib/cups, causing a conflict
-    environment.etc."cups/lpoptions".enable = lib.mkForce false;
-    environment.etc."cups/client.conf".enable = lib.mkForce false;
-
     systemd.services.cups.preStart = ''
       install -m 600 ${./conf/printers.conf} /var/lib/cups/printers.conf
       install -m 600 ${./conf/classes.conf} /var/lib/cups/classes.conf
