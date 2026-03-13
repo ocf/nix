@@ -64,6 +64,34 @@ in
         };
 
         Preferences = {
+          # Color DOUBLE
+          "print.printer_color-double.print_in_color" = {
+            Value = true;
+            Status = "default";
+          };
+          "print.printer_color-double.print_paper_height" = {
+            Value = "279.4";
+            Status = "default";
+          };
+          "print.printer_color-double.print_paper_id" = {
+            Value = "na_letter";
+            Status = "default";
+          };
+          "print.printer_color-double.print_paper_size_unit" = {
+            Value = 1;
+            Status = "default";
+            Type = "number";
+          };
+          "print.printer_color-double.print_paper_width" = {
+            Value = "215.9";
+            Status = "default";
+          };
+
+          # Color SINGLE
+          "print.printer_color-single.print_in_color" = {
+            Value = true;
+            Status = "default";
+          };
           "print.printer_color-single.print_paper_height" = {
             Value = "279.4";
             Status = "default";
@@ -81,6 +109,8 @@ in
             Value = "215.9";
             Status = "default";
           };
+
+          # B&W DOUBLE
           "print.printer_double.print_in_color" = {
             Value = false;
             Status = "default";
@@ -102,6 +132,8 @@ in
             Value = "215.9";
             Status = "default";
           };
+
+          # B&W SINGLE
           "print.printer_single.print_in_color" = {
             Value = false;
             Status = "default";
@@ -123,6 +155,8 @@ in
             Value = "215.9";
             Status = "default";
           };
+          
+          # Fix Firefox crash on suspend
           "widget.wayland.fractional-scale.enabled" = {
             Value = false;
             Status = "default";
