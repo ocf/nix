@@ -98,6 +98,23 @@ in
       jack.enable = true;
       alsa.enable = true;
     };
+    
+    printing.enable = true;
+  };
+  
+  # CUPS Config
+  environment.etc = {
+    papersize.text = "letter";
+    "cups/lpoptions".text = "Default double";
+    "cups/client.conf".text = ''
+      ServerName printhost-dev.ocf.berkeley.edu
+      AllowAnyRoot No
+      AllowExpiredCerts No
+      Encryption Required
+      SSLOptions DenyTLS1.0
+      TrustOnFirstUse No
+      ValidateCerts Yes
+    '';
   };
 
   security.rtkit.enable = true;
