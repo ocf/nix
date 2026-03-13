@@ -30,8 +30,8 @@ in
     services.printing = {
       enable = true;
       drivers = [ cupsDriverPackage ];
-      listenAddresses = [ "*:80" "*:631" ];
-      extraConf = lib.mkForce (lib.replaceStrings [ "@hostname@" ] [ "${config.networking.hostName}.ocf.berkeley.edu" ]
+      listenAddresses = [ "*:80" "*:443" "*:631" ];
+      extraConf = lib.mkForce (lib.replaceStrings [ "@cups-url@" ] [ "${config.printhostUrl}" ]
         (builtins.readFile ./conf/cupsd.conf));
       extraFilesConf = lib.replaceStrings [ "@hostname@" ] [ "${config.networking.hostName}.ocf.berkeley.edu" ]
         (builtins.readFile ./conf/cups-files.conf);

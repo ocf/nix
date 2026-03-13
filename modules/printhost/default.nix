@@ -29,6 +29,12 @@
       type = lib.types.path;
       description = "Path to file containing the wayout notification password.";
     };
+    
+    printhostUrl = lib.mkOption {
+      type = lib.types.str;
+      description = "Printhost URL";
+      default = "printhost-dev.ocf.berkeley.edu";
+    };
 
     _enforcerBackend = lib.mkOption {
       type = lib.types.package;
