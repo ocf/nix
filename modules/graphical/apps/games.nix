@@ -11,7 +11,10 @@ in
   };
 
   config = lib.mkIf cfg.apps.games {
+    hardware.graphics.enable32Bit = true;
+
     programs.steam.enable = true;
+    programs.steam.protontricks.enable = true;
 
     environment.systemPackages = with pkgs; [
       # GAMES
@@ -21,5 +24,13 @@ in
       superTuxKart
       tetris
       antimicrox
+
+      # windows compat
+      wine
+      lutris
+      bottles
+      winetricks
+      wineWow64Packages.stable
+    ];
   };
 }
