@@ -114,7 +114,7 @@ in
       Encryption Required
       SSLOptions DenyTLS1.0
       TrustOnFirstUse No
-      ValidateCerts Yes
+      ValidateCerts No
     '';
   };
 
