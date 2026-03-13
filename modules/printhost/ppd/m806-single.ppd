@@ -44,7 +44,6 @@
 *NickName: "HP LaserJet M806 (ocf)"
 
 *cupsFilter: "application/pdf 0 ocfps"
-*cupsManualCopies: True
 
 *% Duplexing options
 
