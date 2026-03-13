@@ -210,32 +210,11 @@ def page_size(filepath):
     )
 
 
-def get_requested_copies(argv):
-    """Return requested copy count from CUPS argv copies/options fields."""
-    copies = 1
-
-    if len(argv) > 4:
-        try:
-            copies = max(1, int(argv[4]))
-        except ValueError:
-            copies = 1
-
-    if len(argv) > 5:
-        for opt in argv[5].split():
-            if opt.startswith("copies="):
-                try:
-                    copies = max(copies, int(opt.split("=", 1)[1]))
-                except ValueError:
-                    pass
-
-    return copies
-
-
 def get_job_and_filepath(argv):
     """Parse CUPS backend arguments and build a quota.Job."""
     username = argv[2]
     title = argv[3]
-    copies = get_requested_copies(argv)
+    copies = int(argv[4])
 
     tmp = tempfile.NamedTemporaryFile(delete=False, suffix=".ps")
     tmp.write(sys.stdin.buffer.read())
@@ -366,13 +345,8 @@ def forward_to_printer(argv, filepath):
     scheme = real_uri.split("://", 1)[0]
     backend = IPP_BACKEND if scheme == "ipp" else SOCKET_BACKEND
     env = {**os.environ, "DEVICE_URI": real_uri}
-    copies = get_requested_copies(argv)
-    options = argv[5] if len(argv) > 5 else ""
-    if "copies=" not in options:
-        options = f"{options} copies={copies}".strip()
-
     result = subprocess.run(
-        [backend, argv[1], argv[2], argv[3], str(copies), options, filepath],
+        [backend] + argv[1:6] + [filepath],
         env=env,
         timeout=600,
     )
