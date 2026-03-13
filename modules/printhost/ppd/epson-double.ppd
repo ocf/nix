@@ -1002,51 +1002,14 @@ pop pop
 *DefaultOutputOrder: Normal
 
 *OpenUI *Duplex/Duplex: PickOne
-*fr.Translation Duplex/Duplex (Recto Verso): ""
-*es.Translation Duplex/Dúplex: ""
-*it.Translation Duplex/Duplex: ""
-*de.Translation Duplex/Duplex: ""
-*pt.Translation Duplex/Dúplex: ""
-*nl.Translation Duplex/Duplex: ""
-
-*DefaultDuplex: None
+*DefaultDuplex: DuplexNoTumble
 *OrderDependency: 180 AnySetup *Duplex
-*Duplex None/Simplex: "<</Duplex false>> setpagedevice"
-*fr.Duplex None/Simplex: ""
-*es.Duplex None/Simple: ""
-*it.Duplex None/Simplex: ""
-*de.Duplex None/Simplex: ""
-*pt.Duplex None/Simples: ""
-*nl.Duplex None/Simplex: ""
-
-*Duplex DuplexTumble/Short Edge Binding: "
-	<</Duplex true /Tumble true>> setpagedevice
-"
-*End
-*fr.Duplex DuplexTumble/Reliure côté court: ""
-*es.Duplex DuplexTumble/Encuadernar lado corto: ""
-*it.Duplex DuplexTumble/Rilegatura lato corto: ""
-*de.Duplex DuplexTumble/Bindung kurze Seite: ""
-*pt.Duplex DuplexTumble/União Margem Curta: ""
-*nl.Duplex DuplexTumble/Korte zijde binden: ""
-
 *Duplex DuplexNoTumble/Long Edge Binding: "
-	<</Duplex true /Tumble false>> setpagedevice
+<</Duplex true /Tumble false>> setpagedevice
 "
 *End
-*fr.Duplex DuplexNoTumble/Reliure côté long: ""
-*es.Duplex DuplexNoTumble/Encuadernar lado largo: ""
-*it.Duplex DuplexNoTumble/Rilegatura lato lungo: ""
-*de.Duplex DuplexNoTumble/Bindung lange Seite: ""
-*pt.Duplex DuplexNoTumble/União Margem Longa: ""
-*nl.Duplex DuplexNoTumble/Lange zijde binden: ""
-
 *?Duplex: "
-	save
-	currentpagedevice dup /Duplex 2 copy known
-	{get {/Tumble get {(DuplexTumble)}{(DuplexNoTumble)} ifelse}
-	{pop (None)} ifelse} {pop pop pop (None)}ifelse = flush
-	restore
+  (DuplexNoTumble) = flush
 "
 *End
 *CloseUI: *Duplex

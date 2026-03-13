@@ -52,9 +52,12 @@
 
 *OpenUI *Duplex/Two-Sided: PickOne
 *OrderDependency: 50 AnySetup *Duplex
-*DefaultDuplex: None
-*Duplex None/Off: "<</Duplex false /Tumble false>> setpagedevice"
+*DefaultDuplex: DuplexNoTumble
 *Duplex DuplexNoTumble/Long-Edge Binding: "<</Duplex true /Tumble false>> setpagedevice"
+*?Duplex: "
+  (DuplexNoTumble) = flush
+"
+*End
 *CloseUI: *Duplex
 
 *%%% The rest is straight from the stock driver
