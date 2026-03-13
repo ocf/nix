@@ -1,15 +1,18 @@
-# preinstalled apps for ocf desktops
+# other apps for ocf desktops
 
 { lib, config, pkgs, ... }:
 
 let
-  cfg = config.ocf.graphical.install-extra-apps;
+  cfg = config.ocf.graphical;
 in
 {
-  options.ocf.graphical.install-extra-apps = lib.mkEnableOption "Install extra software useful for OCF lab desktops";
+  options.ocf.graphical.apps.other = lib.mkOption {
+    type = lib.types.bool;
+    description = "Enable other apps";
+    default = cfg.enable && cfg.extra;
+  };
 
-  config = lib.mkIf cfg {
-    programs.steam.enable = true;
+  config = lib.mkIf cfg.apps.other {
     programs.zoom-us.enable = true;
     programs.obs-studio.enable = true;
     programs.obs-studio.enableVirtualCamera = true;
@@ -22,11 +25,8 @@ in
       st
       ghostty
 
-      libreoffice
       drawio
-      xournalpp
       octave
-      simple-scan
 
       yubioath-flutter
       kdiskmark
@@ -69,9 +69,6 @@ in
       brasero
       kdePackages.k3b
 
-      ocf-okular
-      ocf-papers
-
       # TEXT & CODE EDITORS
       vscode-fhs
       vscodium-fhs
@@ -82,14 +79,6 @@ in
 
       gitg
       meld
-
-      # GAMES
-      dwarf-fortress
-      prismlauncher
-      unciv
-      superTuxKart
-      tetris
-      antimicrox
 
       # Editors
       emacs

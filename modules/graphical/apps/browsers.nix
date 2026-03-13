@@ -4,12 +4,16 @@ let
   cfg = config.ocf.graphical;
 in
 {
-  options.ocf.graphical.browsers = lib.mkEnableOption "Enable desktop environment configuration";
+  options.ocf.graphical.apps.browsers = lib.mkOption {
+    type = lib.types.bool;
+    description = "Enable browser configuration";
+    default = cfg.enable;
+  };
 
-  config = lib.mkIf cfg.browsers {
+  config = lib.mkIf cfg.apps.browsers {
     environment.systemPackages = with pkgs; [
       firefox
-    ] ++ lib.optionals cfg.install-extra-apps [
+    ] ++ lib.optionals cfg.extra [
       librewolf
       tor-browser
       mullvad-browser
