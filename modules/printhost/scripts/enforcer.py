@@ -32,7 +32,7 @@ CUPS_BACKEND_OK = 0
 CUPS_BACKEND_FAILED = 1
 CUPS_BACKEND_CANCEL = 5
 
-COLOR_QUEUE = "color-single"
+COLOR_QUEUES = {"color-single", "color-double"}
 WAYOUT_APP_NAME = "Printer"
 WAYOUT_PORT = 6767
 
@@ -319,7 +319,7 @@ def do_prehook(c, r, job, filepath, wayout_pass):
         send_notification(wayout_pass, "Insufficient Quota", msg, job.user)
         return False, quo
 
-    if job.queue == COLOR_QUEUE and job.pages > quo.color:
+    if job.queue in COLOR_QUEUES and job.pages > quo.color:
         send_printer_mail(
             INSUFFICIENT_COLOR_QUOTA_MESSAGE_SUBJECT,
             INSUFFICIENT_COLOR_QUOTA_MESSAGE_BODY,

@@ -10,16 +10,14 @@ let
 
   ocfpsFilter = pkgs.writeShellScript "ocfps" (builtins.readFile ocfpsSubstituted);
 
-  ppdSingle = ./ppd/m806-single.ppd;
-  ppdDouble = ./ppd/m806-double.ppd;
+  ppdHp = ./ppd/m806.ppd;
   ppdEpson = ./ppd/epson.ppd;
 
   cupsDriverPackage = pkgs.runCommand "ocf-cups-drivers" { } ''
     mkdir -p $out/lib/cups/backend $out/lib/cups/filter $out/share/cups/model
     install -m 700 ${cfg._enforcerBackend}  $out/lib/cups/backend/enforcer
     install -m 755 ${ocfpsFilter}           $out/lib/cups/filter/ocfps
-    install -m 644 ${ppdSingle}             $out/share/cups/model/ocf-m806-single.ppd
-    install -m 644 ${ppdDouble}             $out/share/cups/model/ocf-m806-double.ppd
+    install -m 644 ${ppdHp}                 $out/share/cups/model/ocf-m806.ppd
     install -m 644 ${ppdEpson}              $out/share/cups/model/ocf-epson.ppd
   '';
 
@@ -55,12 +53,10 @@ in
 
       mkdir -p /var/lib/cups/ppd
       for name in logjam-double logjam-single pagefault-double pagefault-single papercut-double papercut-single; do
-        case $name in
-          *-double) install -m 644 ${ppdDouble} /var/lib/cups/ppd/$name.ppd ;;
-          *-single) install -m 644 ${ppdSingle} /var/lib/cups/ppd/$name.ppd ;;
-        esac
+        install -m 644 ${ppdHp} /var/lib/cups/ppd/$name.ppd
       done
-      install -m 644 ${ppdEpson}     /var/lib/cups/ppd/epson.ppd
+      install -m 644 ${ppdEpson} /var/lib/cups/ppd/epson-double.ppd
+      install -m 644 ${ppdEpson} /var/lib/cups/ppd/epson-single.ppd
       echo 'Default double'           > /etc/cups/lpoptions
       echo '# deny printing raw jobs' > /etc/cups/raw.convs
       echo '# deny printing raw jobs' > /etc/cups/raw.types

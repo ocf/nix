@@ -52,7 +52,8 @@
 
 *OpenUI *Duplex/Two-Sided: PickOne
 *OrderDependency: 50 AnySetup *Duplex
-*DefaultDuplex: DuplexNoTumble
+*DefaultDuplex: None
+*Duplex None/Off: "<</Duplex false /Tumble false>> setpagedevice"
 *Duplex DuplexNoTumble/Long-Edge Binding: "<</Duplex true /Tumble false>> setpagedevice"
 *CloseUI: *Duplex
 
