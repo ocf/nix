@@ -108,8 +108,8 @@ in
     papersize.text = "letter";
     "cups/lpoptions".text = "Default double";
     "cups/client.conf".text = ''
-      ServerName 169.229.226.127
-      Encryption Always
+      ServerName 169.229.226.127:631
+      Encryption Never
     '';
   };
 
