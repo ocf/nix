@@ -1,29 +1,7 @@
-{ pkgs, lib, config, ... }:
+{ lib, config, ... }:
 
 let
   cfg = config.ocf.printhost;
-
-  ocfpsSubstituted = pkgs.replaceVars ./scripts/ocfps.sh {
-    pdftops = "${pkgs.poppler-utils}/bin/pdftops";
-    pstops = "${pkgs.cups}/lib/cups/filter/pstops";
-  };
-
-  ocfpsFilter = pkgs.writeShellScript "ocfps" (builtins.readFile ocfpsSubstituted);
-
-  ppdHpSingle = ./ppd/m806-single.ppd;
-  ppdHpDouble = ./ppd/m806-double.ppd;
-  ppdEpsonSingle = ./ppd/epson-single.ppd;
-  ppdEpsonDouble = ./ppd/epson-double.ppd;
-
-  cupsDriverPackage = pkgs.runCommand "ocf-cups-drivers" { } ''
-    mkdir -p $out/lib/cups/backend $out/lib/cups/filter $out/share/cups/model
-    install -m 700 ${cfg._enforcerBackend}  $out/lib/cups/backend/enforcer
-    install -m 755 ${ocfpsFilter}           $out/lib/cups/filter/ocfps
-    install -m 644 ${ppdHpSingle}           $out/share/cups/model/ocf-m806-single.ppd
-    install -m 644 ${ppdHpDouble}           $out/share/cups/model/ocf-m806-double.ppd
-    install -m 644 ${ppdEpsonSingle}        $out/share/cups/model/ocf-epson-single.ppd
-    install -m 644 ${ppdEpsonDouble}        $out/share/cups/model/ocf-epson-double.ppd
-  '';
 
 in
 {
@@ -31,7 +9,6 @@ in
 
     services.printing = {
       enable = true;
-      drivers = [ cupsDriverPackage ];
       startWhenNeeded = false;
       listenAddresses = [ "*:80" "*:631" ];
       extraConf = lib.mkForce (lib.replaceStrings [ "@cups-url@" ] [ "${config.ocf.printhost.printhostUrl}" ]
@@ -56,15 +33,6 @@ in
       cp /var/lib/acme/${config.networking.hostName}.ocf.berkeley.edu/key.pem \
         /var/lib/cups/ssl/${config.networking.hostName}.OCF.Berkeley.EDU.key
 
-      mkdir -p /var/lib/cups/ppd
-      for name in logjam-double logjam-single pagefault-double pagefault-single papercut-double papercut-single; do
-        case $name in
-          *-double) install -m 644 ${ppdHpDouble} /var/lib/cups/ppd/$name.ppd ;;
-          *-single) install -m 644 ${ppdHpSingle} /var/lib/cups/ppd/$name.ppd ;;
-        esac
-      done
-      install -m 644 ${ppdEpsonDouble} /var/lib/cups/ppd/epson-double.ppd
-      install -m 644 ${ppdEpsonSingle} /var/lib/cups/ppd/epson-single.ppd
       echo 'Default double'           > /etc/cups/lpoptions
       echo '# deny printing raw jobs' > /etc/cups/raw.convs
       echo '# deny printing raw jobs' > /etc/cups/raw.types

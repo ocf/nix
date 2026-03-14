@@ -3,36 +3,12 @@
 let
   cfg = config.ocf.printhost;
 
-  enforcerPcPkg = pkgs.writeShellApplication {
-    name = "enforcer-pc";
-    runtimeInputs = [ pkgs.coreutils pkgs.gawk ];
-    text = builtins.readFile ./scripts/enforcer-pc.sh;
-  };
-
-  enforcerSizePkg = pkgs.writeShellApplication {
-    name = "enforcer-size";
-    runtimeInputs = [ pkgs.coreutils pkgs.gawk ];
-    text = builtins.readFile ./scripts/enforcer-size.sh;
-  };
-
   pythonEnv = pkgs.python312.withPackages (ps: with ps; [
     ocflib
-    redis
-    requests
     pycups
-    prometheus-client
     pymysql
+    requests
   ]);
-
-  enforcerBackendPy = pkgs.replaceVars ./scripts/enforcer.py {
-    enforcerPc = lib.getExe enforcerPcPkg;
-    enforcerSize = lib.getExe enforcerSizePkg;
-    socketBackend = "${pkgs.cups}/lib/cups/backend/socket";
-    ippBackend = "${pkgs.cups}/lib/cups/backend/ipp";
-  };
-  enforcerBackend = pkgs.writeShellScript "enforcer" ''
-    exec ${pythonEnv}/bin/python3 ${enforcerBackendPy} "$@"
-  '';
 
   privacyCleanupScript = pkgs.writeText "enforcer-privacy-cleanup.py" ''
     import os
@@ -58,18 +34,23 @@ let
     exec ${pythonEnv}/bin/python3 ${privacyCleanupScript}
   '';
 
+  submitGateScript = pkgs.writeText "enforcer-submit-gate.py"
+    (builtins.readFile ./scripts/submit-gate.py);
+
+  submitGateBin = pkgs.writeShellScript "enforcer-submit-gate" ''
+    exec ${pythonEnv}/bin/python3 ${submitGateScript}
+  '';
+
+  ippAccountingScript = pkgs.writeText "ipp-accounting.py"
+    (builtins.readFile ./scripts/ipp-accounting.py);
+
+  ippAccountingBin = pkgs.writeShellScript "ipp-accounting" ''
+    exec ${pythonEnv}/bin/python3 ${ippAccountingScript}
+  '';
+
 in
 {
   config = lib.mkIf cfg.enable {
-    ocf.printhost._enforcerBackend = enforcerBackend;
-
-    services.printing.extraFilesConf = ''
-      SetEnv ENFORCER_MYSQL_PASSWORD ${cfg.mysqlPasswordFile}
-      SetEnv ENFORCER_REDIS_HOST ${cfg.redisHost}
-      SetEnv ENFORCER_REDIS_PASSWORD ${cfg.redisPasswordFile}
-      SetEnv ENFORCER_WAYOUT_PASSWORD ${cfg.wayoutPasswordFile}
-    '';
-
     # ocflib hardcodes /usr/sbin/sendmail; on NixOS postfix provides it at
     # /run/wrappers/bin/sendmail via security.wrappers.
     systemd.tmpfiles.rules = [
@@ -93,6 +74,46 @@ in
       timerConfig = {
         OnBootSec = "1h";
         OnUnitActiveSec = "1h";
+      };
+    };
+
+    systemd.services.enforcer-submit-gate = {
+      description = "Reject over-quota jobs shortly after submission";
+      serviceConfig = {
+        Type = "oneshot";
+        ExecStart = "${submitGateBin}";
+      };
+      environment = {
+        ENFORCER_MYSQL_PASSWORD = cfg.mysqlPasswordFile;
+        ENFORCER_WAYOUT_PASSWORD = cfg.wayoutPasswordFile;
+      };
+    };
+
+    systemd.timers.enforcer-submit-gate = {
+      wantedBy = [ "timers.target" ];
+      timerConfig = {
+        OnBootSec = "2s";
+        OnUnitActiveSec = "1s";
+      };
+    };
+
+    systemd.services.ipp-accounting = {
+      description = "Account completed IPP jobs into quota DB";
+      serviceConfig = {
+        Type = "oneshot";
+        ExecStart = "${ippAccountingBin}";
+      };
+      environment = {
+        ENFORCER_MYSQL_PASSWORD = cfg.mysqlPasswordFile;
+        ENFORCER_WAYOUT_PASSWORD = cfg.wayoutPasswordFile;
+      };
+    };
+
+    systemd.timers.ipp-accounting = {
+      wantedBy = [ "timers.target" ];
+      timerConfig = {
+        OnBootSec = "30s";
+        OnUnitActiveSec = "5s";
       };
     };
   };

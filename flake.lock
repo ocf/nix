@@ -478,12 +478,10 @@
     },
     "ocflib": {
       "locked": {
-        "lastModified": 1769831138,
-        "narHash": "sha256-QVKq1gu5fgKb1UAjBd2gjfzC3cbr3NLqp+tb3Yf3Ozk=",
-        "owner": "ocf",
-        "repo": "ocflib",
-        "rev": "31d446a36245fe4213970d6a8d200067128e8b05",
-        "type": "github"
+        "lastModified": 1773513835,
+        "narHash": "sha256-NUtqU+Cm9V5mg9L/ECulUps4kAdnFgn82ZJ0YiZYAWM=",
+        "path": "/Users/blakehaug/Documents/Programming/ocflib",
+        "type": "path"
       },
       "original": {
         "owner": "ocf",
