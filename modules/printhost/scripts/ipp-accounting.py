@@ -122,9 +122,18 @@ def main():
             wayout_pass = f.read().strip()
     try:
         conn = cups.Connection()
+        logging.info(f"Connected to CUPS server: {cups.getServer()}")
     except RuntimeError as exc:
         logging.error(f"cups unavailable, skipping ipp-accounting run: {exc}")
         return 0
+
+    # Diagnostic: check printers and classes
+    try:
+        printers = conn.getPrinters()
+        classes = conn.getClasses()
+        logging.info(f"CUPS has {len(printers)} printers and {len(classes)} classes")
+    except Exception as exc:
+        logging.error(f"failed to list printers/classes: {exc}")
 
     with quota.get_connection(user="ocfprinting", password=mysql_pass) as c:
         _ensure_hold_schema(c)
