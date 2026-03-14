@@ -31,6 +31,9 @@ in
         Type = "oneshot";
         ExecStart = "${monitorBin} /srv/prometheus/cups.prom";
       };
+      environment = {
+        PYTHONUNBUFFERED = "1";
+      };
     };
 
     systemd.timers.monitor-cups = {

@@ -11,9 +11,18 @@ let
   ]);
 
   privacyCleanupScript = pkgs.writeText "enforcer-privacy-cleanup.py" ''
+    import logging
     import os
+    import sys
     import pymysql
 
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(message)s",
+        stream=sys.stderr,
+    )
+
+    logging.info("Starting privacy-cleanup run")
     mysql_passwd = open(os.environ['ENFORCER_MYSQL_PASSWORD']).read().strip()
     conn = pymysql.connect(
         host='mysql.ocf.berkeley.edu',
@@ -27,7 +36,9 @@ let
                 'UPDATE jobs SET doc_name = NULL '
                 'WHERE time < DATE_SUB(NOW(), INTERVAL 14 DAY)'
             )
+            logging.info(f"Cleaned up {c.rowcount} job document titles")
         conn.commit()
+    logging.info("finishing privacy-cleanup run")
   '';
 
   privacyCleanupBin = pkgs.writeShellScript "enforcer-privacy-cleanup" ''
@@ -66,6 +77,7 @@ in
       };
       environment = {
         ENFORCER_MYSQL_PASSWORD = cfg.mysqlPasswordFile;
+        PYTHONUNBUFFERED = "1";
       };
     };
 
@@ -79,6 +91,8 @@ in
 
     systemd.services.enforcer-submit-gate = {
       description = "Reject over-quota jobs shortly after submission";
+      after = [ "cups.service" ];
+      wants = [ "cups.service" ];
       serviceConfig = {
         Type = "oneshot";
         ExecStart = "${submitGateBin}";
@@ -86,19 +100,23 @@ in
       environment = {
         ENFORCER_MYSQL_PASSWORD = cfg.mysqlPasswordFile;
         ENFORCER_WAYOUT_PASSWORD = cfg.wayoutPasswordFile;
+        PYTHONUNBUFFERED = "1";
       };
     };
 
     systemd.timers.enforcer-submit-gate = {
       wantedBy = [ "timers.target" ];
       timerConfig = {
-        OnBootSec = "2s";
-        OnUnitActiveSec = "1s";
+        OnBootSec = "30s";
+        OnUnitActiveSec = "10s";
+        Persistent = true;
       };
     };
 
     systemd.services.ipp-accounting = {
       description = "Account completed IPP jobs into quota DB";
+      after = [ "cups.service" ];
+      wants = [ "cups.service" ];
       serviceConfig = {
         Type = "oneshot";
         ExecStart = "${ippAccountingBin}";
@@ -106,6 +124,7 @@ in
       environment = {
         ENFORCER_MYSQL_PASSWORD = cfg.mysqlPasswordFile;
         ENFORCER_WAYOUT_PASSWORD = cfg.wayoutPasswordFile;
+        PYTHONUNBUFFERED = "1";
       };
     };
 
@@ -113,7 +132,8 @@ in
       wantedBy = [ "timers.target" ];
       timerConfig = {
         OnBootSec = "30s";
-        OnUnitActiveSec = "5s";
+        OnUnitActiveSec = "10s";
+        Persistent = true;
       };
     };
   };

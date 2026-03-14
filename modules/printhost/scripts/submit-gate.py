@@ -6,6 +6,7 @@ Inspects pending CUPS jobs and cancels quickly when user credit is insufficient.
 This is transport/driver agnostic and works with driverless IPP queues.
 """
 
+import logging
 import os
 import sys
 from datetime import datetime
@@ -14,6 +15,12 @@ from urllib.parse import urlparse
 import cups
 import ocflib.printing.quota as quota
 import requests
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(message)s",
+    stream=sys.stderr,
+)
 
 COLOR_QUEUES = {"color-single", "color-double"}
 PENDING_STATE = 3
@@ -97,11 +104,11 @@ def _hold_job(conn, job_id):
 
 
 def _release_job(conn, job_id):
-    if hasattr(conn, "releaseJob"):
-        conn.releaseJob(job_id)
-        return
     if hasattr(conn, "setJobHoldUntil"):
         conn.setJobHoldUntil(job_id, "no-hold")
+        return
+    if hasattr(conn, "releaseJob"):
+        conn.releaseJob(job_id)
         return
     raise RuntimeError("No CUPS release API available on this pycups build")
 
@@ -136,17 +143,38 @@ def _send_notification(wayout_pass, summary, body, username):
 
 
 def main():
+    logging.info("Starting submit-gate run")
     with open(os.environ["ENFORCER_MYSQL_PASSWORD"]) as f:
         mysql_pass = f.read().strip()
     wayout_pass = ""
     if "ENFORCER_WAYOUT_PASSWORD" in os.environ:
         with open(os.environ["ENFORCER_WAYOUT_PASSWORD"]) as f:
             wayout_pass = f.read().strip()
-    conn = cups.Connection()
+    try:
+        conn = cups.Connection()
+    except RuntimeError as exc:
+        logging.error(f"cups unavailable, skipping submit-gate run: {exc}")
+        return 0
 
     # Active/pending jobs only.
-    jobs = conn.getJobs(which_jobs="not-completed")
-    if not jobs:
+    try:
+        jobs = conn.getJobs(which_jobs="not-completed")
+    except (cups.IPPError, RuntimeError) as exc:
+        logging.error(f"failed to list jobs, skipping submit-gate run: {exc}")
+        return 0
+
+    if jobs:
+        logging.info(f"Found {len(jobs)} jobs in CUPS: {list(jobs.keys())}")
+    else:
+        logging.info("no active jobs found in CUPS")
+        # Try listing completed jobs just for debugging
+        try:
+            completed = conn.getJobs(which_jobs="completed", first_job_id=-1, requested_attributes=["job-id", "job-name", "job-state"])
+            if completed:
+                logging.info(f"Recent completed jobs: {list(completed.keys())}")
+        except Exception:
+            pass
+        logging.info("finishing submit-gate run")
         return 0
 
     with quota.get_connection(user="ocfprinting", password=mysql_pass) as qdb:
@@ -171,9 +199,10 @@ def main():
 
             if job_state == PENDING_STATE:
                 try:
+                    logging.info(f"holding job {job_id} for user {user} on queue {queue}")
                     _hold_job(conn, job_id)
                 except (cups.IPPError, RuntimeError) as exc:
-                    print(f"failed to hold job {job_id}: {exc}", file=sys.stderr)
+                    logging.error(f"failed to hold job {job_id}: {exc}")
                 continue
 
             held_pages = _active_hold_pages(qdb, hold_id)
@@ -185,6 +214,10 @@ def main():
             over_color = queue in COLOR_QUEUES and pages > available_color
             if over_daily or over_color:
                 # Reject before print path reaches backend when possible.
+                logging.info(
+                    f"canceling job {job_id}: user={user} queue={queue} pages={pages} "
+                    f"daily_left={available_daily} color_left={available_color}",
+                )
                 try:
                     conn.cancelJob(job_id, purge_job=False)
                     if held_pages > 0:
@@ -199,6 +232,7 @@ def main():
                     pass
                 continue
 
+            logging.info(f"releasing job {job_id} for user {user} on queue {queue}")
             quota.add_hold(
                 qdb,
                 quota.Hold(
@@ -212,8 +246,9 @@ def main():
             try:
                 _release_job(conn, job_id)
             except (cups.IPPError, RuntimeError) as exc:
-                print(f"failed to release job {job_id}: {exc}", file=sys.stderr)
+                logging.error(f"failed to release job {job_id}: {exc}")
 
+    logging.info("finishing submit-gate run")
     return 0
 
 

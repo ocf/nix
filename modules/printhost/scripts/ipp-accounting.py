@@ -6,20 +6,28 @@ This replaces backend-hook accounting by polling completed CUPS jobs and
 recording quota usage via ocflib.printing.quota.add_job.
 """
 
+import logging
 import os
 import sys
-from datetime import datetime
+from datetime import datetime, timedelta
 from urllib.parse import urlparse
 
 import cups
 import ocflib.printing.quota as quota
 import requests
 
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(message)s",
+    stream=sys.stderr,
+)
+
 ABORTED_STATE = 8
 CANCELED_STATE = 7
 COMPLETED_STATE = 9
 WAYOUT_APP_NAME = "Printer"
 WAYOUT_PORT = 6767
+STALE_HOLD_AGE = timedelta(minutes=30)
 
 
 def _scalar(value):
@@ -105,25 +113,43 @@ def _send_notification(wayout_pass, summary, body, username):
 
 
 def main():
+    logging.info("Starting ipp-accounting run")
     with open(os.environ["ENFORCER_MYSQL_PASSWORD"]) as f:
         mysql_pass = f.read().strip()
     wayout_pass = ""
     if "ENFORCER_WAYOUT_PASSWORD" in os.environ:
         with open(os.environ["ENFORCER_WAYOUT_PASSWORD"]) as f:
             wayout_pass = f.read().strip()
-    conn = cups.Connection()
+    try:
+        conn = cups.Connection()
+    except RuntimeError as exc:
+        logging.error(f"cups unavailable, skipping ipp-accounting run: {exc}")
+        return 0
 
     with quota.get_connection(user="ocfprinting", password=mysql_pass) as c:
         _ensure_hold_schema(c)
+
+        # Diagnostic: check for completed jobs in CUPS
+        try:
+            completed_cups_jobs = conn.getJobs(which_jobs="completed", first_job_id=-1, requested_attributes=["job-id", "job-originating-user-name", "job-state"])
+            if completed_cups_jobs:
+                logging.info(f"Recently completed jobs in CUPS: {list(completed_cups_jobs.keys())}")
+        except Exception as exc:
+            logging.error(f"failed to list completed jobs from CUPS: {exc}")
+
         c.execute(
             """
-            SELECT `job_id`, `user`, `pages`, `queue`
+            SELECT `job_id`, `user`, `pages`, `queue`, `time`
             FROM `job_holds`
             WHERE `state` = 'active'
             ORDER BY `id` ASC
             """
         )
         active_holds = c.fetchall() or []
+
+        if not active_holds:
+            logging.info("no active holds, finishing ipp-accounting run")
+            return 0
 
         for hold in active_holds:
             hold_id = _scalar(hold.get("job_id"))
@@ -134,12 +160,17 @@ def main():
             try:
                 attrs = conn.getJobAttributes(cups_job_id)
             except cups.IPPError:
+                hold_time = _scalar(hold.get("time"))
+                if isinstance(hold_time, datetime) and datetime.now() - hold_time > STALE_HOLD_AGE:
+                    quota.release_hold(c, hold_id)
+                    logging.info(f"released stale hold {hold_id} after missing CUPS job")
                 continue
 
             job_state = _to_int(attrs.get("job-state"), 0)
             if job_state == COMPLETED_STATE:
                 user = _scalar(attrs.get("job-originating-user-name")) or _scalar(hold.get("user")) or ""
                 if not user:
+                    logging.info(f"settling hold {hold_id} with no user")
                     quota.settle_hold(c, hold_id)
                     continue
 
@@ -163,6 +194,7 @@ def main():
                     doc_name=_scalar(attrs.get("job-name")) or "",
                     filesize=str(max(0, _to_int(attrs.get("job-k-octets"), 0) * 1024)),
                 )
+                logging.info(f"accounting job {cups_job_id} for user {user}: {pages} pages on {queue_name}")
                 quota.add_job(c, job)
                 quota.settle_hold(c, hold_id)
                 _send_notification(
@@ -172,8 +204,10 @@ def main():
                     user,
                 )
             elif job_state in {ABORTED_STATE, CANCELED_STATE}:
+                logging.info(f"releasing hold {hold_id} for job state {job_state}")
                 quota.release_hold(c, hold_id)
 
+    logging.info("finishing ipp-accounting run")
     return 0
 
 
