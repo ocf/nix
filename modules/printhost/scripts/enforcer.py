@@ -343,7 +343,7 @@ def forward_to_printer(argv, filepath):
     device_uri = os.environ.get("DEVICE_URI", "")
     real_uri = device_uri.split(":", 1)[1]  # strip "enforcer:" prefix
     scheme = real_uri.split("://", 1)[0]
-    backend = IPP_BACKEND if scheme == "ipp" else SOCKET_BACKEND
+    backend = IPP_BACKEND if scheme in ("ipp", "ipps") else SOCKET_BACKEND
     env = {**os.environ, "DEVICE_URI": real_uri}
     result = subprocess.run(
         [backend] + argv[1:6] + [filepath],
