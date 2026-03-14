@@ -167,7 +167,7 @@ def main():
 
     # Active/pending jobs only.
     try:
-        jobs = conn.getJobs(which_jobs="not-completed")
+        jobs = conn.getJobs(which_jobs="not-completed", my_jobs=False)
     except (cups.IPPError, RuntimeError) as exc:
         logging.error(f"failed to list jobs, skipping submit-gate run: {exc}")
         return 0
@@ -178,7 +178,7 @@ def main():
         logging.info("no active jobs found in CUPS")
         # Try listing completed jobs just for debugging
         try:
-            completed = conn.getJobs(which_jobs="completed", first_job_id=-1, requested_attributes=["job-id", "job-name", "job-state"])
+            completed = conn.getJobs(which_jobs="completed", my_jobs=False, first_job_id=-1, requested_attributes=["job-id", "job-name", "job-state"])
             if completed:
                 logging.info(f"Recent completed jobs: {list(completed.keys())}")
         except Exception:

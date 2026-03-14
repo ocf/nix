@@ -140,7 +140,7 @@ def main():
 
         # Diagnostic: check for completed jobs in CUPS
         try:
-            completed_cups_jobs = conn.getJobs(which_jobs="completed", first_job_id=-1, requested_attributes=["job-id", "job-originating-user-name", "job-state"])
+            completed_cups_jobs = conn.getJobs(which_jobs="completed", my_jobs=False, first_job_id=-1, requested_attributes=["job-id", "job-originating-user-name", "job-state"])
             if completed_cups_jobs:
                 logging.info(f"Recently completed jobs in CUPS: {list(completed_cups_jobs.keys())}")
         except Exception as exc:
