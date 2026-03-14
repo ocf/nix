@@ -88,7 +88,6 @@ in
     pulseaudio
     pciutils
     usbutils
-    cups
     ipmitool
     smartmontools
     nvme-cli
@@ -166,15 +165,6 @@ in
   services.pulseaudio.enable = false;
 
   networking.firewall.enable = false;
-
-  environment.etc = {
-    papersize.text = "letter";
-    "cups/lpoptions".text = "Default double";
-    "cups/client.conf".text = ''
-      ServerName printhost.ocf.berkeley.edu
-      Encryption Always
-    '';
-  };
 
   environment.etc."nixos/configuration.nix".text = ''
     {}: builtins.abort "This machine is not managed by /etc/nixos. Please use configs at ocf.io/gh/nix with Colmena."
