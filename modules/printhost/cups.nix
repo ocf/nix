@@ -27,7 +27,6 @@ in
           location = "OCF lab";
           ppdOptions = {
             Duplex = "DuplexNoTumble";
-            "job-hold-until" = "indefinite";
           };
         }
         {
@@ -37,7 +36,6 @@ in
           location = "OCF lab";
           ppdOptions = {
             Duplex = "None";
-            "job-hold-until" = "indefinite";
           };
         }
         {
@@ -47,7 +45,6 @@ in
           location = "OCF lab";
           ppdOptions = {
             Duplex = "DuplexNoTumble";
-            "job-hold-until" = "indefinite";
           };
         }
         {
@@ -57,7 +54,6 @@ in
           location = "OCF lab";
           ppdOptions = {
             Duplex = "None";
-            "job-hold-until" = "indefinite";
           };
         }
         {
@@ -67,7 +63,6 @@ in
           location = "OCF lab";
           ppdOptions = {
             Duplex = "DuplexNoTumble";
-            "job-hold-until" = "indefinite";
           };
         }
         {
@@ -77,7 +72,6 @@ in
           location = "OCF lab";
           ppdOptions = {
             Duplex = "None";
-            "job-hold-until" = "indefinite";
           };
         }
         {
@@ -89,7 +83,6 @@ in
             Duplex = "DuplexNoTumble";
             PageSize = "Letter";
             InputSlot = "Alternate";
-            "job-hold-until" = "indefinite";
           };
         }
         {
@@ -101,7 +94,6 @@ in
             Duplex = "None";
             PageSize = "Letter";
             InputSlot = "Alternate";
-            "job-hold-until" = "indefinite";
           };
         }
       ];

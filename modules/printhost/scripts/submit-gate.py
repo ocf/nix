@@ -60,17 +60,89 @@ def _get_pdf_pages(job_id):
     # CUPS spool files are usually in /var/spool/cups/dXXXXX-001
     spool_path = f"/var/spool/cups/d{job_id:05d}-001"
     if not os.path.exists(spool_path):
-        logging.debug(f"Spool file {spool_path} not found for job {job_id}")
+        logging.info(f"Spool file {spool_path} not found for job {job_id}")
         return None
     
     try:
         # Use pdfinfo to get the actual page count from the spool file
         out = subprocess.check_output(["pdfinfo", spool_path], stderr=subprocess.STDOUT, text=True)
+        logging.info(f"pdfinfo output for job {job_id}: {out.strip()}")
         for line in out.splitlines():
             if line.startswith("Pages:"):
                 return int(line.split(":")[1].strip())
     except Exception as exc:
-        logging.debug(f"pdfinfo failed for job {job_id}: {exc}")
+        logging.info(f"pdfinfo failed for job {job_id}: {exc}")
+    
+    return None
+
+
+def _get_copies_from_control_file(job_id):
+    # CUPS control files are named cXXXXX where XXXXX is the job ID.
+    # We'll try a few variations and also list the directory if needed.
+    c_path = None
+    
+    # Try direct paths first
+    for p in [f"/var/spool/cups/c{job_id}", f"/var/spool/cups/c{job_id:05d}"]:
+        if os.path.exists(p):
+            c_path = p
+            break
+            
+    if not c_path:
+        # List directory to find the file and debug permissions/naming
+        try:
+            files = os.listdir("/var/spool/cups")
+            logging.info(f"Control file not found at expected paths. /var/spool/cups contains: {files}")
+            for f in files:
+                if f.startswith("c") and str(job_id) in f:
+                    c_path = os.path.join("/var/spool/cups", f)
+                    logging.info(f"Found alternative control file path: {c_path}")
+                    break
+        except Exception as e:
+            logging.error(f"Failed to list /var/spool/cups: {e}")
+
+    if not c_path:
+        return None
+    
+    try:
+        with open(c_path, 'rb') as f:
+            content = f.read()
+            logging.info(f"Inspecting control file {c_path} ({len(content)} bytes)")
+            
+            # Pattern 1: Standard IPP integer 'copies'
+            # 0x21 (Integer Tag), [2-byte NameLen], 'copies', [2-byte ValLen], [4-byte Val]
+            # NameLen for 'copies' is 6 (\x00\x06), ValLen is 4 (\x00\x04)
+            match = re.search(rb'\x21\x00\x06copies\x00\x04(....)', content)
+            if match:
+                val = int.from_bytes(match.group(1), byteorder='big')
+                logging.info(f"Discovered copies={val} via IPP 'copies' pattern")
+                return val
+            
+            # Pattern 2: 'number-of-copies' (NameLen 16 = \x00\x10)
+            match = re.search(rb'\x21\x00\x10number-of-copies\x00\x04(....)', content)
+            if match:
+                val = int.from_bytes(match.group(1), byteorder='big')
+                logging.info(f"Discovered copies={val} via IPP 'number-of-copies' pattern")
+                return val
+
+            # Pattern 3: String-based discovery for common client options
+            for keyword in [b'copies', b'Count', b'NumCopies', b'Copies']:
+                match = re.search(keyword + rb'\s*=\s*(\d+)', content, re.IGNORECASE)
+                if match:
+                    val = int(match.group(1))
+                    logging.info(f"Discovered copies={val} via string pattern '{keyword.decode()}'")
+                    return val
+
+            # Diagnostic: If we can't find it, dump context around any 'copies' mention or the header
+            idx = content.lower().find(b'copies')
+            if idx != -1:
+                snippet = content[max(0, idx-20):idx+40].hex()
+                logging.info(f"Found 'copies' keyword at {idx} but no pattern match. Context (hex): {snippet}")
+            else:
+                header = content[:512].hex()
+                logging.info(f"No copy count found. Control file header (first 512 bytes hex):\n{header}")
+                
+    except Exception as exc:
+        logging.error(f"Failed to read/parse control file {c_path}: {exc}")
     
     return None
 
@@ -78,34 +150,35 @@ def _get_pdf_pages(job_id):
 def _estimate_requested_pages(attrs):
     job_id = _to_int(attrs.get("job-id"), 0)
     
-    # Prefer IPP-reported impression/media estimates.
-    # When a job is first submitted and held, these are often 0.
+    # Check IPP attributes
     impressions = _to_int(attrs.get("job-impressions"), 0)
     sheets = _to_int(attrs.get("job-media-sheets"), 0)
+    copies = _to_int(attrs.get("copies"), 0) or _to_int(attrs.get("number-of-copies"), 0)
     
-    # Check both standard and common variant for copies
-    copies = max(
-        1, 
-        _to_int(attrs.get("copies"), 1), 
-        _to_int(attrs.get("number-of-copies"), 1)
-    )
+    # Fallback to control file
+    if copies <= 1:
+        cf_copies = _get_copies_from_control_file(job_id)
+        if cf_copies:
+            copies = cf_copies
+
+    if copies == 0:
+        copies = 1
     
     base_pages = max(impressions, sheets)
     
-    # Fallback: if IPP counts are 0 and it's a PDF, try inspecting the spool file.
+    # Accurate PDF counting
     if base_pages == 0 and attrs.get("document-format") == "application/pdf":
         pdf_pages = _get_pdf_pages(job_id)
         if pdf_pages is not None:
-            logging.info(f"Discovered {pdf_pages} document pages via pdfinfo for job {job_id}")
-            # pdfinfo gives pages in the doc, we MUST multiply by copies
+            # If pdf_pages is large, it might already include copies
+            # (e.g. user printed 2 copies of 1 page, browser sent 2 page PDF)
             base_pages = pdf_pages
             
-    # Final safety floor
     if base_pages == 0:
         base_pages = 1
         
     est = base_pages * copies
-    logging.info(f"Page estimate for job {job_id}: base_pages={base_pages}, copies={copies} (from attrs: impressions={impressions}, sheets={sheets}) -> total={est}")
+    logging.info(f"Final estimate for job {job_id}: {base_pages} pages * {copies} copies = {est} total")
     return est
 
 

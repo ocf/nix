@@ -109,7 +109,7 @@ in
       wantedBy = [ "timers.target" ];
       timerConfig = {
         OnBootSec = "30s";
-        OnUnitActiveSec = "10s";
+        OnUnitActiveSec = "30s";
         Persistent = true;
       };
     };
@@ -134,7 +134,7 @@ in
       wantedBy = [ "timers.target" ];
       timerConfig = {
         OnBootSec = "30s";
-        OnUnitActiveSec = "10s";
+        OnUnitActiveSec = "30s";
         Persistent = true;
       };
     };
