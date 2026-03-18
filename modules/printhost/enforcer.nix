@@ -93,6 +93,7 @@ in
       description = "Reject over-quota jobs shortly after submission";
       after = [ "cups.service" ];
       wants = [ "cups.service" ];
+      path = [ pkgs.cups pkgs.poppler-utils ];
       serviceConfig = {
         Type = "oneshot";
         ExecStart = "${submitGateBin}";
@@ -117,6 +118,7 @@ in
       description = "Account completed IPP jobs into quota DB";
       after = [ "cups.service" ];
       wants = [ "cups.service" ];
+      path = [ pkgs.cups ];
       serviceConfig = {
         Type = "oneshot";
         ExecStart = "${ippAccountingBin}";

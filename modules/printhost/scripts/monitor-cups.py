@@ -6,6 +6,8 @@ metrics format.
 
 import logging
 import sys
+import getpass
+import os
 
 import cups
 from prometheus_client import CollectorRegistry
@@ -24,6 +26,9 @@ def main():
         logging.error("usage: monitor-cups.py <output_file>")
         return 1
 
+    logging.info(f"Starting monitor-cups run as user: {getpass.getuser()} (UID: {os.getuid()})")
+    cups.setUser("root")
+    logging.info(f"CUPS user set to: {cups.getUser()}")
     logging.info(f"Starting monitor-cups run, outputting to {sys.argv[1]}")
     registry = CollectorRegistry()
 

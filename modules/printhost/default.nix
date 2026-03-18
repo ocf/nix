@@ -30,6 +30,7 @@
 
   config = lib.mkIf config.ocf.printhost.enable {
     users.users."cups".extraGroups = [ "acme" ];
+    users.users."root".extraGroups = [ "lp" ];
 
     security.acme.defaults.reloadServices = [ "cups.service" ];
 

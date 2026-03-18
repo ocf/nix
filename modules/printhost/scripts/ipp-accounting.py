@@ -9,6 +9,7 @@ recording quota usage via ocflib.printing.quota.add_job.
 import logging
 import os
 import sys
+import getpass
 from datetime import datetime, timedelta
 from urllib.parse import urlparse
 
@@ -57,11 +58,32 @@ def _queue_from_uri(uri):
 
 
 def _pages_from_attrs(attrs):
-    # Prefer sheets completed for paper accounting; fall back to impressions.
-    sheets = _to_int(attrs.get("job-media-sheets-completed"), 0)
+    job_id = _to_int(attrs.get("job-id"), 0)
+    logging.info(f"Full attributes for completed job {job_id}: {attrs}")
+    
+    # job-impressions-completed is the total number of sides printed for the whole job.
+    # This should include copies if the backend/CUPS reported it correctly.
     impressions = _to_int(attrs.get("job-impressions-completed"), 0)
-    copies = max(1, _to_int(attrs.get("copies"), 1))
-    return max(sheets, impressions, copies, 1)
+    
+    # job-media-sheets-completed is the total number of physical sheets.
+    sheets = _to_int(attrs.get("job-media-sheets-completed"), 0)
+    
+    # Check both standard and common variant for copies
+    copies = max(
+        1, 
+        _to_int(attrs.get("copies"), 1), 
+        _to_int(attrs.get("number-of-copies"), 1)
+    )
+    
+    # Heuristic: impressions is the most accurate for "per-side" billing if non-zero.
+    # If impressions is zero, fallback to sheets * copies.
+    if impressions > 0:
+        actual = impressions
+    else:
+        actual = max(1, sheets * copies)
+        
+    logging.info(f"Page counting for completed job {job_id}: impressions={impressions}, sheets={sheets}, copies={copies} -> actual={actual}")
+    return actual
 
 
 def _ensure_hold_schema(c):
@@ -113,7 +135,9 @@ def _send_notification(wayout_pass, summary, body, username):
 
 
 def main():
-    logging.info("Starting ipp-accounting run")
+    logging.info(f"Starting ipp-accounting run as user: {getpass.getuser()} (UID: {os.getuid()})")
+    cups.setUser("root")
+    logging.info(f"CUPS user set to: {cups.getUser()}")
     with open(os.environ["ENFORCER_MYSQL_PASSWORD"]) as f:
         mysql_pass = f.read().strip()
     wayout_pass = ""
@@ -140,11 +164,12 @@ def main():
 
         # Diagnostic: check for completed jobs in CUPS
         try:
-            completed_cups_jobs = conn.getJobs(which_jobs="completed", my_jobs=False, first_job_id=-1, requested_attributes=["job-id", "job-originating-user-name", "job-state"])
+            completed_cups_jobs = conn.getJobs(which_jobs="completed", my_jobs=False, requested_attributes=["job-id", "job-originating-user-name", "job-state"])
             if completed_cups_jobs:
                 logging.info(f"Recently completed jobs in CUPS: {list(completed_cups_jobs.keys())}")
         except Exception as exc:
             logging.error(f"failed to list completed jobs from CUPS: {exc}")
+
 
         c.execute(
             """
