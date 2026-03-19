@@ -1,11 +1,26 @@
-{ pkgs, lib, inputs, config, ... }:
+{ self, pkgs, lib, inputs, config, ... }:
 
 let
   secretsDir = inputs.self + "/secrets";
   hostKeyFile = secretsDir + "/host-keys/${config.networking.hostName}.pub";
+  gitRev =
+    if (self ? shortRev ) then
+      self.shortRev
+    else if (self ? dirtyRev) then
+      # self.rev has self.shortRev but there is no equivalent for self.dirtyRev
+      (builtins.substring 0 7 self.dirtyRev) + "-dirty"
+    else "nullrev";
+  gitDate =
+    if (self ? lastModifiedDate) then
+      self.lastModifiedDate
+    else
+      "unknown";
 in
 
 {
+  system.configurationRevision = gitRev;
+  system.nixos.label = "${gitRev}-${gitDate}-${system.nixos.version}";
+
   nix = {
     channel.enable = false;
     registry = lib.mapAttrs (_: value: { flake = value; }) inputs;
