@@ -1,3 +1,5 @@
+# documents and media
+
 { lib, config, pkgs, ... }:
 
 let
@@ -38,8 +40,6 @@ in
     };
 
     environment.systemPackages = with pkgs; [
-      kdePackages.gwenview
-
       # scanning
       simple-scan
 
@@ -56,6 +56,34 @@ in
 
       # editors
       xournalpp
+
+      kdePackages.gwenview
+      vlc
+
+      # useful for iso files even without a cd drive
+      # needed for melange (cd drive host)
+      brasero
+      kdePackages.k3b
+    ] ++ lib.optionals cfg.extra [
+      krita
+      gimp3
+      darktable
+      inkscape
+      blender
+      kdePackages.kdenlive
+      drawio
+      octave
+
+      freecad
+      kicad
+      openscad
+
+      audacity
+      mpv
+      ncmpcpp
+      yt-dlp
+      ffmpeg
+      songrec
     ];
 
     ocf.graphical.apps.browsers.handlePDFs = true;

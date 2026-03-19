@@ -28,12 +28,8 @@ in
       st
       ghostty
 
-      drawio
-      octave
-
       yubioath-flutter
       kdiskmark
-      songrec
       remmina
 
       # IRC Clients
@@ -44,33 +40,11 @@ in
 
       element-desktop
 
-      krita
-      gimp3
-      darktable
-      inkscape
-      blender
-      kdePackages.kdenlive
-
-      audacity
-      mpv
-      vlc
-      ncmpcpp
-      yt-dlp
-      ffmpeg
-
       # pipewire
       easyeffects
       helvum
 
-      freecad
-      kicad
-      openscad
-
       mission-center
-
-      # useful for iso files even without a cd drive
-      brasero
-      kdePackages.k3b
 
       # TEXT & CODE EDITORS
       vscode-fhs
