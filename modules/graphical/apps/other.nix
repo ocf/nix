@@ -19,6 +19,9 @@ in
     programs.java.enable = true; # set $JAVA_HOME
     programs.java.package = pkgs.zulu25;
 
+    programs.thunderbird.enable = true;
+    xdg.mime.addedAssociations."x-scheme-handler/mailto" = "thunderbird.desktop";
+
     environment.systemPackages = with pkgs; [
       # extra terminal emulators
       alacritty
