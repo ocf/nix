@@ -17,13 +17,25 @@ in
     programs.steam.protontricks.enable = true;
 
     environment.systemPackages = with pkgs; [
+      # controller support
+      antimicrox
+
       # GAMES
       dwarf-fortress
-      prismlauncher
       unciv
       superTuxKart
       tetris
-      antimicrox
+
+      # emulators
+      dosbox
+      dolphin-emu
+      ryubing
+
+      # minecraft
+      prismlauncher
+      worldpainter
+      amidst
+      mcaselector
 
       # windows compat
       wine

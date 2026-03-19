@@ -32,6 +32,11 @@ in
       kdiskmark
       remmina
 
+      zenmap
+      wireshark
+
+      cobang
+
       # IRC Clients
       irssi
       weechat
@@ -51,10 +56,16 @@ in
       vscodium-fhs
       rstudio
       zed-editor
-      jetbrains.idea-oss
       gnome-builder
+      jetbrains.idea-oss
+      jetbrains.pycharm-oss
+      jetbrains.datagrip
+
+      insomnia
 
       gitg
+      github-desktop
+
       meld
 
       # Editors
@@ -70,7 +81,10 @@ in
       elixir
       clojure
       ghc
-      rustup
+      rustup # to install other versions not installed by default
+      rustfmt
+      rustc
+      cargo
       clang
       nodejs_22
       graphviz
@@ -83,6 +97,8 @@ in
       go
       sqlite
       godot
+      kotlin
+      libxml2 # xmllint
 
       # File management tools
       zip

@@ -174,6 +174,8 @@
             "vscode"
             "zoom"
             "drawio"
+            "datagrip"
+            "davinci-resolve"
           ];
         };
       };

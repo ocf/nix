@@ -65,25 +65,42 @@ in
       brasero
       kdePackages.k3b
     ] ++ lib.optionals cfg.extra [
+      apostrophe
+      #texliveFull
+      texstudio
+      pandoc
+      img2pdf
+
       krita
       gimp3
       darktable
       inkscape
       blender
-      kdePackages.kdenlive
       drawio
       octave
+      kdePackages.kdenlive
+      davinci-resolve
+
+      audacity
+      ardour
+      musescore
+      milkytracker
+      schismtracker
 
       freecad
       kicad
       openscad
 
-      audacity
       mpv
       ncmpcpp
+      strawberry
+      xmp
       yt-dlp
       ffmpeg
       songrec
+
+      exiftool
+      imagemagick
     ];
 
     ocf.graphical.apps.browsers.handlePDFs = true;
