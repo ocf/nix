@@ -4,13 +4,17 @@ let
   cfg = config.ocf.graphical;
 in
 {
-  options.ocf.graphical.apps.browsers = lib.mkOption {
-    type = lib.types.bool;
-    description = "Enable browser configuration";
-    default = cfg.enable;
+  options.ocf.graphical.apps.browsers = {
+    enable = lib.mkOption {
+      type = lib.types.bool;
+      description = "Enable browser configuration";
+      default = cfg.enable;
+    };
+
+    handlePDFs = lib.mkEnableOption "Use browser as PDF viewer";
   };
 
-  config = lib.mkIf cfg.apps.browsers {
+  config = lib.mkIf cfg.apps.browsers.enable {
     environment.systemPackages = with pkgs; [
       firefox
     ] ++ lib.optionals cfg.extra [
@@ -20,6 +24,12 @@ in
       google-chrome # absolutely proprietary
       ungoogled-chromium
     ];
+
+    xdg.mime.addedAssociations = {
+      "application/pdf" = lib.mkIf cfg.apps.browsers.handlePDFs "firefox.desktop";
+      "x-scheme-handler/http" = "firefox.desktop";
+      "x-scheme-handler/https" = "firefox.desktop";
+    };
 
     programs.firefox = {
       enable = true;

@@ -6,13 +6,13 @@ let
   cfg = config.ocf.graphical;
 in
 {
-  options.ocf.graphical.apps.other = lib.mkOption {
+  options.ocf.graphical.apps.other.enable = lib.mkOption {
     type = lib.types.bool;
     description = "Enable other apps";
     default = cfg.enable && cfg.extra;
   };
 
-  config = lib.mkIf cfg.apps.other {
+  config = lib.mkIf cfg.apps.other.enable {
     programs.zoom-us.enable = true;
     programs.obs-studio.enable = true;
     programs.obs-studio.enableVirtualCamera = true;
