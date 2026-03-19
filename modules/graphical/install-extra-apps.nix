@@ -13,6 +13,8 @@ in
     programs.zoom-us.enable = true;
     programs.obs-studio.enable = true;
     programs.obs-studio.enableVirtualCamera = true;
+    programs.java.enable = true; # set $JAVA_HOME
+    programs.java.package = pkgs.zulu25;
 
     environment.systemPackages = with pkgs; [
       # extra terminal emulators
@@ -41,6 +43,7 @@ in
 
       krita
       gimp3
+      darktable
       inkscape
       blender
       kdePackages.kdenlive
@@ -113,7 +116,6 @@ in
       valgrind
       go
       sqlite
-      zulu25
       godot
 
       # File management tools

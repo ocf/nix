@@ -174,6 +174,7 @@ in
       '';
     };
 
+    # EDGE CASE: if user has custom halloy config with specific rose pine colorscheme and doesnt want it to dynamically change with dark/light mode, they should name their colorscheme something aside from the OCF defaults (rose-pine.toml and rose-pine-dawn.toml)! Content can stay the same.
     systemd.user.services.cosmictheme-dark = {
       description = "Changes the user's persistent preference in ~/remote when the cosmic dark mode setting is changed.";
       after = [ "cosmic-session.target" ];
@@ -192,10 +193,13 @@ in
             if [ "$content" = "true" ]; then
               echo "dark" > "$OCF_THEME_FILE"
               sed -i -E 's/bg-(light|dark)/bg-dark/g' $COSMIC_BG_FILE
+              sed -i 's/theme = "rose-pine-dawn"/theme = "rose-pine"/' $HOME/.config/halloy/config.toml
             else
               echo "light" > "$OCF_THEME_FILE"
               sed -i -E 's/bg-(light|dark)/bg-light/g' $COSMIC_BG_FILE
+              sed -i 's/theme = "rose-pine"/theme = "rose-pine-dawn"/' $HOME/.config/halloy/config.toml
             fi
+            pkill -USR1 halloy || true
           fi
         }
 
