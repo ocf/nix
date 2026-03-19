@@ -80,6 +80,9 @@ in
     '';
   };
 
+  environment.variables.EDITOR = "${pkgs.vim}/bin/ex";    # line editor
+  environment.variables.VISUAL = "${pkgs.nano}/bin/nano"; # visual editor
+
   environment.systemPackages = with pkgs; [
     # System utilities
     dnsutils
@@ -120,7 +123,7 @@ in
     dua
     lf
     file
-    vim
+    micro
     ripgrep
 
     comma-with-db
@@ -134,6 +137,8 @@ in
     (python312.withPackages (ps: [ ps.ocflib ]))
     ocf-utils
   ];
+
+  programs.vim.enable = true;
 
   services = {
     openssh = {
