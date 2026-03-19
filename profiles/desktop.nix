@@ -105,13 +105,14 @@ in
         Encryption Never
       '';
     };
-    services.avahi = {
+    avahi = {
       enable = true;
       nssmdns4 = true;
       openFirewall = true;
     };
-    hardware.printers.ensureDefaultPrinter = "monochrome";
   };
+  
+  hardware.printers.ensureDefaultPrinter = "monochrome";
 
   security.rtkit.enable = true;
   services.pulseaudio.enable = false;
