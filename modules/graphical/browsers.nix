@@ -127,9 +127,14 @@ in
             Value = false;
             Status = "default";
           };
+          "toolkit.legacyUserProfileCustomizations.stylesheets" = {
+            Value = true;
+            Status = "default";
+          };
         };
       };
     };
+    
 
     # Force Chrome to use Wayland, rather than XWayland
     environment.sessionVariables.NIXOS_OZONE_WL = "1";
