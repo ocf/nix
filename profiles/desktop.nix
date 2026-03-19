@@ -87,32 +87,31 @@ in
 
     # IRC password prompt
     kdePackages.kdialog
+    
+    # Add printing packages
+    cups
   ];
 
   services = {
+    avahi.enable = true;
+
     pipewire = {
       enable = true;
       pulse.enable = true;
       jack.enable = true;
       alsa.enable = true;
     };
-    
-    # Enable printing via cups
-    printing = {
-      enable = true;
-      extraConf = ''
-        ServerName printhost-dev.ocf.berkeley.edu
-        Encryption Never
-      '';
-    };
-    avahi = {
-      enable = true;
-      nssmdns4 = true;
-      openFirewall = true;
-    };
   };
   
-  hardware.printers.ensureDefaultPrinter = "monochrome";
+  # CUPS Config
+  environment.etc = {
+    papersize.text = "letter";
+    "cups/lpoptions".text = "Default double";
+    "cups/client.conf".text = ''
+      ServerName printhost-dev.ocf.berkeley.edu
+      Encryption Never
+    '';
+  };
 
   security.rtkit.enable = true;
   services.pulseaudio.enable = false;
