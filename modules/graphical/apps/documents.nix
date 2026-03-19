@@ -15,7 +15,17 @@ in
     # grammar checker for libreoffice
     services.languagetool.enable = true;
     services.languagetool.public = false;
-    environment.etc."libreoffice/registry/languagetool.xcu".source = ./libreoffice-languagetool.xcu;
+
+    # Apache OpenOffice documentation mentions administrator config methods but
+    # LibreOffice docs do not mention it, and it seems sparsely documented if
+    # at all documented. I just inserted what LibreOffice does when you change
+    # the settings into the skeleton home to keep things simple (and formatted
+    # the xml nicely).
+    # FIXME: doesnt work, "Permission denied", probably has something to do
+    # with environment.etc."skel" already being set to a directory, so i put
+    # the config in ../skel instead. this does mean that languagetool will be
+    # enabled in libreoffice regardless of whether the system has it.
+    #environment.etc."skel/.config/libreoffice/4/user/registrymodifications.xcu".source = ./libreoffice-config.xcu;
 
     xdg.mime.addedAssociations = {
       "image/jpeg"    = "org.kde.gwenview.desktop";
