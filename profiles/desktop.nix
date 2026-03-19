@@ -2,16 +2,7 @@
 
 { config, pkgs, lib, inputs, ... }:
 
-# TODO: Move this to pkgs/ or come up with a better way to manage custom scripts
 let
-  vncScript = pkgs.writeShellScriptBin "ocf-tv" ''
-    ${lib.getExe pkgs.openssh_gssapi} -M -S /tmp/ocftv-ssh-ctl -fNT -L 5900:localhost:5900 tornado
-    ${lib.getExe pkgs.remmina} --no-tray-icon --disable-news --disable-stats --enable-extra-hardening -c vnc://localhost
-    ${lib.getExe pkgs.openssh_gssapi} -S /tmp/ocftv-ssh-ctl -O exit tornado
-  '';
-  # override ocf-tv from util
-  ocf-tv = lib.hiPrio vncScript;
-
   # Default openssh doesn't include GSSAPI support, so we need to override sshfs
   # to use the openssh_gssapi package instead. This is annoying because the
   # sshfs package's openssh argument is nested in another layer of callPackage,
@@ -78,8 +69,6 @@ in
     dua
     tree
     tmux
-
-    ocf-tv
 
     # COSMIC Applets
     ocf-cosmic-applets
