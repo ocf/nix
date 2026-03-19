@@ -76,6 +76,9 @@ in
 
     # IRC password prompt
     kdePackages.kdialog
+    
+    # Add printing packages
+    cups
   ];
 
   services = {
@@ -87,6 +90,16 @@ in
       jack.enable = true;
       alsa.enable = true;
     };
+  };
+  
+  # CUPS Config
+  environment.etc = {
+    papersize.text = "letter";
+    "cups/lpoptions".text = "Default double";
+    "cups/client.conf".text = ''
+      ServerName printhost-dev.ocf.berkeley.edu
+      Encryption Never
+    '';
   };
 
   security.rtkit.enable = true;

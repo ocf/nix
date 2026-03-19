@@ -1,0 +1,45 @@
+{ pkgs, lib, config, ... }:
+
+{
+  imports = [ ../../hardware/virtualized.nix ];
+
+  networking.hostName = "tule";
+
+  ocf.network = {
+    enable = true;
+    lastOctet = 127;
+  };
+
+  ocf.acme = {
+    enable = true;
+  };
+
+  ocf.printhost = {
+    enable = true;
+    mysqlPasswordFile = config.age.secrets.printhost-mysql-password.path;
+    wayoutPasswordFile = config.age.secrets.printhost-wayout-password.path;
+  };
+
+  age.secrets.printhost-mysql-password = {
+    rekeyFile = ../../secrets/master-keyed/printhost/mysql-password.age;
+    mode = "0440";
+    group = "lp";
+  };
+  age.secrets.printhost-wayout-password = {
+    rekeyFile = ../../secrets/master-keyed/printhost/wayout-password.age;
+    mode = "0440";
+    group = "lp";
+  };
+  services.postfix = {
+    enable = true;
+    domain = "ocf.berkeley.edu";
+    origin = "ocf.berkeley.edu";
+    config = {
+      mydestination = "";
+      inet_interfaces = "loopback-only";
+      relayhost = ["smtp.ocf.berkeley.edu"];
+    };
+  };
+
+  system.stateVersion = "25.05";
+}

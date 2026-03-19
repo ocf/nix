@@ -23,7 +23,11 @@ in
 
   config = lib.mkIf cfg.enable {
 
-    age.secrets.tsig-secret.rekeyFile = ../secrets/master-keyed/tsig-secret.age;
+    age.secrets.tsig-secret = {
+      rekeyFile = ../secrets/master-keyed/tsig-secret.age;
+      group = "acme";
+      mode = "0440";
+    };
 
     security.acme = {
 
