@@ -11,6 +11,9 @@ in
       enable = true;
       startWhenNeeded = false;
       listenAddresses = [ "*:80" "*:631" ];
+      browsed.enable = false;
+      browsing = true;
+      stateless = true;
       extraConf = lib.mkForce (lib.replaceStrings [ "@cups-url@" ] [ "${config.ocf.printhost.printhostUrl}" ]
         (builtins.readFile ./conf/cupsd.conf));
       extraFilesConf = lib.replaceStrings [ "@hostname@" ] [ "${config.networking.hostName}.ocf.berkeley.edu" ]
@@ -18,83 +21,48 @@ in
     };
     
     hardware.printers = {
-      ensureDefaultPrinter = "double";
+      # ensureDefaultPrinter = "double";
       ensurePrinters = [
         {
-          name = "logjam-double";
+          name = "logjam";
           deviceUri = "ipp://169.229.226.92/ipp/print";
           model = "everywhere";
           location = "OCF lab";
-          ppdOptions = {
-            Duplex = "DuplexNoTumble";
-          };
+          # ppdOptions = {
+          #   Duplex = "DuplexNoTumble";
+          #   PageSize = "Letter";
+          # };
         }
         {
-          name = "logjam-single";
-          deviceUri = "ipp://169.229.226.92/ipp/print";
-          model = "everywhere";
-          location = "OCF lab";
-          ppdOptions = {
-            Duplex = "None";
-          };
-        }
-        {
-          name = "pagefault-double";
-          deviceUri = "ipp://169.229.226.91/ipp/print";
-          model = "everywhere";
-          location = "OCF lab";
-          ppdOptions = {
-            Duplex = "DuplexNoTumble";
-          };
-        }
-        {
-          name = "pagefault-single";
-          deviceUri = "ipp://169.229.226.91/ipp/print";
-          model = "everywhere";
-          location = "OCF lab";
-          ppdOptions = {
-            Duplex = "None";
-          };
-        }
-        {
-          name = "papercut-double";
+          name = "papercut";
           deviceUri = "ipp://169.229.226.93/ipp/print";
           model = "everywhere";
           location = "OCF lab";
-          ppdOptions = {
-            Duplex = "DuplexNoTumble";
-          };
+          # ppdOptions = {
+          #   Duplex = "DuplexNoTumble";
+          #   PageSize = "Letter";
+          # };
         }
         {
-          name = "papercut-single";
-          deviceUri = "ipp://169.229.226.93/ipp/print";
+          name = "pagefault";
+          deviceUri = "ipp://169.229.226.91/ipp/print";
           model = "everywhere";
           location = "OCF lab";
-          ppdOptions = {
-            Duplex = "None";
-          };
+          # ppdOptions = {
+          #   Duplex = "DuplexNoTumble";
+          #   PageSize = "Letter";
+          # };
         }
         {
-          name = "epson-double";
-          deviceUri = "ipp://169.229.226.96/ipp/print";
+          name = "epson";
+          deviceUri = "ipps://169.229.226.96/ipp/print";
           model = "everywhere";
           location = "OCF lab";
-          ppdOptions = {
-            Duplex = "DuplexNoTumble";
-            PageSize = "Letter";
-            InputSlot = "Alternate";
-          };
-        }
-        {
-          name = "epson-single";
-          deviceUri = "ipp://169.229.226.96/ipp/print";
-          model = "everywhere";
-          location = "OCF lab";
-          ppdOptions = {
-            Duplex = "None";
-            PageSize = "Letter";
-            InputSlot = "Alternate";
-          };
+          # ppdOptions = {
+          #   Duplex = "DuplexNoTumble";
+          #   PageSize = "Letter";
+          #   InputSlot = "Alternate";
+          # };
         }
       ];
     };
@@ -130,95 +98,57 @@ in
 
         # Wait briefly for declarative printers to be present before managing classes.
         for _ in $(seq 1 30); do
-          if lpstat -p epson-single >/dev/null 2>&1 \
-            && lpstat -p epson-double >/dev/null 2>&1 \
-            && lpstat -p logjam-single >/dev/null 2>&1 \
-            && lpstat -p pagefault-single >/dev/null 2>&1 \
-            && lpstat -p papercut-single >/dev/null 2>&1 \
-            && lpstat -p logjam-double >/dev/null 2>&1 \
-            && lpstat -p pagefault-double >/dev/null 2>&1 \
-            && lpstat -p papercut-double >/dev/null 2>&1; then
+          if lpstat -p epson >/dev/null 2>&1 \
+            && lpstat -p logjam >/dev/null 2>&1 \
+            && lpstat -p papercut >/dev/null 2>&1 \
+            && lpstat -p pagefault >/dev/null 2>&1; then
             break
           fi
-          sleep 1
+          sleep 10
         done
-
-        lpadmin -x color-single >/dev/null 2>&1 || true
-        lpadmin -x color-double >/dev/null 2>&1 || true
-        lpadmin -x single >/dev/null 2>&1 || true
-        lpadmin -x double >/dev/null 2>&1 || true
-
-        lpadmin -p epson-single -c color-single
-        lpadmin -p epson-double -c color-double
-        lpadmin -p logjam-single -c single
-        lpadmin -p pagefault-single -c single
-        lpadmin -p papercut-single -c single
-        lpadmin -p logjam-double -c double
-        lpadmin -p pagefault-double -c double
-        lpadmin -p papercut-double -c double
-
-        for dest in epson-single logjam-single pagefault-single papercut-single color-single single; do
-          lpadmin -p "$dest" -o Duplex-default=None
-          lpadmin -p "$dest" -o Duplex=None
-        done
-        for dest in epson-double logjam-double pagefault-double papercut-double color-double double; do
-          lpadmin -p "$dest" -o Duplex-default=DuplexNoTumble
+        
+        # Set printer settings
+        for dest in epson logjam papercut pagefault; do
           lpadmin -p "$dest" -o Duplex=DuplexNoTumble
+          lpadmin -p "$dest" -o PageSize=Letter
+          # lpadmin -p "$dest" -o job-hold-until-default=indefinite
         done
+        lpadmin -p epson -o InputSlot=Alternate
 
-        for dest in color-single color-double single double; do
+        # add printers to classes
+        lpadmin -p epson -c color
+        lpadmin -p logjam -c monochrome
+        lpadmin -p pagefault -c monochrome
+        lpadmin -p papercut -c monochrome
+
+        # for dest in epson-single logjam-single pagefault-single papercut-single color-single single; do
+        #   lpadmin -p "$dest" -o Duplex-default=None
+        #   lpadmin -p "$dest" -o Duplex=None
+        # done
+        # for dest in epson-double logjam-double pagefault-double papercut-double color-double double; do
+        #   lpadmin -p "$dest" -o Duplex-default=DuplexNoTumble
+        #   lpadmin -p "$dest" -o Duplex=DuplexNoTumble
+        # done
+        
+        
+
+        # for dest in \
+        #   epson-single epson-double \
+        #   logjam-single pagefault-single papercut-single \
+        #   logjam-double pagefault-double papercut-double
+        # do
+        #   lpadmin -p "$dest" -o job-hold-until-default=indefinite
+        # done
+
+        for dest in color monochrome; do
           lpadmin -p "$dest" -o printer-is-shared=true
-          lpadmin -p "$dest" -o job-hold-until-default=indefinite
-        done
-
-        for dest in \
-          epson-single epson-double \
-          logjam-single pagefault-single papercut-single \
-          logjam-double pagefault-double papercut-double
-        do
-          lpadmin -p "$dest" -o job-hold-until-default=indefinite
-        done
-
-        for dest in \
-          epson-single epson-double \
-          logjam-single pagefault-single papercut-single \
-          logjam-double pagefault-double papercut-double \
-          color-single color-double single double
-        do
-          cupsenable "$dest" >/dev/null 2>&1 || true
-          cupsaccept "$dest" >/dev/null 2>&1 || true
+          # lpadmin -p "$dest" -o job-hold-until-default=indefinite
+          
+          cupsenable "$dest"
+          cupsaccept "$dest"
         done
       '';
     };
-
-
-    systemd.mounts = [
-      # Ensure print jobs aren't saved persistently for privacy reasons
-      {
-        what = "tmpfs";
-        where = "/var/spool/cups";
-        type = "tmpfs";
-        options = "mode=0710,gid=lp,noatime,nodev,noexec,nosuid";
-        before = [ "cups.service" ];
-        wantedBy = [ "cups.service" "multi-user.target" ];
-      }
-      {
-        what = "tmpfs";
-        where = "/var/lib/cups";
-        type = "tmpfs";
-        options = "mode=0710,gid=lp,noatime,nodev,noexec,nosuid";
-        before = [ "cups.service" ];
-        wantedBy = [ "cups.service" "multi-user.target" ];
-      }
-      {
-        what = "tmpfs";
-        where = "/var/cache/cups";
-        type = "tmpfs";
-        options = "mode=0710,gid=lp,noatime,nodev,noexec,nosuid";
-        before = [ "cups.service" ];
-        wantedBy = [ "cups.service" "multi-user.target" ];
-      }
-    ];
 
     networking.firewall = {
       allowedTCPPorts = [ 80 443 631 ];

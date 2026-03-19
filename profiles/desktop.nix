@@ -110,7 +110,7 @@ in
       nssmdns4 = true;
       openFirewall = true;
     };
-    hardware.printers.ensureDefaultPrinter = "double";
+    hardware.printers.ensureDefaultPrinter = "monochrome";
   };
 
   security.rtkit.enable = true;
