@@ -178,16 +178,17 @@ in
           # Set 175% scaling for all enabled displays
           ${pkgs.cosmic-randr}/bin/cosmic-randr list | grep "(enabled)" | sed 's/\x1b[[0-9;]*m//g' | awk '{print $1}' | while read -r output; do
           # Get current mode for this output
-          mode=$(${pkgs.cosmic-randr}/bin/cosmic-randr list | awk '/(current)/ {gsub(/\x1b[[0-9;]*m/, ""); print $1, $3;
-  ex  it}')
+          mode=$(${pkgs.cosmic-randr}/bin/cosmic-randr list | awk '/@/ {gsub(/\x1b[[0-9;]*m/, ""); print $1, $3;
+    exit}')
             if [ -n "$mode" ]; then
               width=$(echo "$mode" | cut -d'x' -f1)
               height=$(echo "$mode" | cut -d'x' -f2 | cut -d' ' -f1)
+              hz=$(echo "$mode" | cut -d' ' -f2)
               scale=1.25
               if [[ "$height" -ge "2160" ]]; then
                   scale=1.5
               fi
-              ${pkgs.cosmic-randr}/bin/cosmic-randr mode "$output" "$width" "$height" --scale "$scale"
+              ${pkgs.cosmic-randr}/bin/cosmic-randr mode "$output" "$width" "$height" --refresh "$hz" --scale "$scale"
             fi
           done
         '';
