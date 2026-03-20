@@ -3,6 +3,11 @@
 let
   secretsDir = inputs.self + "/secrets";
   hostKeyFile = secretsDir + "/host-keys/${config.networking.hostName}.pub";
+  prependedLabel =
+    if system.nixos.variant_id != null then
+      system.nixos.variant_id
+    else
+      "ocf";
   gitRev =
     if (self ? shortRev ) then
       self.shortRev
@@ -19,7 +24,7 @@ in
 
 {
   system.configurationRevision = gitRev;
-  system.nixos.label = "${gitRev}-${gitDate}-${system.nixos.version}";
+  system.nixos.label = "${prependedlabel}.${gitRev}.${gitDate}.${system.nixos.version}";
 
   nix = {
     channel.enable = false;
