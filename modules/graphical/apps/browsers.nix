@@ -25,7 +25,7 @@ in
       ungoogled-chromium
     ];
 
-    xdg.mime.addedAssociations = {
+    xdg.mime.defaultApplications = {
       "application/pdf" = lib.mkIf cfg.apps.browsers.handlePDFs "firefox.desktop";
       "x-scheme-handler/http" = "firefox.desktop";
       "x-scheme-handler/https" = "firefox.desktop";

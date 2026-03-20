@@ -18,7 +18,7 @@ in
     programs.obs-studio.enableVirtualCamera = true;
 
     programs.thunderbird.enable = true;
-    xdg.mime.addedAssociations."x-scheme-handler/mailto" = "thunderbird.desktop";
+    xdg.mime.defaultApplications."x-scheme-handler/mailto" = "thunderbird.desktop";
 
     environment.systemPackages = with pkgs; [
       # extra terminal emulators

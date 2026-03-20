@@ -29,7 +29,7 @@ in
     # enabled in libreoffice regardless of whether the system has it.
     #environment.etc."skel/.config/libreoffice/4/user/registrymodifications.xcu".source = ./libreoffice-config.xcu;
 
-    xdg.mime.addedAssociations = {
+    xdg.mime.defaultApplications = {
       "image/jpeg"    = "org.kde.gwenview.desktop";
       "image/png"     = "org.kde.gwenview.desktop";
       "image/gif"     = "org.kde.gwenview.desktop";
