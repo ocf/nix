@@ -215,7 +215,7 @@
         meta = {
           nixpkgs = pkgsFor defaultSystem;
           nodeNixpkgs = nixpkgs.lib.mapAttrs (name: pkgsFor) overrideSystem;
-          specialArgs = { inherit inputs; };
+          specialArgs = { inherit self inputs; };
         };
       });
 
