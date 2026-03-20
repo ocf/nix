@@ -28,17 +28,17 @@ in
     network.wakeOnLan.enable = true;
     logged-in-users-exporter.enable = true;
 
-    graphical = {
-      enable = true;
-      install-extra-apps = true;
-      browsers = true;
-    };
+    graphical.enable = true;
+    graphical.extra = true;
   };
 
   boot = {
     loader.systemd-boot.consoleMode = "max";
     loader.timeout = 0;
     initrd.systemd.enable = true;
+
+    # zen kernel for a more responsive desktop
+    kernelPackages = pkgs.linuxPackages_zen;
   };
 
   # Enable support SANE scanners

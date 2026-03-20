@@ -174,6 +174,8 @@
             "vscode"
             "zoom"
             "drawio"
+            "datagrip"
+            "davinci-resolve"
           ];
         };
       };
@@ -266,7 +268,7 @@
             pkgs.agenix-rekey
             pkgs.age-plugin-fido2-hmac
             pkgs.wol
-            colmena.packages.${pkgs.system}.colmena
+            colmena.packages.${pkgs.stdenv.hostPlatform.system}.colmena
           ];
         };
         deploy = pkgs.mkShell {
@@ -274,7 +276,7 @@
             pkgs.git
             pkgs.openssh
             pkgs.wol
-            colmena.packages.${pkgs.system}.colmena
+            colmena.packages.${pkgs.stdenv.hostPlatform.system}.colmena
           ];
         };
       });

@@ -9,7 +9,7 @@
 
   ocf = {
     auth.enable = true;
-    graphical.browsers = true;
+    graphical.apps.browsers.enable = true;
 
     network = {
       enable = true;

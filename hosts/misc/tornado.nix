@@ -15,7 +15,7 @@
     managed-deployment.automated-deploy = false;
 
     auth.enable = true;
-    graphical.browsers.enable = true;
+    graphical.apps.browsers.enable = true;
 
     network = {
       enable = true;

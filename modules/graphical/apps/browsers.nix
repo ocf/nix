@@ -4,18 +4,37 @@ let
   cfg = config.ocf.graphical;
 in
 {
-  options.ocf.graphical.browsers = lib.mkEnableOption "Enable desktop environment configuration";
+  options.ocf.graphical.apps.browsers = {
+    enable = lib.mkOption {
+      type = lib.types.bool;
+      description = "Enable browser configuration";
+      default = cfg.enable;
+    };
 
-  config = lib.mkIf cfg.browsers {
+    handlePDFs = lib.mkEnableOption "Use browser as PDF viewer";
+  };
+
+  config = lib.mkIf cfg.apps.browsers.enable {
     environment.systemPackages = with pkgs; [
       firefox
-    ] ++ lib.optionals cfg.install-extra-apps [
+    ] ++ lib.optionals cfg.extra [
       librewolf
       tor-browser
       mullvad-browser
       google-chrome # absolutely proprietary
       ungoogled-chromium
     ];
+
+    # FIXME: cosmic files does not read the multiple mimeapps.list files
+    # correctly, but it does correctly read the one in XDG_CONFIG_HOME. thus,
+    # mimeapps.list is stored in skel until this is fixed.
+    /*
+    xdg.mime.defaultApplications = {
+      "application/pdf" = lib.mkIf cfg.apps.browsers.handlePDFs "firefox.desktop";
+      "x-scheme-handler/http" = "firefox.desktop";
+      "x-scheme-handler/https" = "firefox.desktop";
+    };
+    */
 
     programs.firefox = {
       enable = true;
