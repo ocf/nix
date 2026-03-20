@@ -1,0 +1,18 @@
+name: Check formatting
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+
+jobs:
+  check-format:
+    runs-on: ci-ocf-nix-build
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check formatting with nixfmt-tree
+        run: nix develop -c treefmt --ci
