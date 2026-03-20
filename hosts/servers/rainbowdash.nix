@@ -1,0 +1,27 @@
+{ pkgs, lib, config, ... }:
+
+{
+  imports = [ ../../hardware/virtualized.nix ];
+
+  networking.hostName = "rainbowdash";
+
+  ocf.network = {
+    enable = true;
+    lastOctet = 129;
+  };
+
+  ocf.nfs = {
+    enable = true;
+    mountHome = true;
+    mountServices = true;
+  };
+
+  environment.systemPackages = with pkgs; [
+    ocf-utils
+    openldap
+    ldapvi
+    ipmitool
+  ];
+
+  system.stateVersion = "25.05";
+}
