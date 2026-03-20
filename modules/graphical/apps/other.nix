@@ -18,7 +18,10 @@ in
     programs.obs-studio.enableVirtualCamera = true;
 
     programs.thunderbird.enable = true;
-    xdg.mime.defaultApplications."x-scheme-handler/mailto" = "thunderbird.desktop";
+    # FIXME: cosmic files does not read the multiple mimeapps.list files
+    # correctly, but it does correctly read the one in XDG_CONFIG_HOME. thus,
+    # mimeapps.list is stored in skel until this is fixed.
+    #xdg.mime.defaultApplications."x-scheme-handler/mailto" = "thunderbird.desktop";
 
     environment.systemPackages = with pkgs; [
       # extra terminal emulators

@@ -25,11 +25,16 @@ in
       ungoogled-chromium
     ];
 
+    # FIXME: cosmic files does not read the multiple mimeapps.list files
+    # correctly, but it does correctly read the one in XDG_CONFIG_HOME. thus,
+    # mimeapps.list is stored in skel until this is fixed.
+    /*
     xdg.mime.defaultApplications = {
       "application/pdf" = lib.mkIf cfg.apps.browsers.handlePDFs "firefox.desktop";
       "x-scheme-handler/http" = "firefox.desktop";
       "x-scheme-handler/https" = "firefox.desktop";
     };
+    */
 
     programs.firefox = {
       enable = true;

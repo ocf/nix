@@ -29,6 +29,10 @@ in
     # enabled in libreoffice regardless of whether the system has it.
     #environment.etc."skel/.config/libreoffice/4/user/registrymodifications.xcu".source = ./libreoffice-config.xcu;
 
+    # FIXME: cosmic files does not read the multiple mimeapps.list files
+    # correctly, but it does correctly read the one in XDG_CONFIG_HOME. thus,
+    # mimeapps.list is stored in skel until this is fixed.
+    /*
     xdg.mime.defaultApplications = {
       "image/jpeg"    = "org.kde.gwenview.desktop";
       "image/png"     = "org.kde.gwenview.desktop";
@@ -38,6 +42,7 @@ in
       "image/tiff"    = "org.kde.gwenview.desktop";
       "image/svg+xml" = "org.kde.gwenview.desktop";
     };
+    */
 
     environment.systemPackages = with pkgs; [
       # scanning
