@@ -3,28 +3,26 @@
 let
   secretsDir = inputs.self + "/secrets";
   hostKeyFile = secretsDir + "/host-keys/${config.networking.hostName}.pub";
-  prependedLabel =
-    if system.nixos.variant_id != null then
-      system.nixos.variant_id
+  variant_id =
+    if config.system.nixos.variant_id != null then
+      config.system.nixos.variant_id
     else
       "ocf";
   gitRev =
     if (self ? shortRev ) then
       self.shortRev
-    else if (self ? dirtyRev) then
-      # self.rev has self.shortRev but there is no equivalent for self.dirtyRev
-      (builtins.substring 0 7 self.dirtyRev) + "-dirty"
+    else if (self ? dirtyShortRev) then
+      self.dirtyShortRev
     else "nullrev";
-  gitDate =
-    if (self ? lastModifiedDate) then
-      self.lastModifiedDate
-    else
-      "unknown";
 in
 
 {
   system.configurationRevision = gitRev;
-  system.nixos.label = "${prependedlabel}.${gitRev}.${gitDate}.${system.nixos.version}";
+  # we do not include self.lastModifiedDate since:
+  # - the bootloader menu already includes "built on"
+  # - date can be checked from the revision hash with an extra step
+  # - label is much shorter without the date
+  system.nixos.label = "${variant_id}.${gitRev}.${config.system.nixos.version}";
 
   nix = {
     channel.enable = false;
