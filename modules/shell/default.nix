@@ -31,8 +31,12 @@ in
         interactiveShellInit = ''
           source ${pkgs.zsh-powerlevel10k}/share/zsh-powerlevel10k/powerlevel10k.zsh-theme
           source /etc/p10k.zsh
+          ${builtins.readFile ./command_not_found_handler.zsh}
         '';
       };
+
+      fzf.keybindings = true;
+      fzf.fuzzyCompletion = true;
 
       fish.enable = true;
       xonsh.enable = true;
