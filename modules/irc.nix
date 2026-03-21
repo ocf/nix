@@ -166,6 +166,18 @@ in
         accounts = lib.mkIf cfg.oauth2.enable {
           authentication-enabled = true;
           registration.enabled = false; # Users authenticate via Keycloak, not local registration
+          require-sasl.enabled = false; # Allow unauthenticated connections
+
+          nick-reservation = {
+            enabled = true;
+            # "strict" = unregistered users cannot use registered nicks
+            # "optional" = registered nicks are protected but not required
+            method = "strict";
+            # Force authenticated users to use their account name as nick
+            force-nick-equals-account = true;
+            # Don't allow guest nicks for unauthenticated users matching account pattern
+            force-guest-format = false;
+          };
         };
       };
     };
