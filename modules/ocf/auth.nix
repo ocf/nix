@@ -2,6 +2,8 @@
 
 let
   cfg = config.ocf.auth;
+  keytabSecretPath = ../../secrets/rekeyed + "/${config.networking.hostName}/krb5-keytab.age";
+  hasKeytab = builtins.pathExists keytabSecretPath;
 in
 {
   options.ocf.auth = {
@@ -10,6 +12,16 @@ in
 
   config = lib.mkIf cfg.enable {
     age.secrets.root-password-hash.rekeyFile = ../../secrets/master-keyed/root-password-hash.age;
+
+    # Per-host keytab for GSSAPI SSH authentication
+    # Only configured if the host has a keytab in secrets/rekeyed/<hostname>/krb5-keytab.age
+    age.secrets.krb5-keytab = lib.mkIf hasKeytab {
+      rekeyFile = keytabSecretPath;
+      path = "/etc/krb5.keytab";
+      owner = "root";
+      group = "root";
+      mode = "0600";
+    };
 
     users = {
       mutableUsers = false;
@@ -85,7 +97,8 @@ in
       GSSAPIAuthentication = "yes";
       GSSAPICleanupCredentials = "yes";
       GSSAPIStrictAcceptorCheck = "no";
-      GSSAPIKeyExchange = "yes";
+      # Only enable key exchange if host has a keytab
+      GSSAPIKeyExchange = lib.mkIf hasKeytab "yes";
     };
   };
 }
