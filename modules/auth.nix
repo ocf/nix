@@ -96,7 +96,7 @@ in
     services.openssh.settings = {
       GSSAPIAuthentication = "yes";
       GSSAPICleanupCredentials = "yes";
-      GSSAPIStrictAcceptorCheck = "no";
+      GSSAPIStrictAcceptorCheck = "yes";
       # Only enable key exchange if host has a keytab
       GSSAPIKeyExchange = lib.mkIf hasKeytab "yes";
     };
