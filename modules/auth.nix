@@ -97,8 +97,11 @@ in
       GSSAPIAuthentication = "yes";
       GSSAPICleanupCredentials = "yes";
       GSSAPIStrictAcceptorCheck = "yes";
+      # ssh gssapi currently does not support a post-quantum safe key exchange
+      # algorithm. lets disable gssapi key exchange and use ssh's default key
+      # exchanges (which supports post-quantum safe key exchange).
       # Only enable key exchange if host has a keytab
-      GSSAPIKeyExchange = lib.mkIf hasKeytab "yes";
+      #GSSAPIKeyExchange = lib.mkIf hasKeytab "yes";
     };
   };
 }
