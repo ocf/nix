@@ -26,6 +26,7 @@ in
 
   config = lib.mkIf cfg.enable {
     networking.useDHCP = false;
+    networking.domain = "ocf.berkeley.edu";
 
     systemd.network = {
       enable = true;
