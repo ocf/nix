@@ -236,7 +236,7 @@ in
         '';
       };
 
-      ## Generate Halloy IRC config
+      ## Generate Halloy IRC config with SASL PLAIN (password validated against Kerberos KDC)
       systemd.user.services."halloy-config" = {
         description = "Generate default halloy IRC config with OCF username";
         wantedBy = [ "default.target" ];
@@ -252,6 +252,10 @@ in
       nickname = "$USER"
       server = "irc.ocf.berkeley.edu"
       port = 6697
+
+      [servers.ocf.sasl.plain]
+      username = "$USER"
+      password_file = "$HOME/.config/halloy/ocf-password"
       EOF
         '';
       };

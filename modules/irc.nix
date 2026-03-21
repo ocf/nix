@@ -88,7 +88,7 @@ in
       ${lib.getExe pkgs.gnused} -i "s/@irc-passwd@/$secret/g" "$configFile"
 
       ${lib.optionalString cfg.oauth2.enable ''
-        # Substitute OAuth2 client secret
+        # Substitute OAuth2 client secret (for OAUTHBEARER clients)
         oauth2Secret=$(cat "${config.age.secrets.irc-oauth2-secret.path}")
         ${lib.getExe pkgs.gnused} -i "s/@irc-oauth2-secret@/$oauth2Secret/g" "$configFile"
       ''}
@@ -152,7 +152,7 @@ in
           };
         };
 
-        # OAuth2 authentication via Keycloak
+        # OAuth2 authentication via Keycloak (for clients supporting OAUTHBEARER)
         oauth2 = lib.mkIf cfg.oauth2.enable {
           enabled = true;
           autocreate = cfg.oauth2.autocreate;
@@ -166,17 +166,14 @@ in
         accounts = lib.mkIf cfg.oauth2.enable {
           authentication-enabled = true;
           registration.enabled = false; # Users authenticate via Keycloak, not local registration
-          require-sasl.enabled = false; # Allow unauthenticated connections
+          require-sasl.enabled = false; # Allow unauthenticated connections as guests
 
           nick-reservation = {
             enabled = true;
-            # "strict" = unregistered users cannot use registered nicks
-            # "optional" = registered nicks are protected but not required
+            # "strict" = guests cannot use nicks registered via OAuth2
             method = "strict";
             # Force authenticated users to use their account name as nick
             force-nick-equals-account = true;
-            # Don't allow guest nicks for unauthenticated users matching account pattern
-            force-guest-format = false;
           };
         };
       };
