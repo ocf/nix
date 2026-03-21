@@ -57,6 +57,8 @@ in
     hostPubkey = lib.mkIf (builtins.pathExists hostKeyFile) (builtins.readFile hostKeyFile);
   };
 
+  boot.tmp.useTmpfs = true;
+
   boot.loader = {
     systemd-boot = {
       enable = lib.mkDefault true;
