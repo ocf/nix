@@ -6,6 +6,29 @@ in
 {
   options.ocf.irc = {
     enable = lib.mkEnableOption "Enable IRC Server";
+
+    oauth2 = {
+      enable = lib.mkEnableOption "Enable OAuth2/OIDC authentication via Keycloak";
+
+      issuer = lib.mkOption {
+        type = lib.types.str;
+        description = "Keycloak realm issuer URL";
+        default = "https://idm.ocf.berkeley.edu/realms/ocf";
+      };
+
+      clientId = lib.mkOption {
+        type = lib.types.str;
+        description = "OAuth2 client ID registered in Keycloak";
+        default = "ergo";
+      };
+
+      autocreate = lib.mkOption {
+        type = lib.types.bool;
+        description = "Automatically create IRC accounts on successful OAuth2 authentication";
+        default = true;
+      };
+    };
+
     motd = lib.mkOption {
       type = lib.types.str;
       description = "Message of the Day";
@@ -51,12 +74,24 @@ in
 
   config = lib.mkIf cfg.enable {
     age.secrets.irc-passwd.rekeyFile = ../secrets/master-keyed/irc-passwd.age;
+    age.secrets.irc-oauth2-secret = lib.mkIf cfg.oauth2.enable {
+      rekeyFile = ../secrets/master-keyed/irc/oauth2-client-secret.age;
+    };
+
     security.acme.defaults.reloadServices = [ "ergochat.service" ];
 
-    system.activationScripts."irc-passwd" = ''
-      secret=$(cat "${config.age.secrets.irc-passwd.path}")
+    system.activationScripts."irc-secrets" = ''
       configFile=/etc/ergo.yaml
+
+      # Substitute oper password
+      secret=$(cat "${config.age.secrets.irc-passwd.path}")
       ${lib.getExe pkgs.gnused} -i "s/@irc-passwd@/$secret/g" "$configFile"
+
+      ${lib.optionalString cfg.oauth2.enable ''
+        # Substitute OAuth2 client secret
+        oauth2Secret=$(cat "${config.age.secrets.irc-oauth2-secret.path}")
+        ${lib.getExe pkgs.gnused} -i "s/@irc-oauth2-secret@/$oauth2Secret/g" "$configFile"
+      ''}
     '';
 
     services.ergochat = {
@@ -115,6 +150,22 @@ in
             cert = "/var/lib/acme/scootaloo.ocf.berkeley.edu/fullchain.pem";
             key = "/var/lib/acme/scootaloo.ocf.berkeley.edu/key.pem";
           };
+        };
+
+        # OAuth2 authentication via Keycloak
+        oauth2 = lib.mkIf cfg.oauth2.enable {
+          enabled = true;
+          autocreate = cfg.oauth2.autocreate;
+          introspection-url = "${cfg.oauth2.issuer}/protocol/openid-connect/token/introspect";
+          introspection-timeout = "10s";
+          client-id = cfg.oauth2.clientId;
+          client-secret = "@irc-oauth2-secret@";
+        };
+
+        # Account settings for OAuth2
+        accounts = lib.mkIf cfg.oauth2.enable {
+          authentication-enabled = true;
+          registration.enabled = false; # Users authenticate via Keycloak, not local registration
         };
       };
     };

@@ -236,28 +236,5 @@ in
         '';
       };
 
-      ## Generate Halloy IRC config
-      # First, checks for plaintext password file at ~/remote/.config/hallow/nickserv-password.
-      # If that doesn't exist, prompts for password with kdialog gui.
-      systemd.user.services."halloy-config" = {
-        description = "Generate default halloy IRC config with OCF username";
-        wantedBy = [ "default.target" ];
-        serviceConfig = {
-          Type = "oneshot";
-          RemainAfterExit = true;
-        };
-        script = ''
-          cat > $HOME/.config/halloy/config.toml << EOF
-      theme = "rose-pine-dawn"
-      [servers.ocf]
-      nickname = "$USER"
-      server = "irc.ocf.berkeley.edu"
-
-      [servers.ocf.sasl.plain]
-      username = "$USER"
-      password_command = 'sh -c "cat ~/remote/.config/ocf/halloy/nickserv-password 2>/dev/null || kdialog --password \"NickServ password (leave blank if not registered)\""'
-      EOF
-        '';
-      };
   }]);
 }

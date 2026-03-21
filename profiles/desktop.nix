@@ -74,9 +74,6 @@ in
     # COSMIC Applets
     ocf-cosmic-applets
     cosmic-ext-applet-external-monitor-brightness
-
-    # IRC password prompt
-    kdePackages.kdialog
   ];
 
   services = {

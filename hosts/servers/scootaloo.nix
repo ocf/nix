@@ -12,6 +12,7 @@
 
   ocf.irc = {
     enable = true;
+    oauth2.enable = true;
   };
 
   ocf.matrix = {
