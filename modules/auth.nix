@@ -2,7 +2,7 @@
 
 let
   cfg = config.ocf.auth;
-  keytabSecretPath = ../secrets/rekeyed + "/${config.networking.hostName}/krb5-keytab.age";
+  keytabSecretPath = ../secrets/master-keyed/keytabs + "/${config.networking.hostName}.age";
   hasKeytab = builtins.pathExists keytabSecretPath;
 in
 {
@@ -14,7 +14,7 @@ in
     age.secrets.root-password-hash.rekeyFile = ../secrets/master-keyed/root-password-hash.age;
 
     # Per-host keytab for GSSAPI SSH authentication
-    # Only configured if the host has a keytab in secrets/rekeyed/<hostname>/krb5-keytab.age
+    # Only configured if the host has a keytab in secrets/master-keyed/keytabs/<hostname>.age
     age.secrets.krb5-keytab = lib.mkIf hasKeytab {
       rekeyFile = keytabSecretPath;
       path = "/etc/krb5.keytab";
