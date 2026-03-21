@@ -1,0 +1,6 @@
+[Desktop Entry]
+Type=Application
+Name=IntelliJ IDEA
+Exec=idea-oss
+Icon=idea-oss
+Terminal=false

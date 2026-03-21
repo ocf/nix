@@ -1,5 +1,0 @@
-[Desktop Entry]
-Type=Application
-Name=OCF File Storage
-Exec=xdg-open remote
-Icon=media-floppy

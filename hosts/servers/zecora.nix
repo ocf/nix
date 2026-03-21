@@ -11,6 +11,11 @@
     lastOctet = 44;
   };
 
+  ocf.motd = {
+    enable = true;
+    description = "Unifi console.";
+  };
+
   services.unifi.enable = true;
 
   system.stateVersion = "24.11";

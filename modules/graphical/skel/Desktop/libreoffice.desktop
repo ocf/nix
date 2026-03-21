@@ -1,0 +1,6 @@
+[Desktop Entry]
+Type=Application
+Name=LibreOffice
+Exec=libreoffice
+Icon=libreoffice-startcenter
+Terminal=false
