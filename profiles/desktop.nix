@@ -27,6 +27,7 @@ in
     tmpfsHome.enable = true;
     network.wakeOnLan.enable = true;
     logged-in-users-exporter.enable = true;
+    nfs.enable = true;
 
     graphical.enable = true;
     graphical.extra = true;
