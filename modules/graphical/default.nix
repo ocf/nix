@@ -25,6 +25,14 @@ let
   '';
   # override ocf-tv from util
   ocf-tv = lib.hiPrio vncScript;
+  catppuccin-sddm = pkgs.catppuccin-sddm.override {
+    themeConfig.General = {
+      FontSize = 12;
+      Background = "/etc/ocf-assets/images/login-newyear.png";
+      #Logo = "/etc/ocf-assets/images/penguin.svg";
+      CustomBackground = true;
+    };
+  };
 in
 {
   options.ocf.graphical = {
@@ -91,14 +99,7 @@ in
       programs.ssh.askPassword = pkgs.lib.mkForce (lib.getExe pkgs.ksshaskpass.out);
 
       environment.systemPackages = with pkgs; [
-        (catppuccin-sddm.override {
-          themeConfig.General = {
-            FontSize = 12;
-            Background = "/etc/ocf-assets/images/login-newyear.png";
-            #Logo = "/etc/ocf-assets/images/penguin.svg";
-            CustomBackground = true;
-          };
-        })
+        catppuccin-sddm
 
         # terminal emulators
         kitty
@@ -130,7 +131,7 @@ in
 
           sddm = {
             enable = true;
-            theme = "catppuccin-latte";
+            theme = "${catppuccin-sddm}/share/sddm/themes/catppuccin-latte";
             wayland.enable = true;
             settings.Users = {
               RememberLastUser = false;
@@ -164,7 +165,6 @@ in
           else
             echo "User doesn't have a ~/remote/.desktoprc file"
           fi
-            
         '';
       };
 
