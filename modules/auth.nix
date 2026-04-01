@@ -109,6 +109,7 @@ in
       };
     };
 
+    services.openssh.package = pkgs.openssh_gssapi;
     services.openssh.settings = {
       GSSAPIAuthentication = "yes";
       GSSAPICleanupCredentials = "yes";
