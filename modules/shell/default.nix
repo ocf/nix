@@ -34,6 +34,11 @@ in
             return
           fi
 
+          # emacs keybinds: ^u, ^k, ^a, ^e, etc
+          # this is a good nonintrusive default that adds useful keybinds while
+          # not interfering with people's muscle memory
+          bindkey -e
+
           source ${pkgs.zsh-powerlevel10k}/share/zsh-powerlevel10k/powerlevel10k.zsh-theme
 
           # p10k.zsh start
