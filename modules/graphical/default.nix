@@ -77,7 +77,7 @@ in
           fcitx5-gtk
           fcitx5-mozc
           fcitx5-rime
-          fcitx5-chinese-addons
+          qt6Packages.fcitx5-chinese-addons
           fcitx5-hangul
           kdePackages.fcitx5-unikey
           fcitx5-bamboo
