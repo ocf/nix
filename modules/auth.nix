@@ -119,6 +119,7 @@ in
       # exchanges (which supports post-quantum safe key exchange).
       # Only enable key exchange if host has a keytab
       GSSAPIKeyExchange = lib.mkIf hasKeytab "yes";
+      GSSAPIStoreCredentialsOnRekey = "yes";
     };
   };
 }
