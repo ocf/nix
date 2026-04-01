@@ -10,4 +10,3 @@ cosmic-greeter.overrideAttrs (oldAttrs: {
     hash = "sha256-4yRBgFrH4RBpuvChTED+ynx+PyFumoT2Z+R1gXxF4Xc=";
   };
 })
-

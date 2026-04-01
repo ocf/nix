@@ -1,4 +1,9 @@
-{ lib, config, pkgs, ... }:
+{
+  lib,
+  config,
+  pkgs,
+  ...
+}:
 
 let
   cfg = config.ocf.graphical;
@@ -15,25 +20,28 @@ in
   };
 
   config = lib.mkIf cfg.apps.browsers.enable {
-    environment.systemPackages = with pkgs; [
-      firefox
-    ] ++ lib.optionals cfg.extra [
-      librewolf
-      tor-browser
-      mullvad-browser
-      google-chrome # absolutely proprietary
-      ungoogled-chromium
-    ];
+    environment.systemPackages =
+      with pkgs;
+      [
+        firefox
+      ]
+      ++ lib.optionals cfg.extra [
+        librewolf
+        tor-browser
+        mullvad-browser
+        google-chrome # absolutely proprietary
+        ungoogled-chromium
+      ];
 
     # FIXME: cosmic files does not read the multiple mimeapps.list files
     # correctly, but it does correctly read the one in XDG_CONFIG_HOME. thus,
     # mimeapps.list is stored in skel until this is fixed.
     /*
-    xdg.mime.defaultApplications = {
-      "application/pdf" = lib.mkIf cfg.apps.browsers.handlePDFs "firefox.desktop";
-      "x-scheme-handler/http" = "firefox.desktop";
-      "x-scheme-handler/https" = "firefox.desktop";
-    };
+      xdg.mime.defaultApplications = {
+        "application/pdf" = lib.mkIf cfg.apps.browsers.handlePDFs "firefox.desktop";
+        "x-scheme-handler/http" = "firefox.desktop";
+        "x-scheme-handler/https" = "firefox.desktop";
+      };
     */
 
     programs.firefox = {
@@ -73,7 +81,10 @@ in
         DisableBuiltinPDFViewer = true;
         OverrideFirstRunPage = "https://www.ocf.berkeley.edu/about/lab/open-source";
 
-        Authentication.SPNEGO = [ "auth.ocf.berkeley.edu" "idm.ocf.berkeley.edu" ];
+        Authentication.SPNEGO = [
+          "auth.ocf.berkeley.edu"
+          "idm.ocf.berkeley.edu"
+        ];
 
         ExtensionSettings = {
           "uBlock0@raymondhill.net" = {
@@ -153,7 +164,6 @@ in
         };
       };
     };
-    
 
     # Force Chrome to use Wayland, rather than XWayland
     environment.sessionVariables.NIXOS_OZONE_WL = "1";

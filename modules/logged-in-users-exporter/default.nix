@@ -1,4 +1,9 @@
-{ config, pkgs, lib, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
 
 with lib;
 let
@@ -46,8 +51,17 @@ in
         node = {
           enable = true;
           port = 9100;
-          enabledCollectors = [ "systemd" "textfile" ];
-          extraFlags = [ "--collector.ethtool" "--collector.softirqs" "--collector.tcpstat" "--collector.wifi" "--collector.textfile.directory=/var/lib/node_exporter/textfile_collector" ];
+          enabledCollectors = [
+            "systemd"
+            "textfile"
+          ];
+          extraFlags = [
+            "--collector.ethtool"
+            "--collector.softirqs"
+            "--collector.tcpstat"
+            "--collector.wifi"
+            "--collector.textfile.directory=/var/lib/node_exporter/textfile_collector"
+          ];
         };
       };
     };

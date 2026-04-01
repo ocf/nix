@@ -1,4 +1,9 @@
-{ lib, config, pkgs, ... }:
+{
+  lib,
+  config,
+  pkgs,
+  ...
+}:
 
 let
   cfg = config.ocf.webhost;
@@ -26,9 +31,9 @@ let
       serverAliases = [ "${website-cfg.name}.${shortDomain}" ];
       root = "/var/www/${website-cfg.name}";
       extraConfig = ''
-        add_header Last-Modified "";
-      	add_header Cache-Control "public, max-age=${website-cfg.cacheTime}";
-	'';
+                add_header Last-Modified "";
+              	add_header Cache-Control "public, max-age=${website-cfg.cacheTime}";
+        	'';
     };
   };
 
@@ -54,7 +59,6 @@ let
     };
   };
 
-
   makeExtraCerts = website-cfg: [
     "${website-cfg.name}.${baseDomain}"
     "${website-cfg.name}.${shortDomain}"
@@ -65,32 +69,31 @@ in
   options.ocf.webhost = {
     enable = lib.mkEnableOption "Enable static webhosting configuration";
     websites = lib.mkOption {
-      type = lib.types.listOf (lib.types.submodule {
+      type = lib.types.listOf (
+        lib.types.submodule {
 
+          options = {
+            enable = lib.mkEnableOption "Enable this website";
 
-        options = {
-          enable = lib.mkEnableOption "Enable this website";
+            name = lib.mkOption {
+              type = lib.types.str;
+              description = "Subdomain of webpage - will set <name>.ocf.berkeley.edu & <name>.ocf.io";
+            };
 
-          name = lib.mkOption {
-            type = lib.types.str;
-            description = "Subdomain of webpage - will set <name>.ocf.berkeley.edu & <name>.ocf.io";
+            githubActionsPubkey = lib.mkOption {
+              type = lib.types.str;
+              description = "SSH Public Key of Github Actions Deploy Workflow";
+            };
+            # For some reason Nginx on our nix servers doesn't update the Last Modified header,
+            # which leads to content being cached indefinetely.
+            cacheTime = lib.mkOption {
+              type = lib.types.str;
+              description = "Browser file cache time in seconds";
+              default = "3600";
+            };
           };
 
-          githubActionsPubkey = lib.mkOption {
-            type = lib.types.str;
-            description = "SSH Public Key of Github Actions Deploy Workflow";
-          };
-	  # For some reason Nginx on our nix servers doesn't update the Last Modified header, 
-	  # which leads to content being cached indefinetely.
-	  cacheTime = lib.mkOption {
-	    type = lib.types.str;
-	    description = "Browser file cache time in seconds";
-	    default = "3600";
-	  };
-        };
-
-
-      }
+        }
       );
     };
   };
@@ -101,13 +104,9 @@ in
     systemd.tmpfiles.settings."web-roots" = lib.mkMerge (builtins.map makeTmpFileRules enabledSites);
     ocf.acme.extraCerts = (builtins.concatMap makeExtraCerts enabledSites);
 
-
     services.nginx = {
       enable = true;
-      virtualHosts = lib.mkMerge (
-        (builtins.map makeVirtHosts enabledSites)
-        ++ defaultVirtHost
-      );
+      virtualHosts = lib.mkMerge ((builtins.map makeVirtHosts enabledSites) ++ defaultVirtHost);
     };
 
   };
