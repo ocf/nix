@@ -175,22 +175,22 @@ in
         wantedBy = [ "cosmic-session.target" ];
         environment = { PATH = lib.mkForce "/run/current-system/sw/bin"; };
         script = ''
-          # Set 175% scaling for all enabled displays
-          ${pkgs.cosmic-randr}/bin/cosmic-randr list | grep "(enabled)" | sed 's/\x1b[[0-9;]*m//g' | awk '{print $1}' | while read -r output; do
-          # Get current mode for this output
-          mode=$(${pkgs.cosmic-randr}/bin/cosmic-randr list | awk '/@/ {gsub(/\x1b[[0-9;]*m/, ""); print $1, $3;
-    exit}')
-            if [ -n "$mode" ]; then
-              width=$(echo "$mode" | cut -d'x' -f1)
-              height=$(echo "$mode" | cut -d'x' -f2 | cut -d' ' -f1)
-              hz=$(echo "$mode" | cut -d' ' -f2)
-              scale=1.25
-              if [[ "$height" -ge "2160" ]]; then
-                  scale=1.5
-              fi
-              ${pkgs.cosmic-randr}/bin/cosmic-randr mode "$output" "$width" "$height" --refresh "$hz" --scale "$scale"
-            fi
-          done
+                # Set 175% scaling for all enabled displays
+                ${pkgs.cosmic-randr}/bin/cosmic-randr list | grep "(enabled)" | sed 's/\x1b[[0-9;]*m//g' | awk '{print $1}' | while read -r output; do
+                # Get current mode for this output
+                mode=$(${pkgs.cosmic-randr}/bin/cosmic-randr list | awk '/@/ {gsub(/\x1b[[0-9;]*m/, ""); print $1, $3;
+          exit}')
+                  if [ -n "$mode" ]; then
+                    width=$(echo "$mode" | cut -d'x' -f1)
+                    height=$(echo "$mode" | cut -d'x' -f2 | cut -d' ' -f1)
+                    hz=$(echo "$mode" | cut -d' ' -f2)
+                    scale=1.25
+                    if [[ "$height" -ge "2160" ]]; then
+                        scale=1.5
+                    fi
+                    ${pkgs.cosmic-randr}/bin/cosmic-randr mode "$output" "$width" "$height" --refresh "$hz" --scale "$scale"
+                  fi
+                done
         '';
       };
 
@@ -247,17 +247,18 @@ in
           RemainAfterExit = true;
         };
         script = ''
-          cat > $HOME/.config/halloy/config.toml << EOF
-      theme = "rose-pine-dawn"
-      [servers.ocf]
-      nickname = "$USER"
-      server = "irc.ocf.berkeley.edu"
+              cat > $HOME/.config/halloy/config.toml << EOF
+          theme = "rose-pine-dawn"
+          [servers.ocf]
+          nickname = "$USER"
+          server = "irc.ocf.berkeley.edu"
 
-      [servers.ocf.sasl.plain]
-      username = "$USER"
-      password_command = 'sh -c "cat ~/remote/.config/ocf/halloy/nickserv-password 2>/dev/null || kdialog --password \"NickServ password (leave blank if not registered)\""'
-      EOF
+          [servers.ocf.sasl.plain]
+          username = "$USER"
+          password_command = 'sh -c "cat ~/remote/.config/ocf/halloy/nickserv-password 2>/dev/null || kdialog --password \"NickServ password (leave blank if not registered)\""'
+          EOF
         '';
       };
-  }]);
+    }
+  ]);
 }

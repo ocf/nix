@@ -29,11 +29,11 @@ in
     # correctly, but it does correctly read the one in XDG_CONFIG_HOME. thus,
     # mimeapps.list is stored in skel until this is fixed.
     /*
-    xdg.mime.defaultApplications = {
+      xdg.mime.defaultApplications = {
       "application/pdf" = lib.mkIf cfg.apps.browsers.handlePDFs "firefox.desktop";
       "x-scheme-handler/http" = "firefox.desktop";
       "x-scheme-handler/https" = "firefox.desktop";
-    };
+      };
     */
 
     programs.firefox = {
@@ -153,7 +153,7 @@ in
         };
       };
     };
-    
+
 
     # Force Chrome to use Wayland, rather than XWayland
     environment.sessionVariables.NIXOS_OZONE_WL = "1";

@@ -33,7 +33,7 @@ in
     # correctly, but it does correctly read the one in XDG_CONFIG_HOME. thus,
     # mimeapps.list is stored in skel until this is fixed.
     /*
-    xdg.mime.defaultApplications = {
+      xdg.mime.defaultApplications = {
       "image/jpeg"    = "org.kde.gwenview.desktop";
       "image/png"     = "org.kde.gwenview.desktop";
       "image/gif"     = "org.kde.gwenview.desktop";
@@ -41,7 +41,7 @@ in
       "image/bmp"     = "org.kde.gwenview.desktop";
       "image/tiff"    = "org.kde.gwenview.desktop";
       "image/svg+xml" = "org.kde.gwenview.desktop";
-    };
+      };
     */
 
     environment.systemPackages = with pkgs; [

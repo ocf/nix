@@ -219,30 +219,33 @@
         };
       });
 
-      autoDeploy = let
-        # returns the value of a managed-deployment option (given as a string containing the option name) for the given node
-        getOptionForNode = option: node: self.colmenaHive.nodes.${node}.config.ocf.managed-deployment.${option};
+      autoDeploy =
+        let
+          # returns the value of a managed-deployment option (given as a string containing the option name) for the given node
+          getOptionForNode = option: node: self.colmenaHive.nodes.${node}.config.ocf.managed-deployment.${option};
 
-        # returns a list of the MAC addresses for the given list of nodes with automated deploy enabled
-        # hosts that do not have mac-address set will be gracefully ignored
-        getMACs = nodes: builtins.filter (mac: mac != "")
-          (builtins.map
-            (node: getOptionForNode "mac-address" node)
-            nodes);
-      in {
-        # list of nodes with automated deploy enabled, to be consumed by github actions
-        nodes = builtins.filter (node: getOptionForNode "automated-deploy" node) (builtins.attrNames self.colmenaHive.nodes);
+          # returns a list of the MAC addresses for the given list of nodes with automated deploy enabled
+          # hosts that do not have mac-address set will be gracefully ignored
+          getMACs = nodes: builtins.filter (mac: mac != "")
+            (builtins.map
+              (node: getOptionForNode "mac-address" node)
+              nodes);
+        in
+        {
+          # list of nodes with automated deploy enabled, to be consumed by github actions
+          nodes = builtins.filter (node: getOptionForNode "automated-deploy" node) (builtins.attrNames self.colmenaHive.nodes);
 
-        # list of mac addresses of nodes that github actions should wake up on deploy
-        MACs = getMACs self.autoDeploy.nodes;
+          # list of mac addresses of nodes that github actions should wake up on deploy
+          MACs = getMACs self.autoDeploy.nodes;
 
-        # attribute set combining automatedDeployNodes and automatedDeployNodeMACs
-        # get json with `nix eval .#autoDeploy.nodesWithMACs --json`!
-        # TODO: script to wake up hosts with this
-        nodesWithMACs = nixpkgs.lib.listToAttrs (nixpkgs.lib.zipListsWith
-          (name: value: { inherit name value; })
-          self.autoDeploy.nodes self.autoDeploy.MACs);
-      };
+          # attribute set combining automatedDeployNodes and automatedDeployNodeMACs
+          # get json with `nix eval .#autoDeploy.nodesWithMACs --json`!
+          # TODO: script to wake up hosts with this
+          nodesWithMACs = nixpkgs.lib.listToAttrs (nixpkgs.lib.zipListsWith
+            (name: value: { inherit name value; })
+            self.autoDeploy.nodes
+            self.autoDeploy.MACs);
+        };
 
       overlays.default = final: prev: {
         ocf-utils = ocf-utils.packages.${final.system}.default;

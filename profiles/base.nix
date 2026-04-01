@@ -9,7 +9,7 @@ let
     else
       "ocf";
   gitRev =
-    if (self ? shortRev ) then
+    if (self ? shortRev) then
       self.shortRev
     else if (self ? dirtyShortRev) then
       self.dirtyShortRev
@@ -35,7 +35,8 @@ in
       automatic = true;
       dates = "weekly";
     };
-    settings = { #makes devenv shells build significantly faster
+    settings = {
+      #makes devenv shells build significantly faster
       trusted-substituters = [ "https://devenv.cachix.org" ];
       trusted-public-keys = [ "devenv.cachix.org-1:w1cLUi8dv3hnoSPGAuibQv+f9TZLr6cv/Hm9XgU50cw=" ];
     };
@@ -100,7 +101,7 @@ in
     '';
   };
 
-  environment.variables.EDITOR = "${pkgs.vim}/bin/ex";    # line editor
+  environment.variables.EDITOR = "${pkgs.vim}/bin/ex"; # line editor
   environment.variables.VISUAL = "${pkgs.nano}/bin/nano"; # visual editor
 
   environment.systemPackages = with pkgs; [
@@ -152,7 +153,7 @@ in
     teleport
     k9s
     kubectl
-    
+
     # OCF utilities
     (python312.withPackages (ps: [ ps.ocflib ]))
     ocf-utils

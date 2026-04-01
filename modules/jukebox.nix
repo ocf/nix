@@ -80,13 +80,13 @@ in
           useACMEHost = "${config.networking.hostName}.ocf.berkeley.edu";
           onlySSL = true;
 
-          locations."/" = { 
+          locations."/" = {
             proxyPass = "http://127.0.0.1:${toString cfg.port}";
             proxyWebsockets = true;
           };
         };
-      
-       "force-ssl" = {
+
+        "force-ssl" = {
           listen = [
             {
               addr = "0.0.0.0";

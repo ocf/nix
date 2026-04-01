@@ -65,7 +65,7 @@ in
 
         room_list_publication_rules = [
           {
-          action = "allow";
+            action = "allow";
           }
         ];
 
