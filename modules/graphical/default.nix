@@ -28,7 +28,7 @@ let
   catppuccin-sddm = pkgs.catppuccin-sddm.override {
     themeConfig.General = {
       FontSize = 12;
-      Background = "/etc/ocf-assets/images/login-newyear.png";
+      Background = "/etc/ocf-assets/images/login.png";
       #Logo = "/etc/ocf-assets/images/penguin.svg";
       CustomBackground = true;
     };
