@@ -265,6 +265,7 @@
         default = pkgs.mkShell {
           packages = [
             pkgs.git
+	    pkgs.age
             pkgs.agenix-rekey
             pkgs.age-plugin-fido2-hmac
             pkgs.wol

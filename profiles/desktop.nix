@@ -104,4 +104,16 @@ in
   # Needed for generic Linux programs
   # More info: https://nix.dev/guides/faq#how-to-run-non-nix-executables
   programs.nix-ld.enable = true;
+
+  # Enable ticket forwarding on desktops (no password when sshing to other ocf hosts from the desktops thru supernova!)
+  # disabled on everything else bc they dont need to jump through hosts like that...
+  programs.ssh.extraConfig = lib.mkOverride 90 ''
+    CanonicalizeHostname yes
+    CanonicalDomains ocf.berkeley.edu
+    Host *.ocf.berkeley.edu *.ocf.io 169.229.226.* 2607:f140:8801::*
+        GSSAPIAuthentication yes
+        GSSAPIKeyExchange yes
+        GSSAPIDelegateCredentials yes
+  '';
+  # TODO: only forward kerberos tickets to login servers (currently supernova and tsunami)!
 }
