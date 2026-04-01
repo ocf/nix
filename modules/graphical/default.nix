@@ -71,6 +71,8 @@ in
     {
       i18n.inputMethod = {
         enable = true;
+	# see https://github.com/pop-os/libcosmic/pull/1182, cosmic specific text will have ime support once this is merged soon
+	# see skel/.config/fcitx5 for IMEs enabled by default on cosmic
         type = "fcitx5";
         fcitx5.waylandFrontend = true;
         fcitx5.addons = with pkgs; [
