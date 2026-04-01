@@ -174,6 +174,8 @@
             "vscode"
             "zoom"
             "drawio"
+            "datagrip"
+            "davinci-resolve"
           ];
         };
       };
@@ -213,7 +215,7 @@
         meta = {
           nixpkgs = pkgsFor defaultSystem;
           nodeNixpkgs = nixpkgs.lib.mapAttrs (name: pkgsFor) overrideSystem;
-          specialArgs = { inherit inputs; };
+          specialArgs = { inherit self inputs; };
         };
       });
 
@@ -267,7 +269,7 @@
             pkgs.age-plugin-fido2-hmac
             pkgs.wol
             pkgs.nixfmt-tree
-            colmena.packages.${pkgs.system}.colmena
+            colmena.packages.${pkgs.stdenv.hostPlatform.system}.colmena
           ];
         };
         deploy = pkgs.mkShell {
@@ -276,7 +278,7 @@
             pkgs.openssh
             pkgs.wol
             pkgs.nixfmt-tree
-            colmena.packages.${pkgs.system}.colmena
+            colmena.packages.${pkgs.stdenv.hostPlatform.system}.colmena
           ];
         };
       });
