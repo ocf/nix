@@ -1,4 +1,9 @@
-{ config, pkgs, lib, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
 
 let
   kubernetes = pkgs.kubernetes.overrideAttrs (oldAttrs: rec {
@@ -11,7 +16,19 @@ let
       hash = "sha256-UZdrfQEEx0RRe4Bb4EAWcjgCCLq4CJL06HIriYuk1Io=";
     };
   });
-  kubePkgs = with pkgs; [ kubernetes util-linux iproute2 ethtool cri-o iptables-legacy socat conntrack-tools gvisor cri-tools ebtables ];
+  kubePkgs = with pkgs; [
+    kubernetes
+    util-linux
+    iproute2
+    ethtool
+    cri-o
+    iptables-legacy
+    socat
+    conntrack-tools
+    gvisor
+    cri-tools
+    ebtables
+  ];
 in
 {
   # Configuration for Nodes
@@ -30,7 +47,9 @@ in
     ocf.managed-deployment.automated-deploy = false;
 
     environment.etc = {
-      "kubernetes/manifests/kubevip.yaml" = lib.mkIf config.services.ocfKubernetes.isLeader { source = ./kubevip.yaml; };
+      "kubernetes/manifests/kubevip.yaml" = lib.mkIf config.services.ocfKubernetes.isLeader {
+        source = ./kubevip.yaml;
+      };
       "kubernetes/kubeadm.yaml".source = ./kubeadm.yaml;
     };
 
@@ -89,7 +108,12 @@ in
     # <https://docs.cilium.io/en/v1.11/operations/system_requirements/#firewall-rules>
     networking.firewall.allowedUDPPorts = [ 8472 ];
     # <https://kubernetes.io/docs/reference/ports-and-protocols/>
-    networking.firewall.allowedTCPPortRanges = [{ from = 30000; to = 32767; }];
+    networking.firewall.allowedTCPPortRanges = [
+      {
+        from = 30000;
+        to = 32767;
+      }
+    ];
 
     # <https://github.com/NixOS/nixpkgs/issues/179741>
     networking.nftables.enable = false;

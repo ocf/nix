@@ -36,15 +36,15 @@ in
         };
       };
 
-      networks = lib.listToAttrs (map
-        (interface: {
+      networks = lib.listToAttrs (
+        map (interface: {
           name = "10-${interface}";
           value = {
             matchConfig.Name = interface;
             networkConfig.Bond = cfg.bondInterface;
           };
-        })
-        cfg.interfaces);
+        }) cfg.interfaces
+      );
     };
   };
 }

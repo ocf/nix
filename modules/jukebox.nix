@@ -1,4 +1,9 @@
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 let
   cfg = config.ocf.jukebox;
@@ -28,13 +33,19 @@ in
 
   config = lib.mkIf cfg.enable {
 
-    ocf.acme.extraCerts = [ "jukebox.ocf.berkeley.edu" "jukebox.ocf.io" ];
+    ocf.acme.extraCerts = [
+      "jukebox.ocf.berkeley.edu"
+      "jukebox.ocf.io"
+    ];
 
     users.users."nginx".extraGroups = [ "acme" ];
 
     systemd.services.jukebox = {
       description = "OCF Jukebox Django Server";
-      after = [ "network.target" "nss-lookup.target" ];
+      after = [
+        "network.target"
+        "nss-lookup.target"
+      ];
       wants = [ "nss-lookup.target" ];
       wantedBy = [ "multi-user.target" ];
       environment = {
@@ -59,7 +70,6 @@ in
       recommendedGzipSettings = true;
       recommendedProxySettings = true;
 
-
       virtualHosts = {
         "jukebox" = {
           listen = [
@@ -80,13 +90,13 @@ in
           useACMEHost = "${config.networking.hostName}.ocf.berkeley.edu";
           onlySSL = true;
 
-          locations."/" = { 
+          locations."/" = {
             proxyPass = "http://127.0.0.1:${toString cfg.port}";
             proxyWebsockets = true;
           };
         };
-      
-       "force-ssl" = {
+
+        "force-ssl" = {
           listen = [
             {
               addr = "0.0.0.0";

@@ -1,4 +1,9 @@
-{ pkgs, lib, config, ... }:
+{
+  pkgs,
+  lib,
+  config,
+  ...
+}:
 
 let
   cfg = config.ocf.irc;
@@ -119,7 +124,10 @@ in
       };
     };
 
-    ocf.acme.extraCerts = [ "irc.ocf.berkeley.edu" "irc.ocf.io" ];
+    ocf.acme.extraCerts = [
+      "irc.ocf.berkeley.edu"
+      "irc.ocf.io"
+    ];
 
     users.users."ergochat" = {
       isNormalUser = true;
