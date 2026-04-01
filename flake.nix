@@ -209,7 +209,7 @@
         hosts;
     in
     {
-      formatter = forAllSystems (pkgs: pkgs.nixpkgs-fmt);
+      formatter = forAllSystems (pkgs: pkgs.nixfmt-tree);
 
       colmenaHive = colmena.lib.makeHive (colmenaHosts // {
         meta = {
@@ -268,6 +268,7 @@
             pkgs.agenix-rekey
             pkgs.age-plugin-fido2-hmac
             pkgs.wol
+            pkgs.nixfmt-tree
             colmena.packages.${pkgs.stdenv.hostPlatform.system}.colmena
           ];
         };
@@ -276,6 +277,7 @@
             pkgs.git
             pkgs.openssh
             pkgs.wol
+            pkgs.nixfmt-tree
             colmena.packages.${pkgs.stdenv.hostPlatform.system}.colmena
           ];
         };
