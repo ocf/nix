@@ -96,9 +96,8 @@ in
       Host *.ocf.berkeley.edu *.ocf.io 169.229.226.* 2607:f140:8801::*
           GSSAPIAuthentication yes
           GSSAPIKeyExchange yes
-          GSSAPIDelegateCredentials yes
+          GSSAPIDelegateCredentials no
     '';
-    # set GSSAPIDelegateCredentials yes, so that we can forward tickets to remote hosts (like SSH agent forwarding)
   };
 
   environment.variables.EDITOR = "${pkgs.vim}/bin/ex";    # line editor
