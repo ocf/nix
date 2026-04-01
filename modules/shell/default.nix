@@ -11,7 +11,6 @@ in
   config = lib.mkIf cfg.enable {
     environment = {
       enableAllTerminfo = true;
-      etc."p10k.zsh".source = ./p10k.zsh;
 
       systemPackages = with pkgs; [
         bash
@@ -29,9 +28,21 @@ in
           zsh-newuser-install() { :; }
         '';
         interactiveShellInit = ''
+          # add default ocf config only if not disabled by user in ~/.zshenv by
+          # setting $SKIP_OCF_ZSHRC
+          if [[ -n "$SKIP_OCF_ZSHRC" ]]; then
+            return
+          fi
+
           source ${pkgs.zsh-powerlevel10k}/share/zsh-powerlevel10k/powerlevel10k.zsh-theme
-          source /etc/p10k.zsh
+
+          # p10k.zsh start
+          ${builtins.readFile ./p10k.zsh}
+          # p10k.zsh end
+
+          # command_not_found_handler.zsh start
           ${builtins.readFile ./command_not_found_handler.zsh}
+          # command_not_found_handler.zsh end
         '';
       };
 
