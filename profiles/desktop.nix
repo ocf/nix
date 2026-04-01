@@ -115,4 +115,5 @@ in
         GSSAPIKeyExchange yes
         GSSAPIDelegateCredentials yes
   '';
+  # TODO: only forward kerberos tickets to login servers (currently supernova and tsunami)!
 }
