@@ -106,6 +106,13 @@
       url = "github:ocf/jukebox-django";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    nixpkgs-unstable = {
+      type = "github";
+      owner = "nixos";
+      repo = "nixpkgs";
+      ref = "nixos-unstable";
+    };
   };
 
   outputs =
@@ -125,6 +132,7 @@
       wayout,
       ocf-cosmic-applets,
       ocf-jukebox,
+      nixpkgs-unstable,
     }@inputs:
     let
       # ============== #
@@ -263,6 +271,7 @@
         };
 
       overlays.default = final: prev: {
+        cutecosmic = nixpkgs-unstable.legacyPackages.${final.system}.cutecosmic;
         ocf-utils = ocf-utils.packages.${final.system}.default;
         ocf-wayout = wayout.packages.${final.system}.default;
         ocf-jukebox = ocf-jukebox.packages.${final.system}.default;

@@ -126,6 +126,9 @@ in
 
           # OCF IRC
           halloy
+
+          cutecosmic
+          adw-gtk3
         ];
 
         fonts.packages = with pkgs; [
@@ -133,6 +136,18 @@ in
           noto-fonts
           noto-fonts-cjk-sans
         ];
+
+        environment.sessionVariables = {
+          QT_QPA_PLATFORMTHEME = "cosmic";
+        };
+
+        programs.dconf.enable = true;
+
+        programs.firefox = {
+          preferences = {
+            "widget.gtk.libadwaita-colors.enabled" = false;
+          };
+        };
 
         services = {
           desktopManager.cosmic = {
