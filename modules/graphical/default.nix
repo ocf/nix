@@ -33,8 +33,7 @@ let
   catppuccin-sddm = pkgs.catppuccin-sddm.override {
     themeConfig.General = {
       FontSize = 12;
-      # FIXME: update this automatically based on time
-      Background = "/etc/ocf-assets/images/login-afool.png";
+      Background = "/etc/ocf-assets/images/login.png";
       #Logo = "/etc/ocf-assets/images/penguin.svg";
       CustomBackground = true;
     };
