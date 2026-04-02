@@ -163,7 +163,7 @@ in
         ];
 
         environment.sessionVariables = {
-          QT_QPA_PLATFORMTHEME = "gtk3";
+          QT_QPA_PLATFORMTHEME = "qt5ct";
         };
 
         programs.dconf.enable = true;
