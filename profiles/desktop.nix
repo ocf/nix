@@ -116,6 +116,9 @@ in
   # More info: https://nix.dev/guides/faq#how-to-run-non-nix-executables
   programs.nix-ld.enable = true;
 
+  # Add forward flag to tickets on desktops
+  security.krb5.settings.libdefaults.forwardable = true;
+
   # Only forward Kerberos tickets to login servers (fluttershy and rainbowdash)
   programs.ssh.extraConfig = lib.mkOverride 90 ''
     CanonicalizeHostname yes
@@ -127,6 +130,5 @@ in
     Host *.ocf.berkeley.edu *.ocf.io 169.229.226.* 2607:f140:8801::*
         GSSAPIAuthentication yes
         GSSAPIKeyExchange yes
-        GSSAPIDelegateCredentials no
   '';
 }
