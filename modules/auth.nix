@@ -105,6 +105,7 @@ in
         };
         libdefaults = {
           default_realm = "OCF.BERKELEY.EDU";
+          forwardable = true;
         };
       };
     };
