@@ -136,7 +136,7 @@ in
 
           # Themes
           adw-gtk3
-          qt5ct
+          libsForQt5.qt5ct
           kdePackages.qt6ct
           adwaita-qt
           adwaita-qt6
