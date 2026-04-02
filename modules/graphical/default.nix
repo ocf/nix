@@ -134,8 +134,10 @@ in
           # OCF IRC
           halloy
 
+          # Themes
           cutecosmic
           adw-gtk3
+          papirus-icon-theme
         ];
 
         fonts.packages = with pkgs; [
