@@ -116,15 +116,19 @@ in
   # More info: https://nix.dev/guides/faq#how-to-run-non-nix-executables
   programs.nix-ld.enable = true;
 
-  # Enable ticket forwarding on desktops (no password when sshing to other ocf hosts from the desktops thru supernova!)
-  # disabled on everything else bc they dont need to jump through hosts like that...
+  # Add forward flag to tickets on desktops
+  security.krb5.settings.libdefaults.forwardable = true;
+
+  # Only forward Kerberos tickets to login servers (fluttershy and rainbowdash)
   programs.ssh.extraConfig = lib.mkOverride 90 ''
     CanonicalizeHostname yes
     CanonicalDomains ocf.berkeley.edu
-    Host *.ocf.berkeley.edu *.ocf.io 169.229.226.* 2607:f140:8801::*
+    Host fluttershy.ocf.berkeley.edu rainbowdash.ocf.berkeley.edu
         GSSAPIAuthentication yes
         GSSAPIKeyExchange yes
         GSSAPIDelegateCredentials yes
+    Host *.ocf.berkeley.edu *.ocf.io 169.229.226.* 2607:f140:8801::*
+        GSSAPIAuthentication yes
+        GSSAPIKeyExchange yes
   '';
-  # TODO: only forward kerberos tickets to login servers (currently supernova and tsunami)!
 }
