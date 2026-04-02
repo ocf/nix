@@ -163,14 +163,17 @@ in
         ];
 
         environment.sessionVariables = {
-          QT_QPA_PLATFORMTHEME = "qt5ct";
+          QT_QPA_PLATFORMTHEME = "gtk3";
         };
 
         programs.dconf.enable = true;
 
         programs.firefox = {
-          preferences = {
-            "widget.gtk.libadwaita-colors.enabled" = false;
+          policies.Preferences = {
+            "widget.gtk.libadwaita-colors.enabled" = {
+              Value = false;
+              Status = "default";
+            };
           };
         };
 
