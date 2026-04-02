@@ -132,7 +132,6 @@
       wayout,
       ocf-cosmic-applets,
       ocf-jukebox,
-      nixpkgs-unstable,
     }@inputs:
     let
       # ============== #
