@@ -168,15 +168,6 @@ in
 
         programs.dconf.enable = true;
 
-        programs.firefox = {
-          policies.Preferences = {
-            "widget.gtk.libadwaita-colors.enabled" = {
-              Value = false;
-              Status = "default";
-            };
-          };
-        };
-
         services = {
           desktopManager.cosmic = {
             enable = true;
