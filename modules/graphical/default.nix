@@ -122,6 +122,13 @@ in
         # Conflict override since multiple DEs set this option
         programs.ssh.askPassword = pkgs.lib.mkForce (lib.getExe pkgs.ksshaskpass.out);
 
+        xdg.portal {
+          enable = true;
+          extraPortals = with pkgs; [
+            xdg-desktop-portal-gtk
+          ];
+        }
+
         environment.systemPackages = with pkgs; [
           catppuccin-sddm
 
