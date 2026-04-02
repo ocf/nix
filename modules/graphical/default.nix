@@ -149,8 +149,11 @@ in
           halloy
 
           # Themes
-          cutecosmic
           adw-gtk3
+          qt5ct
+          kdePackages.qt6ct
+          adwaita-qt
+          adwaita-qt6
         ];
 
         fonts.packages = with pkgs; [
@@ -160,7 +163,7 @@ in
         ];
 
         environment.sessionVariables = {
-          QT_QPA_PLATFORMTHEME = "cosmic";
+          QT_QPA_PLATFORMTHEME = "qt5ct";
         };
 
         programs.dconf.enable = true;
