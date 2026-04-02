@@ -127,7 +127,7 @@ in
           extraPortals = with pkgs; [
             xdg-desktop-portal-gtk
           ];
-        }
+        };
 
         environment.systemPackages = with pkgs; [
           catppuccin-sddm
