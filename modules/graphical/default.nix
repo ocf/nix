@@ -232,10 +232,12 @@ in
                 if [ "$content" = "true" ]; then
                   echo "dark" > "$OCF_THEME_FILE"
                   sed -i -E 's/bg-(light|dark)/bg-dark/g' $COSMIC_BG_FILE
+                  gsettings set org.gnome.desktop.interface color-scheme prefer-dark
                   sed -i 's/theme = "rose-pine-dawn"/theme = "rose-pine"/' $HOME/.config/halloy/config.toml
                 else
                   echo "light" > "$OCF_THEME_FILE"
                   sed -i -E 's/bg-(light|dark)/bg-light/g' $COSMIC_BG_FILE
+                  gsettings set org.gnome.desktop.interface color-scheme prefer-light
                   sed -i 's/theme = "rose-pine"/theme = "rose-pine-dawn"/' $HOME/.config/halloy/config.toml
                 fi
                 pkill -USR1 halloy || true
