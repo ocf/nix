@@ -248,20 +248,26 @@ in
               if [ -f "$COSMIC_THEME_FILE" ]; then
                 content=$(cat "$COSMIC_THEME_FILE")
                 mkdir -p "$(dirname "$OCF_THEME_FILE")"
+                mkdir -p "$(dirname "$KVANTUM_THEME_FILE")"
+
+                # Ensure kvantum knows where to find the rose pine themes
+                ln -sfT ${pkgs.rose-pine-kvantum}/share/Kvantum/rose-pine $HOME/.config/Kvantum/rose-pine || true
+                ln -sfT ${pkgs.rose-pine-kvantum}/share/Kvantum/rose-pine-dawn $HOME/.config/Kvantum/rose-pine-dawn || true
+
                 if [ "$content" = "true" ]; then
                   echo "dark" > "$OCF_THEME_FILE"
                   sed -i -E 's/bg-(light|dark)/bg-dark/g' $COSMIC_BG_FILE
                   sed -i 's/theme = "rose-pine-dawn"/theme = "rose-pine"/' $HOME/.config/halloy/config.toml
                   # QT Themes
-                  sed -i 's/^theme=.*/theme=Rose-Pine/' $KVANTUM_THEME_FILE
-                  kvantummanager --set "Rose-Pine" || true
+                  sed -i 's/^theme=.*/theme=rose-pine/' $KVANTUM_THEME_FILE
+                  kvantummanager --set "rose-pine" || true
                 else
                   echo "light" > "$OCF_THEME_FILE"
                   sed -i -E 's/bg-(light|dark)/bg-light/g' $COSMIC_BG_FILE
                   sed -i 's/theme = "rose-pine"/theme = "rose-pine-dawn"/' $HOME/.config/halloy/config.toml
                   # QT Themes
-                  sed -i 's/^theme=.*/theme=Rose-Pine-Dawn/' $KVANTUM_THEME_FILE
-                  kvantummanager --set "Rose-Pine-Dawn" || true
+                  sed -i 's/^theme=.*/theme=rose-pine-dawn/' $KVANTUM_THEME_FILE
+                  kvantummanager --set "rose-pine-dawn" || true
                 fi
                 pkill -USR1 halloy || true
               fi
