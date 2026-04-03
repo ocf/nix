@@ -150,6 +150,8 @@ in
 
           # Themes
           adw-gtk3
+          libsForQt5.qt5ct
+          kdePackages.qt6ct
           kdePackages.qtstyleplugin-kvantum
           rose-pine-kvantum
         ];
@@ -161,7 +163,7 @@ in
         ];
 
         environment.sessionVariables = {
-          QT_STYLE_OVERRIDE = "kvantum";
+          QT_QPA_PLATFORMTHEME = "qt5ct";
         };
 
         programs.dconf.enable = true;
