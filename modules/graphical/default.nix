@@ -243,6 +243,15 @@ in
             }
 
             # Initial sync
+            if [ -f "$OCF_THEME_FILE" ]; then
+              ocf_theme=$(cat "$OCF_THEME_FILE")
+              mkdir -p "$(dirname "$COSMIC_THEME_FILE")"
+              if [ "$ocf_theme" = "dark" ]; then
+                echo "true" > "$COSMIC_THEME_FILE"
+              elif [ "$ocf_theme" = "light" ]; then
+                echo "false" > "$COSMIC_THEME_FILE"
+              fi
+            fi
             sync_theme
 
             # Watch for changes
