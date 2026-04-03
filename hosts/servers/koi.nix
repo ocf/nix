@@ -8,7 +8,7 @@
 {
   imports = [ ../../hardware/virtualized.nix ];
 
-  networking.hostName = "rainbowdash";
+  networking.hostName = "koi";
 
   ocf.network = {
     enable = true;
