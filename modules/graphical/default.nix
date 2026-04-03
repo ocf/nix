@@ -258,16 +258,16 @@ in
             COSMIC_BG_FILE="$HOME/.config/cosmic/com.system76.CosmicBackground/v1/all"
             OCF_THEME_FILE="$HOME/remote/.config/ocf/theme"
             KVANTUM_THEME_FILE="$HOME/.config/Kvantum/kvantum.kvconfig"
+            mkdir -p "$(dirname "$KVANTUM_THEME_FILE")"
+
+            # Ensure kvantum knows where to find the rose pine themes
+            ln -sfT ${pkgs.rose-pine-kvantum}/share/Kvantum/themes/rose-pine-moon-iris $HOME/.config/Kvantum/rose-pine-moon-iris || true
+            ln -sfT ${pkgs.rose-pine-kvantum}/share/Kvantum/themes/rose-pine-dawn-iris $HOME/.config/Kvantum/rose-pine-dawn-iris || true
 
             sync_theme() {
               if [ -f "$COSMIC_THEME_FILE" ]; then
                 content=$(cat "$COSMIC_THEME_FILE")
                 mkdir -p "$(dirname "$OCF_THEME_FILE")"
-                mkdir -p "$(dirname "$KVANTUM_THEME_FILE")"
-
-                # Ensure kvantum knows where to find the rose pine themes
-                ln -sfT ${pkgs.rose-pine-kvantum}/share/Kvantum/rose-pine $HOME/.config/Kvantum/rose-pine || true
-                ln -sfT ${pkgs.rose-pine-kvantum}/share/Kvantum/rose-pine-dawn $HOME/.config/Kvantum/rose-pine-dawn || true
 
                 if [ "$content" = "true" ]; then
                   echo "dark" > "$OCF_THEME_FILE"
@@ -275,16 +275,16 @@ in
                   gsettings set org.gnome.desktop.interface color-scheme prefer-dark
                   sed -i 's/theme = "rose-pine-dawn"/theme = "rose-pine"/' $HOME/.config/halloy/config.toml
                   # QT Themes
-                  sed -i 's/^theme=.*/theme=rose-pine/' $KVANTUM_THEME_FILE
-                  kvantummanager --set "rose-pine" || true
+                  sed -i 's/^theme=.*/theme=rose-pine-moon-iris/' $KVANTUM_THEME_FILE
+                  kvantummanager --set "rose-pine-moon-iris" || true
                 else
                   echo "light" > "$OCF_THEME_FILE"
                   sed -i -E 's/bg-(light|dark)/bg-light/g' $COSMIC_BG_FILE
                   gsettings set org.gnome.desktop.interface color-scheme prefer-light
                   sed -i 's/theme = "rose-pine"/theme = "rose-pine-dawn"/' $HOME/.config/halloy/config.toml
                   # QT Themes
-                  sed -i 's/^theme=.*/theme=rose-pine-dawn/' $KVANTUM_THEME_FILE
-                  kvantummanager --set "rose-pine-dawn" || true
+                  sed -i 's/^theme=.*/theme=rose-pine-dawn-iris/' $KVANTUM_THEME_FILE
+                  kvantummanager --set "rose-pine-dawn-iris" || true
                 fi
                 pkill -USR1 halloy || true
               fi
