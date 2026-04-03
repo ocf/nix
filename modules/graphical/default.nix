@@ -232,10 +232,12 @@ in
                 if [ "$content" = "true" ]; then
                   echo "dark" > "$OCF_THEME_FILE"
                   sed -i -E 's/bg-(light|dark)/bg-dark/g' $COSMIC_BG_FILE
+                  gsettings set org.gnome.desktop.interface color-scheme prefer-dark
                   sed -i 's/theme = "rose-pine-dawn"/theme = "rose-pine"/' $HOME/.config/halloy/config.toml
                 else
                   echo "light" > "$OCF_THEME_FILE"
                   sed -i -E 's/bg-(light|dark)/bg-light/g' $COSMIC_BG_FILE
+                  gsettings set org.gnome.desktop.interface color-scheme prefer-light
                   sed -i 's/theme = "rose-pine"/theme = "rose-pine-dawn"/' $HOME/.config/halloy/config.toml
                 fi
                 pkill -USR1 halloy || true
@@ -243,7 +245,19 @@ in
             }
 
             # Initial sync
+            if [ -f "$OCF_THEME_FILE" ]; then
+              ocf_theme=$(cat "$OCF_THEME_FILE")
+              mkdir -p "$(dirname "$COSMIC_THEME_FILE")"
+              if [ "$ocf_theme" = "dark" ]; then
+                echo "true" > "$COSMIC_THEME_FILE"
+              elif [ "$ocf_theme" = "light" ]; then
+                echo "false" > "$COSMIC_THEME_FILE"
+              fi
+            fi
             sync_theme
+
+            # sleep to wait for desktop to load so next overwrite doesn't interfere
+            sleep 1
 
             # Watch for changes
             ${pkgs.inotify-tools}/bin/inotifywait -m -e close_write,moved_to,create \
