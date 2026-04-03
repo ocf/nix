@@ -98,7 +98,7 @@
       type = "github";
       owner = "ocf";
       repo = "cosmic-applets";
-      ref = "fix-theme-preference";
+      ref = "main";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
