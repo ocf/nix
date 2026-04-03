@@ -256,7 +256,8 @@ in
             fi
             sync_theme
 
-            sleep 5
+            # sleep to wait for desktop to load so next overwrite doesn't interfere
+            sleep 1
 
             # Watch for changes
             ${pkgs.inotify-tools}/bin/inotifywait -m -e close_write,moved_to,create \
