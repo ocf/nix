@@ -21,6 +21,14 @@
     mountServices = true;
   };
 
+  age.secrets.ocfprinting = {
+    rekeyFile = ../../secrets/master-keyed/ocfprinting.age;
+    path = "/etc/ocfprinting.json";
+    owner = "root";
+    group = "ocfstaff";
+    mode = "0640";
+  };
+
   environment.systemPackages = with pkgs; [
     ocf-utils
     openldap
