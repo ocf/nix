@@ -8,7 +8,7 @@
 {
   imports = [ ../../hardware/virtualized.nix ];
 
-  networking.hostName = "fluttershy";
+  networking.hostName = "carp";
 
   ocf.network = {
     enable = true;
