@@ -256,6 +256,8 @@ in
             fi
             sync_theme
 
+            sleep 5
+
             # Watch for changes
             ${pkgs.inotify-tools}/bin/inotifywait -m -e close_write,moved_to,create \
               "$(dirname "$COSMIC_THEME_FILE")" 2>/dev/null | while read -r dir events file; do
