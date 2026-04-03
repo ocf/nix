@@ -123,7 +123,7 @@ in
   programs.ssh.extraConfig = lib.mkOverride 90 ''
     CanonicalizeHostname yes
     CanonicalDomains ocf.berkeley.edu
-    Host fluttershy.ocf.berkeley.edu rainbowdash.ocf.berkeley.edu
+    Host carp.ocf.berkeley.edu koi.ocf.berkeley.edu
         GSSAPIAuthentication yes
         GSSAPIKeyExchange yes
         GSSAPIDelegateCredentials yes
