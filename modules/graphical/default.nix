@@ -135,10 +135,8 @@ in
 
           # Themes
           adw-gtk3
-          libsForQt5.qt5ct
-          kdePackages.qt6ct
-          adwaita-qt
-          adwaita-qt6
+          kdePackages.qtstyleplugin-kvantum
+          rose-pine-kvantum
         ];
 
         fonts.packages = with pkgs; [
@@ -148,7 +146,7 @@ in
         ];
 
         environment.sessionVariables = {
-          QT_QPA_PLATFORMTHEME = "qt5ct";
+          QT_STYLE_OVERRIDE = "kvantum";
         };
 
         programs.dconf.enable = true;
@@ -244,8 +242,7 @@ in
             COSMIC_THEME_FILE="$HOME/.config/cosmic/com.system76.CosmicTheme.Mode/v1/is_dark"
             COSMIC_BG_FILE="$HOME/.config/cosmic/com.system76.CosmicBackground/v1/all"
             OCF_THEME_FILE="$HOME/remote/.config/ocf/theme"
-            QT5CT_THEME_FILE="$HOME/.config/qt5ct/qt5ct.conf"
-            QT6CT_THEME_FILE="$HOME/.config/qt6ct/qt6ct.conf"
+            KVANTUM_THEME_FILE="$HOME/.config/Kvantum/kvantum.kvconfig"
 
             sync_theme() {
               if [ -f "$COSMIC_THEME_FILE" ]; then
@@ -256,15 +253,15 @@ in
                   sed -i -E 's/bg-(light|dark)/bg-dark/g' $COSMIC_BG_FILE
                   sed -i 's/theme = "rose-pine-dawn"/theme = "rose-pine"/' $HOME/.config/halloy/config.toml
                   # QT Themes
-                  sed -i 's/^style=.*/style=Adwaita-Dark/' $QT5CT_THEME_FILE
-                  sed -i 's/^style=.*/style=Adwaita-Dark/' $QT6CT_THEME_FILE
+                  sed -i 's/^theme=.*/theme=Rose-Pine/' $KVANTUM_THEME_FILE
+                  kvantummanager --set "Rose-Pine" || true
                 else
                   echo "light" > "$OCF_THEME_FILE"
                   sed -i -E 's/bg-(light|dark)/bg-light/g' $COSMIC_BG_FILE
                   sed -i 's/theme = "rose-pine"/theme = "rose-pine-dawn"/' $HOME/.config/halloy/config.toml
                   # QT Themes
-                  sed -i 's/^style=.*/style=Adwaita/' $QT5CT_THEME_FILE
-                  sed -i 's/^style=.*/style=Adwaita/' $QT6CT_THEME_FILE
+                  sed -i 's/^theme=.*/theme=Rose-Pine-Dawn/' $KVANTUM_THEME_FILE
+                  kvantummanager --set "Rose-Pine-Dawn" || true
                 fi
                 pkill -USR1 halloy || true
               fi
