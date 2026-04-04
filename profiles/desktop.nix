@@ -119,11 +119,11 @@ in
   # Add forward flag to tickets on desktops
   security.krb5.settings.libdefaults.forwardable = true;
 
-  # Only forward Kerberos tickets to login servers (fluttershy and rainbowdash)
+  # Only forward Kerberos tickets to login servers (carp and koi)
   programs.ssh.extraConfig = lib.mkOverride 90 ''
     CanonicalizeHostname yes
     CanonicalDomains ocf.berkeley.edu
-    Host fluttershy.ocf.berkeley.edu rainbowdash.ocf.berkeley.edu
+    Host carp.ocf.berkeley.edu koi.ocf.berkeley.edu
         GSSAPIAuthentication yes
         GSSAPIKeyExchange yes
         GSSAPIDelegateCredentials yes
