@@ -28,5 +28,12 @@
     ipmitool
   ];
 
+  programs.ssh.extraConfig = lib.mkOverride 90 ''
+    GSSAPIAuthentication yes
+    GSSAPIKeyExchange yes
+    GSSAPICleanupCredentials yes
+    GSSAPIStrictAcceptorCheck yes
+  '';
+
   system.stateVersion = "25.05";
 }
