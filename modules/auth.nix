@@ -1,7 +1,14 @@
-{ lib, config, pkgs, ... }:
+{
+  lib,
+  config,
+  pkgs,
+  ...
+}:
 
 let
   cfg = config.ocf.auth;
+  keytabSecretPath = ../secrets/master-keyed/keytabs + "/${config.networking.hostName}.age";
+  hasKeytab = builtins.pathExists keytabSecretPath;
 in
 {
   options.ocf.auth = {
@@ -10,6 +17,16 @@ in
 
   config = lib.mkIf cfg.enable {
     age.secrets.root-password-hash.rekeyFile = ../secrets/master-keyed/root-password-hash.age;
+
+    # Per-host keytab for GSSAPI SSH authentication
+    # Only configured if the host has a keytab in secrets/master-keyed/keytabs/<hostname>.age
+    age.secrets.krb5-keytab = lib.mkIf hasKeytab {
+      rekeyFile = keytabSecretPath;
+      path = "/etc/krb5.keytab";
+      owner = "root";
+      group = "root";
+      mode = "0600";
+    };
 
     users = {
       mutableUsers = false;
@@ -37,8 +54,19 @@ in
       '';
 
       extraRules = [
-        { groups = [ "ocfroot" ]; commands = [ "ALL" ]; }
-        { users = [ "ocfbackups" ]; commands = [{ command = lib.getExe pkgs.rsync; options = [ "NOPASSWD" ]; }]; }
+        {
+          groups = [ "ocfroot" ];
+          commands = [ "ALL" ];
+        }
+        {
+          users = [ "ocfbackups" ];
+          commands = [
+            {
+              command = lib.getExe pkgs.rsync;
+              options = [ "NOPASSWD" ];
+            }
+          ];
+        }
       ];
     };
 
@@ -77,8 +105,20 @@ in
         };
         libdefaults = {
           default_realm = "OCF.BERKELEY.EDU";
+          rdns = false;
         };
       };
+    };
+
+    services.openssh.settings = {
+      GSSAPIAuthentication = "yes";
+      GSSAPICleanupCredentials = "yes";
+      GSSAPIStrictAcceptorCheck = "yes";
+      # ssh gssapi currently does not support a post-quantum safe key exchange
+      # algorithm. lets disable gssapi key exchange and use ssh's default key
+      # exchanges (which supports post-quantum safe key exchange).
+      # Only enable key exchange if host has a keytab
+      #GSSAPIKeyExchange = lib.mkIf hasKeytab "yes";
     };
   };
 }

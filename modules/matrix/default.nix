@@ -1,4 +1,9 @@
-{ pkgs, lib, config, ... }:
+{
+  pkgs,
+  lib,
+  config,
+  ...
+}:
 
 let
   cfg = config.ocf.matrix;
@@ -33,7 +38,12 @@ in
 
   config = lib.mkIf cfg.enable {
 
-    ocf.acme.extraCerts = [ "matrix.ocf.berkeley.edu" "matrix.ocf.io" "chat.ocf.berkeley.edu" "chat.ocf.io" ];
+    ocf.acme.extraCerts = [
+      "matrix.ocf.berkeley.edu"
+      "matrix.ocf.io"
+      "chat.ocf.berkeley.edu"
+      "chat.ocf.io"
+    ];
 
     age.secrets.synapse-client-secret.rekeyFile = ../../secrets/master-keyed/matrix/client-secret.age;
     age.secrets.synapse-client-secret.owner = "matrix-synapse";
@@ -65,7 +75,7 @@ in
 
         room_list_publication_rules = [
           {
-          action = "allow";
+            action = "allow";
           }
         ];
 
@@ -83,7 +93,10 @@ in
             issuer = "https://idm.ocf.berkeley.edu/realms/ocf";
             client_id = "matrix";
             client_secret_path = config.age.secrets.synapse-client-secret.path;
-            scopes = [ "openid" "profile" ];
+            scopes = [
+              "openid"
+              "profile"
+            ];
             user_mapping_provider = {
               config = {
                 localpart_template = "{{ user.preferred_username }}";
@@ -126,7 +139,6 @@ in
       recommendedOptimisation = true;
       recommendedGzipSettings = true;
       recommendedProxySettings = true;
-
 
       virtualHosts = {
         "synapse" = {

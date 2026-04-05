@@ -109,21 +109,22 @@
   };
 
   outputs =
-    { self
-    , nixpkgs
-    , systems
-    , colmena
-    , agenix
-    , agenix-rekey
-    , disko
-    , nix-index-database
-    , ocflib
-    , ocf-sync-etc
-    , ocf-pam-trimspaces
-    , ocf-utils
-    , wayout
-    , ocf-cosmic-applets
-    , ocf-jukebox
+    {
+      self,
+      nixpkgs,
+      systems,
+      colmena,
+      agenix,
+      agenix-rekey,
+      disko,
+      nix-index-database,
+      ocflib,
+      ocf-sync-etc,
+      ocf-pam-trimspaces,
+      ocf-utils,
+      wayout,
+      ocf-cosmic-applets,
+      ocf-jukebox,
     }@inputs:
     let
       # ============== #
@@ -139,8 +140,9 @@
         agenix-rekey.overlays.default
       ];
 
-      customModules =
-        (with nixpkgs.lib; filter (hasSuffix ".nix") (filesystem.listFilesRecursive ./modules));
+      customModules = (
+        with nixpkgs.lib; filter (hasSuffix ".nix") (filesystem.listFilesRecursive ./modules)
+      );
 
       commonModules = customModules ++ [
         ./profiles/base.nix
@@ -150,107 +152,125 @@
       ];
 
       defaultSystem = "x86_64-linux";
-      overrideSystem = { overheat = "aarch64-linux"; };
+      overrideSystem = {
+        overheat = "aarch64-linux";
+      };
 
       # ============== #
       # Glue/Internals #
       # ============== #
 
-      pkgsFor = system: import nixpkgs {
-        inherit overlays system;
-        config = {
-          allowUnfreePredicate = pkg: builtins.elem (nixpkgs.lib.getName pkg) [
-            "code"
-            "claude-code"
-            "dwarf-fortress"
-            "google-chrome"
-            "helvetica-neue-lt-std" #tornado
-            "mongodb" #zecora for unifi
-            "nvidia-settings"
-            "nvidia-x11"
-            "steam"
-            "steam-unwrapped"
-            "unifi-controller"
-            "vscode"
-            "zoom"
-            "drawio"
-          ];
+      pkgsFor =
+        system:
+        import nixpkgs {
+          inherit overlays system;
+          config = {
+            allowUnfreePredicate =
+              pkg:
+              builtins.elem (nixpkgs.lib.getName pkg) [
+                "code"
+                "claude-code"
+                "dwarf-fortress"
+                "google-chrome"
+                "helvetica-neue-lt-std" # tornado
+                "mongodb" # zecora for unifi
+                "nvidia-settings"
+                "nvidia-x11"
+                "steam"
+                "steam-unwrapped"
+                "unifi-controller"
+                "vscode"
+                "zoom"
+                "drawio"
+                "datagrip"
+                "davinci-resolve"
+              ];
+          };
         };
-      };
 
-      forAllSystems = fn: nixpkgs.lib.genAttrs (import systems)
-        (system: fn (pkgsFor system));
+      forAllSystems = fn: nixpkgs.lib.genAttrs (import systems) (system: fn (pkgsFor system));
 
-      readGroup = group: nixpkgs.lib.mapAttrs'
-        (filename: _: {
+      readGroup =
+        group:
+        nixpkgs.lib.mapAttrs' (filename: _: {
           name = nixpkgs.lib.nameFromURL filename ".";
           value = {
             inherit group;
             modules = [ ./hosts/${group}/${filename} ];
           };
-        })
-        (builtins.readDir ./hosts/${group});
+        }) (builtins.readDir ./hosts/${group});
 
-      hosts = nixpkgs.lib.concatMapAttrs
-        (group: _: readGroup group)
-        (builtins.readDir ./hosts);
+      hosts = nixpkgs.lib.concatMapAttrs (group: _: readGroup group) (builtins.readDir ./hosts);
 
       deploy-user = "ocf-nix-deploy-user";
-      colmenaHosts = builtins.mapAttrs
-        (host: { modules, group }: {
+      colmenaHosts = builtins.mapAttrs (
+        host:
+        { modules, group }:
+        {
           imports = commonModules ++ modules;
           deployment.tags = [ group ];
           deployment.targetHost = "${host}.ocf.berkeley.edu";
           # TODO: Think of a less ugly way of doing this
-          deployment.targetUser = nixpkgs.lib.mkIf self.colmenaHive.nodes.${host}.config.ocf.managed-deployment.enable deploy-user;
-        })
-        hosts;
+          deployment.targetUser =
+            nixpkgs.lib.mkIf self.colmenaHive.nodes.${host}.config.ocf.managed-deployment.enable
+              deploy-user;
+        }
+      ) hosts;
     in
     {
-      formatter = forAllSystems (pkgs: pkgs.nixpkgs-fmt);
+      formatter = forAllSystems (pkgs: pkgs.nixfmt-tree);
 
-      colmenaHive = colmena.lib.makeHive (colmenaHosts // {
-        meta = {
-          nixpkgs = pkgsFor defaultSystem;
-          nodeNixpkgs = nixpkgs.lib.mapAttrs (name: pkgsFor) overrideSystem;
-          specialArgs = { inherit inputs; };
+      colmenaHive = colmena.lib.makeHive (
+        colmenaHosts
+        // {
+          meta = {
+            nixpkgs = pkgsFor defaultSystem;
+            nodeNixpkgs = nixpkgs.lib.mapAttrs (name: pkgsFor) overrideSystem;
+            specialArgs = { inherit self inputs; };
+          };
+        }
+      );
+
+      autoDeploy =
+        let
+          # returns the value of a managed-deployment option (given as a string containing the option name) for the given node
+          getOptionForNode =
+            option: node: self.colmenaHive.nodes.${node}.config.ocf.managed-deployment.${option};
+
+          # returns a list of the MAC addresses for the given list of nodes with automated deploy enabled
+          # hosts that do not have mac-address set will be gracefully ignored
+          getMACs =
+            nodes:
+            builtins.filter (mac: mac != "") (builtins.map (node: getOptionForNode "mac-address" node) nodes);
+        in
+        {
+          # list of nodes with automated deploy enabled, to be consumed by github actions
+          nodes = builtins.filter (node: getOptionForNode "automated-deploy" node) (
+            builtins.attrNames self.colmenaHive.nodes
+          );
+
+          # list of mac addresses of nodes that github actions should wake up on deploy
+          MACs = getMACs self.autoDeploy.nodes;
+
+          # attribute set combining automatedDeployNodes and automatedDeployNodeMACs
+          # get json with `nix eval .#autoDeploy.nodesWithMACs --json`!
+          # TODO: script to wake up hosts with this
+          nodesWithMACs = nixpkgs.lib.listToAttrs (
+            nixpkgs.lib.zipListsWith (name: value: {
+              inherit name value;
+            }) self.autoDeploy.nodes self.autoDeploy.MACs
+          );
         };
-      });
-
-      autoDeploy = let
-        # returns the value of a managed-deployment option (given as a string containing the option name) for the given node
-        getOptionForNode = option: node: self.colmenaHive.nodes.${node}.config.ocf.managed-deployment.${option};
-
-        # returns a list of the MAC addresses for the given list of nodes with automated deploy enabled
-        # hosts that do not have mac-address set will be gracefully ignored
-        getMACs = nodes: builtins.filter (mac: mac != "")
-          (builtins.map
-            (node: getOptionForNode "mac-address" node)
-            nodes);
-      in {
-        # list of nodes with automated deploy enabled, to be consumed by github actions
-        nodes = builtins.filter (node: getOptionForNode "automated-deploy" node) (builtins.attrNames self.colmenaHive.nodes);
-
-        # list of mac addresses of nodes that github actions should wake up on deploy
-        MACs = getMACs self.autoDeploy.nodes;
-
-        # attribute set combining automatedDeployNodes and automatedDeployNodeMACs
-        # get json with `nix eval .#autoDeploy.nodesWithMACs --json`!
-        # TODO: script to wake up hosts with this
-        nodesWithMACs = nixpkgs.lib.listToAttrs (nixpkgs.lib.zipListsWith
-          (name: value: { inherit name value; })
-          self.autoDeploy.nodes self.autoDeploy.MACs);
-      };
 
       overlays.default = final: prev: {
-        ocf-utils = ocf-utils.packages.${final.system}.default;
-        ocf-wayout = wayout.packages.${final.system}.default;
-        ocf-jukebox = ocf-jukebox.packages.${final.system}.default;
+        ocf-utils = ocf-utils.packages.${final.stdenv.hostPlatform.system}.default;
+        ocf-wayout = wayout.packages.${final.stdenv.hostPlatform.system}.default;
+        ocf-jukebox = ocf-jukebox.packages.${final.stdenv.hostPlatform.system}.default;
         plasma-applet-commandoutput = final.callPackage ./pkgs/plasma-applet-commandoutput.nix { };
         catppuccin-sddm = final.qt6Packages.callPackage ./pkgs/catppuccin-sddm.nix { };
         ocf-papers = final.callPackage ./pkgs/ocf-papers.nix { };
         ocf-okular = final.kdePackages.callPackage ./pkgs/ocf-okular.nix { };
-        ocf-cosmic-applets = ocf-cosmic-applets.packages.${final.system}.default;
+        ocf-cosmic-applets = ocf-cosmic-applets.packages.${final.stdenv.hostPlatform.system}.default;
         ocf-cosmic-greeter = final.callPackage ./pkgs/ocf-cosmic-greeter.nix { };
       };
 
@@ -263,10 +283,12 @@
         default = pkgs.mkShell {
           packages = [
             pkgs.git
+            pkgs.age
             pkgs.agenix-rekey
             pkgs.age-plugin-fido2-hmac
             pkgs.wol
-            colmena.packages.${pkgs.system}.colmena
+            pkgs.nixfmt-tree
+            colmena.packages.${pkgs.stdenv.hostPlatform.system}.colmena
           ];
         };
         deploy = pkgs.mkShell {
@@ -274,18 +296,20 @@
             pkgs.git
             pkgs.openssh
             pkgs.wol
-            colmena.packages.${pkgs.system}.colmena
+            pkgs.nixfmt-tree
+            colmena.packages.${pkgs.stdenv.hostPlatform.system}.colmena
           ];
         };
       });
 
-      nixosConfigurations = builtins.mapAttrs
-        (host: colmenaConfig: nixpkgs.lib.nixosSystem rec {
+      nixosConfigurations = builtins.mapAttrs (
+        host: colmenaConfig:
+        nixpkgs.lib.nixosSystem rec {
           system = overrideSystem.${host} or defaultSystem;
           pkgs = pkgsFor system;
           modules = colmenaConfig.imports;
           specialArgs = { inherit inputs; };
-        })
-        colmenaHosts;
+        }
+      ) colmenaHosts;
     };
 }

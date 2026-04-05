@@ -1,4 +1,9 @@
-{ pkgs, lib, config, ... }:
+{
+  pkgs,
+  lib,
+  config,
+  ...
+}:
 
 {
   imports = [ ../../hardware/virtualized.nix ];
@@ -16,7 +21,7 @@
     description = "Unifi console.";
   };
 
-  services.unifi.enable = true;
+  services.unifi.enable = false;
 
   system.stateVersion = "24.11";
 }
