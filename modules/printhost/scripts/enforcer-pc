@@ -1,0 +1,7 @@
+#!/bin/bash
+# Print the number of pages in arg1 (a PostScript file pre-processed by
+# CUPS-flavored GhostScript via the ocfps filter).
+#
+# Reads the "%%Pages:" header from the beginning or end of the file.
+set -euo pipefail
+(head -n20; tail -n20) < "$1" | awk '/^%%Pages: [0-9]+$/ {print $2}'
