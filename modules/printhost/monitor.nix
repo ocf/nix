@@ -1,12 +1,19 @@
-{ pkgs, lib, config, ... }:
+{
+  pkgs,
+  lib,
+  config,
+  ...
+}:
 
 let
   cfg = config.ocf.printhost;
 
-  pythonEnv = pkgs.python312.withPackages (ps: with ps; [
-    pycups
-    prometheus-client
-  ]);
+  pythonEnv = pkgs.python312.withPackages (
+    ps: with ps; [
+      pycups
+      prometheus-client
+    ]
+  );
 
   monitorScriptPy = pkgs.writeTextFile {
     name = "monitor-cups.py";
