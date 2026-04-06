@@ -48,7 +48,7 @@
 *% Duplexing options
 
 *cupsEvenDuplex: False
-*cupsManualCopies: False
+*cupsManualCopies: True
 
 *OpenUI *Duplex/Two-Sided: PickOne
 *OrderDependency: 50 AnySetup *Duplex
