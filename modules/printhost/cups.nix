@@ -19,14 +19,24 @@ let
     ]
   );
 
-  # enforcer-pc: reads %%Pages: from PostScript spool file
-  enforcerPc = pkgs.runCommand "enforcer-pc" { } ''
-    install -Dm0755 ${./scripts/enforcer-pc} $out
+  # enforcer-pc: reads %%Pages: from PostScript spool file.
+  # Uses explicit Nix store paths for head/tail/awk — these run as subprocesses
+  # of the backend, which inherits CUPS's restricted PATH.
+  enforcerPc = pkgs.writeShellScript "enforcer-pc" ''
+    set -euo pipefail
+    (${pkgs.coreutils}/bin/head -n20; ${pkgs.coreutils}/bin/tail -n20) < "$1" \
+      | ${pkgs.gawk}/bin/awk '/^%%Pages: [0-9]+$/ {print $2}'
   '';
 
-  # enforcer-size: reads %%DocumentMedia:/%%PageMedia: from PostScript spool file
-  enforcerSize = pkgs.runCommand "enforcer-size" { } ''
-    install -Dm0755 ${./scripts/enforcer-size} $out
+  # enforcer-size: reads %%DocumentMedia:/%%PageMedia: from PostScript spool file.
+  enforcerSize = pkgs.writeShellScript "enforcer-size" ''
+    set -euo pipefail
+    (${pkgs.coreutils}/bin/head -n20; ${pkgs.coreutils}/bin/tail -n20) < "$1" \
+      | ${pkgs.gawk}/bin/awk '
+          /^%%PageMedia:/    {print $2}
+          /^%%DocumentMedia:/ {print $2}
+        ' \
+      | ${pkgs.coreutils}/bin/head -n1
   '';
 
   # enforcer.py with @enforcer_pc@ and @enforcer_size@ paths substituted
