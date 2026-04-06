@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+# ocfps is a CUPS filter which converts PDF documents to rasterized PostScript
+# documents suitable for printing by a PostScript printer.
+#
+# ocfps is the composition of pdftops (poppler-utils) and the CUPS filter
+# pstops. pdftops converts any PDF to rasterized PS. pstops converts this PS
+# to a more printer-friendly syntax and inserts commands for duplexing, etc.
+#
+# The reason for this filter: the OCF's printers frequently encounter errors
+# printing PostScript produced by CUPS directly. They have no problem with
+# rasterized PS, so this fixes that.
+set -euo pipefail
+
+PDFTOPS=@pdftops@
+PSTOPS=@pstops@
+
+if [ "$#" -ne 5 ] && [ "$#" -ne 6 ]; then
+    echo "Usage: $0 job-id user title copies options [file]"
+    exit
+fi
+
+if [ "$#" -eq 5 ]; then
+    $PDFTOPS - - | $PSTOPS "$@"
+else
+    $PDFTOPS "$6" - | $PSTOPS "${@:1:5}"
+fi

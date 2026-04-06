@@ -1,0 +1,141 @@
+#!/usr/bin/env python3
+"""
+OCF CUPS backend wrapper replacing tea4cups.
+
+Intercepts print jobs to run quota enforcement (prehook) before sending to
+the printer and accounting (posthook) afterward.
+
+Device URI format: ocfbackend:<real_backend_uri>
+  e.g.  ocfbackend:socket://169.229.226.92:9100/   (HP printers)
+        ocfbackend:ipp://169.229.226.96/ipp/print  (Epson)
+
+The real backend URI scheme determines which CUPS backend binary is invoked
+(socket, ipp, etc.) from $CUPS_SERVERBIN/backend/.
+
+Paths substituted by Nix at build time:
+  @enforcer@            path to the enforcer binary
+  @mysqlPasswordFile@   path to MySQL password file
+  @wayoutPasswordFile@  path to wayout password file
+  @redisPasswordFile@   path to Redis password file
+"""
+import os
+import sys
+import subprocess
+import tempfile
+from urllib.parse import urlparse
+
+ENFORCER = '@enforcer@'
+MYSQL_PASSWORD_FILE = '@mysqlPasswordFile@'
+WAYOUT_PASSWORD_FILE = '@wayoutPasswordFile@'
+REDIS_PASSWORD_FILE = '@redisPasswordFile@'
+
+# CUPS backend exit codes
+CUPS_BACKEND_OK = 0
+CUPS_BACKEND_FAILED = 1      # retry job
+CUPS_BACKEND_CANCEL = 5      # cancel job, don't retry
+
+
+def main():
+    # Called with no args: CUPS is probing for available devices.
+    # We don't enumerate devices; just exit successfully.
+    if len(sys.argv) == 1:
+        sys.exit(CUPS_BACKEND_OK)
+
+    if len(sys.argv) not in (6, 7):
+        print(
+            f'Usage: {sys.argv[0]} job-id user title copies options [file]',
+            file=sys.stderr,
+        )
+        sys.exit(CUPS_BACKEND_FAILED)
+
+    job_id, user, title, copies, options = sys.argv[1:6]
+    data_file = sys.argv[6] if len(sys.argv) == 7 else None
+
+    device_uri = os.environ.get('DEVICE_URI', '')
+    printer_name = os.environ.get('PRINTER', '')
+    class_name = os.environ.get('CLASS', printer_name)
+    cups_serverbin = os.environ.get('CUPS_SERVERBIN', '/usr/lib/cups')
+
+    if not device_uri.startswith('ocfbackend:'):
+        print(
+            f'ocf-cups-backend: unexpected DEVICE_URI: {device_uri!r}',
+            file=sys.stderr,
+        )
+        sys.exit(CUPS_BACKEND_FAILED)
+
+    real_uri = device_uri[len('ocfbackend:'):]
+    scheme = urlparse(real_uri).scheme
+    # ipps uses the same backend binary as ipp
+    backend_scheme = 'ipp' if scheme == 'ipps' else scheme
+    backend_bin = os.path.join(cups_serverbin, 'backend', backend_scheme)
+
+    if not os.path.exists(backend_bin):
+        print(
+            f'ocf-cups-backend: backend not found: {backend_bin}',
+            file=sys.stderr,
+        )
+        sys.exit(CUPS_BACKEND_FAILED)
+
+    # If job data comes from stdin, buffer it to a temp file so enforcer-pc
+    # and enforcer-size can read it. With the ocfps filter in the pipeline,
+    # CUPS almost always provides a file path, but handle stdin defensively.
+    tmp = None
+    if data_file is None:
+        tmp = tempfile.NamedTemporaryFile(delete=False, suffix='.ps')
+        try:
+            tmp.write(sys.stdin.buffer.read())
+            tmp.flush()
+            data_file = tmp.name
+        finally:
+            tmp.close()
+
+    try:
+        try:
+            file_size = str(os.path.getsize(data_file))
+        except OSError:
+            file_size = '0'
+
+        tea_env = dict(os.environ)
+        tea_env.update({
+            'TEAUSERNAME': user,
+            'TEACOPIES': copies,
+            'TEATITLE': title,
+            'TEAPRINTERNAME': printer_name,
+            'TEADATAFILE': data_file,
+            'TEAJOBSIZE': file_size,
+            'CLASS': class_name,
+            'ENFORCER_MYSQL_PASSWORD': MYSQL_PASSWORD_FILE,
+            'ENFORCER_WAYOUT_PASSWORD': WAYOUT_PASSWORD_FILE,
+            'ENFORCER_REDIS_PASSWORD': REDIS_PASSWORD_FILE,
+        })
+
+        # Prehook: check quota before sending to printer.
+        # enforcer exits 255 to reject; any non-zero cancels the job.
+        prehook = subprocess.run([ENFORCER, 'prehook'], env=tea_env)
+        if prehook.returncode != 0:
+            sys.exit(CUPS_BACKEND_CANCEL)
+
+        # Forward job to the real CUPS backend.
+        backend_env = dict(os.environ)
+        backend_env['DEVICE_URI'] = real_uri
+
+        cmd = [backend_bin, job_id, user, title, copies, options, data_file]
+        result = subprocess.run(cmd, env=backend_env)
+
+        tea_env['TEASTATUS'] = str(result.returncode)
+
+        # Posthook: log completed job to database.
+        subprocess.run([ENFORCER, 'posthook'], env=tea_env)
+
+        sys.exit(result.returncode)
+
+    finally:
+        if tmp is not None:
+            try:
+                os.unlink(tmp.name)
+            except OSError:
+                pass
+
+
+if __name__ == '__main__':
+    main()

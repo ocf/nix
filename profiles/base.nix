@@ -202,16 +202,18 @@ in
 
   environment.etc = {
     papersize.text = "letter";
+    "nixos/configuration.nix".text = ''
+      {}: builtins.abort "This machine is not managed by /etc/nixos. Please use configs at ocf.io/gh/nix with Colmena."
+    '';
+  }
+  // lib.optionalAttrs (!config.ocf.printhost.enable) {
+    # omit cups config on printhost
     "cups/lpoptions".text = "Default double";
     "cups/client.conf".text = ''
-      ServerName printhost.ocf.berkeley.edu
+      ServerName ${config.ocf.printhost.printhostUrl}
       Encryption Always
     '';
   };
-
-  environment.etc."nixos/configuration.nix".text = ''
-    {}: builtins.abort "This machine is not managed by /etc/nixos. Please use configs at ocf.io/gh/nix with Colmena."
-  '';
 
   systemd.services.nix-remove-profiles = {
     description = "Remove old NixOS generations but leave store cleanup to nix.gc";
