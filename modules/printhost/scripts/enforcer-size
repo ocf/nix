@@ -1,0 +1,10 @@
+#!/bin/bash
+# Print the page size of the document in arg1 (a PostScript file
+# pre-processed by CUPS-flavored GhostScript via the ocfps filter).
+#
+# Reads the "%%DocumentMedia:" or "%%PageMedia:" header from the file.
+set -euo pipefail
+(head -n20; tail -n20) < "$1" | awk '
+    /^%%PageMedia:/ {print $2}
+    /^%%DocumentMedia:/ {print $2}
+' | head -n1
