@@ -106,13 +106,18 @@ in
 
     systemd.services.cups.preStart = ''
       # /var/lib/cups is a tmpfs (stateless = true), so this runs every boot.
-      # Copy the LE cert (issued for the host, with printhost SAN) into the
-      # CUPS ssl dir named for cfg.printhostUrl so cupsd serves it correctly.
+      # CUPS resolves its SSL cert by the machine's actual hostname, not ServerName,
+      # so we name the files after the host. The cert includes printhostUrl as a SAN
+      # so clients connecting to either hostname get a valid cert.
       mkdir -p /var/lib/cups/ssl
       cp /var/lib/acme/${config.networking.hostName}.ocf.berkeley.edu/fullchain.pem \
-        /var/lib/cups/ssl/${cfg.printhostUrl}.crt
+        /var/lib/cups/ssl/${config.networking.hostName}.ocf.berkeley.edu.crt
       cp /var/lib/acme/${config.networking.hostName}.ocf.berkeley.edu/key.pem \
-        /var/lib/cups/ssl/${cfg.printhostUrl}.key
+        /var/lib/cups/ssl/${config.networking.hostName}.ocf.berkeley.edu.key
+      cp /var/lib/acme/${config.networking.hostName}.ocf.berkeley.edu/fullchain.pem \
+        "/var/lib/cups/ssl/${config.networking.hostName}.OCF.Berkeley.EDU.crt"
+      cp /var/lib/acme/${config.networking.hostName}.ocf.berkeley.edu/key.pem \
+        "/var/lib/cups/ssl/${config.networking.hostName}.OCF.Berkeley.EDU.key"
 
       # Deny raw job submission (clients must go through filters)
       echo '# deny printing raw jobs' > /etc/cups/raw.convs
