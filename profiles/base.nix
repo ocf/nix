@@ -210,7 +210,7 @@ in
     # omit cups config on printhost
     "cups/lpoptions".text = "Default double";
     "cups/client.conf".text = ''
-      ServerName ${config.ocf.printhost.printhostUrl}
+      ServerName printhost-dev.ocf.berkeley.edu
       Encryption Always
     '';
   };
