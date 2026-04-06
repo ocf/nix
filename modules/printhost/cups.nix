@@ -201,6 +201,9 @@ in
       '';
     };
 
+    # prevent conflict with cups built in mDNS
+    services.avahi.enable = lib.mkForce false;
+
     networking.firewall = {
       allowedTCPPorts = [ 80 443 631 ];
       allowedUDPPorts = [ 631 ];
