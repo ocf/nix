@@ -1,16 +1,23 @@
-{ lib, config, pkgs, ... }:
+{
+  lib,
+  config,
+  pkgs,
+  ...
+}:
 
 let
   cfg = config.ocf.printhost;
 
   # Python environment for the enforcer quota script
-  pythonEnv = pkgs.python312.withPackages (ps: with ps; [
-    ocflib
-    pycups
-    pymysql
-    requests
-    redis
-  ]);
+  pythonEnv = pkgs.python312.withPackages (
+    ps: with ps; [
+      ocflib
+      pycups
+      pymysql
+      requests
+      redis
+    ]
+  );
 
   # enforcer-pc: reads %%Pages: from PostScript spool file
   enforcerPc = pkgs.runCommand "enforcer-pc" { } ''
@@ -78,17 +85,23 @@ in
     services.printing = {
       enable = true;
       startWhenNeeded = false;
-      listenAddresses = [ "*:80" "*:631" ];
+      listenAddresses = [
+        "*:80"
+        "*:631"
+      ];
       browsed.enable = false;
       browsing = false;
       stateless = true;
       # Substitute the public hostname into ServerName
-      extraConf = lib.mkForce
-        (lib.replaceStrings [ "@cups-url@" ] [ cfg.printhostUrl ]
-          (builtins.readFile ./conf/cupsd.conf));
+      extraConf = lib.mkForce (
+        lib.replaceStrings [ "@cups-url@" ] [ cfg.printhostUrl ] (builtins.readFile ./conf/cupsd.conf)
+      );
       extraFilesConf = builtins.readFile ./conf/cups-files.conf;
       # Expose our custom filter and backend to cupsd
-      drivers = [ ocfCupsFilter ocfCupsBackend ];
+      drivers = [
+        ocfCupsFilter
+        ocfCupsBackend
+      ];
     };
 
     systemd.services.cups.preStart = ''
@@ -205,7 +218,11 @@ in
     services.avahi.enable = lib.mkForce false;
 
     networking.firewall = {
-      allowedTCPPorts = [ 80 443 631 ];
+      allowedTCPPorts = [
+        80
+        443
+        631
+      ];
       allowedUDPPorts = [ 631 ];
     };
   };

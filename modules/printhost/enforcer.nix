@@ -1,12 +1,19 @@
-{ pkgs, lib, config, ... }:
+{
+  pkgs,
+  lib,
+  config,
+  ...
+}:
 
 let
   cfg = config.ocf.printhost;
 
-  pythonEnv = pkgs.python312.withPackages (ps: with ps; [
-    ocflib
-    pymysql
-  ]);
+  pythonEnv = pkgs.python312.withPackages (
+    ps: with ps; [
+      ocflib
+      pymysql
+    ]
+  );
 
   privacyCleanupScript = pkgs.writeText "enforcer-privacy-cleanup.py" ''
     import logging

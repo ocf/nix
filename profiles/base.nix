@@ -205,7 +205,8 @@ in
     "nixos/configuration.nix".text = ''
       {}: builtins.abort "This machine is not managed by /etc/nixos. Please use configs at ocf.io/gh/nix with Colmena."
     '';
-  } // lib.optionalAttrs (!config.ocf.printhost.enable) {
+  }
+  // lib.optionalAttrs (!config.ocf.printhost.enable) {
     # omit cups config on printhost
     "cups/lpoptions".text = "Default double";
     "cups/client.conf".text = ''

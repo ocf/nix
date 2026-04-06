@@ -40,12 +40,15 @@
 
     # Reload CUPS when the host's LE cert is renewed (cert lives at hostName path,
     # printhost SAN is included as an extraCert below)
-    security.acme.certs."${config.networking.hostName}.ocf.berkeley.edu".reloadServices =
-      [ "cups.service" ];
+    security.acme.certs."${config.networking.hostName}.ocf.berkeley.edu".reloadServices = [
+      "cups.service"
+    ];
 
     # Add printhostUrl and its .ocf.io variant as SANs on tule's cert
     ocf.acme.extraCerts =
-      let cfg = config.ocf.printhost; in
+      let
+        cfg = config.ocf.printhost;
+      in
       [
         cfg.printhostUrl
         (lib.replaceStrings [ ".ocf.berkeley.edu" ] [ ".ocf.io" ] cfg.printhostUrl)
