@@ -38,7 +38,7 @@
     group = "lp";
   };
 
-  # Postfix relay so ocflib can send mail via sendmail
+  # Postfix relay so ocflib can send mail via sendmail.
   services.postfix = {
     enable = true;
     settings.main = {
@@ -47,6 +47,7 @@
       mydestination = "";
       inet_interfaces = "loopback-only";
       relayhost = [ "smtp.ocf.berkeley.edu" ];
+      sender_canonical_maps = "static:root@ocf.berkeley.edu";
     };
   };
 
