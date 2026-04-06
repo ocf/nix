@@ -46,9 +46,15 @@ let
     pstops = "${pkgs.cups}/lib/cups/filter/pstops";
   };
 
+  # Shell wrapper so the filter runs under the Nix-store bash rather than
+  # relying on bash being in PATH (CUPS filters run in a restricted env).
+  ocfpsBin = pkgs.writeShellScript "ocfps" ''
+    exec ${pkgs.bash}/bin/bash ${ocfpsFilter} "$@"
+  '';
+
   # Package exposing ocfps at $out/lib/cups/filter/ocfps for services.printing.drivers
   ocfCupsFilter = pkgs.runCommand "ocf-cups-filter" { } ''
-    install -Dm0755 ${ocfpsFilter} $out/lib/cups/filter/ocfps
+    install -Dm0755 ${ocfpsBin} $out/lib/cups/filter/ocfps
   '';
 
   # ocf-cups-backend with enforcer path and password file paths substituted.
@@ -60,10 +66,16 @@ let
     redisPasswordFile = cfg.redisPasswordFile;
   };
 
+  # Shell wrapper so the backend runs under the Nix-store python3 rather than
+  # relying on python3 being in PATH (CUPS backends run in a restricted env).
+  ocfBackendBin = pkgs.writeShellScript "ocfbackend" ''
+    exec ${pythonEnv}/bin/python3 ${ocfBackendScript} "$@"
+  '';
+
   # Package exposing the backend at $out/lib/cups/backend/ocfbackend (mode 0700
   # so CUPS runs it as root, which is required for raw socket access to printers)
   ocfCupsBackend = pkgs.runCommand "ocf-cups-backend" { } ''
-    install -Dm0700 ${ocfBackendScript} $out/lib/cups/backend/ocfbackend
+    install -Dm0700 ${ocfBackendBin} $out/lib/cups/backend/ocfbackend
   '';
 
   # PPD files package — all printers reference these at setup time
