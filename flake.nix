@@ -9,6 +9,13 @@
       ref = "nixos-25.11";
     };
 
+    nixpkgs-2411 = {
+      type = "github";
+      owner = "nixos";
+      repo = "nixpkgs";
+      ref = "nixos-24.11";
+    };
+
     systems = {
       type = "github";
       owner = "nix-systems";
@@ -112,6 +119,7 @@
     {
       self,
       nixpkgs,
+      nixpkgs-2411,
       systems,
       colmena,
       agenix,
