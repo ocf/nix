@@ -1053,37 +1053,6 @@ pop pop
 *CloseUI: *Duplex
 
 
-*OpenUI *Collate/Collate: Boolean
-*fr.Translation Collate/Assemblage: ""
-*es.Translation Collate/Combinar: ""
-*it.Translation Collate/Fascicola: ""
-*de.Translation Collate/Sortieren: ""
-*pt.Translation Collate/Agrupar: ""
-*nl.Translation Collate/Sorteren: ""
-
-*DefaultCollate: False
-*OrderDependency: 170 AnySetup *Collate
-*Collate True/On: "<</Collate true>> setpagedevice"
-*fr.Collate True/Oui: ""
-*es.Collate True/Activado: ""
-*it.Collate True/On: ""
-*de.Collate True/Ein: ""
-*pt.Collate True/Sim: ""
-*nl.Collate True/Aan: ""
-
-*Collate False/Off: "<</Collate false>> setpagedevice"
-*fr.Collate False/Non: ""
-*es.Collate False/Desactivado: ""
-*it.Collate False/Off: ""
-*de.Collate False/Aus: ""
-*pt.Collate False/Não: ""
-*nl.Collate False/Uit: ""
-
-*?Collate: "
-	currentpagedevice /Collate get {(True)}{(False)}ifelse = flush
-"
-*End
-*CloseUI: *Collate
 
 *%********** Printer Features **************
 

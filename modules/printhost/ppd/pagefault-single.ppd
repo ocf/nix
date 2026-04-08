@@ -120,12 +120,6 @@
 *MaxMediaWidth: "885.599975585938"
 *MaxMediaHeight: "1333"
 *HWMargins: 12 12 12 12
-*OpenUI *Collate/Collate: Boolean
-*OrderDependency: 12 AnySetup *Collate
-*DefaultCollate: False
-*Collate True/On: "<</Collate true>> setpagedevice"
-*Collate False/Off: "<</Collate false>> setpagedevice"
-*CloseUI: *Collate
 *OpenUI *InputSlot/Paper Feed: PickOne
 *OrderDependency: 40 AnySetup *InputSlot
 *DefaultInputSlot: Auto
