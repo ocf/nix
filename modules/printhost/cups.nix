@@ -222,18 +222,22 @@ in
         for p in logjam-double pagefault-double papercut-double; do
           lpadmin -p "$p" -c double
         done
-        lpadmin -p double -D "Double-sided printing" -L "OCF lab"
+        lpadmin -p double -D "Double-sided printing" -L "OCF lab" \
+          -P ${ppdDir}/share/ppd/logjam-double.ppd
 
         for p in logjam-single pagefault-single papercut-single; do
           lpadmin -p "$p" -c single
         done
-        lpadmin -p single -D "Single-sided printing" -L "OCF lab"
+        lpadmin -p single -D "Single-sided printing" -L "OCF lab" \
+          -P ${ppdDir}/share/ppd/logjam-single.ppd
 
         lpadmin -p epson-single -c color-single
-        lpadmin -p color-single -D "Single-sided color printing" -L "OCF lab"
+        lpadmin -p color-single -D "Single-sided color printing" -L "OCF lab" \
+          -P ${ppdDir}/share/ppd/epson-single.ppd
 
         lpadmin -p epson-double -c color-double
-        lpadmin -p color-double -D "Double-sided color printing" -L "OCF lab"
+        lpadmin -p color-double -D "Double-sided color printing" -L "OCF lab" \
+          -P ${ppdDir}/share/ppd/epson-double.ppd
 
         # Enable and accept jobs for all classes (shared with clients)
         for cls in single double color-single color-double; do

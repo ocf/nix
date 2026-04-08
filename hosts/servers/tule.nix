@@ -1,15 +1,7 @@
-{ config, inputs, ... }:
+{ config, ... }:
 
 {
   imports = [ ../../hardware/virtualized.nix ];
-
-  # Temporarily pin cups + cups-filters to 2.4.11 (nixos-24.11) for testing GTK copies behavior
-  nixpkgs.overlays = [
-    (_: _: {
-      cups = (import inputs.nixpkgs-2411 { system = "x86_64-linux"; }).cups;
-      cups-filters = (import inputs.nixpkgs-2411 { system = "x86_64-linux"; }).cups-filters;
-    })
-  ];
 
   networking.hostName = "tule";
 
