@@ -69,6 +69,10 @@ in
 
         services.desktopManager.gnome.enable = true;
         services.gnome.gcr-ssh-agent.enable = false;
+        services.desktopManager.gnome.extraGSettingsOverrides = ''
+          [org.gnome.mutter]
+          experimental-features=['scale-monitor-framebuffer', 'xwayland-native-scaling']
+        '';
 
         services.desktopManager.plasma6.enable = true;
         environment.systemPackages = [ pkgs.plasma-applet-commandoutput ];
