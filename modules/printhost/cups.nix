@@ -50,23 +50,6 @@ let
     exec ${pythonEnv}/bin/python3 ${enforcerScript} "$@"
   '';
 
-  # ocfps CUPS filter: PDF → rasterized PostScript via pdftops | pstops
-  ocfpsFilter = pkgs.replaceVars ./scripts/ocfps {
-    pdftops = "${pkgs.poppler-utils}/bin/pdftops";
-    pstops = "${pkgs.cups}/lib/cups/filter/pstops";
-  };
-
-  # Shell wrapper so the filter runs under the Nix-store bash rather than
-  # relying on bash being in PATH (CUPS filters run in a restricted env).
-  ocfpsBin = pkgs.writeShellScript "ocfps" ''
-    exec ${pkgs.bash}/bin/bash ${ocfpsFilter} "$@"
-  '';
-
-  # Package exposing ocfps at $out/lib/cups/filter/ocfps for services.printing.drivers
-  ocfCupsFilter = pkgs.runCommand "ocf-cups-filter" { } ''
-    install -Dm0755 ${ocfpsBin} $out/lib/cups/filter/ocfps
-  '';
-
   # ocf-cups-backend with enforcer path and password file paths substituted.
   # mysqlPasswordFile/wayoutPasswordFile/redisPasswordFile are paths to agenix secrets.
   ocfBackendScript = pkgs.replaceVars ./scripts/ocf-cups-backend {
@@ -90,7 +73,7 @@ let
 
   # Use the official hplip PPD unmodified; duplex default is set via lpadmin -o below.
   hpPpd = "${pkgs.hplip}/share/cups/model/HP/hp-laserjet_m806-ps.ppd.gz";
-  epsonPpd = ./ppd/epson-et5880.ppd;
+  epsonPpd = "${pkgs.epson-escpr2}/share/cups/model/epson-inkjet-printer-escpr2/Epson-ET-5880_Series-epson-escpr2-en.ppd";
 
 in
 {
@@ -111,12 +94,11 @@ in
         lib.replaceStrings [ "@cups-url@" ] [ cfg.printhostUrl ] (builtins.readFile ./conf/cupsd.conf)
       );
       extraFilesConf = builtins.readFile ./conf/cups-files.conf;
-      # Expose our custom filter and backend to cupsd.
-      # hplip provides the hpps filter referenced by the official HP PPD.
+      # hplip provides hpps (HP PPD filter); epson-escpr2 provides epson-escpr-wrapper2.
       drivers = [
-        ocfCupsFilter
         ocfCupsBackend
         pkgs.hplip
+        pkgs.epson-escpr2
       ];
     };
 
