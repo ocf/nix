@@ -107,6 +107,7 @@ in
     printing = {
       enable = true;
       startWhenNeeded = true;
+      stateless = true;
       extraConf = ''
         DefaultPrinter OCF-BW
         Browsing Off
