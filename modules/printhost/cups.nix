@@ -91,17 +91,8 @@ let
     install -Dm0700 ${ocfBackendBin} $out/lib/cups/backend/ocfbackend
   '';
 
-  # PPD files package — all printers reference these at setup time
-  ppdDir = pkgs.runCommand "printhost-ppds" { } ''
-    install -Dm0644 ${./ppd/logjam-single.ppd}    $out/share/ppd/logjam-single.ppd
-    install -Dm0644 ${./ppd/logjam-double.ppd}    $out/share/ppd/logjam-double.ppd
-    install -Dm0644 ${./ppd/pagefault-single.ppd} $out/share/ppd/pagefault-single.ppd
-    install -Dm0644 ${./ppd/pagefault-double.ppd} $out/share/ppd/pagefault-double.ppd
-    install -Dm0644 ${./ppd/papercut-single.ppd}  $out/share/ppd/papercut-single.ppd
-    install -Dm0644 ${./ppd/papercut-double.ppd}  $out/share/ppd/papercut-double.ppd
-    install -Dm0644 ${./ppd/epson-single.ppd}     $out/share/ppd/epson-single.ppd
-    install -Dm0644 ${./ppd/epson-double.ppd}     $out/share/ppd/epson-double.ppd
-  '';
+  hpPpd = ./ppd/hp-m806.ppd;
+  epsonPpd = ./ppd/epson-et5880.ppd;
 
 in
 {
@@ -168,83 +159,33 @@ in
           sleep 2
         done
 
-        # ── HP LaserJet printers (socket/9100 raw TCP) ──────────────────────
-        lpadmin -p logjam-single \
+        # ── HP LaserJet M806 printers (socket/9100 raw TCP) ──────────────────
+        # Each printer is shared individually; clients use cups-browsed to
+        # cluster them into a single "OCF" queue with load balancing.
+        lpadmin -p logjam \
           -v ocfbackend:socket://169.229.226.92:9100 \
-          -P ${ppdDir}/share/ppd/logjam-single.ppd \
-          -D "HP LaserJet M806 single-sided" -L "OCF lab" \
-          -E -o printer-is-shared=false
+          -P ${hpPpd} \
+          -D "HP LaserJet M806" -L "OCF lab" \
+          -E -o printer-is-shared=true
 
-        lpadmin -p logjam-double \
-          -v ocfbackend:socket://169.229.226.92:9100 \
-          -P ${ppdDir}/share/ppd/logjam-double.ppd \
-          -D "HP LaserJet M806 double-sided" -L "OCF lab" \
-          -E -o printer-is-shared=false
-
-        lpadmin -p pagefault-single \
+        lpadmin -p pagefault \
           -v ocfbackend:socket://169.229.226.91:9100 \
-          -P ${ppdDir}/share/ppd/pagefault-single.ppd \
-          -D "HP LaserJet M806 single-sided" -L "OCF lab" \
-          -E -o printer-is-shared=false
+          -P ${hpPpd} \
+          -D "HP LaserJet M806" -L "OCF lab" \
+          -E -o printer-is-shared=true
 
-        lpadmin -p pagefault-double \
-          -v ocfbackend:socket://169.229.226.91:9100 \
-          -P ${ppdDir}/share/ppd/pagefault-double.ppd \
-          -D "HP LaserJet M806 double-sided" -L "OCF lab" \
-          -E -o printer-is-shared=false
-
-        lpadmin -p papercut-single \
+        lpadmin -p papercut \
           -v ocfbackend:socket://169.229.226.93:9100 \
-          -P ${ppdDir}/share/ppd/papercut-single.ppd \
-          -D "HP LaserJet M806 single-sided" -L "OCF lab" \
-          -E -o printer-is-shared=false
+          -P ${hpPpd} \
+          -D "HP LaserJet M806" -L "OCF lab" \
+          -E -o printer-is-shared=true
 
-        lpadmin -p papercut-double \
-          -v ocfbackend:socket://169.229.226.93:9100 \
-          -P ${ppdDir}/share/ppd/papercut-double.ppd \
-          -D "HP LaserJet M806 double-sided" -L "OCF lab" \
-          -E -o printer-is-shared=false
-
-        # ── Epson ET-5880 (IPP/S) ────────────────────────────────────────────
-        lpadmin -p epson-single \
+        # ── Epson ET-5880 color printer (IPP/S) ──────────────────────────────
+        lpadmin -p epson \
           -v ocfbackend:ipps://169.229.226.96/ipp/print \
-          -P ${ppdDir}/share/ppd/epson-single.ppd \
-          -D "Epson ET-5880 single-sided color" -L "OCF lab" \
-          -E -o printer-is-shared=false
-
-        lpadmin -p epson-double \
-          -v ocfbackend:ipps://169.229.226.96/ipp/print \
-          -P ${ppdDir}/share/ppd/epson-double.ppd \
-          -D "Epson ET-5880 double-sided color" -L "OCF lab" \
-          -E -o printer-is-shared=false
-
-        # ── Classes ──────────────────────────────────────────────────────────
-        for p in logjam-double pagefault-double papercut-double; do
-          lpadmin -p "$p" -c double
-        done
-        lpadmin -p double -D "Double-sided printing" -L "OCF lab" \
-          -P ${ppdDir}/share/ppd/logjam-double.ppd
-
-        for p in logjam-single pagefault-single papercut-single; do
-          lpadmin -p "$p" -c single
-        done
-        lpadmin -p single -D "Single-sided printing" -L "OCF lab" \
-          -P ${ppdDir}/share/ppd/logjam-single.ppd
-
-        lpadmin -p epson-single -c color-single
-        lpadmin -p color-single -D "Single-sided color printing" -L "OCF lab" \
-          -P ${ppdDir}/share/ppd/epson-single.ppd
-
-        lpadmin -p epson-double -c color-double
-        lpadmin -p color-double -D "Double-sided color printing" -L "OCF lab" \
-          -P ${ppdDir}/share/ppd/epson-double.ppd
-
-        # Enable and accept jobs for all classes (shared with clients)
-        for cls in single double color-single color-double; do
-          cupsenable "$cls"
-          cupsaccept "$cls"
-          lpadmin -p "$cls" -o printer-is-shared=true
-        done
+          -P ${epsonPpd} \
+          -D "Epson ET-5880 Color" -L "OCF lab" \
+          -E -o printer-is-shared=true
       '';
     };
 

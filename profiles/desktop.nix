@@ -99,6 +99,26 @@ in
       jack.enable = true;
       alsa.enable = true;
     };
+
+    # Local CUPS daemon required for cups-browsed to create forwarding queues.
+    # cups-browsed polls the OCF print server and clusters all printers into a
+    # single "OCF" queue on the client, fixing copies-supported and giving users
+    # full PPD option access (duplex, color) in the print dialog.
+    printing = {
+      enable = true;
+      startWhenNeeded = true;
+      extraConf = "DefaultPrinter OCF";
+      browsed.enable = true;
+      browsedConf = ''
+        BrowsePoll printhost-dev.ocf.berkeley.edu:631
+        BrowseRemoteProtocols none
+        BrowseInterval 300
+        BrowseTimeout 1500
+        AutoClustering No
+        Cluster OCF: logjam pagefault papercut epson
+        LoadBalancing QueueOnServers
+      '';
+    };
   };
 
   security.rtkit.enable = true;

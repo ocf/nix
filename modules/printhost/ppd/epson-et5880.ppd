@@ -22,7 +22,6 @@
 *cupsLanguages: "fr es it de pt nl"
 
 *cupsFilter: "application/pdf 0 ocfps"
-*cupsIPPAttribute ipp-features-supported: "subscription-object"
 *cupsManualCopies: False
 
 *%***** Notes on order dependency *****

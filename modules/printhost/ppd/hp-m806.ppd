@@ -44,7 +44,6 @@
 *NickName: "HP LaserJet M806 (ocf)"
 
 *cupsFilter: "application/pdf 0 ocfps"
-*cupsIPPAttribute ipp-features-supported: "subscription-object"
 
 *% Duplexing options
 
@@ -54,7 +53,9 @@
 *OpenUI *Duplex/Two-Sided: PickOne
 *OrderDependency: 50 AnySetup *Duplex
 *DefaultDuplex: None
-*%Duplex None/Off: "<</Duplex false /Tumble false>> setpagedevice"
+*Duplex None/Off: "<</Duplex false /Tumble false>> setpagedevice"
+*Duplex DuplexNoTumble/Long-Edge Binding: "<</Duplex true /Tumble false>> setpagedevice"
+*Duplex DuplexTumble/Short-Edge Binding: "<</Duplex true /Tumble true>> setpagedevice"
 *CloseUI: *Duplex
 
 *%%% The rest is straight from the stock driver
