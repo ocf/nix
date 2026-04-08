@@ -54,9 +54,6 @@ let
   ocfpsFilter = pkgs.replaceVars ./scripts/ocfps {
     pdftops = "${pkgs.poppler-utils}/bin/pdftops";
     pstops = "${pkgs.cups}/lib/cups/filter/pstops";
-    qpdf = "${pkgs.qpdf}/bin/qpdf";
-    grep = "${pkgs.gnugrep}/bin/grep";
-    awk = "${pkgs.gawk}/bin/awk";
   };
 
   # Shell wrapper so the filter runs under the Nix-store bash rather than

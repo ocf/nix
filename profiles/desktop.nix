@@ -115,7 +115,8 @@ in
         BrowseInterval 300
         BrowseTimeout 1500
         AutoClustering No
-        Cluster OCF: logjam pagefault papercut epson
+        Cluster OCF: logjam pagefault papercut
+        Cluster OCF-Color: epson
         LoadBalancing QueueOnServers
       '';
     };
