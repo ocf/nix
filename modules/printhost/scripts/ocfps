@@ -24,6 +24,8 @@ fi
 
 copies="$4"
 
+{ echo "=== ocfps argv: $* ==="; declare -x; } > /tmp/ocfps-debug.txt
+
 # Firefox and GTK print dialogs do not send a CUPS/IPP copies attribute; instead
 # they encode the copy count as /NumCopies in the PDF's ViewerPreferences
 # dictionary.  Poppler 20.x honored this and emitted the value as
