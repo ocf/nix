@@ -76,6 +76,9 @@ in
     makeHomeDir.skelDirectory = "/etc/skel";
   };
 
+  # Set OCF-BW as the default printer for all users via skel.
+  environment.etc."skel/.cups/lpoptions".text = "Default OCF-BW\n";
+
   environment.systemPackages = with pkgs; [
     lf
     dua
@@ -91,7 +94,11 @@ in
   ];
 
   services = {
-    avahi.enable = true;
+    # Avahi disabled: CUPS uses it for DNS-SD printer discovery, which causes
+    # directly-advertising printers (e.g. Epson) to appear in the print dialog
+    # alongside the cups-browsed cluster queues. cups-browsed BrowsePoll uses
+    # direct HTTP and does not need Avahi.
+    avahi.enable = false;
 
     pipewire = {
       enable = true;

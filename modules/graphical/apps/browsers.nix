@@ -139,10 +139,6 @@ in
             Value = "215.9";
             Status = "default";
           };
-          "print.print_printer" = {
-            Value = "OCF-BW";
-            Status = "default";
-          };
           "widget.wayland.fractional-scale.enabled" = {
             Value = false;
             Status = "default";
