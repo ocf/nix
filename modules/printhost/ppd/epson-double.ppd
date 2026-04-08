@@ -22,7 +22,7 @@
 *cupsLanguages: "fr es it de pt nl"
 
 *cupsFilter: "application/pdf 0 ocfps"
-*cupsManualCopies: True
+*cupsManualCopies: False
 
 *%***** Notes on order dependency *****
 *% 20 Input Tray Selection
