@@ -88,7 +88,8 @@ let
     install -Dm0700 ${ocfBackendBin} $out/lib/cups/backend/ocfbackend
   '';
 
-  hpPpd = ./ppd/hp-m806.ppd;
+  # Use the official hplip PPD unmodified; duplex default is set via lpadmin -o below.
+  hpPpd = "${pkgs.hplip}/share/cups/model/HP/hp-laserjet_m806-ps.ppd.gz";
   epsonPpd = ./ppd/epson-et5880.ppd;
 
 in
@@ -110,10 +111,12 @@ in
         lib.replaceStrings [ "@cups-url@" ] [ cfg.printhostUrl ] (builtins.readFile ./conf/cupsd.conf)
       );
       extraFilesConf = builtins.readFile ./conf/cups-files.conf;
-      # Expose our custom filter and backend to cupsd
+      # Expose our custom filter and backend to cupsd.
+      # hplip provides the hpps filter referenced by the official HP PPD.
       drivers = [
         ocfCupsFilter
         ocfCupsBackend
+        pkgs.hplip
       ];
     };
 
@@ -163,19 +166,19 @@ in
           -v ocfbackend:ipp://169.229.226.92:631/ipp/print \
           -P ${hpPpd} \
           -D "HP LaserJet M806" -L "OCF lab" \
-          -E -o printer-is-shared=true
+          -E -o printer-is-shared=true -o Duplex=DuplexNoTumble
 
         lpadmin -p pagefault \
           -v ocfbackend:ipp://169.229.226.91:631/ipp/print \
           -P ${hpPpd} \
           -D "HP LaserJet M806" -L "OCF lab" \
-          -E -o printer-is-shared=true
+          -E -o printer-is-shared=true -o Duplex=DuplexNoTumble
 
         lpadmin -p papercut \
           -v ocfbackend:ipp://169.229.226.93:631/ipp/print \
           -P ${hpPpd} \
           -D "HP LaserJet M806" -L "OCF lab" \
-          -E -o printer-is-shared=true
+          -E -o printer-is-shared=true -o Duplex=DuplexNoTumble
 
         # ── Epson ET-5880 color printer (IPP/S) ──────────────────────────────
         lpadmin -p epson \
