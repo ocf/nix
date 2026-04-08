@@ -98,7 +98,7 @@ in
     # directly-advertising printers (e.g. Epson) to appear in the print dialog
     # alongside the cups-browsed cluster queues. cups-browsed BrowsePoll uses
     # direct HTTP and does not need Avahi.
-    avahi.enable = false;
+    avahi.enable = lib.mkForce false;
 
     pipewire = {
       enable = true;
