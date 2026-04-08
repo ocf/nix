@@ -168,13 +168,13 @@ in
           -v ocfbackend:ipps://169.229.226.96/ipp/print \
           -P ${epson5880Ppd} \
           -D "Epson ET-5880 Color" -L "OCF lab" \
-          -E -o printer-is-shared=true -o Duplex=DuplexNoTumble
+          -E -o printer-is-shared=true -o Duplex=DuplexNoTumble -o PageSize=Letter
 
         lpadmin -p baby-epson \
           -v ocfbackend:ipps://169.229.226.97/ipp/print \
           -P ${epson3850Ppd} \
           -D "Epson ET-3850 Color" -L "OCF lab" \
-          -E -o printer-is-shared=true -o Duplex=DuplexNoTumble
+          -E -o printer-is-shared=true -o Duplex=DuplexNoTumble -o PageSize=Letter
       '';
     };
 
