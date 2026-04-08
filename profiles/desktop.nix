@@ -110,6 +110,7 @@ in
       extraConf = ''
         DefaultPrinter OCF-BW
         Browsing Off
+        ErrorPolicy abort-job
       '';
       browsed.enable = true;
       browsedConf = ''
