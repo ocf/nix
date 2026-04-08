@@ -107,7 +107,7 @@ in
     printing = {
       enable = true;
       startWhenNeeded = true;
-      extraConf = "DefaultPrinter OCF";
+      extraConf = "DefaultPrinter OCF-BW";
       browsed.enable = true;
       browsedConf = ''
         BrowsePoll printhost-dev.ocf.berkeley.edu:631
@@ -115,7 +115,7 @@ in
         BrowseInterval 300
         BrowseTimeout 1500
         AutoClustering No
-        Cluster OCF: logjam pagefault papercut
+        Cluster OCF-BW: logjam pagefault papercut
         Cluster OCF-Color: epson
         LoadBalancing QueueOnServers
       '';
