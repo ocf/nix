@@ -3,11 +3,10 @@
 {
   imports = [ ../../hardware/virtualized.nix ];
 
-  # Temporarily pin cups + cups-filters to 2.4.11 (nixos-24.11) for testing GTK copies behavior
+  # Temporarily pin cups to pre-2.4.0 (nixos-21.11) to test whether ipp-everywhere-server is absent
   nixpkgs.overlays = [
     (_: _: {
-      cups = (import inputs.nixpkgs-2411 { system = "x86_64-linux"; }).cups;
-      cups-filters = (import inputs.nixpkgs-2411 { system = "x86_64-linux"; }).cups-filters;
+      cups = (import inputs.nixpkgs-2111 { system = "x86_64-linux"; }).cups;
     })
   ];
 
