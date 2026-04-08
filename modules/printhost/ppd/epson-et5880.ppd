@@ -23,6 +23,7 @@
 
 *cupsFilter: "application/pdf 0 ocfps"
 *cupsManualCopies: False
+*cupsEvenDuplex: False
 
 *%***** Notes on order dependency *****
 *% 20 Input Tray Selection
@@ -1002,7 +1003,7 @@ pop pop
 *%============ Be here as adviced ============
 *DefaultOutputOrder: Normal
 
-*OpenUI *Duplex/Duplex: PickOne
+*OpenUI *Duplex/Two-Sided: PickOne
 *fr.Translation Duplex/Duplex (Recto Verso): ""
 *es.Translation Duplex/Dúplex: ""
 *it.Translation Duplex/Duplex: ""
