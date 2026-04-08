@@ -71,9 +71,10 @@ let
     install -Dm0700 ${ocfBackendBin} $out/lib/cups/backend/ocfbackend
   '';
 
-  # Use the official hplip PPD unmodified; duplex default is set via lpadmin -o below.
+  # Use official PPDs unmodified; defaults are set via lpadmin -o below.
   hpPpd = "${pkgs.hplip}/share/cups/model/HP/hp-laserjet_m806-ps.ppd.gz";
-  epsonPpd = "${pkgs.epson-escpr2}/share/cups/model/epson-inkjet-printer-escpr2/Epson-ET-5880_Series-epson-escpr2-en.ppd";
+  epson5880Ppd = "${pkgs.epson-escpr2}/share/cups/model/epson-inkjet-printer-escpr2/Epson-ET-5880_Series-epson-escpr2-en.ppd";
+  epson3850Ppd = "${pkgs.epson-escpr2}/share/cups/model/epson-inkjet-printer-escpr2/Epson-ET-3850_Series-epson-escpr2-en.ppd";
 
 in
 {
@@ -162,12 +163,18 @@ in
           -D "HP LaserJet M806" -L "OCF lab" \
           -E -o printer-is-shared=true -o Duplex=DuplexNoTumble
 
-        # ── Epson ET-5880 color printer (IPP/S) ──────────────────────────────
+        # ── Epson color printers (IPP/S) ─────────────────────────────────────
         lpadmin -p epson \
           -v ocfbackend:ipps://169.229.226.96/ipp/print \
-          -P ${epsonPpd} \
+          -P ${epson5880Ppd} \
           -D "Epson ET-5880 Color" -L "OCF lab" \
-          -E -o printer-is-shared=true
+          -E -o printer-is-shared=true -o Duplex=DuplexNoTumble
+
+        lpadmin -p baby-epson \
+          -v ocfbackend:ipps://169.229.226.97/ipp/print \
+          -P ${epson3850Ppd} \
+          -D "Epson ET-3850 Color" -L "OCF lab" \
+          -E -o printer-is-shared=true -o Duplex=DuplexNoTumble
       '';
     };
 
