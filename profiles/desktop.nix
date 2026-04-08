@@ -91,11 +91,7 @@ in
   ];
 
   services = {
-    # Avahi disabled: CUPS uses it for DNS-SD printer discovery, which causes
-    # directly-advertising printers (e.g. Epson) to appear in the print dialog
-    # alongside the cups-browsed cluster queues. cups-browsed BrowsePoll uses
-    # direct HTTP and does not need Avahi.
-    avahi.enable = lib.mkForce false;
+    avahi.enable = true;
 
     pipewire = {
       enable = true;
