@@ -76,9 +76,6 @@ in
     makeHomeDir.skelDirectory = "/etc/skel";
   };
 
-  # Set OCF-BW as the default printer for all users via skel.
-  environment.etc."skel/.cups/lpoptions".text = "Default OCF-BW\n";
-
   environment.systemPackages = with pkgs; [
     lf
     dua
