@@ -156,23 +156,23 @@ in
           sleep 2
         done
 
-        # ── HP LaserJet M806 printers (socket/9100 raw TCP) ──────────────────
+        # ── HP LaserJet M806 printers (IPP) ──────────────────────────────────
         # Each printer is shared individually; clients use cups-browsed to
         # cluster them into a single "OCF" queue with load balancing.
         lpadmin -p logjam \
-          -v ocfbackend:socket://169.229.226.92:9100 \
+          -v ocfbackend:ipp://169.229.226.92:631/ipp/print \
           -P ${hpPpd} \
           -D "HP LaserJet M806" -L "OCF lab" \
           -E -o printer-is-shared=true
 
         lpadmin -p pagefault \
-          -v ocfbackend:socket://169.229.226.91:9100 \
+          -v ocfbackend:ipp://169.229.226.91:631/ipp/print \
           -P ${hpPpd} \
           -D "HP LaserJet M806" -L "OCF lab" \
           -E -o printer-is-shared=true
 
         lpadmin -p papercut \
-          -v ocfbackend:socket://169.229.226.93:9100 \
+          -v ocfbackend:ipp://169.229.226.93:631/ipp/print \
           -P ${hpPpd} \
           -D "HP LaserJet M806" -L "OCF lab" \
           -E -o printer-is-shared=true
