@@ -107,7 +107,10 @@ in
     printing = {
       enable = true;
       startWhenNeeded = true;
-      extraConf = "DefaultPrinter OCF-BW";
+      extraConf = ''
+        DefaultPrinter OCF-BW
+        Browsing Off
+      '';
       browsed.enable = true;
       browsedConf = ''
         BrowsePoll printhost-dev.ocf.berkeley.edu:631
