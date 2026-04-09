@@ -2,12 +2,11 @@
 """Enforcer is a prehook and posthook for the ocf-cups-backend whose primary
 purpose is to add and subtract from page quotas as user jobs are processed.
 
-When a user sends a job to the print server, the backend passes the job as a
-PostScript file to enforcer before sending it to the printer. Enforcer reads
-PostScript comments to count pages and connects to mysql to check against the
-user's quota. If enforcer returns non-zero, the job is rejected. Otherwise,
-enforcer gets called again when the job is done and logs the job in mysql,
-taking care to set the page count to zero if an error was encountered.
+When a user sends a job to the print server, the backend calls enforcer before
+sending it to the printer. Enforcer reads the job-impressions CUPS attribute to
+count pages and connects to mysql to check against the user's quota. If enforcer
+returns non-zero, the job is rejected. Otherwise, enforcer gets called again when
+the job is done and logs the job in mysql.
 
 Another function of enforcer is to send notifications to desktops to let users
 know when a job has been sent to the printer, been rejected due to the quota,
@@ -15,7 +14,6 @@ finished printing, or failed to print.
 """
 import argparse
 import os
-import subprocess
 import sys
 from collections import namedtuple
 from datetime import datetime
@@ -30,10 +28,6 @@ from ocflib.misc.mail import MAIL_SIGNATURE
 from ocflib.misc.mail import send_mail_user
 from ocflib.misc.mail import send_problem_report
 
-
-# Paths to helper scripts — substituted by Nix at build time
-ENFORCER_PC = '@enforcer_pc@'
-ENFORCER_SIZE = '@enforcer_size@'
 
 # Redis broker for real-time notifications
 REDIS_HOST = 'broker.ocf.berkeley.edu'
@@ -135,24 +129,6 @@ ENFORCER_ERROR_MESSAGE = Message(
         """) + MAIL_SIGNATURE
 )
 
-NON_LETTER_ERROR_MESSAGE = Message(
-    subject='[OCF] Your latest print job failed',
-    body=dedent("""\
-        Greetings from the Open Computing Facility,
-
-        This email is letting you know that your most recent print job was
-        rejected since it was not letter sized. Please ensure that you are
-        following all instructions on the computers, and not printing
-        directly from your browser.
-
-        """) + USER_ERROR_INFO + dedent("""
-
-        Does something look wrong? Please reply to
-
-            help@ocf.berkeley.edu
-
-        """) + MAIL_SIGNATURE
-)
 
 NOTIFY_QUOTA_MESSAGE = dedent("""\
         Your print job failed due to insufficient pages. Your job was
@@ -168,11 +144,6 @@ NOTIFY_JOB_ERROR = dedent("""\
         Please contact a staff member for assistance.\
 """)
 
-NOTIFY_NON_LETTER = dedent("""\
-        Your print job '{document}' failed due to not being letter sized.
-        Please ensure you are not printing from your browser.
-""")
-
 
 def read_config():
     with open(os.environ['ENFORCER_MYSQL_PASSWORD']) as f:
@@ -184,48 +155,14 @@ def read_config():
     return 'ocfprinting', mysql_passwd, redis_passwd, wayout_passwd
 
 
-RASTER_PRINTERS = {'epson'}
-
-
 def page_count(env):
-    path = env['TEADATAFILE']
-    num_copy = int(env['TEACOPIES'])
-    printer = env['TEAPRINTERNAME']
-
-    if printer in RASTER_PRINTERS:
-        import cups
-        conn = cups.Connection()
-        attrs = conn.getJobAttributes(
-            int(env['TEAJOBID']),
-            requested_attributes=['job-impressions'],
-        )
-        return num_copy * attrs.get('job-impressions', 1)
-
-    return num_copy * int(subprocess.check_output((ENFORCER_PC, path), timeout=30))
-
-
-def page_size(env):
-    if env['TEAPRINTERNAME'] in RASTER_PRINTERS:
-        return 'Letter'
-
-    # Prefer the CUPS job attribute: set directly from the user's print dialog
-    # selection and unaffected by filter chain processing of the spool file.
-    try:
-        import cups
-        conn = cups.Connection()
-        attrs = conn.getJobAttributes(
-            int(env['TEAJOBID']),
-            requested_attributes=['media'],
-        )
-        media = attrs.get('media', '').strip()
-        if media:
-            return media
-    except Exception:
-        pass
-
-    # Fall back to reading DSC comments from the PostScript spool file.
-    path = env['TEADATAFILE']
-    return subprocess.check_output((ENFORCER_SIZE, path), timeout=30).decode('UTF-8').strip()
+    import cups
+    conn = cups.Connection()
+    attrs = conn.getJobAttributes(
+        int(env['TEAJOBID']),
+        requested_attributes=['job-impressions'],
+    )
+    return int(env['TEACOPIES']) * attrs.get('job-impressions', 1)
 
 
 def create_job(env):
@@ -293,16 +230,6 @@ def get_hostname_from_username(username):
 
 def prehook(c, r, job, wayout_pass):
     quo = quota.get_quota(c, job.user)
-    size = page_size(os.environ)
-
-    if size not in {'Letter', 'na_letter_8.5x11in', '279x215mm', '215x279mm', '279x216mm', '216x279mm'}:
-        send_printer_mail(NON_LETTER_ERROR_MESSAGE, job, quo)
-        msg = NOTIFY_NON_LETTER.format(
-            document=job.doc_name,
-        )
-        r.publish('user-' + job.user, msg)
-        send_notification(wayout_pass, 'Non Letter Error', msg, job.user)
-        sys.exit(255)
 
     if job.pages > quo.daily:
         send_printer_mail(INSUFFICIENT_QUOTA_MESSAGE, job, quo)
