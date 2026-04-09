@@ -125,7 +125,7 @@ in
         AutoClustering No
         Cluster OCF-BW: logjam pagefault papercut
         Cluster OCF-Color: epson
-        LoadBalancing QueueOnServers
+        LoadBalancing QueueOnClient
       '';
     };
   };
