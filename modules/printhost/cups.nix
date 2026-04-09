@@ -141,26 +141,38 @@ in
           sleep 2
         done
 
-        # ── HP LaserJet M806 printers (IPP) ──────────────────────────────────
-        # Each printer is shared individually; clients use cups-browsed to
-        # cluster them into a single "OCF" queue with load balancing.
+        # ── HP LaserJet M806 printers (JetDirect) ────────────────────────────
+        # Socket backend completes as soon as data is written to the printer,
+        # so client backends exit immediately rather than waiting for the job
+        # to physically finish. Individual printers are members of OCF-BW class.
         lpadmin -p logjam \
-          -v ocfbackend:ipp://169.229.226.92:631/ipp/print \
+          -v ocfbackend:socket://169.229.226.92:9100 \
           -P ${hpPpd} \
           -D "HP LaserJet M806" -L "OCF lab" \
           -E -o printer-is-shared=true -o Duplex=DuplexNoTumble
 
         lpadmin -p pagefault \
-          -v ocfbackend:ipp://169.229.226.91:631/ipp/print \
+          -v ocfbackend:socket://169.229.226.91:9100 \
           -P ${hpPpd} \
           -D "HP LaserJet M806" -L "OCF lab" \
           -E -o printer-is-shared=true -o Duplex=DuplexNoTumble
 
         lpadmin -p papercut \
-          -v ocfbackend:ipp://169.229.226.93:631/ipp/print \
+          -v ocfbackend:socket://169.229.226.93:9100 \
           -P ${hpPpd} \
           -D "HP LaserJet M806" -L "OCF lab" \
           -E -o printer-is-shared=true -o Duplex=DuplexNoTumble
+
+        # ── OCF-BW class ──────────────────────────────────────────────────────
+        # Clients send to this class; CUPS distributes to the least-loaded
+        # member. The socket backend above means the server job completes as
+        # soon as data is written to the printer, so client backends exit
+        # immediately rather than waiting for physical print completion.
+        lpadmin -p logjam    -c OCF-BW
+        lpadmin -p pagefault -c OCF-BW
+        lpadmin -p papercut  -c OCF-BW
+        lpadmin -p OCF-BW -E -o printer-is-shared=true \
+          -D "HP LaserJet M806" -L "OCF lab"
 
         # ── Epson color printers (IPP/S) ─────────────────────────────────────
         lpadmin -p epson \
