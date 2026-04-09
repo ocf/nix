@@ -121,7 +121,7 @@ in
         BrowseTimeout 1500
         AutoClustering No
         Cluster OCF-BW: logjam pagefault papercut
-        Cluster OCF-Color: epson baby-epson
+        Cluster OCF-Color: epson
         LoadBalancing QueueOnServers
       '';
     };
