@@ -184,9 +184,23 @@ def read_config():
     return 'ocfprinting', mysql_passwd, redis_passwd, wayout_passwd
 
 
+RASTER_PRINTERS = {'epson'}
+
+
 def page_count(env):
     path = env['TEADATAFILE']
     num_copy = int(env['TEACOPIES'])
+    printer = env['TEAPRINTERNAME']
+
+    if printer in RASTER_PRINTERS:
+        import cups
+        conn = cups.Connection()
+        attrs = conn.getJobAttributes(
+            int(env['TEAJOBID']),
+            requested_attributes=['job-impressions'],
+        )
+        return num_copy * attrs.get('job-impressions', 1)
+
     return num_copy * int(subprocess.check_output((ENFORCER_PC, path), timeout=30))
 
 

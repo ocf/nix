@@ -97,6 +97,7 @@ def main():
 
         tea_env = dict(os.environ)
         tea_env.update({
+            'TEAJOBID': job_id,
             'TEAUSERNAME': user,
             'TEACOPIES': copies,
             'TEATITLE': title,
