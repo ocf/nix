@@ -208,6 +208,22 @@ def page_size(env):
     if env['TEAPRINTERNAME'] in RASTER_PRINTERS:
         return 'Letter'
 
+    # Prefer the CUPS job attribute: set directly from the user's print dialog
+    # selection and unaffected by filter chain processing of the spool file.
+    try:
+        import cups
+        conn = cups.Connection()
+        attrs = conn.getJobAttributes(
+            int(env['TEAJOBID']),
+            requested_attributes=['media'],
+        )
+        media = attrs.get('media', '').strip()
+        if media:
+            return media
+    except Exception:
+        pass
+
+    # Fall back to reading DSC comments from the PostScript spool file.
     path = env['TEADATAFILE']
     return subprocess.check_output((ENFORCER_SIZE, path), timeout=30).decode('UTF-8').strip()
 
@@ -279,7 +295,7 @@ def prehook(c, r, job, wayout_pass):
     quo = quota.get_quota(c, job.user)
     size = page_size(os.environ)
 
-    if size not in ['Letter', '279x215mm', '215x279mm', '279x216mm', '216x279mm']:
+    if size not in {'Letter', 'na_letter_8.5x11in', '279x215mm', '215x279mm', '279x216mm', '216x279mm'}:
         send_printer_mail(NON_LETTER_ERROR_MESSAGE, job, quo)
         msg = NOTIFY_NON_LETTER.format(
             document=job.doc_name,
