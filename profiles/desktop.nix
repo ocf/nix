@@ -113,6 +113,9 @@ in
         Browsing Off
         ErrorPolicy abort-job
       '';
+      # Drivers must be available locally: cups-browsed downloads server PPDs and
+      # runs their filter chains on the client before forwarding to the server.
+      drivers = with pkgs; [ hplip epson-escpr2 ];
       browsed.enable = true;
       browsedConf = ''
         BrowsePoll printhost-dev.ocf.berkeley.edu:631
