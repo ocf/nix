@@ -205,6 +205,9 @@ def page_count(env):
 
 
 def page_size(env):
+    if env['TEAPRINTERNAME'] in RASTER_PRINTERS:
+        return 'Letter'
+
     path = env['TEADATAFILE']
     return subprocess.check_output((ENFORCER_SIZE, path), timeout=30).decode('UTF-8').strip()
 
