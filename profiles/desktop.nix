@@ -146,13 +146,13 @@ in
       # logjam/pagefault/papercut. The server uses socket backends so jobs
       # complete as soon as data is written — no waiting for physical printing.
       lpadmin -p OCF-BW \
-        -v ipp://printhost-dev.ocf.berkeley.edu:631/classes/OCF-BW \
+        -v ipps://printhost-dev.ocf.berkeley.edu/classes/OCF-BW \
         -P ${hpPpd} \
         -D "OCF Black & White" -L "OCF lab" \
         -E -o printer-is-shared=false -o Duplex=DuplexNoTumble
 
       lpadmin -p OCF-Color \
-        -v ipp://printhost-dev.ocf.berkeley.edu:631/printers/epson \
+        -v ipps://printhost-dev.ocf.berkeley.edu/printers/epson \
         -P ${epsonPpd} \
         -D "OCF Color" -L "OCF lab" \
         -E -o printer-is-shared=false -o Duplex=DuplexNoTumble -o PageSize=Letter
