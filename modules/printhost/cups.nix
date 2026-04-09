@@ -67,9 +67,19 @@ in
       browsed.enable = false;
       browsing = false;
       stateless = true;
-      # Substitute the public hostname into ServerName
+      # Substitute the public hostname into ServerName, and switch to
+      # Negotiate (GSSAPI/Kerberos) auth when a keytab is configured.
       extraConf = lib.mkForce (
-        lib.replaceStrings [ "@cups-url@" ] [ cfg.printhostUrl ] (builtins.readFile ./conf/cupsd.conf)
+        lib.replaceStrings
+          [
+            "@cups-url@"
+            "DefaultAuthType Basic"
+          ]
+          [
+            cfg.printhostUrl
+            (if cfg.cupsKeytabFile != null then "DefaultAuthType Negotiate" else "DefaultAuthType Basic")
+          ]
+          (builtins.readFile ./conf/cupsd.conf)
       );
       extraFilesConf = builtins.readFile ./conf/cups-files.conf;
       # hplip provides hpps (HP PPD filter); epson-escpr2 provides epson-escpr-wrapper2.
@@ -162,6 +172,12 @@ in
     };
 
     # prevent conflict with cups built in mDNS
+    # When a Kerberos keytab is provided, point CUPS at it so it can validate
+    # GSSAPI tokens from lab clients authenticating with their Kerberos tickets.
+    systemd.services.cups.environment = lib.mkIf (cfg.cupsKeytabFile != null) {
+      KRB5_KTNAME = cfg.cupsKeytabFile;
+    };
+
     services.avahi.enable = lib.mkForce false;
 
     networking.firewall = {

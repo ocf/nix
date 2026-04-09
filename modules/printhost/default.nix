@@ -25,6 +25,18 @@
       description = "Path to file containing the Redis broker password.";
     };
 
+    cupsKeytabFile = lib.mkOption {
+      type = lib.types.nullOr lib.types.path;
+      description = ''
+        Path to a Kerberos keytab containing the HTTP/<printhostUrl> service
+        principal. When set, CUPS uses Negotiate (GSSAPI/Kerberos) auth so
+        lab machines with valid tickets log in automatically. Access is still
+        restricted to ocfstaff/opstaff via SystemGroup in cups-files.conf.
+        Create the principal via idm and deploy it as an agenix secret.
+      '';
+      default = null;
+    };
+
     printhostUrl = lib.mkOption {
       type = lib.types.str;
       description = "Public hostname for the print server (used as CUPS ServerName and TLS cert name).";
