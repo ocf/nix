@@ -40,10 +40,6 @@ let
           { ... }:
           {
             nix.settings.experimental-features = "nix-command flakes";
-            # github-runner 2.333.1 unconditionally sets __noChroot = true (nixpkgs#506237),
-            # which requires sandbox = "relaxed". Fixed in nixpkgs#508010 (Darwin-only) but
-            # not yet backported to nixos-25.11.
-            nix.settings.sandbox = lib.mkDefault "relaxed";
             networking.firewall.enable = true;
 
             services.github-runners = builtins.listToAttrs (
