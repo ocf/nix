@@ -267,7 +267,6 @@
         ocf-wayout = wayout.packages.${final.stdenv.hostPlatform.system}.default;
         ocf-jukebox = ocf-jukebox.packages.${final.stdenv.hostPlatform.system}.default;
         plasma-applet-commandoutput = final.callPackage ./pkgs/plasma-applet-commandoutput.nix { };
-        catppuccin-sddm = final.qt6Packages.callPackage ./pkgs/catppuccin-sddm.nix { };
         ocf-cosmic-applets = ocf-cosmic-applets.packages.${final.stdenv.hostPlatform.system}.default;
         ocf-cosmic-greeter = final.callPackage ./pkgs/ocf-cosmic-greeter.nix { };
       };

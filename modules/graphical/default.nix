@@ -30,25 +30,6 @@ let
   '';
   # override ocf-tv from util
   ocf-tv = lib.hiPrio vncScript;
-  catppuccin-sddm =
-    (pkgs.catppuccin-sddm.override {
-      themeConfig.General = {
-        FontSize = 12;
-        Background = "/etc/ocf-assets/images/login.png";
-        #Logo = "/etc/ocf-assets/images/penguin.svg";
-        CustomBackground = true;
-      };
-    }).overrideAttrs
-      (old: {
-        postInstall = (old.postInstall or "") + ''
-          rev="${config.system.nixos.label}"
-
-          # add the commit hash to the bottom left corner of sddm
-          for qml in $out/share/sddm/themes/*/Main.qml; do
-            sed -i 's/^}$/    Text { anchors.bottom: parent.bottom; anchors.left: parent.left; anchors.margins: 10; text: "'"$rev"'"; color: "white"; z: 100 }\n}/' "$qml"
-          done
-        '';
-      });
 in
 {
   options.ocf.graphical = {
@@ -123,7 +104,21 @@ in
         programs.ssh.askPassword = pkgs.lib.mkForce (lib.getExe pkgs.ksshaskpass.out);
 
         environment.systemPackages = with pkgs; [
-          catppuccin-sddm
+          (catppuccin-sddm.override {
+            flavor = "latte";
+            fontSize = "12";
+            background = "/etc/ocf-assets/images/login.png";
+          }).overrideAttrs
+          (old: {
+            postInstall = (old.postInstall or "") + ''
+              rev="${config.system.nixos.label}"
+
+              # add the commit hash to the bottom left corner of sddm
+              for qml in $out/share/sddm/themes/*/Main.qml; do
+                sed -i 's/^}$/    Text { anchors.bottom: parent.bottom; anchors.left: parent.left; anchors.margins: 10; text: "'"$rev"'"; color: "white"; z: 100 }\n}/' "$qml"
+              done
+            '';
+          })
 
           # terminal emulators
           kitty
@@ -159,7 +154,7 @@ in
 
             sddm = {
               enable = true;
-              theme = "${catppuccin-sddm}/share/sddm/themes/catppuccin-latte";
+              theme = "catppuccin-latte";
               wayland.enable = true;
               settings.Users = {
                 RememberLastUser = false;
