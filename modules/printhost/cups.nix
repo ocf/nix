@@ -145,7 +145,7 @@ in
           
         lpadmin -p epson \
           -v ocfbackend:socket://169.229.226.96:9100 \
-          -P raw \
+          -m raw \
           -D "Epson ET-5880 Series" -L "OCF lab" \
           -E -o printer-is-shared=false -o Duplex=DuplexNoTumble -o PageSize=Letter
 
