@@ -16,7 +16,7 @@ import argparse
 import os
 import sys
 import re
-import cups
+from pathlib import Path
 from collections import namedtuple
 from datetime import datetime
 from syslog import syslog
@@ -138,7 +138,7 @@ NOTIFY_QUOTA_MESSAGE = dedent("""\
 """)
 
 NOTIFY_JOB_QUEUED = dedent("""\
-        Your print job '{document}' was accepted and queued.\
+        Your print job '{document}' was accepted and queued on '{printer}'.\
 """)
 
 NOTIFY_JOB_ERROR = dedent("""\
@@ -156,25 +156,27 @@ def read_config():
         wayout_passwd = f.read().strip()
     return 'ocfprinting', mysql_passwd, redis_passwd, wayout_passwd
 
-
-def page_count(env):
-    sheets_printed = 0
+def get_page_count(env):
+    filepath = env.get('TEADATAFILE')
     try:
-        current_id = int(env['TEAJOBID'])
-        
-        cups.setUser("root")
-        conn = cups.Connection()
-        
-        current_attrs = conn.getJobAttributes(current_id)
-        sheets_printed = int(current_attrs.get('job-impressions-completed'))
-        
-        # fix HP overreporting pages
-        if current_attrs.get('printer-uri') == 'ipp://localhost:631/printers/OCF-BW':
-          sheets_printed -= 1
-    except Exception as e:
-        syslog(f"CUPS API Error: {e}")
-    return sheets_printed
+        with open(filepath, 'rb') as f:
+            lines = f.readlines()
 
+        head = lines[:20]
+        tail = lines[-20:]
+        target_lines = head + tail
+
+        for line in target_lines:
+            line_str = line.decode('utf-8', errors='ignore').strip()
+
+            match = re.match(r'^%%Pages:\s+(\d+)$', line_str)
+            if match:
+                return match.group(1)
+
+    except Exception as e:
+        syslog(f"Page count error: {e}")
+
+    return 0
 
 def create_job(env):
     printer = env['TEAPRINTERNAME']
@@ -260,19 +262,18 @@ def prehook(c, r, job, wayout_pass):
         r.publish('user-' + job.user, msg)
         send_notification(wayout_pass, 'Insufficient Color Quota', msg, job.user)
         sys.exit(255)
-    else:
-      msg = NOTIFY_JOB_QUEUED.format(
-          document=job.doc_name,
-      )
-      send_notification(wayout_pass, 'Job Queued', msg, job.user)
 
 
 def posthook(c, r, job, success, wayout_pass):
     msg = ''
     if success:
         quota.add_job(c, job)
-        printer_name = job.printer.split('-')[0]
-        r.publish('printer-' + printer_name, job.user)
+        msg = NOTIFY_JOB_QUEUED.format(
+            document=job.doc_name,
+            printer=job.printer
+        )
+        send_notification(wayout_pass, 'Job Queued', msg, job.user)
+        r.publish('printer-' + job.printer, job.user)
     else:
         quo = quota.get_quota(c, job.user)
         msg = NOTIFY_JOB_ERROR.format(document=job.doc_name)

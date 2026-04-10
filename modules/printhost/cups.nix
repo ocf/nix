@@ -126,22 +126,28 @@ in
         done
 
         lpadmin -p logjam \
-          -v socket://169.229.226.92:9100 \
+          -v ocfbackend:socket://169.229.226.92:9100 \
           -m raw \
           -D "HP LaserJet M806" -L "OCF lab" \
           -E -o printer-is-shared=false -o Duplex=DuplexNoTumble
 
         lpadmin -p pagefault \
-          -v socket://169.229.226.91:9100 \
+          -v ocfbackend:socket://169.229.226.91:9100 \
           -m raw \
           -D "HP LaserJet M806" -L "OCF lab" \
           -E -o printer-is-shared=false -o Duplex=DuplexNoTumble
 
         lpadmin -p papercut \
-          -v socket://169.229.226.93:9100 \
+          -v ocfbackend:socket://169.229.226.93:9100 \
           -m raw \
           -D "HP LaserJet M806" -L "OCF lab" \
           -E -o printer-is-shared=false -o Duplex=DuplexNoTumble
+          
+        lpadmin -p epson \
+          -v ocfbackend:socket://169.229.226.96:9100 \
+          -P raw \
+          -D "Epson ET-5880 Series" -L "OCF lab" \
+          -E -o printer-is-shared=false -o Duplex=DuplexNoTumble -o PageSize=Letter
 
         lpadmin -p logjam    -c OCF-BW-Group
         lpadmin -p pagefault -c OCF-BW-Group
@@ -149,14 +155,18 @@ in
         lpadmin -p OCF-BW-Group -E -o printer-is-shared=false \
           -D "HP LaserJet M806" -L "OCF lab"
 
+        lpadmin -p epson -c OCF-Color-Group
+        lpadmin -p OCF-Color-Group -E -o printer-is-shared=false \
+          -D "Epson ET-5880 Series" -L "OCF lab"
+
         # ── Public Printers -------------─────────────────────────────────────
         lpadmin -p OCF-BW \
-          -v ocfbackend:ipp://localhost/classes/OCF-BW-Group \
+          -v ipp://localhost/classes/OCF-BW-Group \
           -P ${hpPpd} \
           -D "OCF Black & White" -L "OCF lab" \
           -E -o printer-is-shared=true -o Duplex=DuplexNoTumble
         lpadmin -p OCF-Color \
-          -v ocfbackend:ipps://169.229.226.96/ipp/print \
+          -v ipp://localhost/classes/OCF-Color-Group \
           -P ${epsonPpd} \
           -D "OCF Color" -L "OCF lab" \
           -E -o printer-is-shared=true -o Duplex=DuplexNoTumble -o PageSize=Letter
