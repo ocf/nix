@@ -128,19 +128,19 @@ in
         done
 
         lpadmin -p logjam \
-          -v ocfbackend:socket://169.229.226.92:9100 \
+          -v socket://169.229.226.92:9100 \
           -m raw \
           -D "HP LaserJet M806" -L "OCF lab" \
           -E -o printer-is-shared=false -o Duplex=DuplexNoTumble
 
         lpadmin -p pagefault \
-          -v ocfbackend:socket://169.229.226.91:9100 \
+          -v socket://169.229.226.91:9100 \
           -m raw \
           -D "HP LaserJet M806" -L "OCF lab" \
           -E -o printer-is-shared=false -o Duplex=DuplexNoTumble
 
         lpadmin -p papercut \
-          -v ocfbackend:socket://169.229.226.93:9100 \
+          -v socket://169.229.226.93:9100 \
           -m raw \
           -D "HP LaserJet M806" -L "OCF lab" \
           -E -o printer-is-shared=false -o Duplex=DuplexNoTumble
@@ -153,7 +153,7 @@ in
 
         # ── Public Printers -------------─────────────────────────────────────
         lpadmin -p OCF-BW \
-          -v ipp://localhost/classes/OCF-BW-Group \
+          -v ocfbackend:ipp://localhost/classes/OCF-BW-Group \
           -P ${hpPpd} \
           -D "OCF Black & White" -L "OCF lab" \
           -E -o printer-is-shared=true -o Duplex=DuplexNoTumble -o cupsManualCopies=false
