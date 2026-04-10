@@ -44,6 +44,11 @@ in
       gitg
       github-desktop
       gh
+      gitFull # has gitk
+
+      sapling
+      subversion
+      mercurialFull
 
       meld
 
