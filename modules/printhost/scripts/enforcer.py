@@ -16,6 +16,7 @@ import argparse
 import os
 import sys
 import re
+import mmap
 from pathlib import Path
 from collections import namedtuple
 from datetime import datetime
@@ -156,33 +157,68 @@ def read_config():
         wayout_passwd = f.read().strip()
     return 'ocfprinting', mysql_passwd, redis_passwd, wayout_passwd
 
+
 def page_count(env):
     filepath = env.get('TEADATAFILE')
     pages = 0
     copies = 1
+    
     try:
         with open(filepath, 'rb') as f:
-            lines = f.readlines()
+            # 1. Read the first 10 bytes to get the "Magic Number"
+            header = f.read(10)
+            f.seek(0) # Reset the file pointer back to the beginning
 
-        head = lines[:40]
-        tail = lines[-40:]
-        target_lines = head + tail
+            # ==========================================
+            # PDF PARSING LOGIC
+            # ==========================================
+            if header.startswith(b'%PDF'):
+                # Check if file is completely empty to prevent mmap crash
+                f.seek(0, 2)
+                if f.tell() == 0: 
+                    return 0
+                f.seek(0)
 
-        for line in target_lines:
-            line_str = line.decode('utf-8', errors='ignore').strip()
+                # Map the file to memory. This is lightning fast and uses almost 0 RAM.
+                with mmap.mmap(f.fileno(), 0, access=mmap.ACCESS_READ) as mm:
+                    # Find all instances of /Count followed by a number
+                    counts = re.findall(b'/Count\s+(\d+)', mm)
+                    if counts:
+                        # The root page tree always has the highest count
+                        pages = max(int(c) for c in counts)
+                
+                # Note: PDFs rarely have an embedded copy count like PS files do.
+                # Copy counts for PDFs are usually passed in the CUPS job ticket (env variables).
 
-            pages_match = re.match(r'^%%Pages:\s+(\d+)$', line_str)
-            if pages_match:
-                pages = int(pages_match.group(1))
+            # ==========================================
+            # POSTSCRIPT PARSING LOGIC
+            # ==========================================
+            elif header.startswith(b'%!'):
+                for line in f:
+                    if b'%%Pages:' in line or b'%RBINumCopies:' in line:
+                        line_str = line.decode('utf-8', errors='ignore').strip()
+                        
+                        pages_match = re.search(r'^%%Pages:\s+(\d+)', line_str)
+                        if pages_match:
+                            pages = int(pages_match.group(1))
+                        
+                        copies_match = re.search(r'^%RBINumCopies:\s+(\d+)', line_str)
+                        if copies_match:
+                            copies = int(copies_match.group(1))
             
-            copies_match = re.match(r'^%RBINumCopies:\s+(\d+)$', line_str)
-            if copies_match:
-                copies = int(copies_match.group(1))
+            # ==========================================
+            # UNKNOWN FILE TYPE
+            # ==========================================
+            else:
+                syslog(f"Unknown file signature in {filepath}. Header: {header}")
+                pass
 
     except Exception as e:
         syslog(f"Page count error: {e}")
+        pass
 
     return pages * copies
+
 
 def create_job(env):
     printer = env['TEAPRINTERNAME']
