@@ -76,8 +76,13 @@ in
       onefetch
       cpufetch
       gpufetch
+
       pokemonsay
       ponysay
+      cowsay
+      kittysay
+      fortune
+      lolcat
       pokemon-colorscripts
 
       # Other tools
