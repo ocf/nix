@@ -2,6 +2,7 @@
 
 let
   cfg = config.ocf.home;
+  homeSetupScript = pkgs.writeShellScript "ocf_setup_home" (builtins.readFile ./ocf_setup_home.sh);
   remoteHost = "tsunami";
 
   # Default openssh doesn't include GSSAPI support, so we need to override sshfs
@@ -39,7 +40,6 @@ in
 
       # needed to mount ~/remote with kerberos ssh auth
       services.login.rules.session.mount.order = config.security.pam.services.login.rules.session.krb5.order + 50;
-      services.login.rules.session.mkhomedir.order = config.security.pam.services.login.rules.session.mount.order + 50;
 
       # mount ~ and ~/remote
       mount.extraVolumes = [
@@ -48,7 +48,17 @@ in
         ''<volume fstype="fuse" path="${lib.getExe sshfs}#%(USER)@${remoteHost}:" mountpoint="~/remote/" options="follow_symlinks,UserKnownHostsFile=/dev/null,StrictHostKeyChecking=no" pgrp="ocf" />''
       ];
 
-      makeHomeDir.skelDirectory = "/etc/skel";
+      # because mount now creates the home dir and mounts tmpfs on it, mkhomedir wont copy the skel because the dir exists
+      # we can do copy skel as part of a home setup script, and do other stuff as well
+      #services.login.rules.session.mkhomedir.order = config.security.pam.services.login.rules.session.mount.order + 50;
+      #makeHomeDir.skelDirectory = "/etc/skel";
+
+      services.login.rules.session.ocf_home_setup = {
+        order = config.security.pam.services.login.rules.session.mount.order + 50;
+        control = "optional";
+        modulePath = "pam_exec.so";
+        args = [ "${homeSetupScript}" ];
+      };
     };
   };
 }
