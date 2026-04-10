@@ -6,6 +6,7 @@
 
 let
   cfg = config.ocf.ttyd;
+  hostnameIo = lib.strings.replaceStrings [ "ocf.berkeley.edu" ] [ "ocf.io" ] cfg.hostname;
 in
 {
   options.ocf.ttyd = {
@@ -31,6 +32,7 @@ in
 
     ocf.acme.extraCerts = [
       cfg.hostname
+      hostnameIo
     ];
 
     users.users."nginx".extraGroups = [ "acme" ];
@@ -58,6 +60,7 @@ in
           ];
 
           serverName = cfg.hostname;
+          serverAliases = [ hostnameIo ];
           useACMEHost = "${config.networking.hostName}.ocf.berkeley.edu";
           onlySSL = true;
 
@@ -80,6 +83,7 @@ in
           ];
 
           serverName = cfg.hostname;
+          serverAliases = [ hostnameIo ];
           globalRedirect = "https://${cfg.hostname}";
         };
       };
