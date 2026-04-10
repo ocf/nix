@@ -18,6 +18,12 @@ in
       default = false;
     };
 
+    mountRemote = lib.mkOption {
+      type = lib.types.bool;
+      description = "Mount NFS homes to /remote (for desktops which create home directory in tmpfs on login).";
+      default = false;
+    };
+
     mountServices = lib.mkOption {
       type = lib.types.bool;
       description = "Mount /services from NFS.";
@@ -40,7 +46,19 @@ in
       ];
     };
 
-    fileSystems."/services" = lib.mkIf cfg.mountHome {
+    fileSystems."/remote" = lib.mkIf cfg.mountRemote {
+      device = "homes:/home";
+      fsType = "nfs4";
+      options = [
+        "rw"
+        "bg"
+        "noatime"
+        "nodev"
+        "nosuid"
+      ];
+    };
+
+    fileSystems."/services" = lib.mkIf cfg.mountServices {
       device = "services:/services";
       fsType = "nfs4";
       options = [
