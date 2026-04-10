@@ -162,46 +162,55 @@ def count_pdf_pages(file):
   reader = PdfReader(file)
   return len(reader.pages)
 
+# def page_count(env):
+#     conn = cups.Connection()
+    
+#     old_attrs = conn.getJobAttributes(int(env.get('TEAJOBID')))
+#     syslog(f"OLD_ATTRS: {old_attrs}")
+    
+#     new_attrs = conn.getJobAttributes(int(env.get('TEAJOBID'))-1)
+#     syslog(f"NEW_ATTRS: {new_attrs}")
+    
+#     sheets = int(conn.getJobAttributes(int(env.get('TEAJOBID'))-1)["job-impressions-completed"])
+#     syslog(f"SHEETS: {sheets}")
+
+#     return sheets
+
+
 def page_count(env):
-    data_file = env.get('TEADATAFILE')
-    if not data_file or not os.path.exists(data_file):
-        return int(env.get('TEACOPIES', 1))
-
-    # 1. Read the first/last few lines (just like the shell script)
-    with open(data_file, 'rb') as f:
-        # Check header to see if it's PostScript or PDF
-        header_bytes = f.read(1024)
-        f.seek(-2048, 2)
-        footer_bytes = f.read()
+    try:
+        current_id = int(env['TEAJOBID'])
+        user = env['TEAUSERNAME']
+        title = env['TEATITLE']
+        cups.setUser("root")
+        conn = cups.Connection()
         
-    combined = (header_bytes + footer_bytes).decode('utf-8', 'ignore')
+        parent_id = None
 
-    # 2. Extract logical pages (Impressions)
-    if b'%PDF' in header_bytes:
-        # For PDF, we still need Ghostscript or a PDF parser
-        sheets = count_pdf_pages(data_file)
-        syslog(f"PDF sheets: {sheets}")
-    else:
-        # Mimic the old script's awk logic with regex
-        match = re.search(r'^%%Pages:\s+(\d+)$', combined, re.MULTILINE)
-        sheets = int(match.group(1)) if match else 1
-        syslog(f"PS sheets: {sheets}")
-           
-    id = env.get('TEAJOBID')
-    syslog(f"printID: {id}")
-    
-    conn = cups.Connection()
-    job_attrs = conn.getJobAttributes(int(id)-1)
-    syslog(f"job_attrs: {job_attrs}")
-    
-    
-    options = env.get('TEAOPTIONS')
-    syslog(f"TEAOPTIONS: {options}")
-    # Because '%%Pages' in a filtered file often already includes copies,
-    # we only multiply by TEACOPIES if the count seems to be for a single copy.
-    # Usually, if %%Pages is found, it's the TOTAL.
-    return sheets
+        all_jobs = conn.getJobs(which_jobs='all')
+        
+        # Find the highest ID that is lower than current_id with the matching title
+        candidate_ids = [
+            jid for jid in all_jobs.keys()
+            if jid < current_id and conn.getJobAttributes(int(all_jobs[jid].get('job-uri')[-1]))['job-name'] == title
+        ]
+        if candidate_ids:
+            parent_id = max(candidate_ids)
 
+        # Query the parent job for the accurate 'job-impressions-completed'
+        if parent_id:
+            parent_attrs = conn.getJobAttributes(parent_id)
+            if 'job-impressions-completed' in parent_attrs:
+                syslog(f"Found sheets at job #{parent_id}: {parent_attrs['job-impressions-completed']}")
+                return parent_attrs['job-impressions-completed']
+
+        return 0
+
+    except Exception as e:
+        syslog(f"CUPS API Page Count Error: {e}")
+
+    # Final fallback to standard copies count
+    return int(env.get('TEACOPIES', 1))
 
 def create_job(env):
     printer = env['TEAPRINTERNAME']
