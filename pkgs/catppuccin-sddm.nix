@@ -1,4 +1,10 @@
-{ lib, formats, stdenvNoCC, fetchFromGitHub, themeConfig ? null }:
+{
+  lib,
+  formats,
+  stdenvNoCC,
+  fetchFromGitHub,
+  themeConfig ? null,
+}:
 
 let
   config = (formats.ini { }).generate "theme.conf.user" themeConfig;

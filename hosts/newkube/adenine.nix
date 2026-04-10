@@ -10,13 +10,22 @@
     lastOctet = 7;
     extraRoutes = [
       # We use these subnets for Kubernetes, they aren't part of the main /64
-      { Destination = "2607:f140:8801:1::/64"; Scope = "link"; }
-      { Destination = "2607:f140:8801:2::/64"; Scope = "link"; }
+      {
+        Destination = "2607:f140:8801:1::/64";
+        Scope = "link";
+      }
+      {
+        Destination = "2607:f140:8801:2::/64";
+        Scope = "link";
+      }
     ];
 
     bond = {
       enable = true;
-      interfaces = [ "enp66s0f0np0" "enp66s0f1np1" ];
+      interfaces = [
+        "enp66s0f0np0"
+        "enp66s0f1np1"
+      ];
     };
   };
 

@@ -15,14 +15,14 @@
     managed-deployment.automated-deploy = false;
 
     auth.enable = true;
-    browsers.enable = true;
+    graphical.apps.browsers.enable = true;
 
     network = {
       enable = true;
       lastOctet = 90;
     };
 
-    kiosk = {
+    graphical.kiosk = {
       enable = true;
       url = "https://labmap.ocf.berkeley.edu"; # https://kinn.dev/labmap2;
       extraConfig = ''
@@ -61,8 +61,14 @@
     };
 
     pipewire.extraConfig.pipewire-pulse."100-network-audio-sink"."pulse.cmd" = [
-      { cmd = "load-module"; args = "module-native-protocol-tcp auth-ip-acl=169.229.226.0/24 auth-anonymous=1"; }
-      { cmd = "load-module"; args = "module-zeroconf-publish"; }
+      {
+        cmd = "load-module";
+        args = "module-native-protocol-tcp auth-ip-acl=169.229.226.0/24 auth-anonymous=1";
+      }
+      {
+        cmd = "load-module";
+        args = "module-zeroconf-publish";
+      }
     ];
 
   };
@@ -71,8 +77,6 @@
     pipewire.wantedBy = [ "default.target" ];
     pipewire-pulse.wantedBy = [ "default.target" ];
   };
-
-
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
