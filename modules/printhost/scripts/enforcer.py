@@ -164,8 +164,8 @@ def page_count(env):
         with open(filepath, 'rb') as f:
             lines = f.readlines()
 
-        head = lines[:20]
-        tail = lines[-20:]
+        head = lines[:40]
+        tail = lines[-40:]
         target_lines = head + tail
 
         for line in target_lines:
