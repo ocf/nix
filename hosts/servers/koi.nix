@@ -15,6 +15,8 @@
     lastOctet = 129;
   };
 
+  ocf.etc.enable = true;
+
   ocf.nfs = {
     enable = true;
     mountHome = true;
