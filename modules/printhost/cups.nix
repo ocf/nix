@@ -129,25 +129,25 @@ in
 
         lpadmin -p logjam \
           -v socket://169.229.226.92:9100 \
-          -m raw \
+          -m everywhere \
           -D "HP LaserJet M806" -L "OCF lab" \
           -E -o printer-is-shared=false -o Duplex=DuplexNoTumble
 
         lpadmin -p pagefault \
           -v socket://169.229.226.91:9100 \
-          -m raw \
+          -m everywhere \
           -D "HP LaserJet M806" -L "OCF lab" \
           -E -o printer-is-shared=false -o Duplex=DuplexNoTumble
 
         lpadmin -p papercut \
           -v socket://169.229.226.93:9100 \
-          -m raw \
+          -m everywhere \
           -D "HP LaserJet M806" -L "OCF lab" \
           -E -o printer-is-shared=false -o Duplex=DuplexNoTumble
 
         lpadmin -p epson \
           -v ipps://169.229.226.96/ipp/print \
-          -m raw \
+          -m everywhere \
           -D "Epson ET-5880 Color" -L "OCF lab" \
           -E -o printer-is-shared=false -o Duplex=DuplexNoTumble -o PageSize=Letter
 
