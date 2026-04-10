@@ -177,7 +177,9 @@ def page_count(env):
             cmd = ['@gs@', '-q', '-dNODISPLAY', '-dNOSAFER',
                    '-c', f'({data_file}) (r) file runpdfbegin pdfpagecount = quit']
             result = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
+            syslog(f"GS result: {result}")
             pages = int(result.decode().strip().split()[-1])
+            syslog(f"GS pages: {pages}")
         else:
             # 2. Use DSC Comments for PostScript (OCF-BW)
             # CUPS filters automatically insert %%Pages: N at the end of the file.
@@ -187,12 +189,19 @@ def page_count(env):
                 tail = f.read().decode('utf-8', 'ignore')
                 match = re.search(r'%%Pages:\s+(\d+)', tail)
                 pages = int(match.group(1)) if match else 1
+                syslog(f"PS pages: {pages}")
+                match = re.search(r'%%Copies:\s+(\d+)', tail)
+                copies = int(match.group(1)) if match else 1
+                syslog(f"PS copies: {copies}")
 
         # 3. Apply Duplex Math (if physical pages are desired)
         options = env.get('TEAOPTIONS', '').lower()
         is_duplex = 'duplex' in options and 'none' not in options
         
         sheets_per_copy = math.ceil(pages / 2) if is_duplex else pages
+        syslog(f"Copies: {copies}")
+        syslog(f"sheets_per_copy: {sheets_per_copy}")
+        syslog(f"options: {options}")
         return copies * sheets_per_copy
 
     except Exception as e:
