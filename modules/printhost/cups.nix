@@ -135,19 +135,19 @@ in
           -v ocfbackend:socket://169.229.226.92:9100 \
           -P ${hpPpd} \
           -D "HP LaserJet M806" -L "OCF lab" \
-          -E -o printer-is-shared=true -o Duplex=DuplexNoTumble
+          -E -o printer-is-shared=false -o Duplex=DuplexNoTumble
 
         lpadmin -p pagefault \
           -v ocfbackend:socket://169.229.226.91:9100 \
           -P ${hpPpd} \
           -D "HP LaserJet M806" -L "OCF lab" \
-          -E -o printer-is-shared=true -o Duplex=DuplexNoTumble
+          -E -o printer-is-shared=false -o Duplex=DuplexNoTumble
 
         lpadmin -p papercut \
           -v ocfbackend:socket://169.229.226.93:9100 \
           -P ${hpPpd} \
           -D "HP LaserJet M806" -L "OCF lab" \
-          -E -o printer-is-shared=true -o Duplex=DuplexNoTumble
+          -E -o printer-is-shared=false -o Duplex=DuplexNoTumble
 
         # ── OCF-BW class ──────────────────────────────────────────────────────
         # Clients send to this class; CUPS distributes to the least-loaded
@@ -165,6 +165,18 @@ in
           -v ocfbackend:ipps://169.229.226.96/ipp/print \
           -P ${epsonPpd} \
           -D "Epson ET-5880 Color" -L "OCF lab" \
+          -E -o printer-is-shared=false -o Duplex=DuplexNoTumble -o PageSize=Letter
+
+        # ── Public Printers -------------─────────────────────────────────────
+        lpadmin -p OCF-BW \
+          -v ipp://localhost/classes/OCF-BW \
+          -P ${hpPpd} \
+          -D "OCF Black & White" -L "OCF lab" \
+          -E -o printer-is-shared=true -o Duplex=DuplexNoTumble
+        lpadmin -p OCF-Color \
+          -v ipp://localhost/printers/epson \
+          -P ${epsonPpd} \
+          -D "OCF Color" -L "OCF lab" \
           -E -o printer-is-shared=true -o Duplex=DuplexNoTumble -o PageSize=Letter
       '';
     };

@@ -20,12 +20,6 @@ let
         openssh = pkgs.openssh_gssapi;
       };
   };
-
-  # Same PPDs as the print server — the client runs the filter chain locally
-  # so users get full option access (duplex, paper size, etc.) in the print
-  # dialog, then sends the processed job to the server class.
-  hpPpd = "${pkgs.hplip}/share/cups/model/HP/hp-laserjet_m806-ps.ppd.gz";
-  epsonPpd = "${pkgs.epson-escpr2}/share/cups/model/epson-inkjet-printer-escpr2/Epson-ET-5880_Series-epson-escpr2-en.ppd";
 in
 {
 
@@ -105,61 +99,6 @@ in
       jack.enable = true;
       alsa.enable = true;
     };
-
-    # Local CUPS daemon with statically configured queues pointing at the print
-    # server. The client runs the HP/Epson filter chains locally (giving users
-    # full PPD option access in the print dialog), then forwards the processed
-    # job to the server. OCF-BW targets the server-side class so the server
-    # distributes to whichever physical printer is free.
-    printing = {
-      enable = true;
-      startWhenNeeded = true;
-      stateless = true;
-      extraConf = ''
-        DefaultPrinter OCF-BW
-        Browsing Off
-        ErrorPolicy abort-job
-      '';
-      drivers = with pkgs; [
-        hplip
-        epson-escpr2
-      ];
-    };
-  };
-
-  # Recreate print queues on every boot (stateless = true clears /var/lib/cups).
-  # Mirrors the cups-setup-printers pattern on the print server.
-  systemd.services.cups-client-setup = {
-    description = "Configure CUPS client print queues";
-    after = [ "cups.service" ];
-    wants = [ "cups.service" ];
-    wantedBy = [ "cups.service" ];
-    partOf = [ "cups.service" ];
-    path = [ config.services.printing.package ];
-    serviceConfig.Type = "oneshot";
-    script = ''
-      set -euo pipefail
-
-      for i in $(seq 1 30); do
-        if lpstat -H >/dev/null 2>&1; then break; fi
-        sleep 2
-      done
-
-      # OCF-BW: points at the server-side class, which distributes to
-      # logjam/pagefault/papercut. The server uses socket backends so jobs
-      # complete as soon as data is written — no waiting for physical printing.
-      lpadmin -p OCF-BW \
-        -v ipps://printhost-dev.ocf.berkeley.edu/classes/OCF-BW \
-        -P ${hpPpd} \
-        -D "OCF Black & White" -L "OCF lab" \
-        -E -o printer-is-shared=false -o Duplex=DuplexNoTumble
-
-      lpadmin -p OCF-Color \
-        -v ipps://printhost-dev.ocf.berkeley.edu/printers/epson \
-        -P ${epsonPpd} \
-        -D "OCF Color" -L "OCF lab" \
-        -E -o printer-is-shared=false -o Duplex=DuplexNoTumble -o PageSize=Letter
-    '';
   };
 
   security.rtkit.enable = true;
