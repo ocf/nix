@@ -137,8 +137,8 @@ NOTIFY_QUOTA_MESSAGE = dedent("""\
         {pages} pages, and you have {quota} pages remaining today.\
 """)
 
-NOTIFY_JOB_ACCEPTED = dedent("""\
-        Your print job '{document}' was accepted and sent to {printer}.\
+NOTIFY_JOB_QUEUED = dedent("""\
+        Your print job '{document}' was accepted and queued.\
 """)
 
 NOTIFY_JOB_ERROR = dedent("""\
@@ -260,6 +260,11 @@ def prehook(c, r, job, wayout_pass):
         r.publish('user-' + job.user, msg)
         send_notification(wayout_pass, 'Insufficient Color Quota', msg, job.user)
         sys.exit(255)
+    else:
+      msg = NOTIFY_JOB_QUEUED.format(
+          document=job.doc_name,
+      )
+      send_notification(wayout_pass, 'Job Queued', msg, job.user)
 
 
 def posthook(c, r, job, success, wayout_pass):
@@ -267,12 +272,7 @@ def posthook(c, r, job, success, wayout_pass):
     if success:
         quota.add_job(c, job)
         printer_name = job.printer.split('-')[0]
-        msg = NOTIFY_JOB_ACCEPTED.format(
-            document=job.doc_name,
-            printer=printer_name,
-        )
         r.publish('printer-' + printer_name, job.user)
-        send_notification(wayout_pass, 'Printer Success', msg, job.user)
     else:
         quo = quota.get_quota(c, job.user)
         msg = NOTIFY_JOB_ERROR.format(document=job.doc_name)
