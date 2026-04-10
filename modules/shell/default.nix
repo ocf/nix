@@ -22,6 +22,7 @@ in
         zsh
         fish
         xonsh
+        tcsh
         zsh-powerlevel10k
       ];
     };
@@ -61,6 +62,7 @@ in
 
       fish.enable = true;
       xonsh.enable = true;
+      tcsh.enable = true;
     };
 
     users.defaultUserShell = pkgs.zsh;

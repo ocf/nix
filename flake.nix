@@ -165,6 +165,7 @@
         import nixpkgs {
           inherit overlays system;
           config = {
+            permittedInsecurepackages = [ "unifi-controller-9.5.21" ];
             allowUnfreePredicate =
               pkg:
               builtins.elem (nixpkgs.lib.getName pkg) [
@@ -288,6 +289,9 @@
             pkgs.age-plugin-fido2-hmac
             pkgs.wol
             pkgs.nixfmt-tree
+            pkgs.wp-cli
+            pkgs.rubyPackages.rails
+            pkgs.python3Packages.virtualenv
             colmena.packages.${pkgs.stdenv.hostPlatform.system}.colmena
           ];
         };
