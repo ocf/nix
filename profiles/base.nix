@@ -211,6 +211,7 @@ in
       ServerName printhost-dev.ocf.berkeley.edu
       Encryption IfRequested
       AuthType Negotiate
+      GSS
     '';
   };
 
