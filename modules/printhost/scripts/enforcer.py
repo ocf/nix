@@ -156,7 +156,7 @@ def read_config():
         wayout_passwd = f.read().strip()
     return 'ocfprinting', mysql_passwd, redis_passwd, wayout_passwd
 
-def get_page_count(env):
+def page_count(env):
     filepath = env.get('TEADATAFILE')
     try:
         with open(filepath, 'rb') as f:
