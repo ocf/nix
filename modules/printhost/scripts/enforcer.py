@@ -158,6 +158,8 @@ def read_config():
 
 def page_count(env):
     filepath = env.get('TEADATAFILE')
+    pages = 0
+    copies = 1
     try:
         with open(filepath, 'rb') as f:
             lines = f.readlines()
@@ -169,14 +171,18 @@ def page_count(env):
         for line in target_lines:
             line_str = line.decode('utf-8', errors='ignore').strip()
 
-            match = re.match(r'^%%Pages:\s+(\d+)$', line_str)
-            if match:
-                return int(match.group(1))
+            pages_match = re.match(r'^%%Pages:\s+(\d+)$', line_str)
+            if pages_match:
+                pages = int(pages_match.group(1))
+            
+            copies_match = re.match(r'^%RBINumCopies:\s+(\d+)$', line_str)
+            if copies_match:
+                copies = int(copies_match.group(1))
 
     except Exception as e:
         syslog(f"Page count error: {e}")
 
-    return 0
+    return pages * copies
 
 def create_job(env):
     printer = env['TEAPRINTERNAME']
