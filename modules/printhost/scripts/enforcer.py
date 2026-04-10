@@ -162,55 +162,67 @@ def count_pdf_pages(file):
   reader = PdfReader(file)
   return len(reader.pages)
 
-# def page_count(env):
-#     conn = cups.Connection()
-    
-#     old_attrs = conn.getJobAttributes(int(env.get('TEAJOBID')))
-#     syslog(f"OLD_ATTRS: {old_attrs}")
-    
-#     new_attrs = conn.getJobAttributes(int(env.get('TEAJOBID'))-1)
-#     syslog(f"NEW_ATTRS: {new_attrs}")
-    
-#     sheets = int(conn.getJobAttributes(int(env.get('TEAJOBID'))-1)["job-impressions-completed"])
-#     syslog(f"SHEETS: {sheets}")
-
-#     return sheets
-
 
 def page_count(env):
     try:
         current_id = int(env['TEAJOBID'])
-        user = env['TEAUSERNAME']
-        title = env['TEATITLE']
+        
+        # Ensure we have admin privileges to view all job attributes
         cups.setUser("root")
         conn = cups.Connection()
         
-        parent_id = None
-
-        all_jobs = conn.getJobs(which_jobs='all')
+        # 1. Get metadata for the current physical job (the child)
+        current_attrs = conn.getJobAttributes(current_id)
+        target_name = current_attrs.get('job-name', env.get('TEATITLE'))
+        target_time = current_attrs.get('time-at-creation')
         
-        # Find the highest ID that is lower than current_id with the matching title
-        candidate_ids = [
-            jid for jid in all_jobs.keys()
-            if jid < current_id and conn.getJobAttributes(int(all_jobs[jid].get('job-uri')[-1]))['job-name'] == title
+        # 2. Query all jobs using requested_attributes.
+        # This is MUCH faster than calling getJobAttributes() inside a loop,
+        # as CUPS returns exactly what we need for all jobs in a single API call.
+        all_jobs = conn.getJobs(
+            which_jobs='all', 
+            requested_attributes=[
+                'job-id', 
+                'job-name', 
+                'time-at-creation', 
+                'job-media-sheets-completed',
+                'job-impressions-completed',
+                'job-originating-host-name'
+            ]
+        )
+        
+        # 3. Filter for the unique parent job
+        # It must be older, share the exact creation second, share the name, 
+        # and NOT originate from localhost (which is the backend forward).
+        parent_jobs = [
+            jid for jid, attrs in all_jobs.items()
+            if jid < current_id 
+            and attrs.get('job-name') == target_name
+            and attrs.get('time-at-creation') == target_time
+            and attrs.get('job-originating-host-name') != 'localhost'
         ]
-        if candidate_ids:
-            parent_id = max(candidate_ids)
-
-        # Query the parent job for the accurate 'job-impressions-completed'
-        if parent_id:
-            parent_attrs = conn.getJobAttributes(parent_id)
-            if 'job-impressions-completed' in parent_attrs:
-                syslog(f"Found sheets at job #{parent_id}: {parent_attrs['job-impressions-completed']}")
-                return parent_attrs['job-impressions-completed']
-
-        return 0
+        
+        if parent_jobs:
+            parent_id = min(parent_jobs)
+            parent_attrs = all_jobs[parent_id]
+            
+            # 4. Pull the exact sheets/impressions
+            sheets = parent_attrs.get('job-media-sheets-completed')
+            if sheets and sheets > 0:
+                syslog(f"Found accurate sheets at parent job #{parent_id}: {sheets}")
+                return sheets
+                
+            impressions = parent_attrs.get('job-impressions-completed')
+            if impressions and impressions > 0:
+                syslog(f"Found accurate impressions at parent job #{parent_id}: {impressions}")
+                return impressions
 
     except Exception as e:
         syslog(f"CUPS API Page Count Error: {e}")
 
-    # Final fallback to standard copies count
-    return int(env.get('TEACOPIES', 1))
+    # Final fallback if all else fails (don't charge the user for a broken system)
+    return 0
+
 
 def create_job(env):
     printer = env['TEAPRINTERNAME']
