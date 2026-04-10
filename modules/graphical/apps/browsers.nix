@@ -84,6 +84,7 @@ in
         Authentication.SPNEGO = [
           "auth.ocf.berkeley.edu"
           "idm.ocf.berkeley.edu"
+          "printhost-dev.ocf.berkeley.edu"
         ];
 
         ExtensionSettings = {
