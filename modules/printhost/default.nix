@@ -43,14 +43,6 @@
     security.acme.certs."${config.networking.hostName}.ocf.berkeley.edu".reloadServices = [
       "cups.service"
     ];
-    
-    # converts username@REALM to just username when cups checks user groups
-    security.krb5.settings.realms."OCF.BERKELEY.EDU" = {
-      auth_to_local = [
-        "RULE:[1:$1@$0](^.*@OCF\\.BERKELEY\\.EDU$)s/@OCF\\.BERKELEY\\.EDU$//"
-        "DEFAULT"
-      ];
-    };
 
     # Add printhostUrl and its .ocf.io variant as SANs on tule's cert
     ocf.acme.extraCerts =
