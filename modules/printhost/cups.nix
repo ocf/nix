@@ -148,7 +148,7 @@ in
         lpadmin -p logjam    -c OCF-BW-Group
         lpadmin -p pagefault -c OCF-BW-Group
         lpadmin -p papercut  -c OCF-BW-Group
-        lpadmin -p OCF-BW-Group -E -o printer-is-shared=false -o single-printer-job=true \
+        lpadmin -p OCF-BW-Group -E -o printer-is-shared=false \
           -D "HP LaserJet M806" -L "OCF lab"
 
         # ── Public Printers -------------─────────────────────────────────────
@@ -156,7 +156,7 @@ in
           -v ocfbackend:ipp://localhost/classes/OCF-BW-Group \
           -P ${hpPpd} \
           -D "OCF Black & White" -L "OCF lab" \
-          -E -o printer-is-shared=true -o Duplex=DuplexNoTumble -o copy-generation=printer-controlled
+          -E -o printer-is-shared=true -o Duplex=DuplexNoTumble
         lpadmin -p OCF-Color \
           -v ocfbackend:ipps://169.229.226.96/ipp/print \
           -P ${epsonPpd} \
