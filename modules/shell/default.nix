@@ -62,7 +62,6 @@ in
 
       fish.enable = true;
       xonsh.enable = true;
-      tcsh.enable = true;
     };
 
     users.defaultUserShell = pkgs.zsh;
