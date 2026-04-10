@@ -24,8 +24,8 @@ in
       rekeyFile = keytabSecretPath;
       path = "/etc/krb5.keytab";
       owner = "root";
-      group = "lp";
-      mode = "0640";
+      group = "root";
+      mode = "0600";
     };
 
     users = {

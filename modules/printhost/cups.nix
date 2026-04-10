@@ -156,7 +156,7 @@ in
         lpadmin -p papercut  -c OCF-BW
         lpadmin -p OCF-BW -E -o printer-is-shared=true \
           -D "HP LaserJet M806" -L "OCF lab"
-        
+
         lpadmin -p epson    -c OCF-Color
         lpadmin -p OCF-Color -E -o printer-is-shared=true \
           -D "Epson ET-5880 Color" -L "OCF lab"

@@ -34,7 +34,7 @@
 
   config = lib.mkIf config.ocf.printhost.enable {
     # cups user needs acme group to read /var/lib/acme certs in preStart
-    users.users."cups".extraGroups = [ "acme" "lp" ];
+    users.users."cups".extraGroups = [ "acme" ];
     # root needs lp group to run lpadmin in the printer setup service
     users.users."root".extraGroups = [ "lp" ];
 

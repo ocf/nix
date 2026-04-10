@@ -205,13 +205,12 @@ in
     "nixos/configuration.nix".text = ''
       {}: builtins.abort "This machine is not managed by /etc/nixos. Please use configs at ocf.io/gh/nix with Colmena."
     '';
-  } // lib.optionalAttrs (!config.ocf.printhost.enable) {
+  }
+  // lib.optionalAttrs (!config.ocf.printhost.enable) {
     "cups/lpoptions".text = "Default OCF-BW";
     "cups/client.conf".text = ''
       ServerName printhost-dev.ocf.berkeley.edu
       Encryption IfRequested
-      AuthType Negotiate
-      GSS
     '';
   };
 
