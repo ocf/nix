@@ -19,9 +19,9 @@ let
     ]
   );
 
-  # enforcer.py — no shell-script substitutions needed now that page count
-  # and paper size come from CUPS job attributes rather than PS DSC parsing.
-  enforcerScript = ./scripts/enforcer.py;
+  enforcerScript = pkgs.replaceVars ./scripts/enforcer.py {
+    gs = "${pkgs.ghostscript}/bin/gs";
+  };
 
   # Wrapper that invokes enforcer.py with the right Python environment
   enforcerBin = pkgs.writeShellScript "enforcer" ''
@@ -128,19 +128,19 @@ in
         done
 
         lpadmin -p logjam \
-          -v socket://169.229.226.92:9100 \
+          -v ocfbackend:socket://169.229.226.92:9100 \
           -m raw \
           -D "HP LaserJet M806" -L "OCF lab" \
           -E -o printer-is-shared=false -o Duplex=DuplexNoTumble
 
         lpadmin -p pagefault \
-          -v socket://169.229.226.91:9100 \
+          -v ocfbackend:socket://169.229.226.91:9100 \
           -m raw \
           -D "HP LaserJet M806" -L "OCF lab" \
           -E -o printer-is-shared=false -o Duplex=DuplexNoTumble
 
         lpadmin -p papercut \
-          -v socket://169.229.226.93:9100 \
+          -v ocfbackend:socket://169.229.226.93:9100 \
           -m raw \
           -D "HP LaserJet M806" -L "OCF lab" \
           -E -o printer-is-shared=false -o Duplex=DuplexNoTumble
@@ -153,7 +153,7 @@ in
 
         # ── Public Printers -------------─────────────────────────────────────
         lpadmin -p OCF-BW \
-          -v ocfbackend:ipp://localhost/classes/OCF-BW-Group \
+          -v ipp://localhost/classes/OCF-BW-Group \
           -P ${hpPpd} \
           -D "OCF Black & White" -L "OCF lab" \
           -E -o printer-is-shared=true -o Duplex=DuplexNoTumble -o cupsManualCopies=false

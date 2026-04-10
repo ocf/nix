@@ -156,13 +156,42 @@ def read_config():
 
 
 def page_count(env):
-    import cups
-    conn = cups.Connection()
-    attrs = conn.getJobAttributes(
-        int(env['TEAJOBID']),
-        requested_attributes=['job-impressions'],
-    )
-    return int(env['TEACOPIES']) * attrs.get('job-impressions', 1)
+    import math
+    import subprocess
+    data_file = env.get('TEADATAFILE')
+    copies = int(env.get('TEACOPIES', 1))
+    options = env.get('TEAOPTIONS', '').lower()
+
+    if not data_file or not os.path.exists(data_file):
+        return copies # Fallback
+
+    try:
+        # 1. Count logical pages (impressions) using Ghostscript
+        # This handles both PS (from BW) and PDF (from Color)
+        cmd = [
+            '@gs@', '-q', '-dNODISPLAY', '-dNOSAFER',
+            '-c', f'({data_file}) (r) file runpdfbegin pdfpagecount = quit'
+        ]
+        result = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
+        impressions_per_copy = int(result.decode().strip())
+
+        # 2. Check for Duplexing
+        # We look for common CUPS duplex strings
+        is_duplex = any(opt in options for opt in ['duplex', 'two-sided'])
+
+        # 3. Calculate physical sheets per copy
+        if is_duplex:
+            # Ceiling division for odd-numbered jobs
+            sheets_per_copy = math.ceil(impressions_per_copy / 2)
+        else:
+            sheets_per_copy = impressions_per_copy
+
+        # 4. Multiply by copies
+        return copies * sheets_per_copy
+
+    except Exception as e:
+        syslog(f"Ghostscript count failed for {data_file}: {e}")
+        return copies
 
 
 def create_job(env):

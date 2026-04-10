@@ -101,6 +101,7 @@ def main():
             'TEAUSERNAME': user,
             'TEACOPIES': copies,
             'TEATITLE': title,
+            'TEAOPTIONS': options,
             'TEAPRINTERNAME': printer_name,
             'TEADATAFILE': data_file,
             'TEAJOBSIZE': file_size,
