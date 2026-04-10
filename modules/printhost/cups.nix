@@ -171,13 +171,6 @@ in
       '';
     };
 
-    # prevent conflict with cups built in mDNS
-    # When a Kerberos keytab is provided, point CUPS at it so it can validate
-    # GSSAPI tokens from lab clients authenticating with their Kerberos tickets.
-    systemd.services.cups.environment = lib.mkIf (cfg.cupsKeytabFile != null) {
-      KRB5_KTNAME = cfg.cupsKeytabFile;
-    };
-
     services.avahi.enable = lib.mkForce false;
 
     networking.firewall = {

@@ -17,14 +17,10 @@
     mysqlPasswordFile = config.age.secrets.printhost-mysql-password.path;
     wayoutPasswordFile = config.age.secrets.printhost-wayout-password.path;
     redisPasswordFile = config.age.secrets.printhost-redis-password.path;
-    cupsKeytabFile = config.age.secrets.printhost-cups-keytab.path;
     # TODO: change to "printhost.ocf.berkeley.edu" once tule replaces whiteout
     printhostUrl = "printhost-dev.ocf.berkeley.edu";
   };
 
-  # Secrets — create with: agenix -e secrets/master-keyed/printhost/<name>.age
-  # cups keytab: create HTTP/printhost-dev.ocf.berkeley.edu@OCF.BERKELEY.EDU principal
-  # via idm, export to keytab, then encrypt with agenix
   age.secrets.printhost-mysql-password = {
     rekeyFile = ../../secrets/master-keyed/printhost/mysql-password.age;
     mode = "0440";
@@ -39,11 +35,6 @@
     rekeyFile = ../../secrets/master-keyed/printhost/redis-password.age;
     mode = "0440";
     group = "lp";
-  };
-  age.secrets.printhost-cups-keytab = {
-    rekeyFile = ../../secrets/master-keyed/printhost/cups-keytab.age;
-    mode = "0440";
-    owner = "cups";
   };
 
   # Postfix relay so ocflib can send mail via sendmail.
