@@ -15,7 +15,7 @@
     lastOctet = 130;
   };
 
-  ocf.wetty.enable = true;
+  ocf.ttyd.enable = true;
 
   ocf.nfs = {
     enable = true;
