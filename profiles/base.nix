@@ -1,11 +1,34 @@
-{ pkgs, lib, inputs, config, ... }:
+{
+  self,
+  pkgs,
+  lib,
+  inputs,
+  config,
+  ...
+}:
 
 let
   secretsDir = inputs.self + "/secrets";
   hostKeyFile = secretsDir + "/host-keys/${config.networking.hostName}.pub";
+  variant_id =
+    if config.system.nixos.variant_id != null then config.system.nixos.variant_id else "ocf";
+  gitRev =
+    if (self ? shortRev) then
+      self.shortRev
+    else if (self ? dirtyShortRev) then
+      self.dirtyShortRev
+    else
+      "nullrev";
 in
 
 {
+  system.configurationRevision = gitRev;
+  # we do not include self.lastModifiedDate since:
+  # - the bootloader menu already includes "built on"
+  # - date can be checked from the revision hash with an extra step
+  # - label is much shorter without the date
+  system.nixos.label = "${variant_id}.${gitRev}.${config.system.nixos.version}";
+
   nix = {
     channel.enable = false;
     registry = lib.mapAttrs (_: value: { flake = value; }) inputs;
@@ -17,7 +40,8 @@ in
       automatic = true;
       dates = "weekly";
     };
-    settings = { #makes devenv shells build significantly faster
+    settings = {
+      # makes devenv shells build significantly faster
       trusted-substituters = [ "https://devenv.cachix.org" ];
       trusted-public-keys = [ "devenv.cachix.org-1:w1cLUi8dv3hnoSPGAuibQv+f9TZLr6cv/Hm9XgU50cw=" ];
     };
@@ -38,6 +62,8 @@ in
     localStorageDir = inputs.self + "/secrets/rekeyed/${config.networking.hostName}";
     hostPubkey = lib.mkIf (builtins.pathExists hostKeyFile) (builtins.readFile hostKeyFile);
   };
+
+  boot.tmp.useTmpfs = true;
 
   boot.loader = {
     systemd-boot = {
@@ -80,6 +106,9 @@ in
     '';
   };
 
+  environment.variables.EDITOR = "${pkgs.vim}/bin/ex"; # line editor
+  environment.variables.VISUAL = "${pkgs.nano}/bin/nano"; # visual editor
+
   environment.systemPackages = with pkgs; [
     # System utilities
     dnsutils
@@ -104,6 +133,8 @@ in
     iperf
     vnstat
     nethogs
+    netcat-openbsd
+    nmap
 
     # Other useful stuff
     tmux
@@ -118,7 +149,7 @@ in
     dua
     lf
     file
-    vim
+    micro
     ripgrep
 
     comma-with-db
@@ -127,11 +158,13 @@ in
     teleport
     k9s
     kubectl
-    
+
     # OCF utilities
     (python312.withPackages (ps: [ ps.ocflib ]))
     ocf-utils
   ];
+
+  programs.vim.enable = true;
 
   services = {
     openssh = {
