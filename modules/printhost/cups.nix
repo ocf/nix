@@ -19,7 +19,9 @@ let
     ]
   );
 
-  enforcerScript = ./scripts/enforcer.py;
+  enforcerScript = pkgs.replaceVars ./scripts/enforcer.py {
+    qpdf = "${pkgs.qpdf}/bin/qpdf";
+  };
 
   # Wrapper that invokes enforcer.py with the right Python environment
   enforcerBin = pkgs.writeShellScript "enforcer" ''

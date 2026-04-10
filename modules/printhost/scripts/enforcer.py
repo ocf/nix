@@ -16,7 +16,7 @@ import argparse
 import os
 import sys
 import re
-import mmap
+import subprocess
 from pathlib import Path
 from collections import namedtuple
 from datetime import datetime
@@ -160,41 +160,27 @@ def read_config():
 
 def page_count(env):
     filepath = env.get('TEADATAFILE')
+    job_id = env.get('TEAJOBID')
     pages = 0
     copies = 1
-    syslog(f"Available ENV: {env}")
     
+    # 1. Grab copies directly from Tea4CUPS
+    tea_copies = env.get('TEACOPIES')
+    if tea_copies:
+        try:
+            copies = int(tea_copies)
+        except ValueError:
+            pass
+
     try:
         with open(filepath, 'rb') as f:
-            # 1. Read the first 10 bytes to get the "Magic Number"
-            header = f.read(10)
-            f.seek(0) # Reset the file pointer back to the beginning
-
-            # ==========================================
-            # PDF PARSING LOGIC
-            # ==========================================
-            if header.startswith(b'%PDF'):
-                # Check if file is completely empty to prevent mmap crash
-                f.seek(0, 2)
-                if f.tell() == 0: 
-                    return 0
-                f.seek(0)
-
-                # Map the file to memory. This is lightning fast and uses almost 0 RAM.
-                with mmap.mmap(f.fileno(), 0, access=mmap.ACCESS_READ) as mm:
-                    # Find all instances of /Count followed by a number
-                    counts = re.findall(b'/Count\s+(\d+)', mm)
-                    if counts:
-                        # The root page tree always has the highest count
-                        pages = max(int(c) for c in counts)
-                
-                # Note: PDFs rarely have an embedded copy count like PS files do.
-                # Copy counts for PDFs are usually passed in the CUPS job ticket (env variables).
+            header_chunk = f.read(4096)
+            f.seek(0)
 
             # ==========================================
             # POSTSCRIPT PARSING LOGIC
             # ==========================================
-            elif header.startswith(b'%!'):
+            if b'%!' in header_chunk:
                 for line in f:
                     if b'%%Pages:' in line or b'%RBINumCopies:' in line:
                         line_str = line.decode('utf-8', errors='ignore').strip()
@@ -203,16 +189,43 @@ def page_count(env):
                         if pages_match:
                             pages = int(pages_match.group(1))
                         
+                        # always use PostScript copies                        
                         copies_match = re.search(r'^%RBINumCopies:\s+(\d+)', line_str)
                         if copies_match:
                             copies = int(copies_match.group(1))
-            
+
             # ==========================================
-            # UNKNOWN FILE TYPE
+            # EJL / PDF LOGIC (Using qpdf)
             # ==========================================
             else:
-                syslog(f"Unknown file signature in {filepath}. Header: {header}")
-                pass
+                if job_id:
+                    # Formats job 2 into 'd00002-001'
+                    spool_filename = f"d{int(job_id):05}-001"
+                    potential_path = os.path.join('/var/spool/cups', spool_filename)
+                    
+                    if os.path.exists(potential_path):
+                        filepath = potential_path
+                try:
+                    # Call qpdf to get the number of pages. 
+                    # --show-npages outputs just the integer (e.g., "5\n")
+                    result = subprocess.run(
+                        ['@qpdf@', '--show-npages', filepath],
+                        capture_output=True,
+                        text=True,
+                        check=True
+                    )
+                    pages = int(result.stdout.strip())
+                    
+                except subprocess.CalledProcessError as e:
+                    # qpdf will exit with an error if the file isn't a valid PDF
+                    syslog(f"qpdf failed to parse {filepath}: {e.stderr.strip()}")
+                    pass
+                except FileNotFoundError:
+                    syslog("qpdf is not installed or not in the system PATH.")
+                    pass
+                except ValueError:
+                    syslog(f"qpdf returned non-integer output: {result.stdout}")
+                    pass
 
     except Exception as e:
         syslog(f"Page count error: {e}")
