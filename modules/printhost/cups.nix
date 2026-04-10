@@ -129,19 +129,19 @@ in
 
         lpadmin -p logjam \
           -v socket://169.229.226.92:9100 \
-          -P ${hpPpd} \
+          -m raw \
           -D "HP LaserJet M806" -L "OCF lab" \
           -E -o printer-is-shared=false -o Duplex=DuplexNoTumble
 
         lpadmin -p pagefault \
           -v socket://169.229.226.91:9100 \
-          -P ${hpPpd} \
+          -m raw \
           -D "HP LaserJet M806" -L "OCF lab" \
           -E -o printer-is-shared=false -o Duplex=DuplexNoTumble
 
         lpadmin -p papercut \
           -v socket://169.229.226.93:9100 \
-          -P ${hpPpd} \
+          -m raw \
           -D "HP LaserJet M806" -L "OCF lab" \
           -E -o printer-is-shared=false -o Duplex=DuplexNoTumble
 
