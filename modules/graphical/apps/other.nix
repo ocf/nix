@@ -76,6 +76,9 @@ in
       onefetch
       cpufetch
       gpufetch
+      pokemonsay
+      ponysay
+      pokemon-colorscripts
 
       # Other tools
       bar
