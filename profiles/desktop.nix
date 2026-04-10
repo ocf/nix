@@ -1,6 +1,12 @@
 # basic minimal profile for desktops
 
-{ config, pkgs, lib, inputs, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  inputs,
+  ...
+}:
 
 let
   # Default openssh doesn't include GSSAPI support, so we need to override sshfs
@@ -8,9 +14,11 @@ let
   # sshfs package's openssh argument is nested in another layer of callPackage,
   # so we override callPackage instead to override openssh.
   sshfs = pkgs.sshfs.override {
-    callPackage = fn: args: (pkgs.callPackage fn args).override {
-      openssh = pkgs.openssh_gssapi;
-    };
+    callPackage =
+      fn: args:
+      (pkgs.callPackage fn args).override {
+        openssh = pkgs.openssh_gssapi;
+      };
   };
 in
 {
@@ -52,8 +60,11 @@ in
   security.pam = {
     # Mount ~/remote
     services.login.pamMount = true;
-    services.login.rules.session.mount.order = config.security.pam.services.login.rules.session.krb5.order + 50;
-    mount.extraVolumes = [ ''<volume fstype="fuse" path="${lib.getExe sshfs}#%(USER)@tsunami:" mountpoint="~/remote/" options="follow_symlinks,UserKnownHostsFile=/dev/null,StrictHostKeyChecking=no" pgrp="ocf" />'' ];
+    services.login.rules.session.mount.order =
+      config.security.pam.services.login.rules.session.krb5.order + 50;
+    mount.extraVolumes = [
+      ''<volume fstype="fuse" path="${lib.getExe sshfs}#%(USER)@tsunami:" mountpoint="~/remote/" options="follow_symlinks,UserKnownHostsFile=/dev/null,StrictHostKeyChecking=no" pgrp="ocf" />''
+    ];
 
     # Trim spaces from username
     services.login.rules.auth.trimspaces = {
@@ -105,4 +116,20 @@ in
   # Needed for generic Linux programs
   # More info: https://nix.dev/guides/faq#how-to-run-non-nix-executables
   programs.nix-ld.enable = true;
+
+  # Add forward flag to tickets on desktops
+  security.krb5.settings.libdefaults.forwardable = true;
+
+  # Only forward Kerberos tickets to login servers (carp and koi)
+  programs.ssh.extraConfig = lib.mkOverride 90 ''
+    CanonicalizeHostname yes
+    CanonicalDomains ocf.berkeley.edu
+    Host carp.ocf.berkeley.edu koi.ocf.berkeley.edu
+        GSSAPIAuthentication yes
+        GSSAPIKeyExchange yes
+        GSSAPIDelegateCredentials yes
+    Host *.ocf.berkeley.edu *.ocf.io 169.229.226.* 2607:f140:8801::*
+        GSSAPIAuthentication yes
+        GSSAPIKeyExchange yes
+  '';
 }

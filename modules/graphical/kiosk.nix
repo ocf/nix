@@ -1,4 +1,9 @@
-{ pkgs, lib, config, ... }:
+{
+  pkgs,
+  lib,
+  config,
+  ...
+}:
 
 let
   cfg = config.ocf.graphical.kiosk;
@@ -20,7 +25,7 @@ in
     extraConfig = lib.mkOption {
       type = lib.types.lines;
       description = "Extra config to pass on to sway";
-      default = '''';
+      default = "";
     };
   };
 

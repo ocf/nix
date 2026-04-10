@@ -1,19 +1,24 @@
-{ self, pkgs, lib, inputs, config, ... }:
+{
+  self,
+  pkgs,
+  lib,
+  inputs,
+  config,
+  ...
+}:
 
 let
   secretsDir = inputs.self + "/secrets";
   hostKeyFile = secretsDir + "/host-keys/${config.networking.hostName}.pub";
   variant_id =
-    if config.system.nixos.variant_id != null then
-      config.system.nixos.variant_id
-    else
-      "ocf";
+    if config.system.nixos.variant_id != null then config.system.nixos.variant_id else "ocf";
   gitRev =
-    if (self ? shortRev ) then
+    if (self ? shortRev) then
       self.shortRev
     else if (self ? dirtyShortRev) then
       self.dirtyShortRev
-    else "nullrev";
+    else
+      "nullrev";
 in
 
 {
@@ -35,7 +40,8 @@ in
       automatic = true;
       dates = "weekly";
     };
-    settings = { #makes devenv shells build significantly faster
+    settings = {
+      # makes devenv shells build significantly faster
       trusted-substituters = [ "https://devenv.cachix.org" ];
       trusted-public-keys = [ "devenv.cachix.org-1:w1cLUi8dv3hnoSPGAuibQv+f9TZLr6cv/Hm9XgU50cw=" ];
     };
@@ -56,6 +62,8 @@ in
     localStorageDir = inputs.self + "/secrets/rekeyed/${config.networking.hostName}";
     hostPubkey = lib.mkIf (builtins.pathExists hostKeyFile) (builtins.readFile hostKeyFile);
   };
+
+  boot.tmp.useTmpfs = true;
 
   boot.loader = {
     systemd-boot = {
@@ -98,7 +106,7 @@ in
     '';
   };
 
-  environment.variables.EDITOR = "${pkgs.vim}/bin/ex";    # line editor
+  environment.variables.EDITOR = "${pkgs.vim}/bin/ex"; # line editor
   environment.variables.VISUAL = "${pkgs.nano}/bin/nano"; # visual editor
 
   environment.systemPackages = with pkgs; [
@@ -150,7 +158,7 @@ in
     teleport
     k9s
     kubectl
-    
+
     # OCF utilities
     (python312.withPackages (ps: [ ps.ocflib ]))
     ocf-utils

@@ -1,6 +1,11 @@
 # development related apps for ocf desktops
 
-{ lib, config, pkgs, ... }:
+{
+  lib,
+  config,
+  pkgs,
+  ...
+}:
 
 let
   cfg = config.ocf.graphical;
@@ -47,7 +52,11 @@ in
       claude-code
 
       # Languages
-      (python3.withPackages (ps: [ ps.tkinter ps.numpy ps.pygobject3 ]))
+      (python3.withPackages (ps: [
+        ps.tkinter
+        ps.numpy
+        ps.pygobject3
+      ]))
       poetry
       ruby
       elixir

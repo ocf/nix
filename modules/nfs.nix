@@ -1,4 +1,9 @@
-{ pkgs, lib, config, ... }:
+{
+  pkgs,
+  lib,
+  config,
+  ...
+}:
 
 let
   cfg = config.ocf.nfs;
@@ -26,13 +31,25 @@ in
     fileSystems."/home" = lib.mkIf cfg.mountHome {
       device = "homes:/home";
       fsType = "nfs4";
-      options = [ "rw" "bg" "noatime" "nodev" "nosuid" ];
+      options = [
+        "rw"
+        "bg"
+        "noatime"
+        "nodev"
+        "nosuid"
+      ];
     };
 
     fileSystems."/services" = lib.mkIf cfg.mountHome {
       device = "services:/services";
       fsType = "nfs4";
-      options = [ "rw" "bg" "noatime" "nodev" "nosuid" ];
+      options = [
+        "rw"
+        "bg"
+        "noatime"
+        "nodev"
+        "nosuid"
+      ];
     };
   };
 }

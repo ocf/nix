@@ -1,4 +1,9 @@
-{ lib, config, pkgs, ... }:
+{
+  lib,
+  config,
+  pkgs,
+  ...
+}:
 
 let
   cfg = config.ocf.auth;
@@ -49,8 +54,19 @@ in
       '';
 
       extraRules = [
-        { groups = [ "ocfroot" ]; commands = [ "ALL" ]; }
-        { users = [ "ocfbackups" ]; commands = [{ command = lib.getExe pkgs.rsync; options = [ "NOPASSWD" ]; }]; }
+        {
+          groups = [ "ocfroot" ];
+          commands = [ "ALL" ];
+        }
+        {
+          users = [ "ocfbackups" ];
+          commands = [
+            {
+              command = lib.getExe pkgs.rsync;
+              options = [ "NOPASSWD" ];
+            }
+          ];
+        }
       ];
     };
 
@@ -89,6 +105,7 @@ in
         };
         libdefaults = {
           default_realm = "OCF.BERKELEY.EDU";
+          rdns = false;
         };
       };
     };

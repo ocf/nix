@@ -1,6 +1,11 @@
 # documents and media
 
-{ lib, config, pkgs, ... }:
+{
+  lib,
+  config,
+  pkgs,
+  ...
+}:
 
 let
   cfg = config.ocf.graphical;
@@ -11,7 +16,6 @@ in
     description = "Install software for working with documents and media on OCF lab desktops";
     default = cfg.enable;
   };
-
 
   config = lib.mkIf cfg.apps.documents.enable {
     # grammar checker for libreoffice
@@ -33,85 +37,90 @@ in
     # correctly, but it does correctly read the one in XDG_CONFIG_HOME. thus,
     # mimeapps.list is stored in skel until this is fixed.
     /*
-    xdg.mime.defaultApplications = {
-      "image/jpeg"    = "org.kde.gwenview.desktop";
-      "image/png"     = "org.kde.gwenview.desktop";
-      "image/gif"     = "org.kde.gwenview.desktop";
-      "image/webp"    = "org.kde.gwenview.desktop";
-      "image/bmp"     = "org.kde.gwenview.desktop";
-      "image/tiff"    = "org.kde.gwenview.desktop";
-      "image/svg+xml" = "org.kde.gwenview.desktop";
-    };
+      xdg.mime.defaultApplications = {
+        "image/jpeg"    = "org.kde.gwenview.desktop";
+        "image/png"     = "org.kde.gwenview.desktop";
+        "image/gif"     = "org.kde.gwenview.desktop";
+        "image/webp"    = "org.kde.gwenview.desktop";
+        "image/bmp"     = "org.kde.gwenview.desktop";
+        "image/tiff"    = "org.kde.gwenview.desktop";
+        "image/svg+xml" = "org.kde.gwenview.desktop";
+      };
     */
 
-    environment.systemPackages = with pkgs; [
-      # scanning
-      simple-scan
+    environment.systemPackages =
+      with pkgs;
+      [
+        # scanning
+        simple-scan
 
-      # pdfs
-      ocf-okular
-      ocf-papers
+        # pdfs
+        ocf-okular
+        ocf-papers
 
-      # libreoffice
-      libreoffice-still
-      mythes
-      hunspell # spell check
-      hunspellDicts.en_US
-      hyphenDicts.en_US
+        # libreoffice
+        libreoffice-still
+        mythes
+        hunspell # spell check
+        hunspellDicts.en_US
+        hyphenDicts.en_US
 
-      # editors
-      xournalpp
+        # editors
+        xournalpp
 
-      kdePackages.gwenview
-      vlc
+        kdePackages.gwenview
+        vlc
 
-      # useful for iso files even without a cd drive
-      # needed for melange (cd drive host)
-      brasero
-      kdePackages.k3b
-    ] ++ lib.optionals cfg.extra [
-      apostrophe
-      #texliveFull
-      texstudio
-      pandoc
-      img2pdf
+        # useful for iso files even without a cd drive
+        # needed for melange (cd drive host)
+        brasero
+        kdePackages.k3b
+      ]
+      ++ lib.optionals cfg.extra [
+        apostrophe
+        #texliveFull
+        texstudio
+        pandoc
+        img2pdf
 
-      krita
-      gimp3
-      darktable
-      inkscape
-      blender
-      drawio
-      octave
-      kdePackages.kdenlive
-      davinci-resolve
+        krita
+        gimp3
+        darktable
+        inkscape
+        blender
+        drawio
+        octave
+        kdePackages.kdenlive
+        davinci-resolve
 
-      audacity
-      ardour
-      musescore
-      milkytracker
-      schismtracker
+        audacity
+        ardour
+        musescore
+        milkytracker
+        schismtracker
 
-      freecad
-      kicad
-      openscad
+        freecad
+        kicad
+        openscad
 
-      mpv
-      ncmpcpp
-      strawberry
-      xmp
-      yt-dlp
-      ffmpeg
-      songrec
+        mpv
+        ncmpcpp
+        strawberry
+        xmp
+        yt-dlp
+        ffmpeg
+        songrec
 
-      exiftool
-      imagemagick
-    ];
+        exiftool
+        imagemagick
+      ];
 
     ocf.graphical.apps.browsers.handlePDFs = true;
-    assertions = [{
-      assertion = cfg.apps.browsers.enable;
-      message = "browser is used as default PDF viewer";
-    }];
+    assertions = [
+      {
+        assertion = cfg.apps.browsers.enable;
+        message = "browser is used as default PDF viewer";
+      }
+    ];
   };
 }
