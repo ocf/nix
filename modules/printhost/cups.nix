@@ -127,10 +127,6 @@ in
           sleep 2
         done
 
-        # ── HP LaserJet M806 printers (JetDirect) ────────────────────────────
-        # Socket backend completes as soon as data is written to the printer,
-        # so client backends exit immediately rather than waiting for the job
-        # to physically finish. Individual printers are members of OCF-BW class.
         lpadmin -p logjam \
           -v ocfbackend:socket://169.229.226.92:9100 \
           -P ${hpPpd} \
@@ -149,23 +145,21 @@ in
           -D "HP LaserJet M806" -L "OCF lab" \
           -E -o printer-is-shared=false -o Duplex=DuplexNoTumble
 
-        # ── OCF-BW class ──────────────────────────────────────────────────────
-        # Clients send to this class; CUPS distributes to the least-loaded
-        # member. The socket backend above means the server job completes as
-        # soon as data is written to the printer, so client backends exit
-        # immediately rather than waiting for physical print completion.
-        lpadmin -p logjam    -c OCF-BW
-        lpadmin -p pagefault -c OCF-BW
-        lpadmin -p papercut  -c OCF-BW
-        lpadmin -p OCF-BW -E -o printer-is-shared=true \
-          -D "HP LaserJet M806" -L "OCF lab"
-
-        # ── Epson color printers (IPP/S) ─────────────────────────────────────
         lpadmin -p epson \
           -v ocfbackend:ipps://169.229.226.96/ipp/print \
           -P ${epsonPpd} \
           -D "Epson ET-5880 Color" -L "OCF lab" \
           -E -o printer-is-shared=false -o Duplex=DuplexNoTumble -o PageSize=Letter
+
+        lpadmin -p logjam    -c OCF-BW
+        lpadmin -p pagefault -c OCF-BW
+        lpadmin -p papercut  -c OCF-BW
+        lpadmin -p OCF-BW -E -o printer-is-shared=true \
+          -D "HP LaserJet M806" -L "OCF lab"
+        
+        lpadmin -p epson    -c OCF-Color
+        lpadmin -p OCF-Color -E -o printer-is-shared=true \
+          -D "Epson ET-5880 Color" -L "OCF lab"
 
         # ── Public Printers -------------─────────────────────────────────────
         lpadmin -p OCF-BW \
@@ -174,7 +168,7 @@ in
           -D "OCF Black & White" -L "OCF lab" \
           -E -o printer-is-shared=true -o Duplex=DuplexNoTumble
         lpadmin -p OCF-Color \
-          -v ipp://localhost/printers/epson \
+          -v ipp://localhost/classes/OCF-Color \
           -P ${epsonPpd} \
           -D "OCF Color" -L "OCF lab" \
           -E -o printer-is-shared=true -o Duplex=DuplexNoTumble -o PageSize=Letter
