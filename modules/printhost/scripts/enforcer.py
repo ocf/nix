@@ -167,6 +167,10 @@ def page_count(env):
         
         current_attrs = conn.getJobAttributes(current_id)
         sheets_printed = int(current_attrs.get('job-impressions-completed'))
+        
+        # fix HP overreporting pages
+        if current_attrs.get('printer-uri') == 'ipp://localhost:631/printers/OCF-BW':
+          sheets_printed -= 1
     except Exception as e:
         syslog(f"CUPS API Error: {e}")
     return sheets_printed
