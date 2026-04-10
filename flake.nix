@@ -292,6 +292,7 @@
             pkgs.wp-cli
             pkgs.rubyPackages.rails
             pkgs.python3Packages.virtualenv
+            pkgs.gnumake
             colmena.packages.${pkgs.stdenv.hostPlatform.system}.colmena
           ];
         };
