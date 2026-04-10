@@ -26,7 +26,9 @@ in
       emacs
       vscode-fhs
       vscodium-fhs
-      rstudio
+      # uncomment once electron version is updated to non eol
+      # https://github.com/ocf/nix/pull/244
+      #rstudio
       zed-editor
       gnome-builder
       jetbrains.idea-oss
