@@ -155,42 +155,48 @@ def read_config():
     return 'ocfprinting', mysql_passwd, redis_passwd, wayout_passwd
 
 
+
 def page_count(env):
     import math
     import subprocess
+    import re
+
     data_file = env.get('TEADATAFILE')
     copies = int(env.get('TEACOPIES', 1))
-    options = env.get('TEAOPTIONS', '').lower()
-
+    
     if not data_file or not os.path.exists(data_file):
-        return copies # Fallback
+        return copies
 
     try:
-        # 1. Count logical pages (impressions) using Ghostscript
-        # This handles both PS (from BW) and PDF (from Color)
-        cmd = [
-            '@gs@', '-q', '-dNODISPLAY', '-dNOSAFER',
-            '-c', f'({data_file}) (r) file runpdfbegin pdfpagecount = quit'
-        ]
-        result = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
-        impressions_per_copy = int(result.decode().strip())
+        # 1. Identify File Type (PDF or PostScript)
+        with open(data_file, 'rb') as f:
+            header = f.read(4)
 
-        # 2. Check for Duplexing
-        # We look for common CUPS duplex strings
-        is_duplex = any(opt in options for opt in ['duplex', 'two-sided'])
-
-        # 3. Calculate physical sheets per copy
-        if is_duplex:
-            # Ceiling division for odd-numbered jobs
-            sheets_per_copy = math.ceil(impressions_per_copy / 2)
+        if header == b'%PDF':
+            # Use Ghostscript for PDF (OCF-Color)
+            cmd = ['@gs@', '-q', '-dNODISPLAY', '-dNOSAFER',
+                   '-c', f'({data_file}) (r) file runpdfbegin pdfpagecount = quit']
+            result = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
+            pages = int(result.decode().strip().split()[-1])
         else:
-            sheets_per_copy = impressions_per_copy
+            # 2. Use DSC Comments for PostScript (OCF-BW)
+            # CUPS filters automatically insert %%Pages: N at the end of the file.
+            # We read the end of the file to find it.
+            with open(data_file, 'rb') as f:
+                f.seek(-2048, os.SEEK_END) # Read the last 2KB
+                tail = f.read().decode('utf-8', 'ignore')
+                match = re.search(r'%%Pages:\s+(\d+)', tail)
+                pages = int(match.group(1)) if match else 1
 
-        # 4. Multiply by copies
+        # 3. Apply Duplex Math (if physical pages are desired)
+        options = env.get('TEAOPTIONS', '').lower()
+        is_duplex = 'duplex' in options and 'none' not in options
+        
+        sheets_per_copy = math.ceil(pages / 2) if is_duplex else pages
         return copies * sheets_per_copy
 
     except Exception as e:
-        syslog(f"Ghostscript count failed for {data_file}: {e}")
+        syslog(f"Page count failure: {e}")
         return copies
 
 
