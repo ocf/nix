@@ -143,21 +143,11 @@ in
           -D "HP LaserJet M806" -L "OCF lab" \
           -E -o printer-is-shared=false -o Duplex=DuplexNoTumble
           
-        lpadmin -p epson \
-          -v ocfbackend:socket://169.229.226.96:9100 \
-          -m raw \
-          -D "Epson ET-5880 Series" -L "OCF lab" \
-          -E -o printer-is-shared=false -o Duplex=DuplexNoTumble -o PageSize=Letter
-
         lpadmin -p logjam    -c OCF-BW-Group
         lpadmin -p pagefault -c OCF-BW-Group
         lpadmin -p papercut  -c OCF-BW-Group
         lpadmin -p OCF-BW-Group -E -o printer-is-shared=false \
           -D "HP LaserJet M806" -L "OCF lab"
-
-        lpadmin -p epson -c OCF-Color-Group
-        lpadmin -p OCF-Color-Group -E -o printer-is-shared=false \
-          -D "Epson ET-5880 Series" -L "OCF lab"
 
         # ── Public Printers -------------─────────────────────────────────────
         lpadmin -p OCF-BW \
@@ -166,7 +156,7 @@ in
           -D "OCF Black & White" -L "OCF lab" \
           -E -o printer-is-shared=true -o Duplex=DuplexNoTumble
         lpadmin -p OCF-Color \
-          -v ipp://localhost/classes/OCF-Color-Group \
+          -v ocfbackend:socket://169.229.226.96:9100 \
           -P ${epsonPpd} \
           -D "OCF Color" -L "OCF lab" \
           -E -o printer-is-shared=true -o Duplex=DuplexNoTumble -o PageSize=Letter
