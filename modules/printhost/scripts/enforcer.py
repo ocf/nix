@@ -171,7 +171,7 @@ def page_count(env):
 
             match = re.match(r'^%%Pages:\s+(\d+)$', line_str)
             if match:
-                return match.group(1)
+                return int(match.group(1))
 
     except Exception as e:
         syslog(f"Page count error: {e}")
