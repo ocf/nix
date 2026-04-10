@@ -36,7 +36,7 @@ from ocflib.misc.mail import send_problem_report
 REDIS_HOST = 'broker.ocf.berkeley.edu'
 REDIS_PORT = 6378
 
-COLOR_QUEUES = {'color-single', 'color-double'}
+COLOR_QUEUES = {'OCF-Color'}
 
 APP_NAME = 'Printer'
 PORT = 6767
