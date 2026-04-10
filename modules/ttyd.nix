@@ -5,33 +5,27 @@
 }:
 
 let
-  cfg = config.ocf.wetty;
+  cfg = config.ocf.ttyd;
 in
 {
-  options.ocf.wetty = {
-    enable = lib.mkEnableOption "Wetty web terminal service";
+  options.ocf.ttyd = {
+    enable = lib.mkEnableOption "ttyd web terminal service";
     port = lib.mkOption {
       type = lib.types.port;
-      default = 3000;
+      default = 7681;
     };
     hostname = lib.mkOption {
       type = lib.types.str;
       default = "ssh.ocf.berkeley.edu";
-      description = "Public hostname for the Wetty service";
-    };
-    sshHost = lib.mkOption {
-      type = lib.types.str;
-      default = "carp.ocf.berkeley.edu";
-      description = "SSH host for Wetty to connect to";
+      description = "Public hostname for the ttyd service";
     };
   };
 
   config = lib.mkIf cfg.enable {
-    services.wetty = {
+    services.ttyd = {
       enable = true;
       port = cfg.port;
-      host = "127.0.0.1";
-      sshHost = cfg.sshHost;
+      interface = "127.0.0.1";
     };
 
     ocf.acme.extraCerts = [
@@ -48,7 +42,7 @@ in
       recommendedProxySettings = true;
 
       virtualHosts = {
-        "wetty" = {
+        "ttyd" = {
           listen = [
             {
               addr = "0.0.0.0";
@@ -72,7 +66,7 @@ in
           };
         };
 
-        "wetty-force-ssl" = {
+        "ttyd-force-ssl" = {
           listen = [
             {
               addr = "0.0.0.0";
