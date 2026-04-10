@@ -162,7 +162,6 @@ def page_count(env):
     filepath = env.get('TEADATAFILE')
     pages = 0
     copies = 1
-    syslog(f"Available ENV: {env}")
     
     try:
         with open(filepath, 'rb') as f:
