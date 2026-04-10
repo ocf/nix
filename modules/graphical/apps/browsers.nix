@@ -95,50 +95,50 @@ in
 
         Preferences = {
           # OCF (HP B&W): default to double-sided, black & white, letter
-          "print.printer_OCF-BW.print_duplex" = {
-            Value = 1;
-            Status = "default";
-            Type = "number";
-          };
-          "print.printer_OCF-BW.print_in_color" = {
-            Value = false;
-            Status = "default";
-          };
-          "print.printer_OCF-BW.print_paper_height" = {
-            Value = "279.4";
-            Status = "default";
-          };
-          "print.printer_OCF-BW.print_paper_id" = {
-            Value = "na_letter";
-            Status = "default";
-          };
-          "print.printer_OCF-BW.print_paper_size_unit" = {
-            Value = 1;
-            Status = "default";
-            Type = "number";
-          };
-          "print.printer_OCF-BW.print_paper_width" = {
-            Value = "215.9";
-            Status = "default";
-          };
+          # "print.printer_OCF-BW.print_duplex" = {
+          #   Value = 1;
+          #   Status = "default";
+          #   Type = "number";
+          # };
+          # "print.printer_OCF-BW.print_in_color" = {
+          #   Value = false;
+          #   Status = "default";
+          # };
+          # "print.printer_OCF-BW.print_paper_height" = {
+          #   Value = "279.4";
+          #   Status = "default";
+          # };
+          # "print.printer_OCF-BW.print_paper_id" = {
+          #   Value = "na_letter";
+          #   Status = "default";
+          # };
+          # "print.printer_OCF-BW.print_paper_size_unit" = {
+          #   Value = 1;
+          #   Status = "default";
+          #   Type = "number";
+          # };
+          # "print.printer_OCF-BW.print_paper_width" = {
+          #   Value = "215.9";
+          #   Status = "default";
+          # };
           # OCF-Color (Epson): letter paper size
-          "print.printer_OCF-Color.print_paper_height" = {
-            Value = "279.4";
-            Status = "default";
-          };
-          "print.printer_OCF-Color.print_paper_id" = {
-            Value = "na_letter";
-            Status = "default";
-          };
-          "print.printer_OCF-Color.print_paper_size_unit" = {
-            Value = 1;
-            Status = "default";
-            Type = "number";
-          };
-          "print.printer_OCF-Color.print_paper_width" = {
-            Value = "215.9";
-            Status = "default";
-          };
+          # "print.printer_OCF-Color.print_paper_height" = {
+          #   Value = "279.4";
+          #   Status = "default";
+          # };
+          # "print.printer_OCF-Color.print_paper_id" = {
+          #   Value = "na_letter";
+          #   Status = "default";
+          # };
+          # "print.printer_OCF-Color.print_paper_size_unit" = {
+          #   Value = 1;
+          #   Status = "default";
+          #   Type = "number";
+          # };
+          # "print.printer_OCF-Color.print_paper_width" = {
+          #   Value = "215.9";
+          #   Status = "default";
+          # };
           "widget.wayland.fractional-scale.enabled" = {
             Value = false;
             Status = "default";
