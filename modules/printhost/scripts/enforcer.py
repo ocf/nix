@@ -17,7 +17,6 @@ import os
 import sys
 import re
 import cups
-from pypdf import PdfReader
 from collections import namedtuple
 from datetime import datetime
 from syslog import syslog
@@ -158,70 +157,19 @@ def read_config():
     return 'ocfprinting', mysql_passwd, redis_passwd, wayout_passwd
 
 
-def count_pdf_pages(file):
-  reader = PdfReader(file)
-  return len(reader.pages)
-
-
 def page_count(env):
+    sheets_printed = 0
     try:
         current_id = int(env['TEAJOBID'])
         
-        # Ensure we have admin privileges to view all job attributes
         cups.setUser("root")
         conn = cups.Connection()
         
-        # 1. Get metadata for the current physical job (the child)
         current_attrs = conn.getJobAttributes(current_id)
-        target_name = current_attrs.get('job-name', env.get('TEATITLE'))
-        target_time = current_attrs.get('time-at-creation')
-        
-        # 2. Query all jobs using requested_attributes.
-        # This is MUCH faster than calling getJobAttributes() inside a loop,
-        # as CUPS returns exactly what we need for all jobs in a single API call.
-        all_jobs = conn.getJobs(
-            which_jobs='all', 
-            requested_attributes=[
-                'job-id', 
-                'job-name', 
-                'time-at-creation', 
-                'job-media-sheets-completed',
-                'job-impressions-completed',
-                'job-originating-host-name'
-            ]
-        )
-        
-        # 3. Filter for the unique parent job
-        # It must be older, share the exact creation second, share the name, 
-        # and NOT originate from localhost (which is the backend forward).
-        parent_jobs = [
-            jid for jid, attrs in all_jobs.items()
-            if jid < current_id 
-            and attrs.get('job-name') == target_name
-            and attrs.get('time-at-creation') == target_time
-            and attrs.get('job-originating-host-name') != 'localhost'
-        ]
-        
-        if parent_jobs:
-            parent_id = min(parent_jobs)
-            parent_attrs = all_jobs[parent_id]
-            
-            # 4. Pull the exact sheets/impressions
-            sheets = parent_attrs.get('job-media-sheets-completed')
-            if sheets and sheets > 0:
-                syslog(f"Found accurate sheets at parent job #{parent_id}: {sheets}")
-                return sheets
-                
-            impressions = parent_attrs.get('job-impressions-completed')
-            if impressions and impressions > 0:
-                syslog(f"Found accurate impressions at parent job #{parent_id}: {impressions}")
-                return impressions
-
+        sheets_printed = int(current_attrs.get('job-impressions-completed'))
     except Exception as e:
-        syslog(f"CUPS API Page Count Error: {e}")
-
-    # Final fallback if all else fails (don't charge the user for a broken system)
-    return 0
+        syslog(f"CUPS API Error: {e}")
+    return sheets_printed
 
 
 def create_job(env):
