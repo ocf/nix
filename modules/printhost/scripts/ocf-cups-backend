@@ -120,7 +120,7 @@ def main():
         backend_env = dict(os.environ)
         backend_env['DEVICE_URI'] = real_uri
 
-        cmd = [backend_bin, job_id, user, title, copies, options, data_file]
+        cmd = [backend_bin, job_id, user, title, "1", options, data_file]
         result = subprocess.run(cmd, env=backend_env)
 
         tea_env['TEASTATUS'] = str(result.returncode)
