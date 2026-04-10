@@ -138,6 +138,11 @@ NOTIFY_QUOTA_MESSAGE = dedent("""\
         {pages} pages, and you have {quota} pages remaining today.\
 """)
 
+NOTIFY_COLOR_QUOTA_MESSAGE = dedent("""\
+        Your print job failed due to insufficient color quota. Your job was
+        {pages} pages, and you have {quota} color pages remaining today.\
+""")
+
 NOTIFY_JOB_QUEUED = dedent("""\
         Your print job '{document}' was accepted and queued on '{printer}'.\
 """)
@@ -311,9 +316,9 @@ def prehook(c, r, job, wayout_pass):
         sys.exit(255)
     elif job.queue in COLOR_QUEUES and job.pages > quo.color:
         send_printer_mail(INSUFFICIENT_COLOR_QUOTA_MESSAGE, job, quo)
-        msg = NOTIFY_QUOTA_MESSAGE.format(
+        msg = NOTIFY_COLOR_QUOTA_MESSAGE.format(
             pages=job.pages,
-            quota=quo.daily,
+            quota=quo.color,
         )
         r.publish('user-' + job.user, msg)
         send_notification(wayout_pass, 'Insufficient Color Quota', msg, job.user)
