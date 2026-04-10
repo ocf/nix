@@ -31,7 +31,7 @@
   ];
 
   security.pam.loginLimits = [
-    { domain = "*"; type = "-";    item = "cpu";        value = "3600"; }
+    { domain = "*"; type = "-";    item = "cpu";        value = "60"; }
     { domain = "*"; type = "soft"; item = "stack";      value = "4096"; }
     { domain = "*"; type = "soft"; item = "core";       value = "0"; }
     { domain = "*"; type = "soft"; item = "nproc";      value = "250"; }
