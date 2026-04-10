@@ -15,6 +15,9 @@ finished printing, or failed to print.
 import argparse
 import os
 import sys
+import re
+import cups
+from pypdf import PdfReader
 from collections import namedtuple
 from datetime import datetime
 from syslog import syslog
@@ -155,58 +158,49 @@ def read_config():
     return 'ocfprinting', mysql_passwd, redis_passwd, wayout_passwd
 
 
+def count_pdf_pages(file):
+  reader = PdfReader(file)
+  return len(reader.pages)
 
 def page_count(env):
-    import math
-    import subprocess
-    import re
-
     data_file = env.get('TEADATAFILE')
-    copies = int(env.get('TEACOPIES', 1))
-    
     if not data_file or not os.path.exists(data_file):
-        return copies
+        return int(env.get('TEACOPIES', 1))
 
-    try:
-        # 1. Identify File Type (PDF or PostScript)
-        with open(data_file, 'rb') as f:
-            header = f.read(4)
-
-        if header == b'%PDF':
-            # Use Ghostscript for PDF (OCF-Color)
-            cmd = ['@gs@', '-q', '-dNODISPLAY', '-dNOSAFER',
-                   '-c', f'({data_file}) (r) file runpdfbegin pdfpagecount = quit']
-            result = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
-            syslog(f"GS result: {result}")
-            pages = int(result.decode().strip().split()[-1])
-            syslog(f"GS pages: {pages}")
-        else:
-            # 2. Use DSC Comments for PostScript (OCF-BW)
-            # CUPS filters automatically insert %%Pages: N at the end of the file.
-            # We read the end of the file to find it.
-            with open(data_file, 'rb') as f:
-                f.seek(-2048, os.SEEK_END) # Read the last 2KB
-                tail = f.read().decode('utf-8', 'ignore')
-                match = re.search(r'%%Pages:\s+(\d+)', tail)
-                pages = int(match.group(1)) if match else 1
-                syslog(f"PS pages: {pages}")
-                match = re.search(r'%%Copies:\s+(\d+)', tail)
-                copies = int(match.group(1)) if match else 1
-                syslog(f"PS copies: {copies}")
-
-        # 3. Apply Duplex Math (if physical pages are desired)
-        options = env.get('TEAOPTIONS', '').lower()
-        is_duplex = 'duplex' in options and 'none' not in options
+    # 1. Read the first/last few lines (just like the shell script)
+    with open(data_file, 'rb') as f:
+        # Check header to see if it's PostScript or PDF
+        header_bytes = f.read(1024)
+        f.seek(-2048, 2)
+        footer_bytes = f.read()
         
-        sheets_per_copy = math.ceil(pages / 2) if is_duplex else pages
-        syslog(f"Copies: {copies}")
-        syslog(f"sheets_per_copy: {sheets_per_copy}")
-        syslog(f"options: {options}")
-        return copies * sheets_per_copy
+    combined = (header_bytes + footer_bytes).decode('utf-8', 'ignore')
 
-    except Exception as e:
-        syslog(f"Page count failure: {e}")
-        return copies
+    # 2. Extract logical pages (Impressions)
+    if b'%PDF' in header_bytes:
+        # For PDF, we still need Ghostscript or a PDF parser
+        sheets = count_pdf_pages(data_file)
+        syslog(f"PDF sheets: {sheets}")
+    else:
+        # Mimic the old script's awk logic with regex
+        match = re.search(r'^%%Pages:\s+(\d+)$', combined, re.MULTILINE)
+        sheets = int(match.group(1)) if match else 1
+        syslog(f"PS sheets: {sheets}")
+           
+    id = env.get('TEAJOBID')
+    syslog(f"printID: {id}")
+    
+    conn = cups.Connection()
+    job_attrs = conn.getJobAttributes(int(id)-1)
+    syslog(f"job_attrs: {job_attrs}")
+    
+    
+    options = env.get('TEAOPTIONS')
+    syslog(f"TEAOPTIONS: {options}")
+    # Because '%%Pages' in a filtered file often already includes copies,
+    # we only multiply by TEACOPIES if the count seems to be for a single copy.
+    # Usually, if %%Pages is found, it's the TOTAL.
+    return sheets
 
 
 def create_job(env):

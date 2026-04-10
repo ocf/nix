@@ -16,12 +16,11 @@ let
       pymysql
       requests
       redis
+      pypdf
     ]
   );
 
-  enforcerScript = pkgs.replaceVars ./scripts/enforcer.py {
-    gs = "${pkgs.ghostscript}/bin/gs";
-  };
+  enforcerScript = ./scripts/enforcer.py;
 
   # Wrapper that invokes enforcer.py with the right Python environment
   enforcerBin = pkgs.writeShellScript "enforcer" ''
