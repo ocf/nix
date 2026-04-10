@@ -158,6 +158,7 @@ def read_config():
 
 def page_count(env):
     filepath = env.get('TEADATAFILE')
+    syslog(f"TEADATAFILE: {filepath}")
     try:
         with open(filepath, 'rb') as f:
             lines = f.readlines()
