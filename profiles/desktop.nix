@@ -120,7 +120,10 @@ in
         Browsing Off
         ErrorPolicy abort-job
       '';
-      drivers = with pkgs; [ hplip epson-escpr2 ];
+      drivers = with pkgs; [
+        hplip
+        epson-escpr2
+      ];
     };
   };
 

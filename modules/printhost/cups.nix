@@ -75,7 +75,7 @@ in
             "@cups-url@"
           ]
           [
-            cfg.printhostUrl
+            "${config.networking.hostName}.ocf.berkeley.edu"
           ]
           (builtins.readFile ./conf/cupsd.conf)
       );
