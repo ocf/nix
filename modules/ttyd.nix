@@ -26,6 +26,7 @@ in
       enable = true;
       port = cfg.port;
       interface = "127.0.0.1";
+      writeable = true;
     };
 
     ocf.acme.extraCerts = [
