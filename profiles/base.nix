@@ -210,6 +210,7 @@ in
     "cups/client.conf".text = ''
       ServerName printhost-dev.ocf.berkeley.edu
       Encryption IfRequested
+      AuthType Negotiate
     '';
   };
 
