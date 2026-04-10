@@ -73,11 +73,9 @@ in
         lib.replaceStrings
           [
             "@cups-url@"
-            "DefaultAuthType Basic"
           ]
           [
             cfg.printhostUrl
-            (if cfg.cupsKeytabFile != null then "DefaultAuthType Negotiate" else "DefaultAuthType Basic")
           ]
           (builtins.readFile ./conf/cupsd.conf)
       );
