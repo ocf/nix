@@ -15,6 +15,8 @@
     lastOctet = 130;
   };
 
+  ocf.wetty.enable = true;
+
   ocf.nfs = {
     enable = true;
     mountHome = true;
