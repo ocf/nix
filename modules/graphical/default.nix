@@ -122,6 +122,13 @@ in
         # Conflict override since multiple DEs set this option
         programs.ssh.askPassword = pkgs.lib.mkForce (lib.getExe pkgs.ksshaskpass.out);
 
+        xdg.portal = {
+          enable = true;
+          extraPortals = with pkgs; [
+            xdg-desktop-portal-gtk
+          ];
+        };
+
         environment.systemPackages = with pkgs; [
           catppuccin-sddm
 
@@ -140,6 +147,13 @@ in
 
           # OCF IRC
           halloy
+
+          # Themes
+          adw-gtk3
+          libsForQt5.qt5ct
+          kdePackages.qt6ct
+          kdePackages.qtstyleplugin-kvantum
+          rose-pine-kvantum
         ];
 
         fonts.packages = with pkgs; [
@@ -147,6 +161,12 @@ in
           noto-fonts
           noto-fonts-cjk-sans
         ];
+
+        environment.sessionVariables = {
+          QT_QPA_PLATFORMTHEME = "qt5ct";
+        };
+
+        programs.dconf.enable = true;
 
         services = {
           desktopManager.cosmic = {
@@ -239,21 +259,43 @@ in
             COSMIC_THEME_FILE="$HOME/.config/cosmic/com.system76.CosmicTheme.Mode/v1/is_dark"
             COSMIC_BG_FILE="$HOME/.config/cosmic/com.system76.CosmicBackground/v1/all"
             OCF_THEME_FILE="$HOME/remote/.config/ocf/theme"
+            KVANTUM_THEME_FILE="$HOME/.config/Kvantum/kvantum.kvconfig"
+            mkdir -p "$(dirname "$KVANTUM_THEME_FILE")"
+
+            # Ensure kvantum knows where to find the rose pine themes
+            ln -sfT ${pkgs.rose-pine-kvantum}/share/Kvantum/themes/rose-pine-moon-iris "$HOME/.config/Kvantum/rose-pine-moon-iris" || true
+            ln -sfT ${pkgs.rose-pine-kvantum}/share/Kvantum/themes/rose-pine-dawn-iris "$HOME/.config/Kvantum/rose-pine-dawn-iris" || true
+
+            # Initialize kvantum.kvconfig if not present (skel only covers new users)
+            if [ ! -f "$KVANTUM_THEME_FILE" ]; then
+              kvantum_default_theme="rose-pine-moon-iris"
+              if [ -f "$OCF_THEME_FILE" ] && [ "$(cat "$OCF_THEME_FILE")" = "light" ]; then
+                kvantum_default_theme="rose-pine-dawn-iris"
+              fi
+              printf '[General]\ntheme=%s\n' "$kvantum_default_theme" > "$KVANTUM_THEME_FILE"
+            fi
 
             sync_theme() {
               if [ -f "$COSMIC_THEME_FILE" ]; then
                 content=$(cat "$COSMIC_THEME_FILE")
                 mkdir -p "$(dirname "$OCF_THEME_FILE")"
+
                 if [ "$content" = "true" ]; then
                   echo "dark" > "$OCF_THEME_FILE"
-                  sed -i -E 's/bg-(light|dark)/bg-dark/g' $COSMIC_BG_FILE
+                  sed -i -E 's/bg-(light|dark)/bg-dark/g' "$COSMIC_BG_FILE"
                   gsettings set org.gnome.desktop.interface color-scheme prefer-dark
-                  sed -i 's/theme = "rose-pine-dawn"/theme = "rose-pine"/' $HOME/.config/halloy/config.toml
+                  sed -i 's/theme = "rose-pine-dawn"/theme = "rose-pine"/' "$HOME/.config/halloy/config.toml"
+                  # QT Themes
+                  sed -i 's/^theme=.*/theme=rose-pine-moon-iris/' "$KVANTUM_THEME_FILE"
+                  kvantummanager --set "rose-pine-moon-iris" || true
                 else
                   echo "light" > "$OCF_THEME_FILE"
-                  sed -i -E 's/bg-(light|dark)/bg-light/g' $COSMIC_BG_FILE
+                  sed -i -E 's/bg-(light|dark)/bg-light/g' "$COSMIC_BG_FILE"
                   gsettings set org.gnome.desktop.interface color-scheme prefer-light
-                  sed -i 's/theme = "rose-pine"/theme = "rose-pine-dawn"/' $HOME/.config/halloy/config.toml
+                  sed -i 's/theme = "rose-pine"/theme = "rose-pine-dawn"/' "$HOME/.config/halloy/config.toml"
+                  # QT Themes
+                  sed -i 's/^theme=.*/theme=rose-pine-dawn-iris/' "$KVANTUM_THEME_FILE"
+                  kvantummanager --set "rose-pine-dawn-iris" || true
                 fi
                 pkill -USR1 halloy || true
               fi
