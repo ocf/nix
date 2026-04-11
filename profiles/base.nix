@@ -35,6 +35,7 @@ in
     settings = {
       experimental-features = "nix-command flakes";
       nix-path = lib.mapAttrsToList (name: _: "${name}=flake:${name}") inputs;
+      builders-use-substitutes = true;
     };
     gc = {
       automatic = true;
