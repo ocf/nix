@@ -192,12 +192,20 @@ def page_count(env):
                         
                         pages_match = re.search(r'^%%Pages:\s+(\d+)', line_str)
                         if pages_match:
-                            pages = int(pages_match.group(1))
+                            try:
+                                pages = int(pages_match.group(1))
+                            except ValueError:
+                                syslog(f"non-integer output when processing PS pages: {pages_match}")
+                                pass
                         
                         # always use PostScript copies                        
                         copies_match = re.search(r'^%RBINumCopies:\s+(\d+)', line_str)
                         if copies_match:
-                            copies = int(copies_match.group(1))
+                            try:
+                                copies = int(copies_match.group(1))
+                            except ValueError:
+                                syslog(f"non-integer output when processing PS copies: {copies_match}")
+                                pass
 
             # ==========================================
             # EJL / PDF LOGIC (Using qpdf)
