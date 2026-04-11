@@ -167,7 +167,7 @@ in
           -v ocfbackend:socket://169.229.226.96:9100 \
           -P ${epsonPpd} \
           -D "OCF Color" -L "OCF lab" \
-          -E -o printer-is-shared=true -o Duplex=DuplexNoTumble -o PageSize=Letter
+          -E -o printer-is-shared=true -o Duplex=None -o PageSize=Letter
       '';
     };
 
