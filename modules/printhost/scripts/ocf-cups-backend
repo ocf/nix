@@ -121,6 +121,10 @@ def main():
         backend_env = dict(os.environ)
         backend_env['DEVICE_URI'] = real_uri
 
+        # passing copies=1 to the backend, otherwise the backend
+        # would re-apply copies, resulting in desiredCopies^2
+        # this is only an issue on the epson because the ocf-cups-backend
+        # forwards directly to it rather than to a class and raw queue first
         cmd = [backend_bin, job_id, user, title, "1", options, data_file]
         result = subprocess.run(cmd, env=backend_env)
 
