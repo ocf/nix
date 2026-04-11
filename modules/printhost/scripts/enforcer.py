@@ -405,7 +405,7 @@ def main(argv):
                     ENFORCER_ERROR_MESSAGE,
                     job,
                     quo or quota.UserQuota(user=job.user, daily='Unknown',
-                                           semesterly='Unknown')
+                                           semesterly='Unknown', color='Unknown')
                 )
             except Exception:
                 pass
