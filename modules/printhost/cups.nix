@@ -120,7 +120,7 @@ in
       description = "Declaratively configure CUPS printers and classes";
       after = [ "cups.service" ];
       wants = [ "cups.service" ];
-      wantedBy = [ "cups.service" ];
+      wantedBy = [ "multi-user.target" ];
       partOf = [ "cups.service" ];
       path = [ config.services.printing.package ];
       serviceConfig.Type = "oneshot";
