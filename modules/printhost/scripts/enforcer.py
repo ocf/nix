@@ -236,7 +236,11 @@ def page_count(env):
         syslog(f"Page count error: {e}")
         pass
 
-    return pages * copies
+    total_sides = pages * copies
+    if total_sides <= 0:
+        syslog(f"failed to get document sides (pages={pages}, copies={copies})")
+        raise ValueError(f"failed to get document sides (pages={pages}, copies={copies})")
+    return total_sides
 
 
 def create_job(env):
