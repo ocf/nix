@@ -40,7 +40,6 @@ let
           { ... }:
           {
             nix.settings.experimental-features = "nix-command flakes";
-            nix.settings.sandbox = "relaxed";
             networking.firewall.enable = true;
 
             services.github-runners = builtins.listToAttrs (
