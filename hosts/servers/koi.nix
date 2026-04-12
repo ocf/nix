@@ -17,8 +17,7 @@
 
   ocf.nfs = {
     enable = true;
-    mountHome = true;
-    mountServices = true;
+    mount = true;
   };
 
   age.secrets.ocfprinting = {
