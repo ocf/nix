@@ -32,7 +32,7 @@ in
     acme.enable = false;
 
     etc.enable = true;
-    tmpfsHome.enable = true;
+    home.tmpfs = true;
     network.wakeOnLan.enable = true;
     logged-in-users-exporter.enable = true;
 
