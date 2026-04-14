@@ -197,7 +197,7 @@ in
             Type = "oneshot";
             RemainAfterExit = true;
             ExecStart = "${pkgs.coreutils}/bin/true";
-            ExecStop = "${pkgs.ddcutil}/bin/ddcutil setvcp 10 100";
+            ExecStop = "${pkgs.ddcutil}/bin/ddcutil setvcp 10 85";
           };
         };
 
