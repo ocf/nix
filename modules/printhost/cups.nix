@@ -153,7 +153,7 @@ in
 
         # ── Public Printers -------------─────────────────────────────────────
         lpadmin -p OCF-BW \
-          -v ipp://localhost/classes/OCF-BW-Group \
+          -v "ipp://localhost/classes/OCF-BW-Group?waitjob=false&waitprinter=false" \
           -P ${hpPpd} \
           -D "OCF Black & White" -L "OCF lab" \
           -E -o printer-is-shared=true -o Duplex=DuplexNoTumble
