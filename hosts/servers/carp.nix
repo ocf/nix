@@ -32,6 +32,8 @@
     ipmitool
   ];
 
+  services.openssh.settings.PasswordAuthentication = true;
+
   security.pam.loginLimits = [
     {
       domain = "*";

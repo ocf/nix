@@ -288,10 +288,6 @@
             pkgs.age-plugin-fido2-hmac
             pkgs.wol
             pkgs.nixfmt-tree
-            pkgs.wp-cli
-            pkgs.rubyPackages.rails
-            pkgs.python3Packages.virtualenv
-            pkgs.gnumake
             colmena.packages.${pkgs.stdenv.hostPlatform.system}.colmena
           ];
         };

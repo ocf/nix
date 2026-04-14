@@ -15,10 +15,16 @@
     lastOctet = 129;
   };
 
+  deployment.allowLocalDeployment = true;
+
   ocf.etc.enable = true;
   ocf.userPackages.enable = true;
 
-  services.openssh.settings.AllowGroups = [ "ocfstaff" ];
+  services.openssh.settings.AllowGroups = [
+    "ocfstaff"
+    "ocf-nix-deploy-user"
+  ];
+  services.openssh.settings.PasswordAuthentication = true;
 
   ocf.nfs = {
     enable = true;

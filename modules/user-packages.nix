@@ -42,6 +42,7 @@
       autoconf
       automake
       cmake
+      gnumake
       libtool
       pkg-config
       bison
@@ -100,7 +101,7 @@
       ))
 
       # TeX
-      texlive.combined.scheme-full
+      texlive.combined.scheme-medium
 
       # Terminal clients & chat
       irssi
@@ -155,6 +156,7 @@
           mock
           tkinter
           slixmpp
+          virtualenv
         ]
       ))
     ];

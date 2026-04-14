@@ -26,4 +26,4 @@ jobs:
         # `--evaluator streaming` would be preferable, but it results in
         # colmena exiting as successful after 2 seconds without doing anything,
         # even if nix-eval-jobs is installed.
-        run: nix develop -c colmena build --keep-result --eval-node-limit 16 --nix-option keep-going true -v
+        run: nix develop -c colmena build --keep-result --nix-option keep-going true -v
