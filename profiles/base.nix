@@ -132,19 +132,47 @@ in
     mtr
     traceroute
     iperf
+    iperf3
     vnstat
     nethogs
     netcat-openbsd
     nmap
+    iftop
+    tcpdump
+    whois
 
     # Other useful stuff
     tmux
+    screen
+    dtach
+    reptyr
     htop
     btop
     git
     killall
+    inetutils
     ldapvi
     openldap
+    lsof
+    jq
+    pv
+    pwgen
+    tree
+    unzip
+    moreutils
+    pigz
+    ranger
+    ncdu
+    molly-guard
+    beep
+    gist
+
+    # System administration
+    iotop
+    parted
+    powertop
+    cryptsetup
+    quota
 
     # files
     dua
@@ -152,6 +180,11 @@ in
     file
     micro
     ripgrep
+    hexedit
+    dos2unix
+    bat
+    lsd
+    emacs
 
     comma-with-db
 
@@ -161,7 +194,16 @@ in
     kubectl
 
     # OCF utilities
-    (python312.withPackages (ps: [ ps.ocflib ]))
+    (python312.withPackages (
+      ps: with ps; [
+        ocflib
+        dnspython
+        paramiko
+        requests
+        tabulate
+        virtualenv
+      ]
+    ))
     ocf-utils
   ];
 

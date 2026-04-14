@@ -17,6 +17,7 @@
 
   ocf.ttyd.enable = true;
   ocf.etc.enable = true;
+  ocf.userPackages.enable = true;
 
   ocf.nfs = {
     enable = true;

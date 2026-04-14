@@ -16,6 +16,9 @@
   };
 
   ocf.etc.enable = true;
+  ocf.userPackages.enable = true;
+
+  services.openssh.settings.AllowGroups = [ "ocfstaff" ];
 
   ocf.nfs = {
     enable = true;
