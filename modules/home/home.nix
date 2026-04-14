@@ -7,7 +7,10 @@
 
 let
   cfg = config.ocf.home;
-  homeSetupScript = pkgs.writeShellScript "ocf_setup_home" (builtins.readFile ./ocf_setup_home.sh);
+  homeSetupScript = pkgs.writeShellScript "ocf_tmpfs_skel" (builtins.readFile ./ocf_tmpfs_skel.sh);
+  mountRemoteScript = pkgs.writeShellScript "ocf_mount_remote" (
+    builtins.readFile ./ocf_mount_remote.sh
+  );
   remoteHost = "ssh";
 
   # Default openssh doesn't include GSSAPI support, so we need to override sshfs
@@ -25,7 +28,11 @@ in
 {
   options.ocf.home = {
     tmpfs = lib.mkEnableOption "mount tmpfs on /home and each user's home directory (unmounted on logout)";
-    #TODO mountRemote = lib.mkEnableOption "sshfs mount ${remoteHost}:~ on ~/remote";
+    mountRemote = lib.mkOption {
+      type = lib.types.bool;
+      default = config.ocf.nfs.mount && config.ocf.nfs.asRemote;
+      description = "nfs mount ~/remote"; # TODO: fallback to sshfs if nfs is not enabled (currently no hosts do this)
+    };
   };
 
   config = lib.mkIf cfg.tmpfs {
@@ -48,10 +55,6 @@ in
 
       services.login.pamMount = true;
 
-      # needed to mount ~/remote with kerberos ssh auth
-      services.login.rules.session.mount.order =
-        config.security.pam.services.login.rules.session.krb5.order + 50;
-
       # mount ~ and ~/remote
       mount.extraVolumes = [
         ''<volume fstype="tmpfs" path="tmpfs" mountpoint="~" options="uid=%(USERUID),gid=%(USERGID),mode=0700"/>''
@@ -64,12 +67,26 @@ in
       #services.login.rules.session.mkhomedir.order = config.security.pam.services.login.rules.session.mount.order + 50;
       #makeHomeDir.skelDirectory = "/etc/skel";
 
-      services.login.rules.session.ocf_home_setup = {
-        order = config.security.pam.services.login.rules.session.mount.order + 50;
-        control = "optional";
-        modulePath = "pam_exec.so";
-        args = [ "${homeSetupScript}" ];
-      };
+      services.login.rules.session =
+        let
+          cfgPam = config.security.pam.services.login.rules.session;
+        in
+        {
+          # needed to mount ~/remote with kerberos ssh auth
+          mount.order = cfgPam.krb5.order + 50;
+          ocf_tmpfs_skel = {
+            order = cfgPam.mount.order + 50;
+            control = "optional";
+            modulePath = "pam_exec.so";
+            args = [ "${homeSetupScript}" ];
+          };
+          ocf_mount_remote = lib.mkIf cfg.mountRemote {
+            order = cfgPam.mount.order + 100;
+            control = "optional";
+            modulePath = "pam_exec.so";
+            args = [ "${mountRemoteScript}" ];
+          };
+        };
     };
   };
 }

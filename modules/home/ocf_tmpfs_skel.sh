@@ -18,18 +18,8 @@ case "$PAM_TYPE" in
 			chown -R "$PAM_USER:$user_gid" "$user_home/"
 		fi
 
-		# bind mount ~/remote to nfs
-		# FIXME: check if ocf.nfs.mount.asRemote is true before doing this
-		remote_source="/remote/${PAM_USER:0:1}/${PAM_USER:0:2}/$PAM_USER"
-		remote_dest="$user_home/remote"
-		echo "ocf-setup-home: bind mounting $remote_source/ to $remote_dest."
-		mkdir -p "$remote_dest"
-		mount -o bind "$remote_source" "$remote_dest"
-
 		# TODO: run desktoprc here
 		;;
 	close_session)
-		# unmount everything under the users home dir
-		umount --recursive "$USER_HOME"
 		;;
 esac
