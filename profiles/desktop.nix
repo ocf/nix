@@ -93,9 +93,9 @@ in
   ];
 
   # enable i2c and set udev rules for monitor brightness control
-  hardware.i2c.enable = true;
+  boot.kernelModules = [ "i2c-dev" ];
   services.udev.extraRules = ''
-    KERNEL=="i2c-[0-9]*", GROUP="ocf", MODE="0660"
+    KERNEL=="i2c-[0-9]*", TAG+="uaccess"
   '';
 
   services = {
