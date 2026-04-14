@@ -8,7 +8,7 @@
 let
   cfg = config.ocf.home;
   homeSetupScript = pkgs.writeShellScript "ocf_setup_home" (builtins.readFile ./ocf_setup_home.sh);
-  remoteHost = "tsunami";
+  remoteHost = "ssh";
 
   # Default openssh doesn't include GSSAPI support, so we need to override sshfs
   # to use the openssh_gssapi package instead. This is annoying because the
@@ -56,7 +56,7 @@ in
       mount.extraVolumes = [
         ''<volume fstype="tmpfs" path="tmpfs" mountpoint="~" options="uid=%(USERUID),gid=%(USERGID),mode=0700"/>''
         # TODO: enable StrictHostKeyChecking and UserKnownHostsFile because these should not be disabled!
-        ''<volume fstype="fuse" path="${lib.getExe sshfs}#%(USER)@${remoteHost}:" mountpoint="~/remote/" options="follow_symlinks,UserKnownHostsFile=/dev/null,StrictHostKeyChecking=no" pgrp="ocf" />''
+        #''<volume fstype="fuse" path="${lib.getExe sshfs}#%(USER)@${remoteHost}:" mountpoint="~/remote/" options="follow_symlinks,UserKnownHostsFile=/dev/null,StrictHostKeyChecking=no" pgrp="ocf" />''
       ];
 
       # because mount now creates the home dir and mounts tmpfs on it, mkhomedir wont copy the skel because the dir exists
