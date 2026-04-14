@@ -88,7 +88,12 @@ in
 
     # IRC password prompt
     kdePackages.kdialog
+
+    ddcutil # for monitor brightness control
   ];
+
+  # enable i2c for monitor brightness control
+  hardware.i2c.enable = true;
 
   services = {
     avahi.enable = true;
