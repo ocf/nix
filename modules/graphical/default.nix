@@ -260,11 +260,22 @@ in
             COSMIC_BG_FILE="$HOME/.config/cosmic/com.system76.CosmicBackground/v1/all"
             OCF_THEME_FILE="$HOME/remote/.config/ocf/theme"
             KVANTUM_THEME_FILE="$HOME/.config/Kvantum/kvantum.kvconfig"
-            mkdir -p "$(dirname "$KVANTUM_THEME_FILE")"
+            QT5CT_FILE="$HOME/.config/qt5ct/qt5ct.conf"
+            QT6CT_FILE="$HOME/.config/qt6ct/qt6ct.conf"
+
+            mkdir -p "$(dirname "$KVANTUM_THEME_FILE")" "$(dirname "$QT5CT_FILE")" "$(dirname "$QT6CT_FILE")"
 
             # Ensure kvantum knows where to find the rose pine themes
             ln -sfT ${pkgs.rose-pine-kvantum}/share/Kvantum/themes/rose-pine-moon-iris "$HOME/.config/Kvantum/rose-pine-moon-iris" || true
             ln -sfT ${pkgs.rose-pine-kvantum}/share/Kvantum/themes/rose-pine-dawn-iris "$HOME/.config/Kvantum/rose-pine-dawn-iris" || true
+
+            # Initialize qt5ct and qt6ct if not present
+            if [ ! -f "$QT5CT_FILE" ]; then
+              printf '[Appearance]\nstyle=kvantum\n' > "$QT5CT_FILE"
+            fi
+            if [ ! -f "$QT6CT_FILE" ]; then
+              printf '[Appearance]\nstyle=kvantum\n' > "$QT6CT_FILE"
+            fi
 
             # Initialize kvantum.kvconfig if not present (skel only covers new users)
             if [ ! -f "$KVANTUM_THEME_FILE" ]; then
@@ -282,17 +293,19 @@ in
 
                 if [ "$content" = "true" ]; then
                   echo "dark" > "$OCF_THEME_FILE"
-                  sed -i -E 's/bg-(light|dark)/bg-dark/g' "$COSMIC_BG_FILE"
+                  [ -f "$COSMIC_BG_FILE" ] && sed -i -E 's/bg-(light|dark)/bg-dark/g' "$COSMIC_BG_FILE"
                   gsettings set org.gnome.desktop.interface color-scheme prefer-dark
-                  sed -i 's/theme = "rose-pine-dawn"/theme = "rose-pine"/' "$HOME/.config/halloy/config.toml"
+                  gsettings set org.gnome.desktop.interface gtk-theme 'adw-gtk3-dark'
+                  [ -f "$HOME/.config/halloy/config.toml" ] && sed -i 's/theme = "rose-pine-dawn"/theme = "rose-pine"/' "$HOME/.config/halloy/config.toml"
                   # QT Themes
                   sed -i 's/^theme=.*/theme=rose-pine-moon-iris/' "$KVANTUM_THEME_FILE"
                   kvantummanager --set "rose-pine-moon-iris" || true
                 else
                   echo "light" > "$OCF_THEME_FILE"
-                  sed -i -E 's/bg-(light|dark)/bg-light/g' "$COSMIC_BG_FILE"
+                  [ -f "$COSMIC_BG_FILE" ] && sed -i -E 's/bg-(light|dark)/bg-light/g' "$COSMIC_BG_FILE"
                   gsettings set org.gnome.desktop.interface color-scheme prefer-light
-                  sed -i 's/theme = "rose-pine"/theme = "rose-pine-dawn"/' "$HOME/.config/halloy/config.toml"
+                  gsettings set org.gnome.desktop.interface gtk-theme 'adw-gtk3'
+                  [ -f "$HOME/.config/halloy/config.toml" ] && sed -i 's/theme = "rose-pine"/theme = "rose-pine-dawn"/' "$HOME/.config/halloy/config.toml"
                   # QT Themes
                   sed -i 's/^theme=.*/theme=rose-pine-dawn-iris/' "$KVANTUM_THEME_FILE"
                   kvantummanager --set "rose-pine-dawn-iris" || true
@@ -317,6 +330,7 @@ in
             sleep 1
 
             # Watch for changes
+            mkdir -p "$(dirname "$COSMIC_THEME_FILE")"
             ${pkgs.inotify-tools}/bin/inotifywait -m -e close_write,moved_to,create \
               "$(dirname "$COSMIC_THEME_FILE")" 2>/dev/null | while read -r dir events file; do
               if [ "$file" = "is_dark" ]; then
