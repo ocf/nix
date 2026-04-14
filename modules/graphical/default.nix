@@ -269,7 +269,7 @@ in
             QT5CT_FILE="$HOME/.config/qt5ct/qt5ct.conf"
             QT6CT_FILE="$HOME/.config/qt6ct/qt6ct.conf"
 
-            mkdir -p "$(dirname "$KVANTUM_THEME_FILE")" "$(dirname "$QT5CT_FILE")" "$(dirname "$QT6CT_FILE")"
+            mkdir -p "$(dirname "$KVANTUM_THEME_FILE")" "$(dirname "$QT5CT_FILE")" "$(dirname "$QT6CT_FILE")" "$(dirname "$COSMIC_THEME_FILE")"
 
             # Ensure kvantum knows where to find the rose pine themes
             ln -sfT ${pkgs.rose-pine-kvantum}/share/Kvantum/themes/$KVANTUM_DARK_THEME "$HOME/.config/Kvantum/$KVANTUM_DARK_THEME" || true
@@ -331,7 +331,6 @@ in
             sleep 1
 
             # Watch for changes
-            mkdir -p "$(dirname "$COSMIC_THEME_FILE")"
             ${pkgs.inotify-tools}/bin/inotifywait -m -e close_write,moved_to,create \
               "$(dirname "$COSMIC_THEME_FILE")" 2>/dev/null | while read -r dir events file; do
               if [ "$file" = "is_dark" ]; then
