@@ -6,8 +6,6 @@
     ../../profiles/desktop.nix
   ];
 
-  boot.blacklistedKernelModules = [ "amdgpu" ];
-
   networking.hostName = "princess";
 
   ocf.network = {
