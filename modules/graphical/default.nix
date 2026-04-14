@@ -122,6 +122,13 @@ in
         # Conflict override since multiple DEs set this option
         programs.ssh.askPassword = pkgs.lib.mkForce (lib.getExe pkgs.ksshaskpass.out);
 
+        xdg.portal = {
+          enable = true;
+          extraPortals = with pkgs; [
+            xdg-desktop-portal-gtk
+          ];
+        };
+
         environment.systemPackages = with pkgs; [
           catppuccin-sddm
 
@@ -140,6 +147,13 @@ in
 
           # OCF IRC
           halloy
+
+          # Themes
+          adw-gtk3
+          libsForQt5.qt5ct
+          kdePackages.qt6ct
+          kdePackages.qtstyleplugin-kvantum
+          rose-pine-kvantum
         ];
 
         fonts.packages = with pkgs; [
@@ -147,6 +161,12 @@ in
           noto-fonts
           noto-fonts-cjk-sans
         ];
+
+        environment.sessionVariables = {
+          QT_QPA_PLATFORMTHEME = "qt5ct";
+        };
+
+        programs.dconf.enable = true;
 
         services = {
           desktopManager.cosmic = {
@@ -239,21 +259,55 @@ in
             COSMIC_THEME_FILE="$HOME/.config/cosmic/com.system76.CosmicTheme.Mode/v1/is_dark"
             COSMIC_BG_FILE="$HOME/.config/cosmic/com.system76.CosmicBackground/v1/all"
             OCF_THEME_FILE="$HOME/remote/.config/ocf/theme"
+            KVANTUM_THEME_FILE="$HOME/.config/Kvantum/kvantum.kvconfig"
+            KVANTUM_LIGHT_THEME="rose-pine-dawn-iris"
+            KVANTUM_DARK_THEME="rose-pine-moon-iris"
+            GTK_LIGHT_THEME="adw-gtk3"
+            GTK_DARK_THEME="adw-gtk3-dark"
+            HALLOY_LIGHT_THEME="rose-pine-dawn"
+            HALLOY_DARK_THEME="rose-pine"
+            QT5CT_FILE="$HOME/.config/qt5ct/qt5ct.conf"
+            QT6CT_FILE="$HOME/.config/qt6ct/qt6ct.conf"
+
+            mkdir -p "$(dirname "$KVANTUM_THEME_FILE")" "$(dirname "$QT5CT_FILE")" "$(dirname "$QT6CT_FILE")" "$(dirname "$COSMIC_THEME_FILE")"
+
+            # Ensure kvantum knows where to find the rose pine themes
+            ln -sfT ${pkgs.rose-pine-kvantum}/share/Kvantum/themes/$KVANTUM_DARK_THEME "$HOME/.config/Kvantum/$KVANTUM_DARK_THEME" || true
+            ln -sfT ${pkgs.rose-pine-kvantum}/share/Kvantum/themes/$KVANTUM_LIGHT_THEME "$HOME/.config/Kvantum/$KVANTUM_LIGHT_THEME" || true
+
+            # Initialize qt5ct and qt6ct if not present
+            if [ ! -f "$QT5CT_FILE" ]; then
+              printf '[Appearance]\nstyle=kvantum\n' > "$QT5CT_FILE"
+            fi
+            if [ ! -f "$QT6CT_FILE" ]; then
+              printf '[Appearance]\nstyle=kvantum\n' > "$QT6CT_FILE"
+            fi
 
             sync_theme() {
               if [ -f "$COSMIC_THEME_FILE" ]; then
                 content=$(cat "$COSMIC_THEME_FILE")
                 mkdir -p "$(dirname "$OCF_THEME_FILE")"
+
                 if [ "$content" = "true" ]; then
                   echo "dark" > "$OCF_THEME_FILE"
-                  sed -i -E 's/bg-(light|dark)/bg-dark/g' $COSMIC_BG_FILE
+                  [ -f "$COSMIC_BG_FILE" ] && sed -i -E 's/bg-(light|dark)/bg-dark/g' "$COSMIC_BG_FILE"
+                  # Set GTK theme to dark
                   gsettings set org.gnome.desktop.interface color-scheme prefer-dark
-                  sed -i 's/theme = "rose-pine-dawn"/theme = "rose-pine"/' $HOME/.config/halloy/config.toml
+                  gsettings set org.gnome.desktop.interface gtk-theme "$GTK_DARK_THEME"
+                  [ -f "$HOME/.config/halloy/config.toml" ] && sed -i "s/theme = \"$HALLOY_LIGHT_THEME\"/theme = \"$HALLOY_DARK_THEME\"/" "$HOME/.config/halloy/config.toml"
+                  # Set QT theme to dark
+                  sed -i "s/^theme=.*/theme=$KVANTUM_DARK_THEME/" "$KVANTUM_THEME_FILE"
+                  kvantummanager --set "$KVANTUM_DARK_THEME" || true
                 else
                   echo "light" > "$OCF_THEME_FILE"
-                  sed -i -E 's/bg-(light|dark)/bg-light/g' $COSMIC_BG_FILE
+                  [ -f "$COSMIC_BG_FILE" ] && sed -i -E 's/bg-(light|dark)/bg-light/g' "$COSMIC_BG_FILE"
+                  # Set GTK theme to light
                   gsettings set org.gnome.desktop.interface color-scheme prefer-light
-                  sed -i 's/theme = "rose-pine"/theme = "rose-pine-dawn"/' $HOME/.config/halloy/config.toml
+                  gsettings set org.gnome.desktop.interface gtk-theme "$GTK_LIGHT_THEME"
+                  [ -f "$HOME/.config/halloy/config.toml" ] && sed -i "s/theme = \"$HALLOY_DARK_THEME\"/theme = \"$HALLOY_LIGHT_THEME\"/" "$HOME/.config/halloy/config.toml"
+                  # Set QT theme to light
+                  sed -i "s/^theme=.*/theme=$KVANTUM_LIGHT_THEME/" "$KVANTUM_THEME_FILE"
+                  kvantummanager --set "$KVANTUM_LIGHT_THEME" || true
                 fi
                 pkill -USR1 halloy || true
               fi
@@ -265,8 +319,10 @@ in
               mkdir -p "$(dirname "$COSMIC_THEME_FILE")"
               if [ "$ocf_theme" = "dark" ]; then
                 echo "true" > "$COSMIC_THEME_FILE"
+                printf '[General]\ntheme=%s\n' "$KVANTUM_DARK_THEME" > "$KVANTUM_THEME_FILE"
               elif [ "$ocf_theme" = "light" ]; then
                 echo "false" > "$COSMIC_THEME_FILE"
+                printf '[General]\ntheme=%s\n' "$KVANTUM_LIGHT_THEME" > "$KVANTUM_THEME_FILE"
               fi
             fi
             sync_theme
