@@ -185,6 +185,11 @@ in
                 RememberLastUser = false;
                 RememberLastSession = false;
               };
+
+              # reset display brightness to 100% on logout/boot
+              setupScript = ''
+                ${pkgs.ddcutil}/bin/ddcutil setvcp 10 100";
+              '';
             };
           };
         };
