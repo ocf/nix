@@ -162,9 +162,12 @@ in
           noto-fonts-cjk-sans
         ];
 
-        environment.sessionVariables = {
-          QT_QPA_PLATFORMTHEME = "qt5ct";
-        };
+        # Only change the setting for cosmic
+        environment.extraInit = ''
+          if [ "$XDG_CURRENT_DESKTOP" = "COSMIC" ]; then
+            export QT_QPA_PLATFORMTHEME="qt5ct"
+          fi
+        '';
 
         programs.dconf.enable = true;
 
