@@ -189,6 +189,18 @@ in
           };
         };
 
+        systemd.user.services.brightness-reset = {
+          description = "Reset monitor brightness to 100% on logout";
+          partOf = [ "graphical-session.target" ];
+          wantedBy = [ "graphical-session.target" ];
+          serviceConfig = {
+            Type = "oneshot";
+            RemainAfterExit = true;
+            ExecStart = "${pkgs.coreutils}/bin/true";
+            ExecStop = "${pkgs.ddcutil}/bin/ddcutil setvcp 10 85";
+          };
+        };
+
         systemd.user.services.wayout = {
           description = "Automatic idle logout manager";
           after = [ "graphical-session.target" ];
