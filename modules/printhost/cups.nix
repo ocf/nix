@@ -162,6 +162,9 @@ in
           -P ${epsonPpd} \
           -D "OCF Color" -L "OCF lab" \
           -E -o printer-is-shared=true -o Duplex=None -o PageSize=Letter
+
+        # remove hpps from ppd
+        sed -i 's/^\*cupsFilter:.*hpps.*/%&/' /etc/cups/ppd/OCF-BW.ppd
       '';
     };
 
