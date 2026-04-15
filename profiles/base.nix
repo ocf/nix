@@ -55,6 +55,7 @@ in
     managed-deployment.enable = lib.mkDefault true;
     acme.enable = lib.mkDefault true;
     shell.enable = lib.mkDefault true;
+    motd.enable = lib.mkDefault true;
   };
 
   age.rekey = {
