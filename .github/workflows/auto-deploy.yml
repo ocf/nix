@@ -14,41 +14,7 @@ jobs:
     runs-on: ci-ocf-nix-deploy
     steps:
       - uses: actions/checkout@v4
-
-      - name: Setup hosts
-        run: |
-          HOSTS=$(nix eval .#autoDeploy.nodes --apply 'builtins.concatStringsSep " "' --raw)
-          HOST_MACS=$(nix eval .#autoDeploy.MACs --apply 'builtins.concatStringsSep " "' --raw)
-          echo "HOSTS=$HOSTS" >> $GITHUB_ENV
-          echo "HOST_MACS=$HOST_MACS" >> $GITHUB_ENV
-
-      - name: Setup SSH
-        run: |
-          echo '${{ secrets.COLMENA_APPLY_SSH_KEY }}' > ${{ github.workspace }}/id_ed25519
-          chmod 400 id_ed25519
-
-          for host in ${HOSTS}; do
-            cat secrets/host-keys/$host.pub | sed "s/^/$host.ocf.berkeley.edu /" >> known_hosts
-          done
-
-          echo "
-          CanonicalizeHostname yes
-          CanonicalDomains ocf.berkeley.edu
-          Identityfile $GITHUB_WORKSPACE/id_ed25519
-          UserKnownHostsFile $GITHUB_WORKSPACE/known_hosts
-          StrictHostKeyChecking yes
-          UpdateHostKeys no
-          Host *
-            User ocf-nix-deploy-user
-          " >> ${{ github.workspace }}/ssh_config
-
-      - name: Wake up hosts
-        run: |
-          # not using quotes here so that each mac address is a separate argument
-          if ! nix develop .#deploy -c wol $HOST_MACS; then
-            echo '❌ Failed to wakeup nodes'
-          fi
-
+      - uses: ./composite/setup-hosts.yml
       - name: Deploy with colmena
         env:
           SSH_CONFIG_FILE: ${{ github.workspace }}/ssh_config
