@@ -179,13 +179,13 @@ def page_count(env):
 
     try:
         with open(filepath, 'rb') as f:
-            header_chunk = f.read(4096)
+            header_chunk = f.read(8192)
             f.seek(0)
 
             # ==========================================
             # POSTSCRIPT PARSING LOGIC
             # ==========================================
-            if b'%!' in header_chunk:
+            if header_chunk.lstrip().startswith(b'%!') or b'ENTER LANGUAGE=POSTSCRIPT' in header_chunk:
                 for line in f:
                     if b'%%Pages:' in line or b'%RBINumCopies:' in line:
                         line_str = line.decode('utf-8', errors='ignore').strip()
