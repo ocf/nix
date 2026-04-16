@@ -38,6 +38,10 @@
 
   security.rtkit.enable = true;
 
+  systemd.tmpfiles.rules = [
+    "d /home/o/oc/ocftv/ 0700 ocftv ocf -"
+  ];
+
   services = {
     mpd = {
       enable = true;
