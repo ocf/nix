@@ -2,21 +2,18 @@
 
 {
   imports = [
-    ../../hardware/old-pc.nix
+    ../../hardware/system76-meerkat.nix
   ];
 
-  networking.hostName = "termites";
+  networking.hostName = "anglerfish";
 
   ocf = {
-    # this machine is not currently in use and cannot be deployed to
-    managed-deployment.automated-deploy = false;
-
     auth.enable = true;
     graphical.apps.browsers.enable = true;
 
     network = {
       enable = true;
-      lastOctet = 95;
+      lastOctet = 106;
     };
 
     jukebox = {
@@ -27,22 +24,12 @@
 
     graphical.kiosk = {
       enable = true;
-      url = "https://labmap.ocf.berkeley.edu"; # https://kinn.dev/labmap2;
+      url = "https://labmap.ocf.berkeley.edu";
       extraConfig = ''
         output HDMI-A-1 {
-          mode 1920x1080@60Hz
-          pos 3840 0
-        }
-
-        output HDMI-A-3 {
           mode 3840x2160@60Hz
-          pos 0 0
           scale 2
         }
-
-        workspace 1 output HDMI-A-3
-        assign [class="."] 1
-        focus output HDMI-A-3
       '';
     };
   };
@@ -50,6 +37,10 @@
   fonts.packages = [ pkgs.helvetica-neue-lt-std ];
 
   security.rtkit.enable = true;
+
+  systemd.tmpfiles.rules = [
+    "d /home/o/oc/ocftv/ 0700 ocftv ocf -"
+  ];
 
   services = {
     mpd = {
@@ -103,5 +94,5 @@
   # this value at the release version of the first install of this system.
   # Before changing this value read the documentation for this option
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
-  system.stateVersion = "23.11"; # Did you read the comment?
+  system.stateVersion = "25.11";
 }
