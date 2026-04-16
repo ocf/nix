@@ -8,6 +8,9 @@
   networking.hostName = "termites";
 
   ocf = {
+    # this machine is not currently in use and cannot be deployed to
+    managed-deployment.automated-deploy = false;
+
     auth.enable = true;
     graphical.apps.browsers.enable = true;
 
