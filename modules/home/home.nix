@@ -12,18 +12,6 @@ let
     builtins.readFile ./ocf_mount_remote.sh
   );
   remoteHost = "ssh";
-
-  # Default openssh doesn't include GSSAPI support, so we need to override sshfs
-  # to use the openssh_gssapi package instead. This is annoying because the
-  # sshfs package's openssh argument is nested in another layer of callPackage,
-  # so we override callPackage instead to override openssh.
-  sshfs = pkgs.sshfs.override {
-    callPackage =
-      fn: args:
-      (pkgs.callPackage fn args).override {
-        openssh = pkgs.openssh_gssapi;
-      };
-  };
 in
 {
   options.ocf.home = {
