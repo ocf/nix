@@ -172,6 +172,7 @@
                 "claude-code"
                 "dwarf-fortress"
                 "google-chrome"
+                "microsoft-edge"
                 "helvetica-neue-lt-std" # tornado
                 "mongodb" # zecora for unifi
                 "nvidia-settings"

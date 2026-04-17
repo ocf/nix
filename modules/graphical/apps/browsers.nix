@@ -30,6 +30,7 @@ in
         tor-browser
         mullvad-browser
         google-chrome # absolutely proprietary
+        microsoft-edge
         ungoogled-chromium
       ];
 
