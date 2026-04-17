@@ -159,8 +159,7 @@ NON_LETTER_ERROR_MESSAGE = Message(
 
         This email is letting you know that your most recent print job was
         rejected since it was not letter sized. Please ensure that you are
-        following all instructions on the computers, and not printing
-        directly from your browser.
+        following all instructions on the computers.
 
         """) + USER_ERROR_INFO + dedent("""
 
@@ -172,8 +171,7 @@ NON_LETTER_ERROR_MESSAGE = Message(
 )
 
 NOTIFY_NON_LETTER = dedent("""\
-        Your print job '{document}' failed due to not being letter sized.
-        Please ensure you are not printing from your browser.
+        Your print job '{document}' failed due to not being letter sized.\
 """)
 
 
