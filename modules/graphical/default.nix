@@ -165,7 +165,7 @@ in
         # Only change the setting for cosmic
         environment.extraInit = ''
           if [ "$XDG_CURRENT_DESKTOP" = "COSMIC" ]; then
-            export QT_QPA_PLATFORMTHEME="qt6ct"
+            export QT_QPA_PLATFORMTHEME="kde"
           fi
         '';
 
