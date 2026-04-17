@@ -152,6 +152,28 @@ NOTIFY_JOB_ERROR = dedent("""\
         Please contact a staff member for assistance.\
 """)
 
+NON_LETTER_ERROR_MESSAGE = Message(
+    subject='[OCF] Your latest print job failed',
+    body=dedent("""\
+        Greetings from the Open Computing Facility,
+
+        This email is letting you know that your most recent print job was
+        rejected since it was not letter sized. Please ensure that you are
+        following all instructions on the computers.
+
+        """) + USER_ERROR_INFO + dedent("""
+
+        Does something look wrong? Please reply to
+
+            help@ocf.berkeley.edu
+
+        """) + MAIL_SIGNATURE
+)
+
+NOTIFY_NON_LETTER = dedent("""\
+        Your print job '{document}' failed due to not being letter sized.\
+""")
+
 
 def read_config():
     with open(os.environ['ENFORCER_MYSQL_PASSWORD']) as f:
@@ -251,6 +273,32 @@ def page_count(env):
     return total_sides
 
 
+LETTER_SIZES = {'Letter', '279x215mm', '215x279mm', '279x216mm', '216x279mm'}
+
+
+def page_size(env):
+    """Read the page size from PostScript %%PageMedia: or %%DocumentMedia: comments.
+
+    Mirrors the old enforcer-size bash script: check the first and last 20 lines
+    of the PostScript file for these DSC comments. Returns None for non-PostScript
+    files (the check is skipped in that case).
+    """
+    path = env['TEADATAFILE']
+    with open(path, 'rb') as f:
+        header_chunk = f.read(4096)
+    if b'%!' not in header_chunk:
+        return None
+    with open(path, 'r', errors='ignore') as f:
+        lines = f.readlines()
+    candidates = lines[:20] + lines[-20:]
+    for line in candidates:
+        if line.startswith('%%PageMedia:'):
+            return line.split()[1] if len(line.split()) > 1 else None
+        if line.startswith('%%DocumentMedia:'):
+            return line.split()[1] if len(line.split()) > 1 else None
+    return None
+
+
 def create_job(env):
     printer = env['TEAPRINTERNAME']
     queue = env['CLASS']
@@ -316,6 +364,14 @@ def get_hostname_from_username(username):
 
 def prehook(c, r, job, wayout_pass):
     quo = quota.get_quota(c, job.user)
+
+    size = page_size(os.environ)
+    if size is not None and size not in LETTER_SIZES:
+        send_printer_mail(NON_LETTER_ERROR_MESSAGE, job, quo)
+        msg = NOTIFY_NON_LETTER.format(document=job.doc_name)
+        r.publish('user-' + job.user, msg)
+        send_notification(wayout_pass, 'Non Letter Error', msg, job.user)
+        sys.exit(255)
 
     if job.pages > quo.daily:
         send_printer_mail(INSUFFICIENT_QUOTA_MESSAGE, job, quo)
