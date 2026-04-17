@@ -50,7 +50,7 @@ let
   '';
 
   # Use official PPDs unmodified; defaults are set via lpadmin -o below.
-  hpPpd = "${pkgs.hplip}/share/cups/model/HP/hp-laserjet_m806-ps.ppd.gz";
+  hpPpd = "${pkgs.ocf-hplip}/share/cups/model/HP/hp-laserjet_m806-ps.ppd.gz";
   epsonPpd = "${pkgs.epson-escpr2}/share/cups/model/epson-inkjet-printer-escpr2/Epson-ET-5880_Series-epson-escpr2-en.ppd";
 
 in
@@ -83,7 +83,7 @@ in
       # hplip provides hpps (HP PPD filter); epson-escpr2 provides epson-escpr-wrapper2.
       drivers = [
         ocfCupsBackend
-        pkgs.hplip
+        pkgs.ocf-hplip
         pkgs.epson-escpr2
       ];
     };

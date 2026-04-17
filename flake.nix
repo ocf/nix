@@ -270,6 +270,7 @@
         catppuccin-sddm = final.qt6Packages.callPackage ./pkgs/catppuccin-sddm.nix { };
         ocf-cosmic-applets = ocf-cosmic-applets.packages.${final.stdenv.hostPlatform.system}.default;
         ocf-cosmic-greeter = final.callPackage ./pkgs/ocf-cosmic-greeter.nix { };
+        ocf-hplip = final.callPackage ./pkgs/ocf-hplip.nix { };
       };
 
       agenix-rekey = agenix-rekey.configure {
