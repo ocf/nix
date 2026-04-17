@@ -329,6 +329,7 @@ in
             }
 
             # Initial sync
+            plasma-apply-colorscheme Kvantum
             if [ -f "$OCF_THEME_FILE" ]; then
               ocf_theme=$(cat "$OCF_THEME_FILE")
               mkdir -p "$(dirname "$COSMIC_THEME_FILE")"
