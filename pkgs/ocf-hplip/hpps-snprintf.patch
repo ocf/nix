@@ -1,0 +1,97 @@
+--- a/prnt/hpps/hppsfilter.c
++++ b/prnt/hpps/hppsfilter.c
+@@ -329,11 +329,11 @@ static void WriteHeader(char **argument)
+     /*      Writing Header Information
+     argument[1] = JOB ID , argument[2]= USERNAME,  argument[3] = TITLE      */
+     hpwrite("\x1b%-12345X@PJL JOBNAME=", strlen("\x1b%-12345X@PJL JOBNAME="));
+-    sprintf(buffer, "hplip_%s_%s\x0a", argument[2], argument[1]);
++    snprintf(buffer, sizeof(buffer), "hplip_%s_%s\x0a", argument[2], argument[1]);
+     hpwrite(buffer, strlen(buffer));
+     memset(buffer, 0, sizeof(buffer));
+-    sprintf(buffer, "@PJL SET USERNAME=\"%s\"\x0a", argument[2]);
++    snprintf(buffer, sizeof(buffer), "@PJL SET USERNAME=\"%s\"\x0a", argument[2]);
+     hpwrite(buffer, strlen(buffer));
+     memset(buffer, 0, sizeof(buffer));
+-    sprintf(buffer, "@PJL SET JOBNAME=\"%s\"\x0a", argument[3]);
++    snprintf(buffer, sizeof(buffer), "@PJL SET JOBNAME=\"%s\"\x0a", argument[3]);
+     hpwrite(buffer, strlen(buffer));
+     fprintf(stderr, "HP PS filter func = WriteHeader           : WRITING PJL HEADER INFO\n");
+     return;
+@@ -453,25 +453,25 @@ static unsigned char WriteJobAccounting(char **argument, int num_options, cups_op
+        const char *val             = NULL;
+        time_t t;
+        struct tm *tmp;
+ 
+ 
+-       sprintf(buffer, "@PJL SET JOBATTR=\"JobAcct1=%s\"\x0a", argument[2]);
++       snprintf(buffer, sizeof(buffer), "@PJL SET JOBATTR=\"JobAcct1=%s\"\x0a", argument[2]);
+        hpwrite(buffer, strlen(buffer));
+        memset(buffer, 0, sizeof(buffer));
+        gethostname(name, sizeof(name));
+        if((strlen(name)) < 1)
+        { 
+-         sprintf(buffer, "@PJL SET JOBATTR=\"JobAcct2=%s\"\x0a", "unknown_system_name");
++         snprintf(buffer, sizeof(buffer), "@PJL SET JOBATTR=\"JobAcct2=%s\"\x0a", "unknown_system_name");
+          hpwrite(buffer, strlen(buffer));
+          memset(buffer, 0, sizeof(buffer));
+        }
+        else
+        {
+-         sprintf(buffer, "@PJL SET JOBATTR=\"JobAcct2=%s\"\x0a", name);
++         snprintf(buffer, sizeof(buffer), "@PJL SET JOBATTR=\"JobAcct2=%s\"\x0a", name);
+          hpwrite(buffer, strlen(buffer));
+          memset(buffer, 0, sizeof(buffer));
+        }
+        memset(name, 0, sizeof(name));
+        getdomainname(name,sizeof(name));
+        if(strstr(name, "none") != NULL)
+        { 
+-           sprintf(buffer, "@PJL SET JOBATTR=\"JobAcct3=%s\"\x0a", "unknown_domain_name");
++           snprintf(buffer, sizeof(buffer), "@PJL SET JOBATTR=\"JobAcct3=%s\"\x0a", "unknown_domain_name");
+            hpwrite(buffer, strlen(buffer));
+            memset(buffer, 0, sizeof(buffer));
+        }
+        else
+        {
+-           sprintf(buffer, "@PJL SET JOBATTR=\"JobAcct3=%s\"\x0a", name);
++           snprintf(buffer, sizeof(buffer), "@PJL SET JOBATTR=\"JobAcct3=%s\"\x0a", name);
+            hpwrite(buffer, strlen(buffer));
+            memset(buffer, 0, sizeof(buffer));
+        }
+@@ -496,7 +496,7 @@ static unsigned char WriteJobAccounting(char **argument, int num_options, cups_op
+              return 0;
+           }
+ 
+-           sprintf(buffer, "@PJL SET JOBATTR=\"JobAcct4=%s\"\x0a", outstr);
++           snprintf(buffer, sizeof(buffer), "@PJL SET JOBATTR=\"JobAcct4=%s\"\x0a", outstr);
+            hpwrite(buffer, strlen(buffer));
+            memset(buffer, 0, sizeof(buffer));
+            if((val = cupsGetOption("job-uuid", num_options, options)) != NULL)
+@@ -505,7 +505,7 @@ static unsigned char WriteJobAccounting(char **argument, int num_options, cups_op
+                 if(input_slot)
+                 {
+-                 sprintf(buffer, "@PJL SET JOBATTR=\"JobAcct5=%s\"\x0a", input_slot);
++                 snprintf(buffer, sizeof(buffer), "@PJL SET JOBATTR=\"JobAcct5=%s\"\x0a", input_slot);
+                  hpwrite(buffer, strlen(buffer));
+                  memset(buffer, 0, sizeof(buffer));
+                  
+@@ -515,11 +515,11 @@ static unsigned char WriteJobAccounting(char **argument, int num_options, cups_op
+             { 
+               fprintf(stderr, "HP PS filter func = WriteJobAccounting : JOB ACCOUNTING INFO FAILED -3\n");
+               return 0;
+             }
+-            sprintf(buffer, "@PJL SET JOBATTR=\"JobAcct6=%s\"\x0a", "HP Linux Printing");
++            snprintf(buffer, sizeof(buffer), "@PJL SET JOBATTR=\"JobAcct6=%s\"\x0a", "HP Linux Printing");
+             hpwrite(buffer, strlen(buffer));
+             memset(buffer, 0, sizeof(buffer));
+ 
+-            sprintf(buffer, "@PJL SET JOBATTR=\"JobAcct7=%s\"\x0a", "HP Linux Printing");
++            snprintf(buffer, sizeof(buffer), "@PJL SET JOBATTR=\"JobAcct7=%s\"\x0a", "HP Linux Printing");
+             hpwrite(buffer, strlen(buffer));
+             memset(buffer, 0, sizeof(buffer));
+ 
+-            sprintf(buffer, "@PJL SET JOBATTR=\"JobAcct8=%s\"\x0a", argument[2]);
++            snprintf(buffer, sizeof(buffer), "@PJL SET JOBATTR=\"JobAcct8=%s\"\x0a", argument[2]);
+             hpwrite(buffer, strlen(buffer));
+             memset(buffer, 0, sizeof(buffer));
+             fprintf(stderr, "HP PS filter func = WriteJobAccounting    : WRITING JOB ACCOUNTING INFO\n");
