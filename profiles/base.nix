@@ -163,7 +163,6 @@ in
     pigz
     ranger
     ncdu
-    molly-guard
     beep
     gist
 

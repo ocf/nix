@@ -24,6 +24,12 @@ in
     default = "";
   };
 
+  options.ocf.managed-deployment.staffOnlySsh = lib.mkOption {
+    type = lib.types.bool;
+    description = "Restrict SSH access to ocfstaff. Disable for public login servers (as of now, only carp).";
+    default = true;
+  };
+
   config = lib.mkIf cfg.enable {
     nix.settings.trusted-users = [ deploy-user ];
 
@@ -82,6 +88,12 @@ in
           }
         ];
       }
+    ];
+
+    services.openssh.settings.AllowGroups = lib.mkIf cfg.staffOnlySsh [
+      "ocfstaff"
+      "ocfroot"
+      deploy-user
     ];
   };
 }

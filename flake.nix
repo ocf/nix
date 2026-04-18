@@ -165,7 +165,6 @@
         import nixpkgs {
           inherit overlays system;
           config = {
-            permittedInsecurepackages = [ "unifi-controller-9.5.21" ];
             allowUnfreePredicate =
               pkg:
               builtins.elem (nixpkgs.lib.getName pkg) [
@@ -174,12 +173,10 @@
                 "dwarf-fortress"
                 "google-chrome"
                 "helvetica-neue-lt-std" # tornado
-                "mongodb" # zecora for unifi
                 "nvidia-settings"
                 "nvidia-x11"
                 "steam"
                 "steam-unwrapped"
-                "unifi-controller"
                 "vscode"
                 "zoom"
                 "drawio"
