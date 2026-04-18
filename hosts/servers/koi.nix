@@ -15,6 +15,11 @@
     lastOctet = 129;
   };
 
+  ocf.etc.enable = true;
+  ocf.userPackages.enable = true;
+
+  services.openssh.settings.PasswordAuthentication = true;
+
   ocf.nfs = {
     enable = true;
     mountHome = true;

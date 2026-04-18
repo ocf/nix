@@ -38,6 +38,8 @@ in
 
     graphical.enable = true;
     graphical.extra = true;
+
+    userPackages.enable = true;
   };
 
   boot = {
