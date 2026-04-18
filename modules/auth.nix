@@ -41,6 +41,7 @@ in
           tls_reqcert hard
           tls_cacert /etc/ssl/certs/ca-certificates.crt
 
+          base dc=ocf,dc=berkeley,dc=edu
           nss_base_passwd ou=people,dc=ocf,dc=berkeley,dc=edu
           nss_base_group  ou=group,dc=ocf,dc=berkeley,dc=edu
 
