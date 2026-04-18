@@ -15,6 +15,8 @@
     lastOctet = 130;
   };
 
+  ocf.managed-deployment.staffOnlySsh = false;
+
   ocf.ttyd.enable = true;
   ocf.etc.enable = true;
   ocf.userPackages.enable = true;
