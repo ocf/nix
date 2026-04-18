@@ -201,67 +201,29 @@ def page_count(env):
 
     try:
         with open(filepath, 'rb') as f:
-            header_chunk = f.read(4096)
-            f.seek(0)
-
             # ==========================================
             # POSTSCRIPT PARSING LOGIC
             # ==========================================
-            if b'%!' in header_chunk:
-                for line in f:
-                    if b'%%Pages:' in line or b'%RBINumCopies:' in line:
-                        line_str = line.decode('utf-8', errors='ignore').strip()
-                        
-                        pages_match = re.search(r'^%%Pages:\s+(\d+)', line_str)
-                        if pages_match:
-                            try:
-                                pages = int(pages_match.group(1))
-                            except ValueError:
-                                syslog(f"non-integer output when processing PS pages: {pages_match}")
-                                pass
-                        
-                        # always use PostScript copies                        
-                        copies_match = re.search(r'^%RBINumCopies:\s+(\d+)', line_str)
-                        if copies_match:
-                            try:
-                                copies = int(copies_match.group(1))
-                            except ValueError:
-                                syslog(f"non-integer output when processing PS copies: {copies_match}")
-                                pass
-
-            # ==========================================
-            # EJL / PDF LOGIC (Using qpdf)
-            # ==========================================
-            else:
-                if job_id:
-                    # Formats job 2 into 'd00002-001'
-                    spool_filename = f"d{int(job_id):05}-001"
-                    potential_path = os.path.join('/var/spool/cups', spool_filename)
+            for line in f:
+                if b'%%Pages:' in line or b'%RBINumCopies:' in line:
+                    line_str = line.decode('utf-8', errors='ignore').strip()
                     
-                    if os.path.exists(potential_path):
-                        filepath = potential_path
-                try:
-                    # Call qpdf to get the number of pages. 
-                    # --show-npages outputs just the integer (e.g., "5\n")
-                    result = subprocess.run(
-                        ['@qpdf@', '--show-npages', filepath],
-                        capture_output=True,
-                        text=True,
-                        check=True
-                    )
-                    pages = int(result.stdout.strip())
+                    pages_match = re.search(r'^%%Pages:\s+(\d+)', line_str)
+                    if pages_match:
+                        try:
+                            pages = int(pages_match.group(1))
+                        except ValueError:
+                            syslog(f"non-integer output when processing PS pages: {pages_match}")
+                            pass
                     
-                except subprocess.CalledProcessError as e:
-                    # qpdf will exit with an error if the file isn't a valid PDF
-                    syslog(f"qpdf failed to parse {filepath}: {e.stderr.strip()}")
-                    pass
-                except FileNotFoundError:
-                    syslog("qpdf is not installed or not in the system PATH.")
-                    pass
-                except ValueError:
-                    syslog(f"qpdf returned non-integer output: {result.stdout}")
-                    pass
-
+                    # always use PostScript copies                        
+                    copies_match = re.search(r'^%RBINumCopies:\s+(\d+)', line_str)
+                    if copies_match:
+                        try:
+                            copies = int(copies_match.group(1))
+                        except ValueError:
+                            syslog(f"non-integer output when processing PS copies: {copies_match}")
+                            pass
     except Exception as e:
         syslog(f"Page count error: {e}")
         pass
