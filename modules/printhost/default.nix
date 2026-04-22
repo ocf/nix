@@ -80,29 +80,79 @@
         certCfg = config.ocf.printhost.printerCerts;
         certDir = "/var/lib/acme/${config.networking.hostName}.ocf.berkeley.edu";
         uploadScript = printerUrl: ''
-          umask 077
-          pfx=$(mktemp /run/printer-cert-XXXXXX.pfx)
-          trap 'rm -f "$pfx"' EXIT
-          pass=$(${pkgs.openssl}/bin/openssl rand -base64 32)
-          admin_pass=$(cat ${certCfg.adminPasswordFile})
+          set -euo pipefail
+
+          jar=$(${pkgs.coreutils}/bin/mktemp)
+          pfx=$(${pkgs.coreutils}/bin/mktemp)
+          trap 'rm -f "$jar" "$pfx"' EXIT
+
+          admin_pass=$(< ${certCfg.adminPasswordFile})
+          pfx_pass=$(${pkgs.openssl}/bin/openssl rand -base64 32)
 
           ${pkgs.openssl}/bin/openssl pkcs12 -export \
             -out "$pfx" \
             -inkey ${certDir}/key.pem \
             -in ${certDir}/cert.pem \
-            -passout pass:"$pass"
+            -passout pass:"$pfx_pass"
 
-          ${pkgs.curl}/bin/curl -v --insecure \
-            -u admin:"$admin_pass" \
-            -X PUT \
-            -H "Content-Type: application/octet-stream" \
-            -H "X-Certificate-Password: $pass" \
-            --data-binary "@$pfx" \
-            https://${printerUrl}/hp/device/Certificate.pfx
+          CURL="${pkgs.curl}/bin/curl --fail-with-body -sS -k -b $jar -c $jar"
+
+          # 1. Get sign-in page, scrape its CSRF token
+          signin_page=$($CURL https://${printerUrl}/hp/device/SignIn/Index)
+          signin_csrf=$(printf '%s' "$signin_page" \
+            | ${pkgs.gnugrep}/bin/grep -oP 'name="CSRFToken" value="\K[^"]+' \
+            | ${pkgs.coreutils}/bin/head -n1)
+
+          # 2. Sign in
+          $CURL -X POST https://${printerUrl}/hp/device/SignIn/Index \
+            --data-urlencode "CSRFToken=$signin_csrf" \
+            --data-urlencode "PasswordTextBox=$admin_pass" \
+            --data-urlencode "signInOk=Sign In" \
+            -o /dev/null
+
+          # 3. Get certificates page (now authenticated) for upload CSRF + current cert ID
+          cert_page=$($CURL https://${printerUrl}/hp/device/CertificatesTabs/Index)
+          upload_csrf=$(printf '%s' "$cert_page" \
+            | ${pkgs.gnugrep}/bin/grep -oP 'name="CSRFToken" value="\K[^"]+' \
+            | ${pkgs.coreutils}/bin/head -n1)
+          cert_id=$(printf '%s' "$cert_page" \
+            | ${pkgs.gnugrep}/bin/grep -oP 'value="ID\|[A-F0-9]+"' \
+            | ${pkgs.coreutils}/bin/head -n1 \
+            | ${pkgs.gnused}/bin/sed 's/^value="//; s/"$//')
+
+          if [ -z "$upload_csrf" ] || [ -z "$cert_id" ]; then
+            echo "failed to scrape CSRF or cert ID from ${printerUrl} (sign-in likely failed)" >&2
+            exit 1
+          fi
+
+          # 4. Upload the PFX
+          $CURL -X POST \
+            "https://${printerUrl}/hp/device/CertificatesTabs/Save?jsAnchor=IdentityCertificatesViewSectionId" \
+            -F "CSRFToken=$upload_csrf" \
+            -F "curSelTab=CertificateManagementController" \
+            -F "InstallCertConsolidateID=importCertificate" \
+            -F "SignedCertFile=@$pfx;type=application/octet-stream" \
+            -F "certPassword=$pfx_pass" \
+            -F "certificateFile=;filename=" \
+            -F "certificatesRadioList=$cert_id" \
+            -F "InstallButton=Install" \
+            -F "StepBackAnchor=IdentityCertificatesViewSectionId" \
+            -F "jsAnchor=IdentityCertificatesViewSectionId" \
+            -o /tmp/cert-upload-response.html \
+            -w "${printerUrl}: HTTP %{http_code}\n"
+
+          # Check for error banner in response
+          if ${pkgs.gnugrep}/bin/grep -q 'message-error' /tmp/cert-upload-response.html; then
+            err=$(${pkgs.gnugrep}/bin/grep -oP '<h2>\K[^<]+' /tmp/cert-upload-response.html | ${pkgs.coreutils}/bin/head -n1)
+            echo "${printerUrl}: install failed: $err" >&2
+            exit 1
+          fi
         '';
       in
       lib.mkIf (certCfg.printerUrls != [ ]) (
-        lib.concatMapStringsSep "\n" uploadScript certCfg.printerUrls
+        lib.concatMapStringsSep "\n" (url: ''
+          ( ${uploadScript url} ) || echo "cert upload failed for ${url}" >&2
+        '') certCfg.printerUrls
       );
   };
 }
