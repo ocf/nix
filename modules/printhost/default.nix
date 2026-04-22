@@ -94,9 +94,11 @@
 
           ${pkgs.curl}/bin/curl -v --insecure \
             -u admin:"$admin_pass" \
-            --form certificate=@"$pfx" \
-            --form password="$pass" \
-            https://${printerUrl}/Security/DeviceCertificates/NewCertWithPassword/Upload
+            -X PUT \
+            -H "Content-Type: application/octet-stream" \
+            -H "X-Certificate-Password: $pass" \
+            --data-binary "@$pfx" \
+            https://${printerUrl}/hp/device/Certificate.pfx
         '';
       in
       lib.mkIf (certCfg.printerUrls != [ ]) (
