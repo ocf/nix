@@ -93,6 +93,11 @@
             -out "$pfx" \
             -inkey ${certDir}/key.pem \
             -in ${certDir}/cert.pem \
+            -certfile ${certDir}/chain.pem \
+            -legacy \
+            -keypbe PBE-SHA1-3DES \
+            -certpbe PBE-SHA1-3DES \
+            -macalg SHA1 \
             -passout pass:"$pfx_pass"
 
           CURL="${pkgs.curl}/bin/curl --fail-with-body -sS -k -b $jar -c $jar"
