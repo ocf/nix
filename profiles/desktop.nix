@@ -36,6 +36,8 @@
 
     graphical.enable = true;
     graphical.extra = true;
+
+    userPackages.enable = true;
   };
 
   boot = {
@@ -86,7 +88,15 @@
 
     # IRC password prompt
     kdePackages.kdialog
+
+    ddcutil # for monitor brightness control
   ];
+
+  # enable i2c and set udev rules for monitor brightness control
+  boot.kernelModules = [ "i2c-dev" ];
+  services.udev.extraRules = ''
+    KERNEL=="i2c-[0-9]*", RUN+="${pkgs.coreutils}/bin/chgrp 1000 /dev/%k", RUN+="${pkgs.coreutils}/bin/chmod 0660 /dev/%k"
+  '';
 
   services = {
     avahi.enable = true;

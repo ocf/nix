@@ -173,12 +173,10 @@
                 "dwarf-fortress"
                 "google-chrome"
                 "helvetica-neue-lt-std" # tornado
-                "mongodb" # zecora for unifi
                 "nvidia-settings"
                 "nvidia-x11"
                 "steam"
                 "steam-unwrapped"
-                "unifi-controller"
                 "vscode"
                 "zoom"
                 "drawio"
@@ -268,10 +266,9 @@
         ocf-jukebox = ocf-jukebox.packages.${final.stdenv.hostPlatform.system}.default;
         plasma-applet-commandoutput = final.callPackage ./pkgs/plasma-applet-commandoutput.nix { };
         catppuccin-sddm = final.qt6Packages.callPackage ./pkgs/catppuccin-sddm.nix { };
-        ocf-papers = final.callPackage ./pkgs/ocf-papers.nix { };
-        ocf-okular = final.kdePackages.callPackage ./pkgs/ocf-okular.nix { };
         ocf-cosmic-applets = ocf-cosmic-applets.packages.${final.stdenv.hostPlatform.system}.default;
         ocf-cosmic-greeter = final.callPackage ./pkgs/ocf-cosmic-greeter.nix { };
+        ocf-hplip = final.callPackage ./pkgs/ocf-hplip.nix { };
       };
 
       agenix-rekey = agenix-rekey.configure {

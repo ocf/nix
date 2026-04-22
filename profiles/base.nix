@@ -34,6 +34,7 @@ in
     settings = {
       experimental-features = "nix-command flakes";
       nix-path = lib.mapAttrsToList (name: _: "${name}=flake:${name}") inputs;
+      builders-use-substitutes = true;
     };
     gc = {
       automatic = true;
@@ -130,19 +131,46 @@ in
     mtr
     traceroute
     iperf
+    iperf3
     vnstat
     nethogs
     netcat-openbsd
     nmap
+    iftop
+    tcpdump
+    whois
 
     # Other useful stuff
     tmux
+    screen
+    dtach
+    reptyr
     htop
     btop
     git
     killall
+    inetutils
     ldapvi
     openldap
+    lsof
+    jq
+    pv
+    pwgen
+    tree
+    unzip
+    moreutils
+    pigz
+    ranger
+    ncdu
+    beep
+    gist
+
+    # System administration
+    iotop
+    parted
+    powertop
+    cryptsetup
+    quota
 
     # files
     dua
@@ -150,6 +178,11 @@ in
     file
     micro
     ripgrep
+    hexedit
+    dos2unix
+    bat
+    lsd
+    emacs
 
     # Default openssh doesn't include GSSAPI support, so we need to override sshfs
     # to use the openssh_gssapi package instead. This is annoying because the
@@ -171,7 +204,16 @@ in
     kubectl
 
     # OCF utilities
-    (python312.withPackages (ps: [ ps.ocflib ]))
+    (python312.withPackages (
+      ps: with ps; [
+        ocflib
+        dnspython
+        paramiko
+        requests
+        tabulate
+        virtualenv
+      ]
+    ))
     ocf-utils
   ];
 
@@ -199,6 +241,8 @@ in
         ln -s ${lib.getExe pkgs.zsh} $out/zsh
         ln -s ${lib.getExe pkgs.fish} $out/fish
         ln -s ${lib.getExe pkgs.xonsh} $out/xonsh
+        ln -s ${lib.getExe pkgs.tcsh} $out/tcsh
+        ln -s ${lib.getExe pkgs.tcsh} $out/csh
       '';
     };
 
@@ -213,16 +257,17 @@ in
 
   environment.etc = {
     papersize.text = "letter";
-    "cups/lpoptions".text = "Default double";
+    "nixos/configuration.nix".text = ''
+      {}: builtins.abort "This machine is not managed by /etc/nixos. Please use configs at ocf.io/gh/nix with Colmena."
+    '';
+  }
+  // lib.optionalAttrs (!config.ocf.printhost.enable) {
+    "cups/lpoptions".text = "Default OCF-BW";
     "cups/client.conf".text = ''
-      ServerName printhost.ocf.berkeley.edu
-      Encryption Always
+      ServerName tule.ocf.berkeley.edu
+      Encryption IfRequested
     '';
   };
-
-  environment.etc."nixos/configuration.nix".text = ''
-    {}: builtins.abort "This machine is not managed by /etc/nixos. Please use configs at ocf.io/gh/nix with Colmena."
-  '';
 
   systemd.services.nix-remove-profiles = {
     description = "Remove old NixOS generations but leave store cleanup to nix.gc";

@@ -55,8 +55,8 @@ in
         simple-scan
 
         # pdfs
-        ocf-okular
-        ocf-papers
+        kdePackages.okular
+        papers
 
         # libreoffice
         libreoffice-still
