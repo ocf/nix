@@ -8,19 +8,6 @@
   ...
 }:
 
-let
-  # Default openssh doesn't include GSSAPI support, so we need to override sshfs
-  # to use the openssh_gssapi package instead. This is annoying because the
-  # sshfs package's openssh argument is nested in another layer of callPackage,
-  # so we override callPackage instead to override openssh.
-  sshfs = pkgs.sshfs.override {
-    callPackage =
-      fn: args:
-      (pkgs.callPackage fn args).override {
-        openssh = pkgs.openssh_gssapi;
-      };
-  };
-in
 {
 
   # Colmena tagging
@@ -32,9 +19,20 @@ in
     acme.enable = false;
 
     etc.enable = true;
-    tmpfsHome.enable = true;
+    home.tmpfs = true;
     network.wakeOnLan.enable = true;
     logged-in-users-exporter.enable = true;
+
+    nfs = {
+      enable = true;
+      mount = true;
+      kerberos = true;
+      softerr = true;
+
+      # we keep a single nfs mount and then bind mount to it instead of having
+      # many nfs mounts (each logged in user would need a mount)
+      asRemote = true;
+    };
 
     graphical.enable = true;
     graphical.extra = true;
@@ -64,7 +62,7 @@ in
     services.login.rules.session.mount.order =
       config.security.pam.services.login.rules.session.krb5.order + 50;
     mount.extraVolumes = [
-      ''<volume fstype="fuse" path="${lib.getExe sshfs}#%(USER)@tsunami:" mountpoint="~/remote/" options="follow_symlinks,UserKnownHostsFile=/dev/null,StrictHostKeyChecking=no" pgrp="ocf" />''
+      ''<volume fstype="bind" path="/remote/$(USER:0:1)/$(USER:0:2)/$(USER)" mountpoint="$(HOME)/remote/" />''
     ];
 
     # Trim spaces from username

@@ -20,7 +20,6 @@ let
     else
       "nullrev";
 in
-
 {
   system.configurationRevision = gitRev;
   # we do not include self.lastModifiedDate since:
@@ -184,6 +183,18 @@ in
     bat
     lsd
     emacs
+
+    # Default openssh doesn't include GSSAPI support, so we need to override sshfs
+    # to use the openssh_gssapi package instead. This is annoying because the
+    # sshfs package's openssh argument is nested in another layer of callPackage,
+    # so we override callPackage instead to override openssh.
+    (sshfs.override {
+      callPackage =
+        fn: args:
+        (pkgs.callPackage fn args).override {
+          openssh = pkgs.openssh_gssapi;
+        };
+    })
 
     comma-with-db
 

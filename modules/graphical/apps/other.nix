@@ -67,7 +67,6 @@ in
       ranger
       fd
       rclone
-      sshfs
 
       # Cosmetics
       neofetch
