@@ -84,7 +84,7 @@
 
           jar=$(${pkgs.coreutils}/bin/mktemp)
           pfx=$(${pkgs.coreutils}/bin/mktemp)
-          trap 'rm -f "$jar" "$pfx"' EXIT
+          # trap 'rm -f "$jar" "$pfx"' EXIT
 
           admin_pass=$(< ${certCfg.adminPasswordFile})
           pfx_pass=test
