@@ -56,26 +56,6 @@
 
   documentation.dev.enable = true;
 
-  security.pam = {
-    # Mount ~/remote
-    services.login.pamMount = true;
-    services.login.rules.session.mount.order =
-      config.security.pam.services.login.rules.session.krb5.order + 50;
-    mount.extraVolumes = [
-      ''<volume fstype="bind" path="/remote/$(USER:0:1)/$(USER:0:2)/$(USER)" mountpoint="$(HOME)/remote/" />''
-    ];
-
-    # Trim spaces from username
-    services.login.rules.auth.trimspaces = {
-      control = "requisite";
-      modulePath = "${pkgs.ocf-pam_trimspaces}/lib/security/pam_trimspaces.so";
-      order = 0;
-    };
-
-    # This contains a bunch of KDE, etc. configs
-    makeHomeDir.skelDirectory = "/etc/skel";
-  };
-
   environment.systemPackages = with pkgs; [
     lf
     dua
