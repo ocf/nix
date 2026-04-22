@@ -87,7 +87,7 @@
           trap 'rm -f "$jar" "$pfx"' EXIT
 
           admin_pass=$(< ${certCfg.adminPasswordFile})
-          pfx_pass=$(${pkgs.openssl}/bin/openssl rand -base64 32)
+          pfx_pass=test
 
           ${pkgs.openssl}/bin/openssl pkcs12 -export \
             -out "$pfx" \
