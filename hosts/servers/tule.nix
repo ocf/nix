@@ -18,6 +18,15 @@
     wayoutPasswordFile = config.age.secrets.printhost-wayout-password.path;
     redisPasswordFile = config.age.secrets.printhost-redis-password.path;
     printhostUrl = "printhost.ocf.berkeley.edu";
+    printerCerts = {
+      adminPasswordFile = config.age.secrets.printer-admin-password.path;
+      printerUrls = [
+        "logjam.ocf.berkeley.edu"
+        "papercut.ocf.berkeley.edu"
+        "pagefault.ocf.berkeley.edu"
+        "fishpaper.ocf.berkeley.edu"
+      ];
+    };
   };
 
   age.secrets.printhost-mysql-password = {
@@ -34,6 +43,10 @@
     rekeyFile = ../../secrets/master-keyed/printhost/redis-password.age;
     mode = "0440";
     group = "lp";
+  };
+  age.secrets.printer-admin-password = {
+    rekeyFile = ../../secrets/master-keyed/printhost/printer-admin-password.age;
+    mode = "0400";
   };
 
   # Postfix relay so ocflib can send mail via sendmail.

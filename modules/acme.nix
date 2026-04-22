@@ -24,6 +24,12 @@ in
       description = "Additional domains to add to cert";
       default = [ ];
     };
+
+    postRun = lib.mkOption {
+      type = lib.types.lines;
+      description = "Commands to run after certificate renewal";
+      default = "";
+    };
   };
 
   config = lib.mkIf cfg.enable {
@@ -81,6 +87,7 @@ in
       certs."${config.networking.hostName}.ocf.berkeley.edu" = {
         domain = "${config.networking.hostName}.ocf.berkeley.edu";
         extraDomainNames = [ "${config.networking.hostName}.ocf.io" ] ++ cfg.extraCerts;
+        postRun = lib.mkIf (cfg.postRun != "") cfg.postRun;
       };
     };
   };
