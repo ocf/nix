@@ -11,7 +11,7 @@
   networking.hostName = "carp";
 
   ocf.motd.description = ''
-    Welcome to the new NixOS based login server!
+    Welcome to the new NixOS based public login server!
       - install a package: nix profile add 'nixpkgs#package-name'
       - upgrade all packages: nix profile upgrade --all
       - ...or manage packages declaratively with home-manager!
