@@ -44,9 +44,39 @@ in
           base dc=ocf,dc=berkeley,dc=edu
           nss_base_passwd ou=people,dc=ocf,dc=berkeley,dc=edu
           nss_base_group  ou=group,dc=ocf,dc=berkeley,dc=edu
+
+          # two attempts before giving up, 1s timeout each
+          network_timeout 1
+          timeout 60
+          timelimit 60
+          bind_timelimit 1
+          nss_reconnect_tries 0
+          nss_reconnect_sleeptime 1
+          nss_reconnect_maxsleeptime 1
+          nss_reconnect_maxconntries 2
         '';
       };
     };
+
+    environment.etc."ldap/ldap.conf".text = ''
+      URI ldaps://ldap.ocf.berkeley.edu
+      BASE dc=ocf,dc=berkeley,dc=edu
+      TLS_REQCERT hard
+      TLS_CACERT /etc/ssl/certs/ca-certificates.crt
+      NETWORK_TIMEOUT 1
+      TIMEOUT 60
+      TIMELIMIT 60
+      BIND_TIMELIMIT 1
+    '';
+
+    environment.variables.LDAPCONF = "/etc/ldap/ldap.conf";
+
+    environment.etc."ldapvi.conf".text = ''
+      profile default
+      ldap-conf: yes
+      sasl-mech: GSSAPI
+      bind: sasl
+    '';
 
     security.sudo = {
       extraConfig = ''

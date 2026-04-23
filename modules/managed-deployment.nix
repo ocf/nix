@@ -24,11 +24,20 @@ in
     default = "";
   };
 
+  options.ocf.managed-deployment.staffOnlySsh = lib.mkOption {
+    type = lib.types.bool;
+    description = "Restrict SSH access to ocfstaff. Disable for public login servers (as of now, only carp).";
+    default = true;
+  };
+
   config = lib.mkIf cfg.enable {
     nix.settings.trusted-users = [ deploy-user ];
 
+    users.groups.${deploy-user} = { };
+
     users.users.${deploy-user} = {
       isNormalUser = true;
+      group = deploy-user;
       createHome = false;
       openssh.authorizedKeys.keys = [
         "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDMuiOUsjVJSi+0WeMHKquQmwoyz/c3N7HhjJwzz21B3" # github-actions
@@ -79,6 +88,12 @@ in
           }
         ];
       }
+    ];
+
+    services.openssh.settings.AllowGroups = lib.mkIf cfg.staffOnlySsh [
+      "ocfstaff"
+      "ocfroot"
+      deploy-user
     ];
   };
 }

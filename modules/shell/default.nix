@@ -22,6 +22,7 @@ in
         zsh
         fish
         xonsh
+        tcsh
         zsh-powerlevel10k
       ];
     };

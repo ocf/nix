@@ -43,7 +43,6 @@ in
       mcaselector
 
       # windows compat
-      wine
       lutris
       bottles
       winetricks

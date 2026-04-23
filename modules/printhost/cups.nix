@@ -19,9 +19,7 @@ let
     ]
   );
 
-  enforcerScript = pkgs.replaceVars ./scripts/enforcer.py {
-    qpdf = "${pkgs.qpdf}/bin/qpdf";
-  };
+  enforcerScript = ./scripts/enforcer.py;
 
   # Wrapper that invokes enforcer.py with the right Python environment
   enforcerBin = pkgs.writeShellScript "enforcer" ''
@@ -50,8 +48,8 @@ let
   '';
 
   # Use official PPDs unmodified; defaults are set via lpadmin -o below.
-  hpPpd = "${pkgs.hplip}/share/cups/model/HP/hp-laserjet_m806-ps.ppd.gz";
-  epsonPpd = "${pkgs.epson-escpr2}/share/cups/model/epson-inkjet-printer-escpr2/Epson-ET-5880_Series-epson-escpr2-en.ppd";
+  hpPpd = "${pkgs.ocf-hplip}/share/cups/model/HP/hp-laserjet_m806-ps.ppd.gz";
+  hpColorPpd = "${pkgs.ocf-hplip}/share/cups/model/HP/hp-color_laserjet_m856-ps.ppd.gz";
 
 in
 {
@@ -83,7 +81,7 @@ in
       # hplip provides hpps (HP PPD filter); epson-escpr2 provides epson-escpr-wrapper2.
       drivers = [
         ocfCupsBackend
-        pkgs.hplip
+        pkgs.ocf-hplip
         pkgs.epson-escpr2
       ];
     };
@@ -158,10 +156,10 @@ in
           -D "OCF Black & White" -L "OCF lab" \
           -E -o printer-is-shared=true -o Duplex=DuplexNoTumble
         lpadmin -p OCF-Color \
-          -v ocfbackend:socket://169.229.226.96:9100 \
-          -P ${epsonPpd} \
+          -v ocfbackend:socket://169.229.226.107:9100 \
+          -P ${hpColorPpd} \
           -D "OCF Color" -L "OCF lab" \
-          -E -o printer-is-shared=true -o Duplex=None -o PageSize=Letter
+          -E -o printer-is-shared=true -o Duplex=None
       '';
     };
 

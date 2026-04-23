@@ -17,8 +17,7 @@
     mysqlPasswordFile = config.age.secrets.printhost-mysql-password.path;
     wayoutPasswordFile = config.age.secrets.printhost-wayout-password.path;
     redisPasswordFile = config.age.secrets.printhost-redis-password.path;
-    # TODO: change to "printhost.ocf.berkeley.edu" once tule replaces whiteout
-    printhostUrl = "printhost-dev.ocf.berkeley.edu";
+    printhostUrl = "printhost.ocf.berkeley.edu";
   };
 
   age.secrets.printhost-mysql-password = {

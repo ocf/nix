@@ -8,11 +8,6 @@
 
   networking.hostName = "tabitha";
 
-  ocf.nvidia = {
-    enable = true;
-    open = false;
-  };
-
   ocf.network = {
     enable = true;
     lastOctet = 148;
