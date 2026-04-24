@@ -31,6 +31,8 @@ in
   };
 
   config = lib.mkIf cfg.enable {
+    deployment.allowLocalDeployment = true;
+
     nix.settings.trusted-users = [ deploy-user ];
 
     users.groups.${deploy-user} = { };
