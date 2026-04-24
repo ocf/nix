@@ -10,6 +10,8 @@
 
   networking.hostName = "carp";
 
+  deployment.allowLocalDeployment = true;
+
   ocf.motd.description = ''
     Welcome to the new NixOS based public login server!
       - install a package: nix profile add 'nixpkgs#package-name'
