@@ -128,6 +128,7 @@ in
     nvme-cli
     perf
     strace
+    bsd-finger # necessary for checkacct util to work
 
     # Networking tools
     rsync
