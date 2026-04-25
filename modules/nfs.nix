@@ -49,7 +49,11 @@ in
 
     kerberos = lib.mkEnableOption "Whether to use Kerberos krb5p";
     cache = lib.mkEnableOption "Whether to use cachefilesd and FS-Cache";
-    softerr = lib.mkEnableOption "Whether to use softerr";
+    softerr = lib.mkOption {
+      type = lib.types.bool;
+      default = true; # otherwise, if nfs cant mount, ssh session will hang
+      description = "Whether to use softerr";
+    };
   };
 
   config = lib.mkIf cfg.enable {
