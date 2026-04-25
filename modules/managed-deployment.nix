@@ -31,7 +31,7 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    deployment.allowLocalDeployment = true; #for debugging and deploying when github actions deployment breaks
+    deployment.allowLocalDeployment = true; # for debugging and deploying when github actions deployment breaks
 
     nix.settings.trusted-users = [ deploy-user ];
 
