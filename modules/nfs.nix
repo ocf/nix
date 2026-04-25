@@ -51,7 +51,7 @@ in
     cache = lib.mkEnableOption "Whether to use cachefilesd and FS-Cache";
     softerr = lib.mkOption {
       type = lib.types.bool;
-      default = true;
+      default = true; # otherwise, if nfs cant mount, ssh session will hang
       description = "Whether to use softerr";
     };
   };
