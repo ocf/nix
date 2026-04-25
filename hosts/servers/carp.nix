@@ -39,7 +39,6 @@
   ocf.nfs = {
     enable = true;
     mount = true;
-    softerr = true;
   };
 
   environment.systemPackages = with pkgs; [
