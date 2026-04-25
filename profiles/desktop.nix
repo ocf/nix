@@ -27,7 +27,6 @@
       enable = true;
       mount = true;
       kerberos = true;
-      softerr = true;
 
       # we keep a single nfs mount and then bind mount to it instead of having
       # many nfs mounts (each logged in user would need a mount)

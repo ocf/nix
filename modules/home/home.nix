@@ -7,7 +7,7 @@
 
 let
   cfg = config.ocf.home;
-  homeSetupScript = pkgs.writeShellScript "ocf_tmpfs_skel" (builtins.readFile ./ocf_tmpfs_skel.sh);
+  tmpfsScript = pkgs.writeShellScript "ocf_tmpfs_skel" (builtins.readFile ./ocf_tmpfs_skel.sh);
   mountRemoteScript = pkgs.writeShellScript "ocf_mount_remote" (
     builtins.readFile ./ocf_mount_remote.sh
   );
@@ -19,11 +19,18 @@ in
     mountRemote = lib.mkOption {
       type = lib.types.bool;
       default = config.ocf.nfs.mount && config.ocf.nfs.asRemote;
-      description = "nfs mount ~/remote"; # TODO: fallback to sshfs if nfs is not enabled (currently no hosts do this)
+      description = "nfs mount ~/remote, copy skel from remote on login if it exists";
     };
   };
 
   config = lib.mkIf cfg.tmpfs {
+    assertions = lib.mkIf cfg.mountRemote (
+      lib.singleton {
+        assertion = config.ocf.nfs.mount && config.ocf.nfs.asRemote;
+        message = "ocf.home.mountRemote requires ocf.home.tmpfs and nfs mounted /remote and /services";
+      }
+    );
+
     fileSystems."/home" = {
       device = "tmpfs";
       fsType = "tmpfs";
@@ -41,38 +48,28 @@ in
         order = 0;
       };
 
+      # mount ~ as tmpfs
       services.login.pamMount = true;
-
-      # mount ~ and ~/remote
       mount.extraVolumes = [
         ''<volume fstype="tmpfs" path="tmpfs" mountpoint="~" options="uid=%(USERUID),gid=%(USERGID),mode=0700"/>''
-        # TODO: enable StrictHostKeyChecking and UserKnownHostsFile because these should not be disabled!
-        #''<volume fstype="fuse" path="${lib.getExe sshfs}#%(USER)@${remoteHost}:" mountpoint="~/remote/" options="follow_symlinks,UserKnownHostsFile=/dev/null,StrictHostKeyChecking=no" pgrp="ocf" />''
       ];
 
-      # because mount now creates the home dir and mounts tmpfs on it, mkhomedir wont copy the skel because the dir exists
-      # we can do copy skel as part of a home setup script, and do other stuff as well
-      #services.login.rules.session.mkhomedir.order = config.security.pam.services.login.rules.session.mount.order + 50;
-      #makeHomeDir.skelDirectory = "/etc/skel";
+      # because mount now creates the home dir and mounts tmpfs on it,
+      # mkhomedir wont copy the skel because the dir exists. we can copy skel
+      # as part of a home setup script, and do other stuff as well
 
       services.login.rules.session =
         let
           cfgPam = config.security.pam.services.login.rules.session;
         in
         {
-          # needed to mount ~/remote with kerberos ssh auth
+          # needed to mount ~/remote with kerberos auth
           mount.order = cfgPam.krb5.order + 50;
-          ocf_tmpfs_skel = {
+          ocf_home_setup = {
             order = cfgPam.mount.order + 50;
             control = "optional";
             modulePath = "pam_exec.so";
-            args = [ "${homeSetupScript}" ];
-          };
-          ocf_mount_remote = lib.mkIf cfg.mountRemote {
-            order = cfgPam.mount.order + 100;
-            control = "optional";
-            modulePath = "pam_exec.so";
-            args = [ "${mountRemoteScript}" ];
+            args = [ (if cfg.mountRemote then "${mountRemoteScript}" else "${tmpfsScript}") ];
           };
         };
     };

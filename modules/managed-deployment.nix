@@ -31,6 +31,8 @@ in
   };
 
   config = lib.mkIf cfg.enable {
+    deployment.allowLocalDeployment = true; # for debugging and deploying when github actions deployment breaks
+
     nix.settings.trusted-users = [ deploy-user ];
 
     users.groups.${deploy-user} = { };
@@ -39,6 +41,7 @@ in
       isNormalUser = true;
       group = deploy-user;
       createHome = false;
+      home = "/var/empty";
       openssh.authorizedKeys.keys = [
         "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDMuiOUsjVJSi+0WeMHKquQmwoyz/c3N7HhjJwzz21B3" # github-actions
         "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGlViRB5HH1bTaS1S7TcqVBSuxKdrbdhL2CmhDqc/t6A" # oliverni
