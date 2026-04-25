@@ -24,10 +24,12 @@ in
   };
 
   config = lib.mkIf cfg.tmpfs {
-    assertions = lib.mkIf cfg.mountRemote lib.singleton {
-      assertion = config.ocf.nfs.mount && config.ocf.nfs.asRemote;
-      message = "ocf.home.mountRemote requires ocf.home.tmpfs and nfs mounted /remote and /services";
-    };
+    assertions = lib.mkIf cfg.mountRemote (
+      lib.singleton {
+        assertion = config.ocf.nfs.mount && config.ocf.nfs.asRemote;
+        message = "ocf.home.mountRemote requires ocf.home.tmpfs and nfs mounted /remote and /services";
+      }
+    );
 
     fileSystems."/home" = {
       device = "tmpfs";
