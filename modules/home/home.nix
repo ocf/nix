@@ -67,7 +67,7 @@ in
             order = cfgPam.mount.order + 50;
             control = "optional";
             modulePath = "pam_exec.so";
-            args = [ if cfg.mountRemote then "${mountRemoteScript}" else "${tmpfsScript}" ];
+            args = [ (if cfg.mountRemote then "${mountRemoteScript}" else "${tmpfsScript}") ];
           };
         };
     };
