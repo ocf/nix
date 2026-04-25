@@ -49,7 +49,11 @@ in
 
     kerberos = lib.mkEnableOption "Whether to use Kerberos krb5p";
     cache = lib.mkEnableOption "Whether to use cachefilesd and FS-Cache";
-    softerr = lib.mkEnableOption "Whether to use softerr" // { default = true; };
+    softerr = lib.mkOption {
+      type = lib.types.bool;
+      default = true;
+      description = "Whether to use softerr";
+    };
   };
 
   config = lib.mkIf cfg.enable {
