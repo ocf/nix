@@ -48,7 +48,18 @@
     ipmitool
   ];
 
-  services.openssh.settings.PasswordAuthentication = true;
+  services.openssh.settings = {
+    PasswordAuthentication = true;
+    LoginGraceTime = 30;
+  };
+
+  services.fail2ban = {
+    enable = true;
+    jails.sshd.settings = {
+      enabled = true;
+      maxretry = 5;
+    };
+  };
 
   security.pam.loginLimits = [
     {
