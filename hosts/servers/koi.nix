@@ -38,7 +38,7 @@
     LoginGraceTime = 30;
   };
 
-  networking.firewall.enable = true;
+  networking.firewall.enable = lib.mkForce true;
 
   services.fail2ban = {
     enable = true;
