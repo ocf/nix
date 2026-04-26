@@ -65,7 +65,7 @@
     jails.sshd.settings = {
       enabled = true;
       maxretry = 5;
-      bantime = "24h";
+      bantime = "10m";
     };
   };
 
