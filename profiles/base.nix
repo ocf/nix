@@ -259,7 +259,7 @@ in
   security.rtkit.enable = true;
   services.pulseaudio.enable = false;
 
-  networking.firewall.enable = false;
+  networking.firewall.enable = true;
 
   environment.etc = {
     papersize.text = "letter";
