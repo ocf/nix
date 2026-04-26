@@ -51,6 +51,8 @@
   services.openssh.settings = {
     PasswordAuthentication = true;
     LoginGraceTime = 30;
+    MaxStartups = "50:30:200";
+    PerSourceMaxStartups = 3;
   };
 
   networking.firewall = {
@@ -63,6 +65,7 @@
     jails.sshd.settings = {
       enabled = true;
       maxretry = 5;
+      bantime = "24h";
     };
   };
 

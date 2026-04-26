@@ -54,8 +54,22 @@ pixiecore boot /dev/null --ipxe-efi64 netboot.xyz.efi
 > [!NOTE]
 > You can also use [netboot.xyz's server](https://netboot.xyz/docs/docker) instead of Pixiecore.
 
+## Local deploy
+
+if github actions deploy is broken (often, ocf-nix-deploy-user can't ssh):
+
+1. make a branch, commit and push changes to it
+1. open an ssh tunnel on your machine: `ssh -D 8000 -N koi`, or use supernova/tsunami if both login servers are down. youll have to go irl if those are ALSO down.
+1. go to https://doorplug.ocf.berkeley.edu:8006, open a console on the host you want to deploy to.
+1. log in as root (general root password is in 1pass), then:
+
+`git clone -b yourbranchname https://ocf.io/github/nix /tmp/nix`
+`cd /tmp/nix`
+`nix develop`
+`colmena apply-local --sudo`
 
 ## TODO
 
  - maybe different way of doing admin for IRC. tls certs on yubikey, LDAP, etc..
  - use agenix rekey generators in place of manually generating irc pass hash with ergo
+
