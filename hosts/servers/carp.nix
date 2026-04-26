@@ -53,7 +53,10 @@
     LoginGraceTime = 30;
   };
 
-  networking.firewall.enable = true;
+  networking.firewall = {
+    enable = true;
+    allowedTCPPorts = [ 80 443 ];
+  };
 
   services.fail2ban = {
     enable = true;
