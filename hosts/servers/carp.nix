@@ -51,8 +51,7 @@
   services.openssh.settings = {
     PasswordAuthentication = true;
     LoginGraceTime = 30;
-    MaxStartups = "50:30:200";
-    PerSourceMaxStartups = 3;
+    MaxStartups = "100:30:300";
     PerSourcePenalties = "no";
   };
 
