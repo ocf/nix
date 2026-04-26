@@ -53,6 +53,7 @@
     LoginGraceTime = 30;
     MaxStartups = "50:30:200";
     PerSourceMaxStartups = 3;
+    PerSourcePenalties = "no";
   };
 
   networking.firewall = {

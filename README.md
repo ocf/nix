@@ -68,6 +68,8 @@ if github actions deploy is broken (often, ocf-nix-deploy-user can't ssh):
 `nix develop`
 `colmena apply-local --sudo`
 
+if necessary, reboot the host. but most nix changes should apply in-place just fine.
+
 ## TODO
 
  - maybe different way of doing admin for IRC. tls certs on yubikey, LDAP, etc..
