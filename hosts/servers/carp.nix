@@ -50,7 +50,7 @@
 
   services.openssh.settings = {
     PasswordAuthentication = true;
-    LoginGraceTime = 30;
+    LoginGraceTime = 10;
     MaxStartups = "100:30:300";
     PerSourcePenalties = "no";
   };
@@ -58,6 +58,15 @@
   networking.firewall = {
     enable = lib.mkForce true;
     allowedTCPPorts = [ 22 80 443 ];
+    extraCommands = ''
+      # Rate-limit new SSH connections to 6 per minute per source IP (burst of 6).
+      # Bots triggering NFS authorized_keys reads is the primary cause of D-state
+      # sshd process accumulation and MaxStartups exhaustion.
+      iptables -I nixos-fw -p tcp --dport 22 -m state --state NEW \
+        -m hashlimit --hashlimit-name ssh-ratelimit \
+        --hashlimit-above 6/min --hashlimit-burst 6 \
+        --hashlimit-mode srcip -j DROP
+    '';
   };
 
   services.fail2ban = {

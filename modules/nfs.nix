@@ -19,8 +19,8 @@ let
     "sync"
     "vers=4.2" # force version 4.2
     "bg" # mount in background and continue booting
-    "timeo=150" # 15s timeout instead of default 60s
-    "retrans=3"
+    "timeo=30" # 3s timeout per retry
+    "retrans=2"
     "nconnect=8" # 8 connections instead of 1
 
     (lib.optional cfg.kerberos "sec=krb5p")
