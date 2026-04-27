@@ -52,7 +52,6 @@
     PasswordAuthentication = true;
     LoginGraceTime = 30;
     MaxStartups = "100:30:300";
-    PerSourceMaxStartups = 10;
     PerSourcePenalties = "no";
   };
 
