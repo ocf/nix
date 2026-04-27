@@ -52,7 +52,7 @@
     PasswordAuthentication = true;
     LoginGraceTime = 10;
     MaxStartups = "100:30:300";
-    PerSourcePenalties = "no";
+    PerSourcePenalties = "yes";
   };
 
   networking.firewall = {
