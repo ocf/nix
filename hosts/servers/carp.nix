@@ -59,9 +59,7 @@
     enable = lib.mkForce true;
     allowedTCPPorts = [ 22 80 443 ];
     extraCommands = ''
-      # Rate-limit new SSH connections to 6 per minute per source IP (burst of 6).
-      # Bots triggering NFS authorized_keys reads is the primary cause of D-state
-      # sshd process accumulation and MaxStartups exhaustion.
+      # Rate-limit new SSH connections to 6 per minute per source IP
       iptables -I nixos-fw -p tcp --dport 22 -m state --state NEW \
         -m hashlimit --hashlimit-name ssh-ratelimit \
         --hashlimit-above 6/min --hashlimit-burst 6 \
