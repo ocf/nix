@@ -50,12 +50,25 @@
 
   services.openssh.settings = {
     PasswordAuthentication = true;
-    LoginGraceTime = 30;
+    LoginGraceTime = 10;
+    MaxStartups = "100:30:300";
+    PerSourcePenalties = "yes";
   };
 
   networking.firewall = {
     enable = lib.mkForce true;
-    allowedTCPPorts = [ 80 443 ];
+    allowedTCPPorts = [
+      22
+      80
+      443
+    ];
+    extraCommands = ''
+      # Rate-limit new SSH connections to 6 per minute per source IP
+      iptables -I nixos-fw -p tcp --dport 22 -m state --state NEW \
+        -m hashlimit --hashlimit-name ssh-ratelimit \
+        --hashlimit-above 6/min --hashlimit-burst 6 \
+        --hashlimit-mode srcip -j DROP
+    '';
   };
 
   services.fail2ban = {
@@ -63,6 +76,7 @@
     jails.sshd.settings = {
       enabled = true;
       maxretry = 5;
+      bantime = "10m";
     };
   };
 
