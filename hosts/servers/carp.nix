@@ -57,7 +57,11 @@
 
   networking.firewall = {
     enable = lib.mkForce true;
-    allowedTCPPorts = [ 22 80 443 ];
+    allowedTCPPorts = [
+      22
+      80
+      443
+    ];
     extraCommands = ''
       # Rate-limit new SSH connections to 6 per minute per source IP
       iptables -I nixos-fw -p tcp --dport 22 -m state --state NEW \
