@@ -94,6 +94,7 @@ in
       cdrtools # useful for iso files even without a cd drive
       kana
       freerdp
+      zotero
     ];
   };
 }
