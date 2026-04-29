@@ -149,18 +149,9 @@
     }
   ];
 
-  security.sudo.extraRules = [
-    {
-      users = [ "ALL" ];
-      runAs = "mysql";
-      commands = [
-        {
-          command = "/run/current-system/sw/bin/makemysql-real";
-          options = [ "NOPASSWD" ];
-        }
-      ];
-    }
-  ];
+  security.sudo.extraConfig = ''
+    ALL ALL=(mysql) NOPASSWD: ${pkgs.ocf-utils}/bin/makemysql-real
+  '';
 
   age.secrets.makemysql-conf = {
     rekeyFile = ../../secrets/master-keyed/carp/makemysql.conf.age;
