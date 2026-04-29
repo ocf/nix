@@ -150,7 +150,7 @@
   ];
 
   security.sudo.extraConfig = ''
-    ALL ALL=(mysql) NOPASSWD: ${pkgs.ocf-utils}/bin/makemysql-real
+    ALL ALL=(mysql) NOPASSWD: /nix/store/*/bin/makemysql-real
   '';
 
   age.secrets.makemysql-conf = {
