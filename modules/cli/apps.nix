@@ -218,6 +218,8 @@ in
       shellcheck
       fzf
       bar
+      ghostscript
+      enscript
 
       # misc
       wiremix
