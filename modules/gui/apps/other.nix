@@ -44,8 +44,6 @@ in
       cobang
 
       # IRC Clients
-      irssi
-      weechat
       hexchat
       halloy
 
@@ -56,42 +54,6 @@ in
       helvum
 
       mission-center
-
-      # File management tools
-      zip
-      unzip
-      _7zz
-      eza
-      lsd
-      bat
-      ranger
-      fd
-      rclone
-
-      # Cosmetics
-      neofetch
-      pfetch-rs
-      fastfetch
-      onefetch
-      cpufetch
-      gpufetch
-
-      pokemonsay
-      ponysay
-      cowsay
-      kittysay
-      fortune
-      lolcat
-      pokemon-colorscripts
-
-      # Other tools
-      bar
-      fzf
-      s-tui
-      fio
-      wiremix
-      yubikey-manager
-      cdrtools # useful for iso files even without a cd drive
       kana
       freerdp
       zotero

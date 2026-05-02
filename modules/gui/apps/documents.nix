@@ -70,6 +70,7 @@ in
 
         kdePackages.gwenview
         vlc
+        mpv
 
         # useful for iso files even without a cd drive
         # needed for melange (cd drive host)
@@ -80,8 +81,6 @@ in
         apostrophe
         #texliveFull
         texstudio
-        pandoc
-        img2pdf
 
         krita
         gimp3
@@ -103,16 +102,8 @@ in
         kicad
         openscad
 
-        mpv
-        ncmpcpp
         strawberry
-        xmp
-        yt-dlp
-        ffmpeg
         songrec
-
-        exiftool
-        imagemagick
       ];
 
     ocf.gui.apps.browsers.handlePDFs = true;
