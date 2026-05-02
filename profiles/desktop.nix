@@ -33,7 +33,7 @@
     };
 
     gui.enable = true;
-    gui.extra = true;
+    gui.apps.enable = true;
 
     cli.apps.enable = true;
   };

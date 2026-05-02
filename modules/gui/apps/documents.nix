@@ -8,7 +8,7 @@
 }:
 
 let
-  cfg = config.ocf.gui;
+  cfg = config.ocf.gui.apps;
 in
 {
   options.ocf.gui.apps.documents.enable = lib.mkOption {
@@ -17,7 +17,7 @@ in
     default = cfg.enable;
   };
 
-  config = lib.mkIf cfg.apps.documents.enable {
+  config = lib.mkIf cfg.documents.enable {
     # grammar checker for libreoffice
     services.languagetool.enable = true;
     services.languagetool.public = false;
@@ -48,68 +48,64 @@ in
       };
     */
 
-    environment.systemPackages =
-      with pkgs;
-      [
-        # scanning
-        simple-scan
+    environment.systemPackages = with pkgs; [
+      # scanning
+      simple-scan
 
-        # pdfs
-        kdePackages.okular
-        papers
+      # pdfs
+      kdePackages.okular
+      papers
 
-        # libreoffice
-        libreoffice-still
-        mythes
-        hunspell # spell check
-        hunspellDicts.en_US
-        hyphenDicts.en_US
+      # libreoffice
+      libreoffice-still
+      mythes
+      hunspell # spell check
+      hunspellDicts.en_US
+      hyphenDicts.en_US
 
-        # editors
-        xournalpp
+      # editors
+      xournalpp
 
-        kdePackages.gwenview
-        vlc
-        mpv
+      kdePackages.gwenview
+      vlc
+      mpv
 
-        # useful for iso files even without a cd drive
-        # needed for melange (cd drive host)
-        brasero
-        kdePackages.k3b
-      ]
-      ++ lib.optionals cfg.extra [
-        apostrophe
-        #texliveFull
-        texstudio
+      # useful for iso files even without a cd drive
+      # needed for melange (cd drive host)
+      brasero
+      kdePackages.k3b
+      apostrophe
+      #texliveFull
+      texstudio
 
-        krita
-        gimp3
-        darktable
-        inkscape
-        blender
-        drawio
-        octave
-        kdePackages.kdenlive
-        davinci-resolve
+      krita
+      gimp3
+      darktable
+      inkscape
+      blender
+      drawio
+      octave
+      kdePackages.kdenlive
+      davinci-resolve
 
-        audacity
-        ardour
-        musescore
-        milkytracker
-        schismtracker
+      audacity
+      ardour
+      musescore
+      milkytracker
+      schismtracker
 
-        freecad
-        kicad
-        openscad
+      freecad
+      kicad
+      openscad
 
-        strawberry
-        songrec
-      ];
+      strawberry
+      songrec
+    ];
 
     ocf.gui.apps.browsers.handlePDFs = true;
     assertions = [
       {
-        assertion = cfg.apps.browsers.enable;
+        assertion = cfg.browsers.enable;
         message = "browser is used as default PDF viewer";
       }
     ];
