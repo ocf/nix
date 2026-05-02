@@ -7,7 +7,7 @@
 
 {
   options.ocf.userPackages = {
-    enable = lib.mkEnableOption "user-facing packages for login servers";
+    enable = lib.mkEnableOption "user-facing packages for login servers and desktops";
   };
 
   config = lib.mkIf config.ocf.userPackages.enable {

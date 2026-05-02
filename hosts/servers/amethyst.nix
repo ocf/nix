@@ -10,8 +10,6 @@
     lastOctet = 50;
   };
 
-  ocf.managed-deployment.staffOnlySsh = false;
-
   ocf.webhost = {
     enable = true;
     websites = [

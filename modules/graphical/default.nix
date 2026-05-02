@@ -129,6 +129,7 @@ in
           ];
         };
 
+	# desktop-only (and ocf-tv) packages placed here!
         environment.systemPackages = with pkgs; [
           catppuccin-sddm
 

@@ -97,6 +97,7 @@ in
       "ocfstaff"
       "ocfroot"
       deploy-user
+      "webhost-deploy"
     ];
   };
 }

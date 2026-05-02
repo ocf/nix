@@ -35,15 +35,13 @@ in
       experimental-features = "nix-command flakes";
       nix-path = lib.mapAttrsToList (name: _: "${name}=flake:${name}") inputs;
       builders-use-substitutes = true;
+      # makes devenv shells build significantly faster
+      trusted-substituters = [ "https://devenv.cachix.org" ];
+      trusted-public-keys = [ "devenv.cachix.org-1:w1cLUi8dv3hnoSPGAuibQv+f9TZLr6cv/Hm9XgU50cw=" ];
     };
     gc = {
       automatic = true;
       dates = "weekly";
-    };
-    settings = {
-      # makes devenv shells build significantly faster
-      trusted-substituters = [ "https://devenv.cachix.org" ];
-      trusted-public-keys = [ "devenv.cachix.org-1:w1cLUi8dv3hnoSPGAuibQv+f9TZLr6cv/Hm9XgU50cw=" ];
     };
     extraOptions = ''
       extra-substituters = https://devenv.cachix.org
@@ -170,7 +168,7 @@ in
     ncdu
     beep
     gist
-    claude-code
+    devenv
 
     # System administration
     iotop

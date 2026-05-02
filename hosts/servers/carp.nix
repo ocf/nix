@@ -1,9 +1,4 @@
-{
-  pkgs,
-  lib,
-  config,
-  ...
-}:
+{ ... }:
 
 {
   imports = [ ../../hardware/virtualized.nix ];
@@ -32,134 +27,85 @@
 
   ocf.managed-deployment.staffOnlySsh = false;
 
-  ocf.ttyd.enable = true;
-  ocf.etc.enable = true;
-  ocf.userPackages.enable = true;
-
-  ocf.nfs = {
+  ocf.login-server = {
     enable = true;
-    mount = true;
-  };
-
-  environment.systemPackages = with pkgs; [
-    ocf-utils
-    openldap
-    ldapvi
-    ipmitool
-  ];
-
-  services.openssh.settings = {
-    PasswordAuthentication = true;
-    LoginGraceTime = 10;
-    MaxStartups = "100:30:300";
-    PerSourcePenalties = "yes";
-  };
-
-  networking.firewall = {
-    enable = lib.mkForce true;
-    allowedTCPPorts = [
-      22
-      80
-      443
-    ];
-    extraCommands = ''
-      # Rate-limit new SSH connections to 6 per minute per source IP
-      iptables -I nixos-fw -p tcp --dport 22 -m state --state NEW \
-        -m hashlimit --hashlimit-name ssh-ratelimit \
-        --hashlimit-above 6/min --hashlimit-burst 6 \
-        --hashlimit-mode srcip -j DROP
-    '';
-  };
-
-  services.fail2ban = {
-    enable = true;
-    jails.sshd.settings = {
-      enabled = true;
-      maxretry = 5;
-      bantime = "10m";
-    };
+    ttyd = true;
   };
 
   security.pam.loginLimits = [
     {
-      domain = "*";
-      type = "-";
+      domain = "@ocf";
+      type = "soft";
       item = "cpu";
       value = "60";
     }
     {
-      domain = "*";
-      type = "soft";
+      domain = "@ocf";
+      type = "hard";
+      item = "cpu";
+      value = "1440";
+    }
+    {
+      domain = "@ocf";
+      type = "hard";
       item = "stack";
       value = "4096";
     }
     {
-      domain = "*";
-      type = "soft";
+      domain = "@ocf";
+      type = "hard";
       item = "core";
       value = "0";
     }
     {
-      domain = "*";
-      type = "soft";
+      domain = "@ocf";
+      type = "hard";
       item = "nproc";
       value = "250";
     }
     {
-      domain = "*";
-      type = "soft";
+      domain = "@ocf";
+      type = "hard";
       item = "nofile";
       value = "1024";
     }
     {
-      domain = "*";
-      type = "-";
+      domain = "@ocf";
+      type = "hard";
       item = "memlock";
       value = "2047219";
     }
     {
-      domain = "*";
-      type = "-";
+      domain = "@ocf";
+      type = "hard";
       item = "as";
       value = "12000000";
     }
     {
-      domain = "*";
-      type = "soft";
+      domain = "@ocf";
+      type = "hard";
       item = "sigpending";
       value = "63810";
     }
     {
-      domain = "*";
-      type = "soft";
+      domain = "@ocf";
+      type = "hard";
       item = "msgqueue";
       value = "819200";
     }
     {
-      domain = "*";
-      type = "soft";
+      domain = "@ocf";
+      type = "hard";
       item = "nice";
       value = "0";
     }
     {
-      domain = "*";
-      type = "soft";
+      domain = "@ocf";
+      type = "hard";
       item = "rtprio";
       value = "0";
     }
   ];
-
-  security.sudo.extraConfig = ''
-    ALL ALL=(mysql) NOPASSWD: /run/current-system/sw/bin/makemysql-real
-  '';
-
-  age.secrets.makemysql-conf = {
-    rekeyFile = ../../secrets/master-keyed/carp/makemysql.conf.age;
-    path = "/opt/share/makeservices/makemysql.conf";
-    owner = "mysql";
-    group = "root";
-    mode = "0400";
-  };
 
   system.stateVersion = "25.05";
 }

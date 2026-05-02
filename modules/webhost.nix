@@ -18,6 +18,7 @@ let
       group = "nginx";
       isNormalUser = true;
       createHome = false;
+      extraGroups = [ "webhost-deploy" ];
       openssh.authorizedKeys.keys = [
         "${website-cfg.githubActionsPubkey}"
       ];
@@ -100,6 +101,7 @@ in
   config = lib.mkIf cfg.enable {
 
     security.acme.certs."${fqdn}".group = "nginx";
+    users.groups.webhost-deploy = { };
     users.users = lib.mkMerge (builtins.map makeUsers enabledSites);
     systemd.tmpfiles.settings."web-roots" = lib.mkMerge (builtins.map makeTmpFileRules enabledSites);
     ocf.acme.extraCerts = (builtins.concatMap makeExtraCerts enabledSites);

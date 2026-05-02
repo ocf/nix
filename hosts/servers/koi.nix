@@ -1,9 +1,4 @@
-{
-  pkgs,
-  lib,
-  config,
-  ...
-}:
+{ ... }:
 
 {
   imports = [ ../../hardware/virtualized.nix ];
@@ -30,43 +25,7 @@
     lastOctet = 129;
   };
 
-  ocf.etc.enable = true;
-  ocf.userPackages.enable = true;
-
-  services.openssh.settings = {
-    PasswordAuthentication = true;
-    LoginGraceTime = 30;
-  };
-
-  networking.firewall.enable = lib.mkForce true;
-
-  services.fail2ban = {
-    enable = true;
-    jails.sshd.settings = {
-      enabled = true;
-      maxretry = 5;
-    };
-  };
-
-  ocf.nfs = {
-    enable = true;
-    mount = true;
-  };
-
-  age.secrets.ocfprinting = {
-    rekeyFile = ../../secrets/master-keyed/ocfprinting.age;
-    path = "/etc/ocfprinting.json";
-    owner = "root";
-    group = "ocfstaff";
-    mode = "0640";
-  };
-
-  environment.systemPackages = with pkgs; [
-    ocf-utils
-    openldap
-    ldapvi
-    ipmitool
-  ];
+  ocf.login-server.enable = true;
 
   system.stateVersion = "25.05";
 }
