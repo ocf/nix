@@ -59,6 +59,7 @@ in
     acme.enable = lib.mkDefault true;
     cli.enable = lib.mkDefault true;
     motd.enable = lib.mkDefault true;
+    etc.enable = true;
   };
 
   age.rekey = {

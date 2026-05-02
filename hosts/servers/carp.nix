@@ -33,20 +33,12 @@
   ocf.managed-deployment.staffOnlySsh = false;
 
   ocf.ttyd.enable = true;
-  ocf.etc.enable = true;
   ocf.userPackages.enable = true;
 
   ocf.nfs = {
     enable = true;
     mount = true;
   };
-
-  environment.systemPackages = with pkgs; [
-    ocf-utils
-    openldap
-    ldapvi
-    ipmitool
-  ];
 
   services.openssh.settings = {
     PasswordAuthentication = true;
@@ -149,6 +141,7 @@
     }
   ];
 
+  # this should be in ocf utils package somehow
   security.sudo.extraConfig = ''
     ALL ALL=(mysql) NOPASSWD: /run/current-system/sw/bin/makemysql-real
   '';

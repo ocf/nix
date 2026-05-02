@@ -30,7 +30,6 @@
     lastOctet = 129;
   };
 
-  ocf.etc.enable = true;
   ocf.userPackages.enable = true;
 
   services.openssh.settings = {
@@ -60,13 +59,6 @@
     group = "ocfstaff";
     mode = "0640";
   };
-
-  environment.systemPackages = with pkgs; [
-    ocf-utils
-    openldap
-    ldapvi
-    ipmitool
-  ];
 
   system.stateVersion = "25.05";
 }

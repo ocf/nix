@@ -18,7 +18,6 @@
     # TODO: need ensure host keys can't be stolen by booting an external drive...
     acme.enable = false;
 
-    etc.enable = true;
     home.tmpfs = true;
     network.wakeOnLan.enable = true;
     logged-in-users-exporter.enable = true;
