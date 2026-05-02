@@ -170,6 +170,7 @@ in
     ncdu
     beep
     gist
+    claude-code
 
     # System administration
     iotop
