@@ -15,7 +15,7 @@ in
     public = lib.mkOption {
       type = lib.types.bool;
       default = false;
-      description = "Whether this is a public-facing login server. Enables stricter SSH rules, enables ttyd, and disables staff-only SSH.";
+      description = "Whether this is a publicly accessible (to non ocfstaff) login server. Enables PAM limits, enables ttyd, and disables staff-only SSH.";
     };
   };
 
@@ -32,34 +32,21 @@ in
       services.openssh.settings = {
         PasswordAuthentication = true;
         LoginGraceTime = 30;
+        MaxStartups = "100:30:300";
+        PerSourcePenalties = "yes";
       };
-
-      networking.firewall.enable = lib.mkForce true;
 
       services.fail2ban = {
         enable = true;
         jails.sshd.settings = {
           enabled = true;
           maxretry = 5;
+          bantime = "10m";
         };
-      };
-    })
-
-    (lib.mkIf (cfg.enable && cfg.public) {
-      ocf.managed-deployment.staffOnlySsh = false;
-      ocf.ttyd.enable = true;
-
-      # this should be in ocf utils package somehow
-      security.sudo.extraConfig = ''
-        ALL ALL=(mysql) NOPASSWD: /run/current-system/sw/bin/makemysql-real
-      '';
-
-      services.openssh.settings = {
-        MaxStartups = "100:30:300";
-        PerSourcePenalties = "yes";
       };
 
       networking.firewall = {
+        enable = lib.mkForce true;
         extraCommands = ''
           # Rate-limit new SSH connections to 6 per minute per source IP
           iptables -I nixos-fw -p tcp --dport 22 -m state --state NEW \
@@ -68,8 +55,11 @@ in
             --hashlimit-mode srcip -j DROP
         '';
       };
+    })
 
-      services.fail2ban.jails.sshd.settings.bantime = "10m";
+    (lib.mkIf (cfg.enable && cfg.public) {
+      ocf.managed-deployment.staffOnlySsh = false;
+      ocf.ttyd.enable = true;
 
       security.pam.loginLimits = [
         {
