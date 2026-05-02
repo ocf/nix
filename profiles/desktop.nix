@@ -35,7 +35,7 @@
     gui.enable = true;
     gui.extra = true;
 
-    userPackages.enable = true;
+    cli.apps.enable = true;
   };
 
   boot = {

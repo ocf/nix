@@ -21,13 +21,14 @@ in
 
   config = lib.mkMerge [
     (lib.mkIf cfg.enable {
-      ocf.userPackages.enable = true;
+      ocf.cli.apps.enable = true;
 
       ocf.nfs = {
         enable = true;
         mount = true;
       };
 
+      programs.mosh.enable = true;
       services.openssh.settings = {
         PasswordAuthentication = true;
         LoginGraceTime = 30;

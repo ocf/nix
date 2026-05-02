@@ -16,12 +16,36 @@ in
     programs.java.package = pkgs.zulu25;
 
     environment.systemPackages = with pkgs; [
-      # tui irc
+      # tui editors
+      neovim
+      helix
+      kakoune
+      emacs # has both tui and gui
+
+      # file management tools
+      zip
+      unzip
+      _7zz
+      eza
+      lsd
+      bat
+      ranger
+      fd
+      rclone
+
+      # terminal clients & chat
       irssi
       weechat
+      mutt
+      alpine
+      elinks
+      lynx
+      epic5
+      znc
 
-      # Cosmetics
+      # fetch
       neofetch
+      screenfetch
       pfetch-rs
       fastfetch
       onefetch
@@ -36,70 +60,140 @@ in
       lolcat
       pokemon-colorscripts
 
-      # Other tools
-      bar
-      fzf
+      # benchmarking
       s-tui
       fio
-      wiremix
-      cdrtools # useful for iso files even without a cd drive
 
-      # File management tools
-      zip
-      unzip
-      _7zz
-      eza
-      lsd
-      bat
-      ranger
-      fd
-      rclone
-
-      # tui editors
-      neovim
-      helix
-      kakoune
-      emacs # has both tui and gui
-
+      # version control
       gh
       git
       mercurial
       sapling
       subversion
 
-      devenv
-      claude-code
-
-      # Languages
-      (python3.withPackages (ps: [
-        ps.tkinter
-        ps.numpy
-        ps.pygobject3
-      ]))
+      # debuggers, and build tools
       poetry
-      ruby
-      elixir
-      clojure
       ghc
       rustup # to install other versions not installed by default
       rustfmt
       rustc
       cargo
       clang
-      nodejs_22
-      graphviz
-      nix-du
-      nix-output-monitor
       dix
       lldb
       gdb
       valgrind
-      go
       sqlite
-      godot # has both cli and gui tools
       kotlin
-      libxml2 # xmllint
+      cgdb
+      autoconf
+      automake
+      cmake
+      gnumake
+      libtool
+      pkg-config
+      bison
+      flex
+      nasm
 
+      nix-du
+      nix-output-monitor
+      devenv
+      claude-code
+
+      # languages & runtimes
+      graphviz
+      nodejs
+      go
+      godot # has both cli and gui tools
+      libxml2 # xmllint
+      elixir
+      clojure
+      maven
+      scala_3
+      cabal-install
+      julia
+      chicken
+      octave
+      (ruby.withPackages (
+        ps: with ps; [
+          mysql2
+          sqlite3
+          ronn
+          rails
+        ]
+      ))
+      (rWrapper.override {
+        packages = with rPackages; [
+          data_table
+          dplyr
+          ggplot2
+          jsonlite
+          lubridate
+          magrittr
+          markdown
+          tidyr
+          xml2
+          zoo
+        ];
+      })
+
+      # php
+      (php.withExtensions (
+        { enabled, all }:
+        enabled
+        ++ (with all; [
+          bcmath
+          bz2
+          curl
+          gd
+          intl
+          pdo_mysql
+          pdo_sqlite
+          soap
+          zip
+        ])
+      ))
+
+      # teX
+      texlive.combined.scheme-medium
+
+      # python
+      (python3.withPackages (
+        ps: with ps; [
+          ipython
+          notebook
+          pandas
+          flask
+          jinja2
+          lxml
+          requests-oauthlib
+          sympy
+          tox
+          twine
+          pytest
+          pytest-cov
+          mysqlclient
+          progressbar
+          flake8
+          mock
+          tkinter
+          slixmpp
+          virtualenv
+          numpy
+          pygobject3
+        ]
+      ))
+
+      # database clients
+      sqlite
+      postgresql
+      mariadb
+      qrencode
+      wp-cli
+
+      # media
+      graphicsmagick
       ncmpcpp
       xmp
       yt-dlp
@@ -108,6 +202,28 @@ in
       imagemagick
       pandoc
       img2pdf
+
+      # networking
+      pssh
+
+      # shell utilities
+      unison
+      keychain
+      autojump
+      inotify-tools
+      asciinema
+      colordiff
+      ack
+      silver-searcher
+      shellcheck
+      fzf
+      bar
+
+      # misc
+      wiremix
+      bogofilter
+      units
+      cdrtools # useful for iso files even without a cd drive
 
       # only really runs on the desktops since you need to plug the yubikey in
       yubikey-manager
