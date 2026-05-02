@@ -8,10 +8,10 @@
 }:
 
 let
-  cfg = config.ocf.graphical;
+  cfg = config.ocf.gui;
 in
 {
-  options.ocf.graphical.apps.documents.enable = lib.mkOption {
+  options.ocf.gui.apps.documents.enable = lib.mkOption {
     type = lib.types.bool;
     description = "Install software for working with documents and media on OCF lab desktops";
     default = cfg.enable;
@@ -115,7 +115,7 @@ in
         imagemagick
       ];
 
-    ocf.graphical.apps.browsers.handlePDFs = true;
+    ocf.gui.apps.browsers.handlePDFs = true;
     assertions = [
       {
         assertion = cfg.apps.browsers.enable;

@@ -8,10 +8,10 @@
 }:
 
 let
-  cfg = config.ocf.graphical;
+  cfg = config.ocf.gui;
 in
 {
-  options.ocf.graphical.apps.dev.enable = lib.mkOption {
+  options.ocf.gui.apps.dev.enable = lib.mkOption {
     type = lib.types.bool;
     description = "Enable development related apps";
     default = cfg.enable && cfg.extra;

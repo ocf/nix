@@ -6,10 +6,10 @@
 }:
 
 let
-  cfg = config.ocf.graphical;
+  cfg = config.ocf.gui;
 in
 {
-  options.ocf.graphical.apps.games.enable = lib.mkOption {
+  options.ocf.gui.apps.games.enable = lib.mkOption {
     type = lib.types.bool;
     description = "Enable gaming configuration";
     default = cfg.enable && cfg.extra;

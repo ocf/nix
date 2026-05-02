@@ -9,7 +9,7 @@
 
   ocf = {
     auth.enable = true;
-    graphical.apps.browsers.enable = true;
+    gui.apps.browsers.enable = true;
 
     network = {
       enable = true;
@@ -22,7 +22,7 @@
       musicDir = "/run/jukebox-music";
     };
 
-    graphical.kiosk = {
+    gui.kiosk = {
       enable = true;
       url = "https://labmap.ocf.berkeley.edu";
       extraConfig = ''

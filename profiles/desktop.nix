@@ -33,8 +33,8 @@
       asRemote = true;
     };
 
-    graphical.enable = true;
-    graphical.extra = true;
+    gui.enable = true;
+    gui.extra = true;
 
     userPackages.enable = true;
   };

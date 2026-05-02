@@ -1,6 +1,6 @@
 # This file should contain basic DE setup but not the big KDE config, etc.
 
-# ocf.graphical:
+# ocf.gui:
 # - enable: enable ocf graphical config
 # - kiosk: enable minimal kiosk config
 # - desktop: default desktop env
@@ -18,7 +18,7 @@
 }:
 
 let
-  cfg = config.ocf.graphical;
+  cfg = config.ocf.gui;
   vncScript = pkgs.writeShellScriptBin "ocf-tv" ''
     if [ -z $XDG_RUNTIME_DIR ]; then
       echo "XDG_RUNTIME_DIR must be set"
@@ -51,7 +51,7 @@ let
       });
 in
 {
-  options.ocf.graphical = {
+  options.ocf.gui = {
     enable = lib.mkEnableOption "Enable desktop environment configuration";
 
     # FIXME: this doesnt check if the given value is a valid session
