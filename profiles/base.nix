@@ -112,8 +112,8 @@ in
     '';
   };
 
-  environment.variables.EDITOR = "${pkgs.vim}/bin/ex"; # line editor
-  environment.variables.VISUAL = "${pkgs.nano}/bin/nano"; # visual editor
+  environment.variables.EDITOR = "${pkgs.vim}/bin/vim"; # line editor
+  environment.variables.VISUAL = "${pkgs.vim}/bin/vim"; # visual editor
 
   environment.systemPackages = with pkgs; [
     # System utilities
