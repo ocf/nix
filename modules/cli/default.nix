@@ -6,10 +6,10 @@
 }:
 
 let
-  cfg = config.ocf.shell;
+  cfg = config.ocf.cli;
 in
 {
-  options.ocf.shell = {
+  options.ocf.cli = {
     enable = lib.mkEnableOption "Enable shell configuration";
   };
 

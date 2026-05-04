@@ -30,28 +30,7 @@
     lastOctet = 129;
   };
 
-  ocf.etc.enable = true;
-  ocf.userPackages.enable = true;
-
-  services.openssh.settings = {
-    PasswordAuthentication = true;
-    LoginGraceTime = 30;
-  };
-
-  networking.firewall.enable = lib.mkForce true;
-
-  services.fail2ban = {
-    enable = true;
-    jails.sshd.settings = {
-      enabled = true;
-      maxretry = 5;
-    };
-  };
-
-  ocf.nfs = {
-    enable = true;
-    mount = true;
-  };
+  ocf.loginServer.enable = true;
 
   age.secrets.ocfprinting = {
     rekeyFile = ../../secrets/master-keyed/ocfprinting.age;
@@ -60,13 +39,6 @@
     group = "ocfstaff";
     mode = "0640";
   };
-
-  environment.systemPackages = with pkgs; [
-    ocf-utils
-    openldap
-    ldapvi
-    ipmitool
-  ];
 
   system.stateVersion = "25.05";
 }

@@ -15,14 +15,14 @@
     managed-deployment.automated-deploy = false;
 
     auth.enable = true;
-    graphical.apps.browsers.enable = true;
+    gui.apps.browsers.enable = true;
 
     network = {
       enable = true;
       lastOctet = 90;
     };
 
-    graphical.kiosk = {
+    gui.kiosk = {
       enable = true;
       url = "https://labmap.ocf.berkeley.edu"; # https://kinn.dev/labmap2;
       extraConfig = ''
