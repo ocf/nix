@@ -33,7 +33,20 @@
   ocf.etc.enable = true;
   ocf.userPackages.enable = true;
 
-  services.openssh.settings.PasswordAuthentication = true;
+  services.openssh.settings = {
+    PasswordAuthentication = true;
+    LoginGraceTime = 30;
+  };
+
+  networking.firewall.enable = lib.mkForce true;
+
+  services.fail2ban = {
+    enable = true;
+    jails.sshd.settings = {
+      enabled = true;
+      maxretry = 5;
+    };
+  };
 
   ocf.nfs = {
     enable = true;
