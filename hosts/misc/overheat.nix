@@ -26,7 +26,7 @@
       lastOctet = 94;
     };
 
-    graphical.kiosk = {
+    gui.kiosk = {
       enable = true;
       url = "https://printlist.ocf.berkeley.edu/home";
       extraConfig = ''

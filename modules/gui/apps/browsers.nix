@@ -6,32 +6,32 @@
 }:
 
 let
-  cfg = config.ocf.graphical;
+  cfg = config.ocf.gui.apps;
 in
 {
-  options.ocf.graphical.apps.browsers = {
+  options.ocf.gui.apps.browsers = {
     enable = lib.mkOption {
       type = lib.types.bool;
       description = "Enable browser configuration";
       default = cfg.enable;
     };
 
-    handlePDFs = lib.mkEnableOption "Use browser as PDF viewer";
+    handlePDFs = lib.mkOption {
+      type = lib.types.bool;
+      description = "Use browser as PDF viewer";
+      default = true;
+    };
   };
 
-  config = lib.mkIf cfg.apps.browsers.enable {
-    environment.systemPackages =
-      with pkgs;
-      [
-        firefox
-      ]
-      ++ lib.optionals cfg.extra [
-        librewolf
-        tor-browser
-        mullvad-browser
-        google-chrome # absolutely proprietary
-        ungoogled-chromium
-      ];
+  config = lib.mkIf cfg.browsers.enable {
+    environment.systemPackages = with pkgs; [
+      firefox
+      librewolf
+      tor-browser
+      mullvad-browser
+      google-chrome # absolutely proprietary
+      ungoogled-chromium
+    ];
 
     # FIXME: cosmic files does not read the multiple mimeapps.list files
     # correctly, but it does correctly read the one in XDG_CONFIG_HOME. thus,
