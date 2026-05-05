@@ -11,7 +11,7 @@
   networking.hostName = "koi";
 
   ocf.motd.description = ''
-    Welcome to the new NixOS based staff login server!
+    Welcome to the new NixOS based staff login and development server!
       - install a package: nix profile add 'nixpkgs#package-name'
       - upgrade all packages: nix profile upgrade --all
       - ...or manage packages declaratively with home-manager!
@@ -40,6 +40,7 @@
     mode = "0640";
   };
 
+# like puppet certs, needed for the ocfmail-dev and ocfstats-dev users that are in the ocfweb tests suite, which is run on koi.
   age.secrets.ocfweb-conf = {
     rekeyFile = ../../secrets/master-keyed/koi/ocfweb.conf.age;
     path = "/etc/ocfweb/ocfweb.conf";
@@ -47,6 +48,7 @@
     mode = "0644";
   };
 
+  # These puppet certs are necessary to (at least) load the servers page properly in the dev environment on ocfweb. The puppetdb must be queried by koi when running ocfweb tests to get correct information about puppet hosts (ex. which ones are kvm hypervisors, what are their corresponding VMs)
   age.secrets.puppet-ca = {
     rekeyFile = ../../secrets/master-keyed/koi/puppet-ca.pem.age;
     path = "/etc/ocfweb/puppet-certs/puppet-ca.pem";
