@@ -68,7 +68,7 @@
     rekeyFile = ../../secrets/master-keyed/koi/puppet-private.pem.age;
     path = "/etc/ocfweb/puppet-certs/puppet-private.pem";
     owner = "root";
-    mode = "0600";
+    mode = "0644";
   };
 
   age.secrets.puppet-public = {
