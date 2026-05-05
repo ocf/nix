@@ -45,7 +45,8 @@
     rekeyFile = ../../secrets/master-keyed/koi/ocfweb.conf.age;
     path = "/etc/ocfweb/ocfweb.conf";
     owner = "root";
-    mode = "0644";
+    group = "ocfstaff";
+    mode = "0640";
   };
 
   # These puppet certs are necessary to (at least) load the servers page properly in the dev environment on ocfweb. The puppetdb must be queried by koi when running ocfweb tests to get correct information about puppet hosts (ex. which ones are kvm hypervisors, what are their corresponding VMs)
