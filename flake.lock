@@ -437,11 +437,11 @@
     },
     "ocf-sync-etc": {
       "locked": {
-        "lastModified": 1777875955,
-        "narHash": "sha256-IWB7y+iMnr6Jwc4iGTfcvmZklAOqiZf/qN3xVtGxToY=",
+        "lastModified": 1777892756,
+        "narHash": "sha256-7JVNSXj930FPpu7zt8UpS3bYfpxMnEI0kFtvDhCOgrg=",
         "owner": "ocf",
         "repo": "etc",
-        "rev": "ab6924b606e0fd2c256c024a079461146b710f27",
+        "rev": "42761ebef531df74dbecc616fe321d1b78cfe5b5",
         "type": "github"
       },
       "original": {
@@ -478,11 +478,11 @@
     },
     "ocflib": {
       "locked": {
-        "lastModified": 1777963281,
-        "narHash": "sha256-EM1WBDLcJW5kcK2weyhxf9ZkKT+tgCN1u8X8FVEjydk=",
+        "lastModified": 1777989064,
+        "narHash": "sha256-fjHukXNrGCuSGwsEdoMEbZQM1Jq/QzMAoXbtbWpzwm4=",
         "owner": "ocf",
         "repo": "ocflib",
-        "rev": "94d13fc75cdf9c828420cbd876c6e868915ae307",
+        "rev": "fd45d69ab1c7237db9125f6a4684952bd06476cf",
         "type": "github"
       },
       "original": {
@@ -708,11 +708,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1777463177,
-        "narHash": "sha256-1PcD0+IZPQXyvmXJ1OYH+23sRc9IyOKrUUBYZonVBm8=",
+        "lastModified": 1777895960,
+        "narHash": "sha256-KebDsQd+A7pm++Tp0744EjULttHvz1wbKqNKkMA/088=",
         "owner": "pyproject-nix",
         "repo": "uv2nix",
-        "rev": "6c53dcf4d3f63240f57e0b0c826cb15eda61f249",
+        "rev": "5ad90d48b80ecc920ca2247d53f46beba302e186",
         "type": "github"
       },
       "original": {
