@@ -68,6 +68,7 @@ in
       gh
       git
       mercurial
+      pre-commit
       sapling
       subversion
 
