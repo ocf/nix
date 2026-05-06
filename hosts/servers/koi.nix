@@ -40,7 +40,7 @@
     mode = "0640";
   };
 
-# like puppet certs, needed for the ocfmail-dev and ocfstats-dev users that are in the ocfweb tests suite, which is run on koi.
+  # like puppet certs, needed for the ocfmail-dev and ocfstats-dev users that are in the ocfweb tests suite, which is run on koi.
   age.secrets.ocfweb-conf = {
     rekeyFile = ../../secrets/master-keyed/koi/ocfweb.conf.age;
     path = "/etc/ocfweb/ocfweb.conf";
