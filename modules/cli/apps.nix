@@ -204,6 +204,10 @@ in
       pandoc
       img2pdf
 
+      # kubernetes
+      k9s
+      argocd
+
       # networking
       pssh
 
