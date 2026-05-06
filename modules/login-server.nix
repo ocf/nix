@@ -21,6 +21,10 @@ in
 
   config = lib.mkMerge [
     (lib.mkIf cfg.enable {
+      environment.systemPackages = with pkgs; [
+        python3Packages.cached-property
+      ];
+
       ocf.cli.apps.enable = true;
 
       ocf.nfs = {
