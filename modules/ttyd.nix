@@ -22,6 +22,11 @@ in
   };
 
   config = lib.mkIf cfg.enable {
+    networking.firewall.allowedTCPPorts = [
+      80
+      443
+    ];
+
     services.ttyd = {
       enable = true;
       port = cfg.port;

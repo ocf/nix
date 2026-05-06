@@ -6,7 +6,7 @@
 }:
 
 let
-  cfg = config.ocf.graphical.kiosk;
+  cfg = config.ocf.gui.kiosk;
   swayConfig = pkgs.writeText "kiosk-sway-config" ''
     include /etc/sway/config
     output * bg ${./assets/images/login-afool.png} fill
@@ -16,7 +16,7 @@ let
   '';
 in
 {
-  options.ocf.graphical.kiosk = {
+  options.ocf.gui.kiosk = {
     enable = lib.mkEnableOption "Enable Kiosk configuration";
     url = lib.mkOption {
       type = lib.types.str;
