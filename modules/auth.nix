@@ -122,7 +122,7 @@ in
 
     security.krb5 = {
       enable = true;
-      package = pkgs.heimdal;
+      package = pkgs.krb5;
 
       settings = {
         realms."OCF.BERKELEY.EDU" = {
