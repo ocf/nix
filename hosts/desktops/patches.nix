@@ -6,8 +6,6 @@
     ../../profiles/desktop.nix
   ];
 
-  networking.hostName = "patches";
-
   ocf.network = {
     enable = true;
     lastOctet = 159;

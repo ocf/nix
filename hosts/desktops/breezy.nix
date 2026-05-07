@@ -6,8 +6,6 @@
     ../../profiles/desktop.nix
   ];
 
-  networking.hostName = "breezy";
-
   ocf.network = {
     enable = true;
     lastOctet = 155;

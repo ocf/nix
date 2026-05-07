@@ -3,8 +3,6 @@
 {
   imports = [ ../../hardware/nucleus.nix ];
 
-  networking.hostName = "guanine";
-
   ocf.network = {
     enable = true;
     lastOctet = 8;

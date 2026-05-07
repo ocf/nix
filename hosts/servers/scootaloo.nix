@@ -8,8 +8,6 @@
 {
   imports = [ ../../hardware/virtualized.nix ];
 
-  networking.hostName = "scootaloo";
-
   ocf.network = {
     enable = true;
     lastOctet = 29;

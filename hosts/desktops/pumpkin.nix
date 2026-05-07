@@ -6,8 +6,6 @@
     ../../profiles/desktop.nix
   ];
 
-  networking.hostName = "pumpkin";
-
   ocf.network = {
     enable = true;
     lastOctet = 146;

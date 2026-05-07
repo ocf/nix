@@ -5,8 +5,6 @@
     ../../hardware/raspberry-pi-4b.nix
   ];
 
-  networking.hostName = "overheat";
-
   boot.loader = {
     systemd-boot.enable = false;
     generic-extlinux-compatible.enable = true;

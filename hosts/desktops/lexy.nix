@@ -6,8 +6,6 @@
     ../../profiles/desktop.nix
   ];
 
-  networking.hostName = "lexy";
-
   ocf.nvidia = {
     enable = true;
     open = false;

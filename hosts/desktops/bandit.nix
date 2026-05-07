@@ -6,8 +6,6 @@
     ../../profiles/desktop.nix
   ];
 
-  networking.hostName = "bandit";
-
   ocf.network = {
     enable = true;
     lastOctet = 149;

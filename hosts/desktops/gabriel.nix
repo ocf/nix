@@ -6,8 +6,6 @@
     ../../profiles/desktop.nix
   ];
 
-  networking.hostName = "gabriel";
-
   ocf.network = {
     enable = true;
     lastOctet = 150;

@@ -22,6 +22,7 @@
     network.wakeOnLan.enable = true;
     logged-in-users-exporter.enable = true;
 
+    zfs.enable = true;
     nfs = {
       enable = true;
       mount = true;
@@ -42,10 +43,15 @@
     loader.systemd-boot.consoleMode = "max";
     loader.timeout = 0;
     initrd.systemd.enable = true;
-
-    # zen kernel for a more responsive desktop
-    kernelPackages = pkgs.linuxPackages_zen;
   };
+
+  # FIXME: suspend causes problems with nfs. disable until we fix this
+  systemd.sleep.extraConfig = ''
+    AllowSuspend=no
+    AllowHibernation=no
+    AllowHybridSleep=no
+    AllowSuspendThenHibernate=no
+  '';
 
   # Enable support SANE scanners
   hardware.sane.enable = true;

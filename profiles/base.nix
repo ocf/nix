@@ -271,7 +271,7 @@ in
   // lib.optionalAttrs (!config.ocf.printhost.enable) {
     "cups/lpoptions".text = "Default OCF-BW";
     "cups/client.conf".text = ''
-      ServerName tule.ocf.berkeley.edu
+      ServerName printhost.ocf.berkeley.edu
       Encryption IfRequested
     '';
   };
