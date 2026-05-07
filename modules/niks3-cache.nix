@@ -143,7 +143,7 @@ in
         };
       };
 
-      readProxy.enable = true;
+      readProxy.enable = false;
 
       nginx = {
         enable = true;
@@ -172,10 +172,12 @@ in
 
     services.nginx.virtualHosts.${cfg.cacheDomain} = {
       useACMEHost = "${config.networking.hostName}.ocf.berkeley.edu";
-      locations."/".extraConfig = ''
-        proxy_cache_valid 200 24h;
-        proxy_cache_valid 404 5m;
-      '';
+      locations."/" = {
+        proxyPass = lib.mkForce "http://127.0.0.1:3900/ocf-niks3/";
+      };
+      locations."/api" = {
+        proxyPass = "http://127.0.0.1:5751/api";
+      };
     };
 
     networking.firewall.allowedTCPPorts = [
