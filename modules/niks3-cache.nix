@@ -120,7 +120,7 @@ in
 
       gc = {
         enable = true;
-        olderThan = "2160h";
+        olderThan = "2160h"; # 90 days
         failedUploadsOlderThan = "12h";
         schedule = "Sun *-*-* 03:00:00";
         randomizedDelaySec = 1800;
