@@ -1,13 +1,10 @@
 {
-  stdenv,
   fetchFromGitHub,
-  perl,
   perlPackages,
   git,
-  makeWrapper,
 }:
 
-stdenv.mkDerivation {
+perlPackages.buildPerlPackage {
   pname = "ldap-git-backup";
   version = "unstable-2023-01-27";
 
@@ -18,19 +15,10 @@ stdenv.mkDerivation {
     hash = "sha256-En8MBrSRj2zAs+/3XMRhT96UplkpawdBy3OCLYCWn0s=";
   };
 
-  nativeBuildInputs = [
-    makeWrapper
-    perl
-  ];
-
-  buildInputs = [
-    perl
-    perlPackages.Git
-  ];
+  propagatedBuildInputs = [ perlPackages.Git ];
 
   postInstall = ''
     wrapProgram $out/sbin/ldap-git-backup \
-      --prefix PATH : ${git}/bin \
-      --prefix PERL5LIB : ${perlPackages.Git}/${perl.libPrefix}
+      --prefix PATH : ${git}/bin
   '';
 }
