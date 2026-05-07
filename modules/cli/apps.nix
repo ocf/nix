@@ -234,6 +234,10 @@ in
 
       # only really runs on the desktops since you need to plug the yubikey in
       yubikey-manager
+
+      # password managers
+      bitwarden-cli
+      _1password-cli
     ];
   };
 }
