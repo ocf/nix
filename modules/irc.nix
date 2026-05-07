@@ -7,6 +7,7 @@
 
 let
   cfg = config.ocf.irc;
+  tcpPort = 6697;
 in
 {
   options.ocf.irc = {
@@ -116,13 +117,15 @@ in
           name = "irc.ocf.berkeley.edu";
           motd = pkgs.writeText "ircd.motd" cfg.motd;
           sts.enabled = true;
-          listeners.":6697".tls = {
+          listeners.":${tcpPort}".tls = {
             cert = "/var/lib/acme/scootaloo.ocf.berkeley.edu/fullchain.pem";
             key = "/var/lib/acme/scootaloo.ocf.berkeley.edu/key.pem";
           };
         };
       };
     };
+
+    networking.firewall.allowedTCPPorts = [ tcpPort ];
 
     ocf.acme.extraCerts = [
       "irc.ocf.berkeley.edu"
