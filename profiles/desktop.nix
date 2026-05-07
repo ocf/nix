@@ -22,6 +22,7 @@
     network.wakeOnLan.enable = true;
     logged-in-users-exporter.enable = true;
 
+    zfs.enable = true;
     nfs = {
       enable = true;
       mount = true;
