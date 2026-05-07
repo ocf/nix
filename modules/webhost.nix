@@ -109,6 +109,9 @@ in
       virtualHosts = lib.mkMerge ((builtins.map makeVirtHosts enabledSites) ++ defaultVirtHost);
     };
 
-    networking.firewall.allowedTCPPorts = [ 80 443 ];
+    networking.firewall.allowedTCPPorts = [
+      80
+      443
+    ];
   };
 }

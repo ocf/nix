@@ -202,6 +202,11 @@ in
       };
     };
 
-    networking.firewall.allowedTCPPorts = [ synapseHTTPPort nginxHTTPPort nginxHTTPSPort nginxHTTPSPort2 ];
+    networking.firewall.allowedTCPPorts = [
+      synapseHTTPPort
+      nginxHTTPPort
+      nginxHTTPSPort
+      nginxHTTPSPort2
+    ];
   };
 }
