@@ -15,7 +15,7 @@
     lastOctet = 97;
   };
 
-  ocf.kerberosServer.enable = true;
+  ocf.kerberosKdc.enable = true;
   ocf.ldapServer.enable = true;
 
   ocf.acme.extraCerts = [

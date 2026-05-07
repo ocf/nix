@@ -6,7 +6,7 @@
 }:
 
 let
-  cfg = config.ocf.kerberosServer;
+  cfg = config.ocf.kerberosKdc;
 
   # check-pass-strength wrapped with a Python environment that has ocflib.
   checkPassStrength = pkgs.writeShellScript "check-pass-strength" ''
@@ -15,7 +15,7 @@ let
   '';
 in
 {
-  options.ocf.kerberosServer = {
+  options.ocf.kerberosKdc = {
     enable = lib.mkEnableOption "OCF Kerberos KDC server (Heimdal)";
   };
 
@@ -25,10 +25,6 @@ in
   # and restore with: kadmin -l load <file>
 
   config = lib.mkIf cfg.enable {
-    # Use Heimdal instead of MIT krb5. Heimdal supports an external password
-    # quality check program natively, eliminating the need for a C plugin.
-    security.krb5.package = pkgs.heimdal;
-
     services.kerberos_server = {
       enable = true;
       settings = {

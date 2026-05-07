@@ -7,7 +7,7 @@
 
 let
   cfg = config.ocf.auth;
-  keytabSecretPath = ../secrets/master-keyed/keytabs + "/${config.networking.hostName}.age";
+  keytabSecretPath = ../../secrets/master-keyed/keytabs + "/${config.networking.hostName}.age";
   hasKeytab = builtins.pathExists keytabSecretPath;
 in
 {
@@ -16,7 +16,7 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    age.secrets.root-password-hash.rekeyFile = ../secrets/master-keyed/root-password-hash.age;
+    age.secrets.root-password-hash.rekeyFile = ../../secrets/master-keyed/root-password-hash.age;
 
     # Per-host keytab for GSSAPI SSH authentication
     # Only configured if the host has a keytab in secrets/master-keyed/keytabs/<hostname>.age
@@ -122,7 +122,7 @@ in
 
     security.krb5 = {
       enable = true;
-      package = pkgs.krb5;
+      package = pkgs.heimdal;
 
       settings = {
         realms."OCF.BERKELEY.EDU" = {
