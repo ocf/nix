@@ -18,15 +18,7 @@ stdenv.mkDerivation {
     hash = "sha256-En8MBrSRj2zAs+/3XMRhT96UplkpawdBy3OCLYCWn0s=";
   };
 
-  nativeBuildInputs = [
-    makeWrapper
-    perl
-  ];
-
-  buildInputs = [
-    perl
-    perlPackages.Git
-  ];
+  nativeBuildInputs = [ makeWrapper ];
 
   installPhase = ''
     install -Dm755 ldap-git-backup $out/sbin/ldap-git-backup
