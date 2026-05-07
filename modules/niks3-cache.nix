@@ -95,6 +95,10 @@ in
 
     services.nginx.virtualHosts.${cfg.cacheDomain} = {
       useACMEHost = "${config.networking.hostName}.ocf.berkeley.edu";
+      locations."/".extraConfig = ''
+        proxy_cache_valid 200 24h;
+        proxy_cache_valid 404 5m;
+      '';
     };
 
     systemd.services.niks3.serviceConfig = {
