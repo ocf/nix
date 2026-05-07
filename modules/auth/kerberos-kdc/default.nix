@@ -38,7 +38,7 @@ in
             # Staff /root principals can change any principal's password
             {
               principal = "*/root";
-              access = [ "change-password" ];
+              access = [ "cpw" ];
               target = "*@OCF.BERKELEY.EDU";
             }
             # create/admin is used by account creation tooling (ocflib)
@@ -47,7 +47,7 @@ in
               access = [
                 "add"
                 "get"
-                "change-password"
+                "cpw"
               ];
               target = "*@OCF.BERKELEY.EDU";
             }
