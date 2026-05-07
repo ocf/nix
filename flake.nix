@@ -182,6 +182,7 @@
                 "drawio"
                 "datagrip"
                 "davinci-resolve"
+                "1password"
               ];
           };
         };
