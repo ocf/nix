@@ -117,7 +117,7 @@ in
           name = "irc.ocf.berkeley.edu";
           motd = pkgs.writeText "ircd.motd" cfg.motd;
           sts.enabled = true;
-          listeners.":${tcpPort}".tls = {
+          listeners.":${builtins.toString tcpPort}".tls = {
             cert = "/var/lib/acme/scootaloo.ocf.berkeley.edu/fullchain.pem";
             key = "/var/lib/acme/scootaloo.ocf.berkeley.edu/key.pem";
           };

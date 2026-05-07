@@ -178,10 +178,10 @@ in
             return 404;
           '';
 
-          locations."/_matrix".proxyPass = "http://[::1]:${synapseHTTPPort}";
+          locations."/_matrix".proxyPass = "http://[::1]:${builtins.toString synapseHTTPPort}";
 
-          locations."/_synapse/client".proxyPass = "http://[::1]:${synapseHTTPPort}";
-          locations."/_synapse/admin".proxyPass = "http://[::1]:${synapseHTTPPort}";
+          locations."/_synapse/client".proxyPass = "http://[::1]:${builtins.toString synapseHTTPPort}";
+          locations."/_synapse/admin".proxyPass = "http://[::1]:${builtins.toString synapseHTTPPort}";
         };
 
         "force-ssl" = {
