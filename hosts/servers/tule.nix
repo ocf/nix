@@ -3,8 +3,6 @@
 {
   imports = [ ../../hardware/virtualized.nix ];
 
-  networking.hostName = "tule";
-
   ocf.network = {
     enable = true;
     lastOctet = 127;

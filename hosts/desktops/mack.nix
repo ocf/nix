@@ -6,8 +6,6 @@
     ../../profiles/desktop.nix
   ];
 
-  networking.hostName = "mack";
-
   ocf.network = {
     enable = true;
     lastOctet = 166;

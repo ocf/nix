@@ -3,8 +3,6 @@
 {
   imports = [ ../../hardware/nucleus.nix ];
 
-  networking.hostName = "cytosine";
-
   ocf.network = {
     enable = true;
     lastOctet = 9;

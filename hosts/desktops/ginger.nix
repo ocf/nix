@@ -6,8 +6,6 @@
     ../../profiles/desktop.nix
   ];
 
-  networking.hostName = "ginger";
-
   ocf.network = {
     enable = true;
     lastOctet = 163;

@@ -6,8 +6,6 @@
     ../../profiles/desktop.nix
   ];
 
-  networking.hostName = "misty";
-
   ocf.nvidia = {
     enable = true;
     open = false;
