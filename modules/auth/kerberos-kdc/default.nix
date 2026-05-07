@@ -10,7 +10,7 @@ let
 
   # check-pass-strength wrapped with a Python environment that has ocflib.
   checkPassStrength = pkgs.writeShellScript "check-pass-strength" ''
-    exec ${pkgs.python3.withPackages (ps: [ ps.ocflib ])}/bin/python3 \
+    exec ${pkgs.python312.withPackages (ps: [ ps.ocflib ])}/bin/python3 \
       ${./check-pass-strength.py} "$@"
   '';
 in
