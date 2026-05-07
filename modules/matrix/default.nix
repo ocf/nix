@@ -7,6 +7,10 @@
 
 let
   cfg = config.ocf.matrix;
+  synapseHTTPPort = 8008;
+  nginxHTTPPort = 80;
+  nginxHTTPSPort = 443;
+  nginxHTTPSPort2 = 8448;
 in
 {
   options.ocf.matrix = {
@@ -111,7 +115,7 @@ in
 
         listeners = [
           {
-            port = 8008;
+            port = synapseHTTPPort;
             bind_addresses = [ "::1" ];
             type = "http";
             tls = false;
@@ -145,22 +149,22 @@ in
           listen = [
             {
               addr = "0.0.0.0";
-              port = 443;
+              port = nginxHTTPSPort;
               ssl = true;
             }
             {
               addr = "[::0]";
-              port = 443;
+              port = nginxHTTPSPort;
               ssl = true;
             }
             {
               addr = "0.0.0.0";
-              port = 8448;
+              port = nginxHTTPSPort2;
               ssl = true;
             }
             {
               addr = "[::0]";
-              port = 8448;
+              port = nginxHTTPSPort2;
               ssl = true;
             }
           ];
@@ -174,21 +178,21 @@ in
             return 404;
           '';
 
-          locations."/_matrix".proxyPass = "http://[::1]:8008";
+          locations."/_matrix".proxyPass = "http://[::1]:${builtins.toString synapseHTTPPort}";
 
-          locations."/_synapse/client".proxyPass = "http://[::1]:8008";
-          locations."/_synapse/admin".proxyPass = "http://[::1]:8008";
+          locations."/_synapse/client".proxyPass = "http://[::1]:${builtins.toString synapseHTTPPort}";
+          locations."/_synapse/admin".proxyPass = "http://[::1]:${builtins.toString synapseHTTPPort}";
         };
 
         "force-ssl" = {
           listen = [
             {
               addr = "0.0.0.0";
-              port = 80;
+              port = nginxHTTPPort;
             }
             {
               addr = "[::0]";
-              port = 80;
+              port = nginxHTTPPort;
             }
           ];
 
@@ -197,5 +201,12 @@ in
         };
       };
     };
+
+    networking.firewall.allowedTCPPorts = [
+      synapseHTTPPort
+      nginxHTTPPort
+      nginxHTTPSPort
+      nginxHTTPSPort2
+    ];
   };
 }
