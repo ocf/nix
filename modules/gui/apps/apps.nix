@@ -103,6 +103,10 @@ in
       kana
       freerdp
       zotero
+
+      # password managers
+      bitwarden-desktop
+      _1password-gui
     ];
   };
 }

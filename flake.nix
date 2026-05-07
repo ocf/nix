@@ -182,6 +182,8 @@
                 "drawio"
                 "datagrip"
                 "davinci-resolve"
+                "1password"
+                "1password-cli"
               ];
           };
         };
