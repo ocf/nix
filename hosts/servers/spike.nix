@@ -37,6 +37,11 @@
     ];
   };
 
+  ocf.niks3-push = {
+    enable = true;
+    apiTokenFile = config.age.secrets.niks3-api-token.path;
+  };
+
   ocf.niks3-cache = {
     enable = true;
     apiTokenFile = config.age.secrets.niks3-api-token.path;

@@ -169,6 +169,7 @@
         agenix-rekey.nixosModules.default
         disko.nixosModules.disko
         niks3.nixosModules.default
+        niks3.nixosModules.niks3-auto-upload
         rustfs.nixosModules.rustfs
       ];
 
