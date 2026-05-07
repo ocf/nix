@@ -119,7 +119,7 @@ in
         };
       };
 
-      readProxy.enable = false;
+      readProxy.enable = true;
 
       nginx = {
         enable = true;
@@ -145,15 +145,8 @@ in
     ocf.acme.extraCerts = [ cfg.cacheDomain ];
     users.users."nginx".extraGroups = [ "acme" ];
 
-    # Reads go directly to SeaweedFS S3 (anonymous), push API goes to niks3
     services.nginx.virtualHosts.${cfg.cacheDomain} = {
       useACMEHost = "${config.networking.hostName}.ocf.berkeley.edu";
-      locations."/" = {
-        proxyPass = lib.mkForce "http://127.0.0.1:8333/ocf-niks3/";
-      };
-      locations."/api" = {
-        proxyPass = "http://127.0.0.1:5751/api";
-      };
     };
 
     networking.firewall.allowedTCPPorts = [
