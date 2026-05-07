@@ -6,8 +6,6 @@
     ../../profiles/desktop.nix
   ];
 
-  networking.hostName = "speckles";
-
   ocf.network = {
     enable = true;
     lastOctet = 167;

@@ -212,6 +212,8 @@
           deployment.targetUser =
             nixpkgs.lib.mkIf self.colmenaHive.nodes.${host}.config.ocf.managed-deployment.enable
               deploy-user;
+          networking.hostName = "${host}";
+          networking.hostId = builtins.substring 0 8 (builtins.hashString "sha1" "${host}");
         }
       ) hosts;
     in

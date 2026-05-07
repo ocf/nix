@@ -6,8 +6,6 @@
     ../../profiles/desktop.nix
   ];
 
-  networking.hostName = "cocoa";
-
   ocf.network = {
     enable = true;
     lastOctet = 161;

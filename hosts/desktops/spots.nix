@@ -6,8 +6,6 @@
     ../../profiles/desktop.nix
   ];
 
-  networking.hostName = "spots";
-
   ocf.nvidia.enable = true;
   ocf.network = {
     enable = true;

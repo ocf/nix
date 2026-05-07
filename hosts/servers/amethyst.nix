@@ -3,8 +3,6 @@
 {
   imports = [ ../../hardware/virtualized.nix ];
 
-  networking.hostName = "amethyst";
-
   ocf.network = {
     enable = true;
     lastOctet = 50;

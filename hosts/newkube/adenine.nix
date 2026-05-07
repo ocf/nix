@@ -3,8 +3,6 @@
 {
   imports = [ ../../hardware/nucleus.nix ];
 
-  networking.hostName = "adenine";
-
   ocf.network = {
     enable = true;
     lastOctet = 7;

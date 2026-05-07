@@ -3,8 +3,6 @@
 {
   imports = [ ../../hardware/virtualized.nix ];
 
-  networking.hostName = "spike";
-
   # allows spike to build for raspberry pi
   boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
 

@@ -8,8 +8,6 @@
 {
   imports = [ ../../hardware/virtualized.nix ];
 
-  networking.hostName = "koi";
-
   ocf.motd.description = ''
     Welcome to the new NixOS based staff login and development server!
       - install a package: nix profile add 'nixpkgs#package-name'

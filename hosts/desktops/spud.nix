@@ -6,8 +6,6 @@
     ../../profiles/desktop.nix
   ];
 
-  networking.hostName = "spud";
-
   ocf.network = {
     enable = true;
     lastOctet = 165;

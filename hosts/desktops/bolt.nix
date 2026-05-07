@@ -6,8 +6,6 @@
     ../../profiles/desktop.nix
   ];
 
-  networking.hostName = "bolt";
-
   ocf.network = {
     enable = true;
     lastOctet = 154;

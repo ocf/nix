@@ -5,8 +5,6 @@
     ../../hardware/minisforum-new.nix
   ];
 
-  networking.hostName = "tornado";
-
   ocf = {
     # TODO: need ensure host keys can't be stolen by booting an external drive...
     acme.enable = false;

@@ -5,8 +5,6 @@
     ../../hardware/system76-meerkat.nix
   ];
 
-  networking.hostName = "anglerfish";
-
   ocf = {
     auth.enable = true;
     gui.apps.browsers.enable = true;

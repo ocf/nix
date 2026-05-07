@@ -6,8 +6,6 @@
     ../../profiles/desktop.nix
   ];
 
-  networking.hostName = "pepper";
-
   ocf.network = {
     enable = true;
     lastOctet = 158;
