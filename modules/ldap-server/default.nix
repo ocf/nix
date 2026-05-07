@@ -10,7 +10,7 @@ let
   fqdn = "${config.networking.hostName}.ocf.berkeley.edu";
   certDir = "/var/lib/acme/${fqdn}";
 
-  ldapLint = pkgs.writeShellScript "ldap-lint" ''
+  ldapLint = pkgs.writeShellScriptBin "ldap-lint" ''
     exec ${
       pkgs.python312.withPackages (ps: [
         ps.ocflib
