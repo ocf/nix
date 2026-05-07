@@ -106,6 +106,14 @@
       url = "github:ocf/jukebox-django";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    niks3 = {
+      type = "github";
+      owner = "Mic92";
+      repo = "niks3";
+      ref = "main";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
@@ -125,6 +133,7 @@
       wayout,
       ocf-cosmic-applets,
       ocf-jukebox,
+      niks3,
     }@inputs:
     let
       # ============== #
@@ -149,6 +158,8 @@
         agenix.nixosModules.default
         agenix-rekey.nixosModules.default
         disko.nixosModules.disko
+        niks3.nixosModules.default
+        niks3.nixosModules.niks3-auto-upload
       ];
 
       defaultSystem = "x86_64-linux";
