@@ -93,6 +93,8 @@ in
     # Firewall has to be off, these rules aren't enough to make Cilium work apparently. That said,
     # I spent a while typing these out and putting comments on them, so the rules stay! See if you
     # can figure out how to get Firewall to work at some point (or use Cilium host firewall tbh).
+    # FIXME
+    networking.firewall.enable = false;
     networking.firewall.allowedTCPPorts = [
       # <https://kubernetes.io/docs/reference/ports-and-protocols/>
       6443
