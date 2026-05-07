@@ -9,6 +9,11 @@ let
   cfg = config.ocf.ldapServer;
   fqdn = "${config.networking.hostName}.ocf.berkeley.edu";
   certDir = "/var/lib/acme/${fqdn}";
+
+  ldapLint = pkgs.writeShellScript "ldap-lint" ''
+    exec ${pkgs.python312.withPackages (ps: [ ps.ocflib ps.dnspython ])}/bin/python3 \
+      ${./ldap-lint.py} "$@"
+  '';
 in
 {
   options.ocf.ldapServer = {
@@ -26,7 +31,7 @@ in
       mode = "0400";
     };
 
-    # Allow openldap to read ACME certificates
+    # slapd process runs as openldap user and needs to read acme certs, but acme certs are owned by acme user and acme group by default.
     security.acme.certs.${fqdn}.group = lib.mkDefault "openldap";
 
     # Cyrus SASL configuration for slapd GSSAPI authentication.
@@ -39,7 +44,7 @@ in
       mode = "0444";
     };
 
-    # saslauthd validates Kerberos credentials for services that use it
+    # TODO: try removing, not sure if this is necessary, but it was present in the ocf_ldap puppet module... not moving yet for this migration from puppet to nix
     services.saslauthd = {
       enable = true;
       mechanism = "kerberos5";
@@ -70,14 +75,15 @@ in
           ];
         };
 
+	# TODO: once all debian hosts deployed to with puppet are deprecated, remove puppet.schema.ldif
         children = {
           "cn=schema" = {
             includes = [
               "${pkgs.openldap}/etc/schema/core.ldif"
               "${pkgs.openldap}/etc/schema/cosine.ldif"
               "${pkgs.openldap}/etc/schema/nis.ldif"
-              ./ldap-server/puppet.schema.ldif
-              ./ldap-server/ocf.schema.ldif
+              ./puppet.schema.ldif
+              ./ocf.schema.ldif
             ];
           };
 
@@ -111,10 +117,17 @@ in
                 "cn eq,sub"
                 "calnetUid,oslGid,callinkOid eq,pres"
               ];
-              # TODO: load the ocfvirt overlay (custom shared library from ocf/ldap-api).
-              # In slapd.conf it was: moduleload ocfvirt / overlay ocfvirt
-              # It needs to be packaged as a NixOS derivation and loaded via
-              # olcModulePath / olcModuleLoad before this database config.
+
+	      # Note: the puppet slapd used ocf/ldap-overlay to synthesize
+	      # ocfEmail dynamically from uid (for some reason?). since
+	      # migrating from puppet to nix, we now store ocfEmail directly on
+	      # user entries and populate by ocflib on account
+	      # creation/modification (see ocfweb).
+
+	      # ocfEmail is only currently used in the rt and waddles (ai
+	      # chatbot) repos anyway, no real reason for it to exist. may
+	      # delete soon anyway.
+
               olcAccess = [
                 # Root DSE is readable by everyone
                 "{0}to dn.base=\"\" by * read"
@@ -125,6 +138,7 @@ in
                 # Sorried users cannot change their own shell
                 "{3}to dn.subtree=\"ou=People,dc=OCF,dc=Berkeley,dc=EDU\" filter=(loginShell=/opt/share/utils/bin/sorried) attrs=loginShell by sasl_ssf=56 dn.regex=\"^uid=[^,/]+/admin,cn=OCF.BERKELEY.EDU,cn=GSSAPI,cn=auth$\" write by sasl_ssf=56 users read by tls_ssf=256 anonymous read"
                 # Non-sorried users can change their own shell
+
                 "{4}to dn.subtree=\"ou=People,dc=OCF,dc=Berkeley,dc=EDU\" attrs=loginShell by sasl_ssf=56 dn.regex=\"^uid=[^,/]+/admin,cn=OCF.BERKELEY.EDU,cn=GSSAPI,cn=auth$\" write by sasl_ssf=56 self write by sasl_ssf=56 users read by tls_ssf=256 anonymous read"
                 # mail: /admin and /root can read; smtp service can read; owner can write
                 "{5}to dn.subtree=\"ou=People,dc=OCF,dc=Berkeley,dc=EDU\" attrs=mail by sasl_ssf=56 dn.regex=\"^uid=[^,/]+/admin,cn=OCF.BERKELEY.EDU,cn=GSSAPI,cn=auth$\" write by sasl_ssf=56 dn.regex=\"^uid=[^,/]+/root,cn=OCF.BERKELEY.EDU,cn=GSSAPI,cn=auth$\" read by sasl_ssf=56 dn=\"uid=smtp/anthrax.ocf.berkeley.edu,cn=OCF.BERKELEY.EDU,cn=GSSAPI,cn=auth\" read by sasl_ssf=56 self write by * none"
@@ -146,6 +160,8 @@ in
 
     # KDC must start after slapd so SASL/GSSAPI is available for KDC → LDAP lookups
     systemd.services.krb5kdc.after = [ "openldap.service" ];
+
+    environment.systemPackages = [ ldapLint ];
 
     networking.firewall.allowedTCPPorts = [ 636 ];
 
@@ -172,32 +188,25 @@ in
 
     systemd.services.ldap-git-backup = {
       description = "LDAP git backup";
-      after = [ "slapd.service" ];
-      requires = [ "slapd.service" ];
+      after = [ "openldap.service" ];
+      requires = [ "openldap.service" ];
       path = [
-        pkgs.git
+        pkgs.ldap-git-backup
         pkgs.openldap
+        pkgs.git
       ];
       serviceConfig = {
         Type = "oneshot";
         User = "root";
         UMask = "0077";
       };
+      environment = {
+        GIT_SSH_COMMAND = "ssh -i ${config.age.secrets.ldap-github-deploy-key.path}";
+      };
       script = ''
-        BACKUP_DIR=/var/backups/ldap
-
-        [ -d "$BACKUP_DIR/.git" ] || git -C "$BACKUP_DIR" init -q
-
-        slapcat -n 0 > "$BACKUP_DIR/ldap-config.ldif"
-        slapcat -n 1 > "$BACKUP_DIR/ldap-data.ldif"
-
-        git -C "$BACKUP_DIR" add ldap-config.ldif ldap-data.ldif
-        git -C "$BACKUP_DIR" commit -q -m 'ldap-git-backup' --allow-empty \
-          ldap-config.ldif ldap-data.ldif
-        git -C "$BACKUP_DIR" gc --auto --quiet
-
-        GIT_SSH_COMMAND="ssh -i ${config.age.secrets.ldap-github-deploy-key.path}" \
-          git -C "$BACKUP_DIR" push -q git@github.com:ocf/ldap master
+        ldap-git-backup --backup-dir /var/backups/ldap \
+          --ldif-cmd "${pkgs.openldap}/bin/slapcat"
+        git -C /var/backups/ldap push -q git@github.com:ocf/ldap master
       '';
     };
 

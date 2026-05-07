@@ -1,0 +1,42 @@
+#!/usr/bin/env python3
+"""Enforce OCF account password complexity.
+
+Designed to be used as an external password check program by Heimdal. Uses
+ocflib to validate password strength with the same requirements as all other
+password changing tools.
+
+Details on interface Heimdal uses:
+http://www.h5l.org/manual/HEAD/info/heimdal/Password-changing.html
+
+Example usage:
+$ echo -e "principal: ckuehl@OCF.BERKELEY.EDU\nnew-password: hello" | ./check-pass-strength
+"""
+import sys
+
+import ocflib.account.utils as utils
+import ocflib.account.validators as validators
+
+
+if __name__ == '__main__':
+    data = {}
+    while True:
+        line = sys.stdin.readline().rstrip('\n')
+        if line == 'end' or not line:
+            break
+        else:
+            line = line.split(':')
+            assert len(line) == 2, 'Could not parse input: ' + str(line)
+            data[line[0]] = line[1][1:]
+    try:
+        username = utils.extract_username_from_principal(data['principal'])
+        password = data['new-password']
+    except (KeyError, ValueError):
+        print('Did not receive principal or password from input', file=sys.stderr)
+        sys.exit(1)
+    else:
+        try:
+            validators.validate_password(username, password)
+        except ValueError as e:
+            print(e, file=sys.stderr)
+        else:
+            print('APPROVED')

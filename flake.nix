@@ -284,6 +284,7 @@
         ocf-cosmic-applets = ocf-cosmic-applets.packages.${final.stdenv.hostPlatform.system}.default;
         ocf-cosmic-greeter = final.callPackage ./pkgs/ocf-cosmic-greeter.nix { };
         ocf-hplip = final.callPackage ./pkgs/ocf-hplip.nix { };
+        ldap-git-backup = final.callPackage ./pkgs/ldap-git-backup.nix { };
       };
 
       agenix-rekey = agenix-rekey.configure {

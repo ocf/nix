@@ -18,8 +18,6 @@
   ocf.kerberosServer.enable = true;
   ocf.ldapServer.enable = true;
 
-  # Cert covers both service names as SANs so ldaps:// and kerberos clients
-  # connecting to ldap.ocf.berkeley.edu / kerberos.ocf.berkeley.edu are happy
   ocf.acme.extraCerts = [
     "ldap.ocf.berkeley.edu"
     "kerberos.ocf.berkeley.edu"
