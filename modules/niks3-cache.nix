@@ -47,9 +47,6 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-
-    # -- RustFS: local S3 backend --
-
     services.rustfs = {
       enable = true;
       accessKeyFile = cfg.s3AccessKeyFile;
@@ -77,12 +74,6 @@ in
         ACCESS_KEY=$(cat "${cfg.s3AccessKeyFile}")
         SECRET_KEY=$(cat "${cfg.s3SecretKeyFile}")
 
-        # Wait for RustFS to be ready
-        for i in $(seq 1 30); do
-          mc alias set local http://127.0.0.1:9000 "$ACCESS_KEY" "$SECRET_KEY" --api S3v4 >/dev/null 2>&1 && break
-          sleep 1
-        done
-
         # Create bucket (fails harmlessly if already exists)
         mc mb local/ocf-niks3 || echo "bucket create: already exists"
 
@@ -90,8 +81,6 @@ in
         mc anonymous set download local/ocf-niks3
       '';
     };
-
-    # -- niks3: binary cache server --
 
     services.niks3 = {
       enable = true;
@@ -138,7 +127,6 @@ in
       };
     };
 
-    # niks3 must wait for RustFS setup to complete
     systemd.services.niks3 = {
       after = [ "rustfs-setup.service" ];
       requires = [ "rustfs-setup.service" ];
