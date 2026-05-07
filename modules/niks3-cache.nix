@@ -73,7 +73,7 @@ in
         };
       };
 
-      enableReadProxy = true;
+      readProxy.enable = true;
 
       nginx = {
         enable = true;
