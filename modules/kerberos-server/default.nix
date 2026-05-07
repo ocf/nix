@@ -58,11 +58,11 @@ in
           ];
         };
 
-	# a wrapper for ocflib's `validate_password`. more complex than doing
-	# it natively, but good to standardize password requirements across
-	# ocf/utils and ocf/ocfweb. heimdal's external password checking like
-	# this might not be easily possible in MIT...? consider if migrating
-	# off of heimdal kerb.
+        # a wrapper for ocflib's `validate_password`. more complex than doing
+        # it natively, but good to standardize password requirements across
+        # ocf/utils and ocf/ocfweb. heimdal's external password checking like
+        # this might not be easily possible in MIT...? consider if migrating
+        # off of heimdal kerb.
 
         password_quality = {
           policies = "external-check";

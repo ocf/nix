@@ -11,7 +11,12 @@ let
   certDir = "/var/lib/acme/${fqdn}";
 
   ldapLint = pkgs.writeShellScript "ldap-lint" ''
-    exec ${pkgs.python312.withPackages (ps: [ ps.ocflib ps.dnspython ])}/bin/python3 \
+    exec ${
+      pkgs.python312.withPackages (ps: [
+        ps.ocflib
+        ps.dnspython
+      ])
+    }/bin/python3 \
       ${./ldap-lint.py} "$@"
   '';
 in
@@ -75,7 +80,7 @@ in
           ];
         };
 
-	# TODO: once all debian hosts deployed to with puppet are deprecated, remove puppet.schema.ldif
+        # TODO: once all debian hosts deployed to with puppet are deprecated, remove puppet.schema.ldif
         children = {
           "cn=schema" = {
             includes = [
@@ -118,15 +123,15 @@ in
                 "calnetUid,oslGid,callinkOid eq,pres"
               ];
 
-	      # Note: the puppet slapd used ocf/ldap-overlay to synthesize
-	      # ocfEmail dynamically from uid (for some reason?). since
-	      # migrating from puppet to nix, we now store ocfEmail directly on
-	      # user entries and populate by ocflib on account
-	      # creation/modification (see ocfweb).
+              # Note: the puppet slapd used ocf/ldap-overlay to synthesize
+              # ocfEmail dynamically from uid (for some reason?). since
+              # migrating from puppet to nix, we now store ocfEmail directly on
+              # user entries and populate by ocflib on account
+              # creation/modification (see ocfweb).
 
-	      # ocfEmail is only currently used in the rt and waddles (ai
-	      # chatbot) repos anyway, no real reason for it to exist. may
-	      # delete soon anyway.
+              # ocfEmail is only currently used in the rt and waddles (ai
+              # chatbot) repos anyway, no real reason for it to exist. may
+              # delete soon anyway.
 
               olcAccess = [
                 # Root DSE is readable by everyone
@@ -173,7 +178,7 @@ in
 
     # SSH deploy key for pushing the LDAP backup to github.com:ocf/ldap
     age.secrets.ldap-github-deploy-key = {
-      rekeyFile = ../secrets/master-keyed/ldap-github-deploy-key.age;
+      rekeyFile = ../secrets/master-keyed/eel/ldap-github-deploy-key.age;
       path = "/root/.ssh/id_rsa_ldap_backup";
       owner = "root";
       group = "root";

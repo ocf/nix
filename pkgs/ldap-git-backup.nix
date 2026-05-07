@@ -1,4 +1,11 @@
-{ stdenv, fetchFromGitHub, perl, perlPackages, git, makeWrapper }:
+{
+  stdenv,
+  fetchFromGitHub,
+  perl,
+  perlPackages,
+  git,
+  makeWrapper,
+}:
 
 stdenv.mkDerivation {
   pname = "ldap-git-backup";
@@ -11,7 +18,10 @@ stdenv.mkDerivation {
     hash = "sha256-En8MBrSRj2zAs+/3XMRhT96UplkpawdBy3OCLYCWn0s=";
   };
 
-  nativeBuildInputs = [ makeWrapper perl ];
+  nativeBuildInputs = [
+    makeWrapper
+    perl
+  ];
 
   buildInputs = [
     perl
