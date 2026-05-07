@@ -47,6 +47,14 @@
     kernelPackages = pkgs.linuxPackages_zen;
   };
 
+  # FIXME: suspend causes problems with nfs. disable until we fix this
+  systemd.sleep.extraConfig = ''
+    AllowSuspend=no
+    AllowHibernation=no
+    AllowHybridSleep=no
+    AllowSuspendThenHibernate=no
+  '';
+
   # Enable support SANE scanners
   hardware.sane.enable = true;
 
