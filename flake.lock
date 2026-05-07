@@ -640,30 +640,8 @@
         "ocf-sync-etc": "ocf-sync-etc",
         "ocf-utils": "ocf-utils",
         "ocflib": "ocflib",
-        "rustfs": "rustfs",
         "systems": "systems_4",
         "wayout": "wayout"
-      }
-    },
-    "rustfs": {
-      "inputs": {
-        "nixpkgs": [
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "lastModified": 1777635550,
-        "narHash": "sha256-QHknn6JYNb4+8ztMl7Ngk3Px3r2FRUPwbbrswYuHSpA=",
-        "owner": "rustfs",
-        "repo": "rustfs-flake",
-        "rev": "efaad834053c41ac618804fb4e7612cea455848e",
-        "type": "github"
-      },
-      "original": {
-        "owner": "rustfs",
-        "ref": "main",
-        "repo": "rustfs-flake",
-        "type": "github"
       }
     },
     "stable": {

@@ -31,12 +31,12 @@ in
 
     s3AccessKeyFile = lib.mkOption {
       type = lib.types.path;
-      description = "Path to file containing the RustFS S3 access key.";
+      description = "Path to file containing the S3 access key.";
     };
 
     s3SecretKeyFile = lib.mkOption {
       type = lib.types.path;
-      description = "Path to file containing the RustFS S3 secret key.";
+      description = "Path to file containing the S3 secret key.";
     };
 
     pushGroups = lib.mkOption {
@@ -47,38 +47,49 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    services.rustfs = {
-      enable = true;
-      accessKeyFile = cfg.s3AccessKeyFile;
-      secretKeyFile = cfg.s3SecretKeyFile;
-      address = ":9000";
-      consoleAddress = ":9001";
-      volumes = [ "/var/lib/rustfs" ];
-    };
-
-    # Create bucket and set anonymous read on first boot
-    systemd.services.rustfs-setup = {
-      description = "RustFS bucket setup for niks3";
-      after = [ "rustfs.service" ];
-      requires = [ "rustfs.service" ];
+    systemd.services.seaweedfs = {
+      description = "SeaweedFS server";
+      after = [ "network.target" ];
       wantedBy = [ "multi-user.target" ];
       serviceConfig = {
-        Type = "oneshot";
-        RemainAfterExit = true;
+        Type = "simple";
+        StateDirectory = "seaweedfs";
+        DynamicUser = true;
+        Restart = "on-failure";
+        LoadCredential = [
+          "s3-access-key:${cfg.s3AccessKeyFile}"
+          "s3-secret-key:${cfg.s3SecretKeyFile}"
+        ];
       };
-      environment.HOME = "/tmp/mc-home";
-      path = [ pkgs.minio-client ];
       script = ''
-        set -euo pipefail
+        ACCESS_KEY=$(cat "$CREDENTIALS_DIRECTORY/s3-access-key")
+        SECRET_KEY=$(cat "$CREDENTIALS_DIRECTORY/s3-secret-key")
 
-        ACCESS_KEY=$(cat "${cfg.s3AccessKeyFile}")
-        SECRET_KEY=$(cat "${cfg.s3SecretKeyFile}")
+        cat > /var/lib/seaweedfs/s3.json <<EOF
+        {
+          "defaultEffect": "Deny",
+          "identities": [
+            {
+              "name": "niks3",
+              "credentials": [{"accessKey": "$ACCESS_KEY", "secretKey": "$SECRET_KEY"}],
+              "actions": ["Admin", "Read", "Write", "List", "Tagging"]
+            },
+            {
+              "name": "anonymous",
+              "actions": ["Read", "List"]
+            }
+          ]
+        }
+        EOF
 
-        # Create bucket (fails harmlessly if already exists)
-        mc mb local/ocf-niks3 || echo "bucket create: already exists"
-
-        # Enable anonymous read access
-        mc anonymous set download local/ocf-niks3
+        exec ${pkgs.seaweedfs}/bin/weed server \
+          -dir=/var/lib/seaweedfs \
+          -s3 -filer \
+          -ip=${config.networking.hostName}.ocf.berkeley.edu \
+          -ip.bind=:: \
+          -s3.port=8333 \
+          -volume.max=300 \
+          -s3.config=/var/lib/seaweedfs/s3.json
       '';
     };
 
@@ -87,9 +98,8 @@ in
       httpAddr = "127.0.0.1:5751";
 
       s3 = {
-        endpoint = "${config.networking.hostName}.ocf.berkeley.edu:9000";
+        endpoint = "${config.networking.hostName}.ocf.berkeley.edu:8333";
         bucket = "ocf-niks3";
-        region = "us-east-1";
         useSSL = false;
         accessKeyFile = cfg.s3AccessKeyFile;
         secretKeyFile = cfg.s3SecretKeyFile;
@@ -128,18 +138,18 @@ in
     };
 
     systemd.services.niks3 = {
-      after = [ "rustfs-setup.service" ];
-      requires = [ "rustfs-setup.service" ];
+      after = [ "seaweedfs.service" ];
+      requires = [ "seaweedfs.service" ];
     };
 
     ocf.acme.extraCerts = [ cfg.cacheDomain ];
     users.users."nginx".extraGroups = [ "acme" ];
 
-    # Reads go directly to RustFS (anonymous), push API goes to niks3
+    # Reads go directly to SeaweedFS S3 (anonymous), push API goes to niks3
     services.nginx.virtualHosts.${cfg.cacheDomain} = {
       useACMEHost = "${config.networking.hostName}.ocf.berkeley.edu";
       locations."/" = {
-        proxyPass = lib.mkForce "http://127.0.0.1:9000/ocf-niks3/";
+        proxyPass = lib.mkForce "http://127.0.0.1:8333/ocf-niks3/";
       };
       locations."/api" = {
         proxyPass = "http://127.0.0.1:5751/api";
@@ -149,7 +159,7 @@ in
     networking.firewall.allowedTCPPorts = [
       80
       443
-      9000
+      8333
     ];
   };
 }

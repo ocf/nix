@@ -114,14 +114,6 @@
       ref = "main";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-
-    rustfs = {
-      type = "github";
-      owner = "rustfs";
-      repo = "rustfs-flake";
-      ref = "main";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
   };
 
   outputs =
@@ -142,7 +134,6 @@
       ocf-cosmic-applets,
       ocf-jukebox,
       niks3,
-      rustfs,
     }@inputs:
     let
       # ============== #
@@ -156,7 +147,6 @@
         ocf-pam-trimspaces.overlays.default
         nix-index-database.overlays.nix-index
         agenix-rekey.overlays.default
-        rustfs.overlays.default
       ];
 
       customModules = (
@@ -170,7 +160,6 @@
         disko.nixosModules.disko
         niks3.nixosModules.default
         niks3.nixosModules.niks3-auto-upload
-        rustfs.nixosModules.rustfs
       ];
 
       defaultSystem = "x86_64-linux";
