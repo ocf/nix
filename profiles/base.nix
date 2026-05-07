@@ -228,7 +228,6 @@ in
       ]
     ))
     ocf-utils
-    ocf-niks3-push
   ];
 
   programs.vim.enable = true;
