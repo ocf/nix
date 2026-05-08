@@ -60,8 +60,8 @@ in
 
     services.openldap = {
       enable = true;
-      # ldaps only — no unencrypted ldap://
-      urlList = [ "ldaps:///" ];
+      # ldaps only — no unencrypted ldap://; ldapi for local admin access
+      urlList = [ "ldaps:///" "ldapi:///" ];
       settings = {
         attrs = {
           olcLogLevel = [ "0" ];
