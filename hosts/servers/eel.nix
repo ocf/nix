@@ -19,8 +19,8 @@
   ocf.ldapServer.enable = true;
 
   ocf.acme.extraCerts = [
-    "ldap.ocf.berkeley.edu"
-    "kerberos.ocf.berkeley.edu"
+    "eel-ldap.ocf.berkeley.edu"
+    "eel-kerberos.ocf.berkeley.edu"
   ];
 
   system.stateVersion = "25.11";

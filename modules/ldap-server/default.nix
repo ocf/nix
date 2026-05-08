@@ -178,7 +178,7 @@ in
 
     # SSH deploy key for pushing the LDAP backup to github.com:ocf/ldap
     age.secrets.ldap-github-deploy-key = {
-      rekeyFile = ../secrets/master-keyed/eel/ldap-github-deploy-key.age;
+      rekeyFile = ../../secrets/master-keyed/eel/ldap-github-deploy-key.age;
       path = "/root/.ssh/id_rsa_ldap_backup";
       owner = "root";
       group = "root";
