@@ -33,60 +33,60 @@ in
   config = lib.mkIf cfg.enable {
     nix.settings.trusted-users = [ deploy-user ];
 
-      users.groups.${deploy-user} = { };
+    users.groups.${deploy-user} = { };
 
-      users.users.${deploy-user} = {
-        isNormalUser = true;
-        group = deploy-user;
-        createHome = false;
-        home = "/var/empty";
-        openssh.authorizedKeys.keys = [
-          "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDMuiOUsjVJSi+0WeMHKquQmwoyz/c3N7HhjJwzz21B3" # github-actions
-          "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGlViRB5HH1bTaS1S7TcqVBSuxKdrbdhL2CmhDqc/t6A" # oliverni
-          "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILOaJJvOUG08qr3yeeQRB71M30cdPMuO69nsf0CodALa" # jaysa
-          "sk-ssh-ed25519@openssh.com AAAAGnNrLXNzaC1lZDI1NTE5QG9wZW5zc2guY29tAAAAIDLsEX5PgyQwdOtdOo0U+yWdpOu9gOsqpQRXo7xKww5FAAAABHNzaDo=" # jaysa hardware token
-          "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMdAe7sPMxaidnqOah3UVrjt41KFHHOYleS1VWGH+ZUc" # storce
-          "sk-ssh-ed25519@openssh.com AAAAGnNrLXNzaC1lZDI1NTE5QG9wZW5zc2guY29tAAAAICW8L5pydSCGwBstSlXWNSQh//wmRB03RmAWaT3u7+8hAAAABHNzaDo=" # sbwilliams primary hardware token
-          "sk-ssh-ed25519@openssh.com AAAAGnNrLXNzaC1lZDI1NTE5QG9wZW5zc2guY29tAAAAIIsQXwbC4lVR8qMbduDWHVNvjfqD1m8yYbjdEOGCNVNPAAAABHNzaDo=" # sbwilliams secondary hardware token
-          "sk-ssh-ed25519@openssh.com AAAAGnNrLXNzaC1lZDI1NTE5QG9wZW5zc2guY29tAAAAIIe3xdiMA4u6OhEEa8gw1w26G8mBvAC6SXbbgR0sSWO7AAAABHNzaDo=" # michaelzls hardware token 1
-          "sk-ssh-ed25519@openssh.com AAAAGnNrLXNzaC1lZDI1NTE5QG9wZW5zc2guY29tAAAAICWs4Daof6LfwMw6376xOfuPgBnZNxnPWpoUvcWdlql5AAAABHNzaDo=" # michaelzls hardware token 2
-          "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIF3DDYaYibt/VjeYDR7cO8tZA2iJUhPBh6jFrB1mBxJA" # chamburr
-          "sk-ssh-ed25519@openssh.com AAAAGnNrLXNzaC1lZDI1NTE5QG9wZW5zc2guY29tAAAAIDLsEX5PgyQwdOtdOo0U+yWdpOu9gOsqpQRXo7xKww5FAAAABHNzaDo=" # jaysa hardware token
-          "sk-ssh-ed25519@openssh.com AAAAGnNrLXNzaC1lZDI1NTE5QG9wZW5zc2guY29tAAAAIK6PlfQq5LYIOHTnPwQvJeiGo3MYDxBRb+KdTqrffxFnAAAABHNzaDo=" # blakeh hardware token
-          "sk-ssh-ed25519@openssh.com AAAAGnNrLXNzaC1lZDI1NTE5QG9wZW5zc2guY29tAAAAIPs3+fHihwZSBQVtoXffCtSSmBBDb/0NY+BPDIo+FKh9AAAABHNzaDo=" # blakeh backup hardware token
-          "sk-ssh-ed25519@openssh.com AAAAGnNrLXNzaC1lZDI1NTE5QG9wZW5zc2guY29tAAAAIB1zLZffea+7TdFSQOhNBmT1hftFwPzAEK2c8siFeS/7AAAABHNzaDo=" # ericgu hardware token
-          "sk-ssh-ed25519@openssh.com AAAAGnNrLXNzaC1lZDI1NTE5QG9wZW5zc2guY29tAAAAIKtH02NTIoDXgcD5UJoxWWBu5EhHoYaP6NZQKZSIWmadAAAABHNzaDo=" # ericgu backup hardware token
-        ];
-      };
-
-      # note: this breaks colmena exec, which runs the given command with sudo,
-      # but sudo cant ask for a password without a proper terminal
-      security.sudo.extraRules = [
-        {
-          users = [ deploy-user ];
-          commands = [
-            # needed for colmena apply
-            {
-              command = "/run/current-system/sw/bin/nix-store --no-gc-warning --realise /nix/store/*";
-              options = [ "NOPASSWD" ];
-            }
-            {
-              command = "/run/current-system/sw/bin/nix-env --profile /nix/var/nix/profiles/system --set /nix/store/*";
-              options = [ "NOPASSWD" ];
-            }
-            {
-              command = "/nix/store/*/bin/switch-to-configuration *";
-              options = [ "NOPASSWD" ];
-            }
-
-            # extra commands allowed on colmena exec
-            {
-              command = "/run/current-system/sw/bin/systemctl *";
-              options = [ "NOPASSWD" ];
-            }
-          ];
-        }
+    users.users.${deploy-user} = {
+      isNormalUser = true;
+      group = deploy-user;
+      createHome = false;
+      home = "/var/empty";
+      openssh.authorizedKeys.keys = [
+        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDMuiOUsjVJSi+0WeMHKquQmwoyz/c3N7HhjJwzz21B3" # github-actions
+        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGlViRB5HH1bTaS1S7TcqVBSuxKdrbdhL2CmhDqc/t6A" # oliverni
+        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILOaJJvOUG08qr3yeeQRB71M30cdPMuO69nsf0CodALa" # jaysa
+        "sk-ssh-ed25519@openssh.com AAAAGnNrLXNzaC1lZDI1NTE5QG9wZW5zc2guY29tAAAAIDLsEX5PgyQwdOtdOo0U+yWdpOu9gOsqpQRXo7xKww5FAAAABHNzaDo=" # jaysa hardware token
+        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMdAe7sPMxaidnqOah3UVrjt41KFHHOYleS1VWGH+ZUc" # storce
+        "sk-ssh-ed25519@openssh.com AAAAGnNrLXNzaC1lZDI1NTE5QG9wZW5zc2guY29tAAAAICW8L5pydSCGwBstSlXWNSQh//wmRB03RmAWaT3u7+8hAAAABHNzaDo=" # sbwilliams primary hardware token
+        "sk-ssh-ed25519@openssh.com AAAAGnNrLXNzaC1lZDI1NTE5QG9wZW5zc2guY29tAAAAIIsQXwbC4lVR8qMbduDWHVNvjfqD1m8yYbjdEOGCNVNPAAAABHNzaDo=" # sbwilliams secondary hardware token
+        "sk-ssh-ed25519@openssh.com AAAAGnNrLXNzaC1lZDI1NTE5QG9wZW5zc2guY29tAAAAIIe3xdiMA4u6OhEEa8gw1w26G8mBvAC6SXbbgR0sSWO7AAAABHNzaDo=" # michaelzls hardware token 1
+        "sk-ssh-ed25519@openssh.com AAAAGnNrLXNzaC1lZDI1NTE5QG9wZW5zc2guY29tAAAAICWs4Daof6LfwMw6376xOfuPgBnZNxnPWpoUvcWdlql5AAAABHNzaDo=" # michaelzls hardware token 2
+        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIF3DDYaYibt/VjeYDR7cO8tZA2iJUhPBh6jFrB1mBxJA" # chamburr
+        "sk-ssh-ed25519@openssh.com AAAAGnNrLXNzaC1lZDI1NTE5QG9wZW5zc2guY29tAAAAIDLsEX5PgyQwdOtdOo0U+yWdpOu9gOsqpQRXo7xKww5FAAAABHNzaDo=" # jaysa hardware token
+        "sk-ssh-ed25519@openssh.com AAAAGnNrLXNzaC1lZDI1NTE5QG9wZW5zc2guY29tAAAAIK6PlfQq5LYIOHTnPwQvJeiGo3MYDxBRb+KdTqrffxFnAAAABHNzaDo=" # blakeh hardware token
+        "sk-ssh-ed25519@openssh.com AAAAGnNrLXNzaC1lZDI1NTE5QG9wZW5zc2guY29tAAAAIPs3+fHihwZSBQVtoXffCtSSmBBDb/0NY+BPDIo+FKh9AAAABHNzaDo=" # blakeh backup hardware token
+        "sk-ssh-ed25519@openssh.com AAAAGnNrLXNzaC1lZDI1NTE5QG9wZW5zc2guY29tAAAAIB1zLZffea+7TdFSQOhNBmT1hftFwPzAEK2c8siFeS/7AAAABHNzaDo=" # ericgu hardware token
+        "sk-ssh-ed25519@openssh.com AAAAGnNrLXNzaC1lZDI1NTE5QG9wZW5zc2guY29tAAAAIKtH02NTIoDXgcD5UJoxWWBu5EhHoYaP6NZQKZSIWmadAAAABHNzaDo=" # ericgu backup hardware token
       ];
+    };
+
+    # note: this breaks colmena exec, which runs the given command with sudo,
+    # but sudo cant ask for a password without a proper terminal
+    security.sudo.extraRules = [
+      {
+        users = [ deploy-user ];
+        commands = [
+          # needed for colmena apply
+          {
+            command = "/run/current-system/sw/bin/nix-store --no-gc-warning --realise /nix/store/*";
+            options = [ "NOPASSWD" ];
+          }
+          {
+            command = "/run/current-system/sw/bin/nix-env --profile /nix/var/nix/profiles/system --set /nix/store/*";
+            options = [ "NOPASSWD" ];
+          }
+          {
+            command = "/nix/store/*/bin/switch-to-configuration *";
+            options = [ "NOPASSWD" ];
+          }
+
+          # extra commands allowed on colmena exec
+          {
+            command = "/run/current-system/sw/bin/systemctl *";
+            options = [ "NOPASSWD" ];
+          }
+        ];
+      }
+    ];
 
     services.openssh.settings.AllowGroups = lib.mkIf cfg.staffOnlySsh [
       "ocfstaff"
