@@ -69,5 +69,53 @@ in
 
     environment.systemPackages = [ pkgs.heimdal ];
 
+    networking.firewall = {
+      allowedTCPPorts = [
+        88 # kerberos
+        749 # kadmin
+      ];
+      allowedUDPPorts = [
+        88 # kerberos
+        464 # kpasswd
+      ];
+    };
+
+    systemd.tmpfiles.rules = [
+      "d /var/backups/kerberos 0700 root root -"
+    ];
+
+    systemd.services.kerberos-git-backup = {
+      description = "Kerberos KDC git backup";
+      after = [ "krb5kdc.service" ];
+      requires = [ "krb5kdc.service" ];
+      path = [
+        pkgs.heimdal
+        pkgs.git
+      ];
+      serviceConfig = {
+        Type = "oneshot";
+        User = "root";
+        UMask = "0077";
+      };
+      script = ''
+        dir=/var/backups/kerberos
+        [ -d "$dir/.git" ] || git -C "$dir" init -q
+        kadmin -l dump --decrypt "$dir/kerberos.dump"
+        git -C "$dir" add kerberos.dump
+        git -C "$dir" commit -q -m 'kerberos-git-backup' --allow-empty kerberos.dump
+        git -C "$dir" gc --auto --quiet
+      '';
+    };
+
+    systemd.timers.kerberos-git-backup = {
+      description = "Run Kerberos KDC git backup daily";
+      wantedBy = [ "timers.target" ];
+      timerConfig = {
+        # Run before rsnapshot so the backup server gets a fresh daily snapshot
+        OnCalendar = "*-*-* 01:00:00";
+        Persistent = true;
+      };
+    };
+
   };
 }
