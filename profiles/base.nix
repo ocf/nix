@@ -75,6 +75,14 @@ in
     hostPubkey = lib.mkIf (builtins.pathExists hostKeyFile) (builtins.readFile hostKeyFile);
   };
 
+  # Mitigate Dirty Frag (universal Linux LPE via esp4/esp6/rxrpc page-cache write)
+  # https://github.com/V4bel/dirtyfrag
+  boot.extraModprobeConfig = ''
+    install esp4 /bin/false
+    install esp6 /bin/false
+    install rxrpc /bin/false
+  '';
+
   boot.tmp.useTmpfs = true;
 
   boot.loader = {
