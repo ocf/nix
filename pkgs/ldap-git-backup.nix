@@ -5,6 +5,7 @@
   perlPackages,
   git,
   makeWrapper,
+  autoreconfHook,
 }:
 
 stdenv.mkDerivation {
@@ -18,10 +19,13 @@ stdenv.mkDerivation {
     hash = "sha256-En8MBrSRj2zAs+/3XMRhT96UplkpawdBy3OCLYCWn0s=";
   };
 
-  nativeBuildInputs = [ makeWrapper ];
+  nativeBuildInputs = [
+    autoreconfHook
+    makeWrapper
+    perl
+  ];
 
-  installPhase = ''
-    install -Dm755 ldap-git-backup $out/sbin/ldap-git-backup
+  postInstall = ''
     wrapProgram $out/sbin/ldap-git-backup \
       --prefix PATH : ${git}/bin \
       --prefix PERL5LIB : ${perlPackages.Git}/${perl.libPrefix}
