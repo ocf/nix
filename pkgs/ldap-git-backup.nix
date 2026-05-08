@@ -28,6 +28,7 @@ stdenv.mkDerivation {
   postInstall = ''
     wrapProgram $out/sbin/ldap-git-backup \
       --prefix PATH : ${git}/bin \
-      --prefix PERL5LIB : ${perlPackages.Git}/${perl.libPrefix}
+      --prefix PERL5LIB : ${perlPackages.Git}/${perl.libPrefix} \
+      --prefix PERL5LIB : ${perlPackages.Error}/${perl.libPrefix}
   '';
 }
