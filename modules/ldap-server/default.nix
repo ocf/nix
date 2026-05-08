@@ -29,7 +29,7 @@ in
     # Keytab for the ldap/<hostname>@OCF.BERKELEY.EDU service principal.
     # The path is exposed to slapd via the KRB5_KTNAME environment variable.
     age.secrets.ldap-keytab = {
-      rekeyFile = ../secrets/master-keyed/ldap-keytab.age;
+      rekeyFile = ../../secrets/master-keyed/ldap-keytab.age;
       path = "/etc/openldap/ldap.keytab";
       owner = "openldap";
       group = "openldap";

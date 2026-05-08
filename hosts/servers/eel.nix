@@ -12,7 +12,7 @@
 
   ocf.network = {
     enable = true;
-    lastOctet = 97;
+    lastOctet = 98;
   };
 
   ocf.kerberosKdc.enable = true;
