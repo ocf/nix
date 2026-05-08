@@ -19,19 +19,11 @@
     acme.enable = false;
 
     home.tmpfs = true;
+    home.mountRemote = true;
     network.wakeOnLan.enable = true;
     logged-in-users-exporter.enable = true;
 
     zfs.enable = true;
-    nfs = {
-      enable = true;
-      mount = true;
-      kerberos = true;
-
-      # we keep a single nfs mount and then bind mount to it instead of having
-      # many nfs mounts (each logged in user would need a mount)
-      asRemote = true;
-    };
 
     gui.enable = true;
     gui.apps.enable = true;

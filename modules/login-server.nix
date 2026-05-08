@@ -30,6 +30,8 @@ in
       ocf.nfs = {
         enable = true;
         mount = true;
+        asRemote = false;
+        kerberos = false;
       };
 
       programs.mosh.enable = true;
