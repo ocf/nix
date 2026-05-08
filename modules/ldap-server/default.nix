@@ -217,8 +217,11 @@ in
       script = ''
         git -C /var/backups/ldap config user.name "root"
         git -C /var/backups/ldap config user.email "root@${config.networking.hostName}.ocf.berkeley.edu"
+        ldap_exit=0
         ldap-git-backup --backup-dir /var/backups/ldap \
-          --ldif-cmd "${pkgs.openldap}/bin/slapcat -F /etc/openldap/slapd.d"
+          --ldif-cmd "${pkgs.openldap}/bin/slapcat -F /etc/openldap/slapd.d" || ldap_exit=$?
+        # exit code 7 means git gc had nothing to do — not a real error
+        [ "$ldap_exit" -eq 0 ] || [ "$ldap_exit" -eq 7 ] || exit "$ldap_exit"
         git -C /var/backups/ldap push -q git@github.com:ocf/ldap master
       '';
     };
