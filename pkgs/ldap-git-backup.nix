@@ -25,17 +25,14 @@ stdenv.mkDerivation {
     perl
   ];
 
-  # Replace $repo->command('add', @filelist) with $repo->command('add', '-A')
-  # to avoid E2BIG (errno 7) when the LDAP database has thousands of entries.
-  # git add -A also handles deletions, so the explicit rm command is redundant.
-  postPatch = ''
+  postInstall = ''
+    # Replace $repo->command('add', @filelist) with $repo->command('add', '-A')
+    # to avoid E2BIG (errno 7) when the LDAP database has thousands of entries.
+    # git add -A also handles deletions, so the explicit rm command is redundant.
     sed -i \
       -e "s/\\\$repo->command('add', @filelist) if @filelist;/\\\$repo->command('add', '-A');/" \
       -e "/\\\$repo->command('rm', (keys %files_before)) if %files_before;/d" \
-      ldap-git-backup
-  '';
-
-  postInstall = ''
+      $out/sbin/ldap-git-backup
     patchShebangs $out/sbin/ldap-git-backup
     wrapProgram $out/sbin/ldap-git-backup \
       --prefix PATH : ${git}/bin \
