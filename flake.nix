@@ -220,7 +220,9 @@
         {
           imports = commonModules ++ modules;
           deployment.tags = [ group ];
+          deployment.allowLocalDeployment = true; # for debugging and deploying when github actions deployment breaks
           deployment.targetHost = "${host}.ocf.berkeley.edu";
+          ocf.motd.group = group;
           # TODO: Think of a less ugly way of doing this
           deployment.targetUser =
             nixpkgs.lib.mkIf self.colmenaHive.nodes.${host}.config.ocf.managed-deployment.enable
@@ -321,7 +323,7 @@
           system = overrideSystem.${host} or defaultSystem;
           pkgs = pkgsFor system;
           modules = colmenaConfig.imports;
-          specialArgs = { inherit inputs; };
+          specialArgs = { inherit self inputs; };
         }
       ) colmenaHosts;
     };

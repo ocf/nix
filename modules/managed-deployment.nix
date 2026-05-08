@@ -2,7 +2,6 @@
   pkgs,
   lib,
   config,
-  options,
   ...
 }:
 
@@ -31,12 +30,8 @@ in
     default = true;
   };
 
-  config = lib.mkIf cfg.enable (lib.mkMerge [
-    (lib.mkIf (options ? deployment) {
-      deployment.allowLocalDeployment = true; # for debugging and deploying when github actions deployment breaks
-    })
-    {
-      nix.settings.trusted-users = [ deploy-user ];
+  config = lib.mkIf cfg.enable {
+    nix.settings.trusted-users = [ deploy-user ];
 
       users.groups.${deploy-user} = { };
 
@@ -93,11 +88,10 @@ in
         }
       ];
 
-      services.openssh.settings.AllowGroups = lib.mkIf cfg.staffOnlySsh [
-        "ocfstaff"
-        "ocfroot"
-        deploy-user
-      ];
-    }
-  ]);
+    services.openssh.settings.AllowGroups = lib.mkIf cfg.staffOnlySsh [
+      "ocfstaff"
+      "ocfroot"
+      deploy-user
+    ];
+  };
 }
