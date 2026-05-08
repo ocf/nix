@@ -202,6 +202,7 @@ in
         pkgs.ldap-git-backup
         pkgs.openldap
         pkgs.git
+        pkgs.openssh
       ];
       serviceConfig = {
         Type = "oneshot";
