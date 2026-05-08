@@ -208,6 +208,8 @@ in
         Type = "oneshot";
         User = "root";
         UMask = "0077";
+        # git gc exits 7 when there is nothing to collect; treat as success
+        SuccessExitStatus = "7";
       };
       environment = {
         GIT_SSH_COMMAND = "ssh -i ${config.age.secrets.ldap-github-deploy-key.path}";
