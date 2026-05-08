@@ -213,6 +213,8 @@ in
         GIT_SSH_COMMAND = "ssh -i ${config.age.secrets.ldap-github-deploy-key.path}";
       };
       script = ''
+        git -C /var/backups/ldap config user.name "root"
+        git -C /var/backups/ldap config user.email "root@${config.networking.hostName}.ocf.berkeley.edu"
         ldap-git-backup --backup-dir /var/backups/ldap \
           --ldif-cmd "${pkgs.openldap}/bin/slapcat -F /etc/openldap/slapd.d"
         git -C /var/backups/ldap push -q git@github.com:ocf/ldap master
