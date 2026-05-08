@@ -213,7 +213,7 @@ in
       };
       script = ''
         ldap-git-backup --backup-dir /var/backups/ldap \
-          --ldif-cmd "${pkgs.openldap}/bin/slapcat"
+          --ldif-cmd "${pkgs.openldap}/bin/slapcat -F /etc/openldap/slapd.d"
         git -C /var/backups/ldap push -q git@github.com:ocf/ldap master
       '';
     };
