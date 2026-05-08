@@ -8,6 +8,8 @@
 let
   cfg = config.ocf.ldapServer;
   fqdn = "${config.networking.hostName}.ocf.berkeley.edu";
+  ldapKeytabPath = ../../secrets/master-keyed/ldap-keytab.age;
+  hasLdapKeytab = builtins.pathExists ldapKeytabPath;
   certDir = "/var/lib/acme/${fqdn}";
 
   ldapLint = pkgs.writeShellScriptBin "ldap-lint" ''
@@ -28,8 +30,9 @@ in
   config = lib.mkIf cfg.enable {
     # Keytab for the ldap/<hostname>@OCF.BERKELEY.EDU service principal.
     # The path is exposed to slapd via the KRB5_KTNAME environment variable.
-    age.secrets.ldap-keytab = {
-      rekeyFile = ../../secrets/master-keyed/ldap-keytab.age;
+    # Only configured if the keytab secret exists (not available until KDC is initialized).
+    age.secrets.ldap-keytab = lib.mkIf hasLdapKeytab {
+      rekeyFile = ldapKeytabPath;
       path = "/etc/openldap/ldap.keytab";
       owner = "openldap";
       group = "openldap";
