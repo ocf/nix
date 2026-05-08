@@ -71,7 +71,8 @@ in
           olcTLSCertificateFile = "${certDir}/cert.pem";
           olcTLSCertificateKeyFile = "${certDir}/key.pem";
           olcTLSVerifyClient = "never";
-          olcTLSCipherSuite = "SECURE256:!AES-128-CBC:!ARCFOUR-128:!CAMELLIA-128-CBC:!3DES-CBC:!CAMELLIA-128-CBC";
+          # OpenSSL cipher string (NixOS OpenLDAP uses OpenSSL, not GnuTLS)
+          olcTLSCipherSuite = "HIGH:!aNULL:!eNULL:!EXPORT:!DES:!RC4:!3DES:!MD5:!PSK";
 
           # SASL/GSSAPI realm — map Kerberos principals to LDAP DNs
           olcSaslRealm = "OCF.BERKELEY.EDU";
