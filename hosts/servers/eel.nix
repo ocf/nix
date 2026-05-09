@@ -10,6 +10,10 @@
 
   networking.hostName = "eel";
 
+  ocf.motd.description = ''
+    LDAP and Kerberos server; crucial to the rest of our infrastucture working.
+  '';
+
   ocf.network = {
     enable = true;
     lastOctet = 98;
@@ -19,8 +23,8 @@
   ocf.ldapServer.enable = true;
 
   ocf.acme.extraCerts = [
-    "eel-ldap.ocf.berkeley.edu"
-    "eel-kerberos.ocf.berkeley.edu"
+    "ldap.ocf.berkeley.edu"
+    "kerberos.ocf.berkeley.edu"
   ];
 
   system.stateVersion = "25.11";

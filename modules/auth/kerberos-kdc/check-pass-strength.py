@@ -10,6 +10,8 @@ http://www.h5l.org/manual/HEAD/info/heimdal/Password-changing.html
 
 Example usage:
 $ echo -e "principal: ckuehl@OCF.BERKELEY.EDU\nnew-password: hello" | ./check-pass-strength
+
+(ported directly from our old puppet module: https://github.com/ocf/puppet/blob/master/modules/ocf_kerberos/files/check-pass-strength)
 """
 import sys
 
