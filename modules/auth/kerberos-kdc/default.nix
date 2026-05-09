@@ -84,10 +84,11 @@ in
       "d /var/backups/kerberos 0700 root root -"
     ];
 
+    # unlike LDAP, not uploaded to github (for now?)
     systemd.services.kerberos-git-backup = {
       description = "Kerberos KDC git backup";
-      after = [ "krb5kdc.service" ];
-      requires = [ "krb5kdc.service" ];
+      after = [ "kdc.service" ];
+      requires = [ "kdc.service" ];
       path = [
         pkgs.heimdal
         pkgs.git

@@ -171,7 +171,7 @@ in
     };
 
     # KDC must start after slapd so SASL/GSSAPI is available for KDC → LDAP lookups
-    systemd.services.krb5kdc.after = [ "openldap.service" ];
+    systemd.services.kdc.after = [ "openldap.service" ];
 
     environment.systemPackages = [ ldapLint ];
 
