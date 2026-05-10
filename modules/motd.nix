@@ -22,18 +22,12 @@ in
       description = "Description of this node, to be included in the MOTD.";
       default = "";
     };
-
-    group = lib.mkOption {
-      type = lib.types.str;
-      description = "Host group name (e.g. servers, desktops) shown in the MOTD.";
-      default = "unknown";
-    };
   };
 
   # TODO: make this read from LDAP
   config = lib.mkIf cfg.enable {
     users.motd = ''
-      ${ansi-bold}Hi, I am ${ansi-red}${config.networking.hostName}${ansi-resetfg}, a ${ansi-red}${cfg.group}${ansi-resetfg} at ${ansi-red}169.229.226.${builtins.toString config.ocf.network.lastOctet}${ansi-reset}.
+      ${ansi-bold}Hi, I am ${ansi-red}${config.networking.hostName}${ansi-resetfg}, a ${ansi-red}${builtins.concatStringsSep ", " config.deployment.tags}${ansi-resetfg} at ${ansi-red}169.229.226.${builtins.toString config.ocf.network.lastOctet}${ansi-reset}.
 
       ${cfg.description}
     '';
