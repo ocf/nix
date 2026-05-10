@@ -28,6 +28,9 @@ in
     services.kerberos_server = {
       enable = true;
       settings = {
+        kdc.extra-addresses = "127.0.0.2";
+        kdc.enable-fast = false;
+
         realms."OCF.BERKELEY.EDU" = {
           acl = [
             # Staff /admin principals have full KDC access
