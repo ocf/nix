@@ -1,14 +1,10 @@
 name: Automated Deploy
 
 on:
-  workflow_run:
-    workflows:
-      - Build Hosts
-    types:
-      - completed
+  workflow_dispatch:
+  push:
     branches:
       - main
-
 jobs:
   deploy:
     runs-on: ci-ocf-nix-deploy
