@@ -24,12 +24,6 @@ in
     default = "";
   };
 
-  options.ocf.managed-deployment.staffOnlySsh = lib.mkOption {
-    type = lib.types.bool;
-    description = "Restrict SSH access to ocfstaff. Disable for public login servers (as of now, only carp).";
-    default = true;
-  };
-
   config = lib.mkIf cfg.enable {
     deployment.allowLocalDeployment = true; # for debugging and deploying when github actions deployment breaks
 
@@ -90,9 +84,8 @@ in
       }
     ];
 
-    services.openssh.settings.AllowGroups = lib.mkIf cfg.staffOnlySsh [
-      "ocfstaff"
-      "ocfroot"
+    # add deploy-user to allowed groups if staffOnlySSH is enabled
+    services.openssh.settings.AllowGroups = lib.mkIf config.ocf.auth.staffOnlySSH [
       deploy-user
     ];
   };

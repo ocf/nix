@@ -62,7 +62,7 @@ in
     })
 
     (lib.mkIf (cfg.enable && cfg.public) {
-      ocf.managed-deployment.staffOnlySsh = false;
+      ocf.auth.staffOnlySSH = false;
       ocf.ttyd.enable = true;
 
       security.pam.loginLimits = [
