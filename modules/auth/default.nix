@@ -34,7 +34,7 @@ in
 
       ldap = {
         enable = true;
-        server = "ldaps://ldap.ocf.berkeley.edu";
+        server = "ldaps://ldap0.ocf.berkeley.edu ldaps://ldap.ocf.berkeley.edu";
         base = "dc=OCF,dc=Berkeley,dc=EDU";
         daemon.enable = true;
         extraConfig = ''
@@ -59,7 +59,7 @@ in
     };
 
     environment.etc."ldap/ldap.conf".text = ''
-      URI ldaps://ldap.ocf.berkeley.edu
+      URI ldaps://ldap0.ocf.berkeley.edu ldaps://ldap.ocf.berkeley.edu
       BASE dc=ocf,dc=berkeley,dc=edu
       TLS_REQCERT hard
       TLS_CACERT /etc/ssl/certs/ca-certificates.crt
@@ -126,8 +126,11 @@ in
 
       settings = {
         realms."OCF.BERKELEY.EDU" = {
-          admin_server = "kerberos.ocf.berkeley.edu";
-          kdc = [ "kerberos.ocf.berkeley.edu" ];
+          admin_server = "kdc.ocf.berkeley.edu";
+          kdc = [
+            "kdc.ocf.berkeley.edu"
+            "kerberos.ocf.berkeley.edu"
+          ];
         };
         domain_realm = {
           "ocf.berkeley.edu" = "OCF.BERKELEY.EDU";
