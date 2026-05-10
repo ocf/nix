@@ -71,7 +71,7 @@ in
 
           # TLS — cert issued for ${fqdn} with ldap.ocf.berkeley.edu as a SAN
           olcTLSCACertificateFile = "/etc/ssl/certs/ca-certificates.crt";
-          olcTLSCertificateFile = "${certDir}/cert.pem";
+          olcTLSCertificateFile = "${certDir}/fullchain.pem";
           olcTLSCertificateKeyFile = "${certDir}/key.pem";
           olcTLSVerifyClient = "never";
           # OpenSSL cipher string (NixOS OpenLDAP uses OpenSSL, not GnuTLS)
