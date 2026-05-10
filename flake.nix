@@ -220,6 +220,7 @@
         {
           imports = commonModules ++ modules;
           deployment.tags = [ group ];
+          deployment.allowLocalDeployment = true; # for debugging and deploying when github actions deployment breaks
           deployment.targetHost = "${host}.ocf.berkeley.edu";
           # TODO: Think of a less ugly way of doing this
           deployment.targetUser =
@@ -284,6 +285,7 @@
         ocf-cosmic-applets = ocf-cosmic-applets.packages.${final.stdenv.hostPlatform.system}.default;
         ocf-cosmic-greeter = final.callPackage ./pkgs/ocf-cosmic-greeter.nix { };
         ocf-hplip = final.callPackage ./pkgs/ocf-hplip.nix { };
+        ldap-git-backup = final.callPackage ./pkgs/ldap-git-backup.nix { };
       };
 
       agenix-rekey = agenix-rekey.configure {
@@ -320,7 +322,7 @@
           system = overrideSystem.${host} or defaultSystem;
           pkgs = pkgsFor system;
           modules = colmenaConfig.imports;
-          specialArgs = { inherit inputs; };
+          specialArgs = { inherit self inputs; };
         }
       ) colmenaHosts;
     };
