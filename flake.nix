@@ -300,6 +300,7 @@
             pkgs.age-plugin-fido2-hmac
             pkgs.wol
             pkgs.nixfmt-tree
+            pkgs.nix-fast-build
             colmena.packages.${pkgs.stdenv.hostPlatform.system}.colmena
           ];
         };
@@ -309,6 +310,7 @@
             pkgs.openssh
             pkgs.wol
             pkgs.nixfmt-tree
+            pkgs.nix-fast-build
             colmena.packages.${pkgs.stdenv.hostPlatform.system}.colmena
           ];
         };
