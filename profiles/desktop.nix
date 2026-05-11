@@ -101,6 +101,13 @@
 
   virtualisation.podman.enable = true;
 
+  # kill user processes on logout
+  # if this is not set to true, the system user manager, processes, home tmpfs
+  # mount, etc will linger, causing the logind session and scope to be stuck in
+  # "closing" and "abandoned" respectively. this is undesired behavior on a
+  # shared desktop machine.
+  services.logind.settings.Login.KillUserProcesses = true;
+
   # enable secure attention key (also enables unraw/xlate)
   boot.kernel.sysctl."kernel.sysrq" = 4;
 
