@@ -8,7 +8,7 @@
     lastOctet = 50;
   };
 
-  ocf.managed-deployment.staffOnlySsh = false;
+  ocf.auth.staffOnlySSH = false;
 
   ocf.webhost = {
     enable = true;
