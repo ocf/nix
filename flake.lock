@@ -812,11 +812,11 @@
         "systems": "systems_5"
       },
       "locked": {
-        "lastModified": 1769837614,
-        "narHash": "sha256-OGCc+xi9hZG97NRX+lVrvHpNyHZaei0OX5PtZDNVEOs=",
+        "lastModified": 1778537666,
+        "narHash": "sha256-i3md7T22aHYJ9l2zjkCBRIC3o/sQ6I7kLrvSx3BFAPU=",
         "owner": "ocf",
         "repo": "wayout",
-        "rev": "7cfa4f53c53b008487d90e1260f7273ec2b81c4f",
+        "rev": "039c2c9174783396f8b78eee759fe50ff8173125",
         "type": "github"
       },
       "original": {

@@ -191,17 +191,8 @@ in
       };
     };
 
-    systemd.user.services.wayout = {
-      description = "Automatic idle logout manager";
-      after = [ "graphical-session.target" ];
-      partOf = [ "graphical-session.target" ];
-      wantedBy = [ "graphical-session.target" ];
-      serviceConfig = {
-        ExecStart = "${pkgs.ocf-wayout}/bin/wayout";
-        Type = "simple";
-        Restart = "on-failure";
-      };
-    };
+    services.wayout.enable = true;
+    services.wayout.openFirewall = true;
 
     systemd.user.services.desktoprc = {
       description = "Source custom rc shared across desktops";
