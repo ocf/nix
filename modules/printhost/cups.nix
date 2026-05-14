@@ -112,13 +112,12 @@ in
       '';
     };
 
-    # Declaratively configure all printers and classes on every boot.
+    # Declaratively configure all printers and classes on cups service start.
     # Runs after cups.service since /var/lib/cups is stateless.
     systemd.services.cups-setup-printers = {
       description = "Declaratively configure CUPS printers and classes";
       after = [ "cups.service" ];
-      wants = [ "cups.service" ];
-      wantedBy = [ "multi-user.target" ];
+      wantedBy = [ "cups.service" ];
       partOf = [ "cups.service" ];
       path = [ config.services.printing.package ];
       serviceConfig.Type = "oneshot";
