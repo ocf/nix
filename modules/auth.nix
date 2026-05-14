@@ -13,6 +13,11 @@ in
 {
   options.ocf.auth = {
     enable = lib.mkEnableOption "Enable OCF authentication";
+    staffOnlySSH = lib.mkOption {
+      type = lib.types.bool;
+      description = "Restrict SSH access to ocfstaff and ocfroot. Disable for public login servers (as of now, only carp).";
+      default = true;
+    };
   };
 
   config = lib.mkIf cfg.enable {
@@ -149,6 +154,10 @@ in
       # exchanges (which supports post-quantum safe key exchange).
       # Only enable key exchange if host has a keytab
       #GSSAPIKeyExchange = lib.mkIf hasKeytab "yes";
+      AllowGroups = lib.mkIf cfg.staffOnlySSH [
+        "ocfstaff"
+        "ocfroot"
+      ];
     };
   };
 }
