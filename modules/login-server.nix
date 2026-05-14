@@ -32,6 +32,11 @@ in
         mount = true;
         asRemote = false;
         kerberos = false;
+
+        # if nfs servers are down, the login servers will be so broken that you
+        # might as well freeze all io to the nfs mounts at /home and /services.
+        # this would also be better for data integrity.
+        softerr = false;
       };
 
       programs.mosh.enable = true;
