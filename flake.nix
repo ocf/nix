@@ -160,6 +160,7 @@
         disko.nixosModules.disko
         niks3.nixosModules.default
         niks3.nixosModules.niks3-auto-upload
+        wayout.nixosModules.default
       ];
 
       defaultSystem = "x86_64-linux";
@@ -277,7 +278,6 @@
 
       overlays.default = final: prev: {
         ocf-utils = ocf-utils.packages.${final.stdenv.hostPlatform.system}.default;
-        ocf-wayout = wayout.packages.${final.stdenv.hostPlatform.system}.default;
         ocf-jukebox = ocf-jukebox.packages.${final.stdenv.hostPlatform.system}.default;
         plasma-applet-commandoutput = final.callPackage ./pkgs/plasma-applet-commandoutput.nix { };
         catppuccin-sddm = final.qt6Packages.callPackage ./pkgs/catppuccin-sddm.nix { };
