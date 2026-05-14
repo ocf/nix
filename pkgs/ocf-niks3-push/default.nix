@@ -1,3 +1,6 @@
+# FIXME: there has to be a better way of doing this,
+#        maybe look into using cellar with oidc when
+#        they add it someday (https://github.com/blitz/celler)
 {
   python3Packages,
   niks3,
