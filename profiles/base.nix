@@ -66,6 +66,42 @@ in
     cli.enable = lib.mkDefault true;
     motd.enable = lib.mkDefault true;
     etc.enable = true;
+
+    # the case against globally nfs mounted /home:
+    # - you can scp between hosts
+    # - global /home (and global user config as a result) introduces a huge
+    #   dependency on the nfs server for being able to login anywhere (logins
+    #   would hang if nfs was down).
+    # - global /home means that we are trusting every host (and every program
+    #   running as any user on any host) not to write malicious files/config
+    #   on the shared home directory which then instantly propagates to every
+    #   other host at the ocf (catastrophic).
+    #
+    # this is a middle ground that provides convenient access to the global
+    # home directories:
+    # - nfs server is configured with root_squash and only allows acting as a
+    #   user other than nobody if a valid kerberos ticket is available.
+    # - similar to the desktops, global homes are mounted at /remote and
+    #   /services by default on every host.
+    # - unlike desktops, these global homes are not looked at for
+    #   configuration or a bind mount at ~/remote.
+    # - nfs client should not expect a ticket to be available, as the user may
+    #   not have logged with GSSAPI authenticated ssh; thus the nfs client
+    #   should not touch /remote or /services at all without the user manually
+    #   doing so with a ticket.
+    # - softerr is used to prevent infinite hangs on IO operations to /remote
+    #   and /services in the case that the nfs server is down.
+    nfs = {
+      enable = lib.mkDefault true;
+      mount = lib.mkDefault true;
+      kerberos = lib.mkDefault true;
+      softerr = lib.mkDefault true;
+
+      # instead of having an nfs mount for each logged in user, we mount a
+      # single nfs mount at /remote and if ocf.home.mountRemote is true, bind
+      # mount ~/remote -> /remote/w/wa/waddles (for username waddles)
+      asRemote = lib.mkDefault true;
+    };
   };
 
   age.rekey = {
