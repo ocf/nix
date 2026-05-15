@@ -41,9 +41,8 @@ in
       dates = "weekly";
     };
     settings = {
-      # makes devenv shells build significantly faster
-      trusted-substituters = [
-        "https://devenv.cachix.org"
+      substituters = [
+        "https://devenv.cachix.org" # makes devenv shells build significantly faster
         "https://cache.ocf.berkeley.edu"
       ];
       trusted-public-keys = [
@@ -51,10 +50,6 @@ in
         "cache.ocf.berkeley.edu-1:6n9lihkjExzagz8GYR1QY/ZthT/XAKOy+ju5Jxd6wBg="
       ];
     };
-    extraOptions = ''
-      extra-substituters = https://devenv.cachix.org https://cache.ocf.berkeley.edu
-      extra-trusted-public-keys = devenv.cachix.org-1:w1cLUi8dv3hnoSPGAuibQv+f9TZLr6cv/Hm9XgU50cw= cache.ocf.berkeley.edu-1:6n9lihkjExzagz8GYR1QY/ZthT/XAKOy+ju5Jxd6wBg=
-    '';
   };
 
   nixpkgs.flake.setNixPath = true;
