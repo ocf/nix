@@ -277,6 +277,44 @@
         };
 
       overlays.default = final: prev: {
+        # Patch nginx for multiple CVEs disclosed 2026-05-13, until nixos-25.11
+        # channel advances past the fix (nixpkgs#520076).
+        # Remove this overlay once flake.lock points to a nixpkgs with nginx >= 1.30.1.
+        nginx = prev.nginx.overrideAttrs (old: {
+          patches = (old.patches or [ ]) ++ [
+            (final.fetchpatch {
+              name = "CVE-2026-40460.patch";
+              url = "https://github.com/nginx/nginx/commit/f37ec3e5d4f527e52ed5b25951ad8aa7d1ff6266.patch";
+              hash = "sha256-++hYEzMUkl3mbBMaffR2LQTYMxOR/YziNkYCVyhw2Qg=";
+            })
+            (final.fetchpatch {
+              name = "CVE-2026-40701.patch";
+              url = "https://github.com/nginx/nginx/commit/71841dcedfdf46048ef5e25413fdf97a66957913.patch";
+              hash = "sha256-FzNZpEwIj76r5dpqEP6TgpSc1ywcW7ZOEQpFpwI/YZw=";
+            })
+            (final.fetchpatch {
+              name = "CVE-2026-42934.patch";
+              url = "https://github.com/nginx/nginx/commit/696a7f1b9198d576e6a59c1655b746fbf06561cf.patch";
+              hash = "sha256-/vjyEGysPv5VK4TZmk/gtIg9Zc5ogUXMwpBfBwe55Bc=";
+            })
+            (final.fetchpatch {
+              name = "CVE-2026-42945.patch";
+              url = "https://github.com/nginx/nginx/commit/2046b45aa0c6e712c216b9075886f3f26e9b4ca9.patch";
+              hash = "sha256-VK9CXgrCIqORsaRivTZBmkoLyQhbZ07ss6nAbLNvfJM=";
+            })
+            (final.fetchpatch {
+              name = "CVE-2026-42946.patch";
+              url = "https://github.com/nginx/nginx/commit/baef7fdac28e4e1fe26509b50b8d15603393e28e.patch";
+              hash = "sha256-Z1naMxxiVuDbUcvX3PiIK4CMuSSpUyzPqjix9GTwHmk=";
+            })
+            (final.fetchpatch {
+              name = "CVE-2026-42946-part-2.patch";
+              url = "https://github.com/nginx/nginx/commit/39d7d0ba0799fcff6baee52b6525f45739593cfd.patch";
+              hash = "sha256-6PwV0iz4kQGGBwVk9129aH+TFzbSx3QSVpp22AoKQY4=";
+            })
+          ];
+        });
+
         ocf-utils = ocf-utils.packages.${final.stdenv.hostPlatform.system}.default;
         ocf-jukebox = ocf-jukebox.packages.${final.stdenv.hostPlatform.system}.default;
         plasma-applet-commandoutput = final.callPackage ./pkgs/plasma-applet-commandoutput.nix { };
