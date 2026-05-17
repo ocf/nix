@@ -254,14 +254,16 @@
           meta = {
             nixpkgs = pkgsFor defaultSystem;
             nodeNixpkgs = nixpkgs.lib.mapAttrs (name: pkgsFor) overrideSystem;
-            specialArgs = { 
+            specialArgs = {
               inherit self inputs;
               # pkgs-unstable exposes the packages from the nixpkgs-unstable input
               # this should only be used as a *temporary* measure when the version of
               # a package in nixpkgs stable is not sufficiently updated
               pkgs-unstable = pkgsUnstableFor defaultSystem;
             };
-            nodeSpecialArgs = nixpkgs.lib.mapAttrs (name: value: { pkgs-unstable = pkgsUnstableFor value; }) overrideSystem;
+            nodeSpecialArgs = nixpkgs.lib.mapAttrs (name: value: {
+              pkgs-unstable = pkgsUnstableFor value;
+            }) overrideSystem;
           };
         }
       );
@@ -380,14 +382,14 @@
 
       nixosConfigurations = builtins.mapAttrs (
         host: colmenaConfig:
-        let 
+        let
           system = overrideSystem.${host} or defaultSystem;
         in
         nixpkgs.lib.nixosSystem {
           inherit system;
           pkgs = pkgsFor system;
           modules = colmenaConfig.imports;
-          specialArgs = { 
+          specialArgs = {
             inherit inputs;
             pkgs-unstable = pkgsUnstableFor system;
           };
