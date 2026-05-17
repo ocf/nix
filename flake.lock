@@ -395,6 +395,22 @@
         "type": "github"
       }
     },
+    "nixpkgs-unstable": {
+      "locked": {
+        "lastModified": 1778869304,
+        "narHash": "sha256-30sZNZoA1cqF5JNO9fVX+wgiQYjB7HJqqJ4ztCDeBZE=",
+        "owner": "nixos",
+        "repo": "nixpkgs",
+        "rev": "d233902339c02a9c334e7e593de68855ad26c4cb",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nixos",
+        "ref": "nixos-unstable",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
     "ocf-cosmic-applets": {
       "inputs": {
         "crane": "crane",
@@ -596,6 +612,7 @@
         "niks3": "niks3",
         "nix-index-database": "nix-index-database",
         "nixpkgs": "nixpkgs",
+        "nixpkgs-unstable": "nixpkgs-unstable",
         "ocf-cosmic-applets": "ocf-cosmic-applets",
         "ocf-jukebox": "ocf-jukebox",
         "ocf-pam-trimspaces": "ocf-pam-trimspaces",

@@ -1,19 +1,22 @@
 {
   config,
   pkgs,
+  pkgs-unstable,
   lib,
   ...
 }:
 
 let
-  kubernetes = pkgs.kubernetes.overrideAttrs (oldAttrs: rec {
-    version = "1.33.3";
+  # TODO kubernetes 1.36 requires go > 1.26. revert to stable nixpkgs
+  # once go version is > 1.26
+  kubernetes = pkgs-unstable.kubernetes.overrideAttrs (oldAttrs: rec {
+    version = "1.36.1";
     src = pkgs.fetchFromGitHub {
       owner = "kubernetes";
       repo = "kubernetes";
       rev = "v${version}";
       # make sure to update hash if changing kubernetes version
-      hash = "sha256-UZdrfQEEx0RRe4Bb4EAWcjgCCLq4CJL06HIriYuk1Io=";
+      hash = "sha256-QG2zFaFtGXoWIlyp3hVBRU+OHre/6vWcvijUe1DdjIo=";
     };
   });
   kubePkgs = with pkgs; [
