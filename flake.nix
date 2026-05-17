@@ -9,6 +9,13 @@
       ref = "nixos-25.11";
     };
 
+    nixpkgs-unstable = {
+      type = "github";
+      owner = "nixos";
+      repo = "nixpkgs";
+      ref = "nixos-unstable";
+    };
+
     systems = {
       type = "github";
       owner = "nix-systems";
@@ -120,6 +127,7 @@
     {
       self,
       nixpkgs,
+      nixpkgs-unstable,
       systems,
       colmena,
       agenix,
@@ -200,6 +208,12 @@
           };
         };
 
+      pkgsUnstableFor =
+        system:
+        import nixpkgs-unstable {
+          inherit system;
+        };
+
       forAllSystems = fn: nixpkgs.lib.genAttrs (import systems) (system: fn (pkgsFor system));
 
       readGroup =
@@ -240,7 +254,11 @@
           meta = {
             nixpkgs = pkgsFor defaultSystem;
             nodeNixpkgs = nixpkgs.lib.mapAttrs (name: pkgsFor) overrideSystem;
-            specialArgs = { inherit self inputs; };
+            specialArgs = { 
+              inherit self inputs;
+              pkgs-unstable = pkgsUnstableFor defaultSystem;
+            };
+            nodeSpecialArgs = nixpkgs.lib.mapAttrs (name: value: { pkgs-unstable = pkgsUnstableFor value; }) overrideSystem;
           };
         }
       );
@@ -359,11 +377,17 @@
 
       nixosConfigurations = builtins.mapAttrs (
         host: colmenaConfig:
-        nixpkgs.lib.nixosSystem rec {
+        let 
           system = overrideSystem.${host} or defaultSystem;
+        in
+        nixpkgs.lib.nixosSystem {
+          inherit system;
           pkgs = pkgsFor system;
           modules = colmenaConfig.imports;
-          specialArgs = { inherit inputs; };
+          specialArgs = { 
+            inherit inputs;
+            pkgs-unstable = pkgsUnstableFor system;
+          };
         }
       ) colmenaHosts;
     };
