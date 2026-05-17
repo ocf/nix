@@ -49,7 +49,19 @@ let
 
   # Use official PPDs unmodified; defaults are set via lpadmin -o below.
   hpPpd = "${pkgs.ocf-hplip}/share/cups/model/HP/hp-laserjet_m806-ps.ppd.gz";
-  hpColorPpd = "${pkgs.ocf-hplip}/share/cups/model/HP/hp-color_laserjet_m856-ps.ppd.gz";
+
+  # Add economode support to the color ppd
+  hpColorPpd = pkgs.runCommand "hp-color_laserjet_m856-economode.ppd.gz" { } ''
+        ${pkgs.gzip}/bin/zcat ${pkgs.ocf-hplip}/share/cups/model/HP/hp-color_laserjet_m856-ps.ppd.gz \
+          | sed '/^\*JCLCloseUI: \*HPPJLPrintQuality$/a\
+    *OpenUI *HPPJLEconoMode2/EconoMode: PickOne\
+    *OrderDependency: 20 AnySetup *HPPJLEconoMode2\
+    *DefaultHPPJLEconoMode2: yes\
+    *HPPJLEconoMode2 yes/On: " "\
+    *HPPJLEconoMode2 no/Off: " "\
+    *CloseUI: *HPPJLEconoMode2' \
+          | ${pkgs.gzip}/bin/gzip -9 > $out
+  '';
 
 in
 {
@@ -158,7 +170,7 @@ in
           -v ocfbackend:socket://169.229.226.107:9100 \
           -P ${hpColorPpd} \
           -D "OCF Color" -L "OCF lab" \
-          -E -o printer-is-shared=true -o Duplex=None
+          -E -o printer-is-shared=true -o Duplex=None -o HPPJLEconoMode2=yes
       '';
     };
 
