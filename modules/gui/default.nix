@@ -99,10 +99,17 @@ in
       pkgs.cosmic-initial-setup
     ];
 
-    environment.etc = {
-      skel.source = ./skel;
-      ocf-assets.source = ./assets;
-    };
+    environment.etc =
+      let
+        kittyThemes = "${pkgs.kitty-themes}share/kitty-themes/themes";
+      in
+      {
+        skel.source = ./skel;
+        ocf-assets.source = ./assets;
+        "xdg/kitty/dark-theme.auto.conf".source = "${kittyThemes}/rose-pine.conf";
+        "xdg/kitty/light-theme.auto.conf ".source = "${kittyThemes}/rose-pine-dawn.conf";
+        "xdg/kitty/no-preference-theme.auto.conf".source = "${kittyThemes}/rose-pine.conf";
+      };
 
     # Conflict override since multiple DEs set this option
     programs.ssh.askPassword = pkgs.lib.mkForce (lib.getExe pkgs.ksshaskpass.out);
@@ -191,17 +198,8 @@ in
       };
     };
 
-    systemd.user.services.wayout = {
-      description = "Automatic idle logout manager";
-      after = [ "graphical-session.target" ];
-      partOf = [ "graphical-session.target" ];
-      wantedBy = [ "graphical-session.target" ];
-      serviceConfig = {
-        ExecStart = "${pkgs.ocf-wayout}/bin/wayout";
-        Type = "simple";
-        Restart = "on-failure";
-      };
-    };
+    services.wayout.enable = true;
+    services.wayout.openFirewall = true;
 
     systemd.user.services.desktoprc = {
       description = "Source custom rc shared across desktops";
