@@ -25,6 +25,10 @@ in
         python3Packages.cached-property
       ];
 
+      # -s to display output in human friendly units by default
+      # old puppet hosts had -Q as well, but can be removed? maybe?
+      environment.shellAliases.quota = "quota -Qs";
+
       ocf.cli.apps.enable = true;
 
       ocf.nfs = {
