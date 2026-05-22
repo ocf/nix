@@ -32,7 +32,7 @@
       }
       {
         enable = true;
-        repo = "hugo-decal-web";
+        repo = "decalweb";
       }
     ];
   };
