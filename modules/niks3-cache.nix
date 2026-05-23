@@ -152,7 +152,7 @@ in
     networking.firewall.allowedTCPPorts = [
       80
       443
-      8333
+      8333 # allow direct access to seaweedfs for writing (niks3 sends client the url), reads are proxied.
     ];
   };
 }
