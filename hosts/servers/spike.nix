@@ -34,6 +34,10 @@
         enable = true;
         repo = "decalweb";
       }
+      {
+        enable = true;
+        repo = "dns";
+      }
     ];
   };
 
