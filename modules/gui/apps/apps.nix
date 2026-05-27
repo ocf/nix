@@ -55,7 +55,7 @@ in
       # GAMES
       dwarf-fortress
       unciv
-      superTuxKart
+      supertuxkart
       tetris
 
       # emulators
