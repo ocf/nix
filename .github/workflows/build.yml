@@ -3,6 +3,7 @@ name: Build Hosts
 on:
   workflow_dispatch:
   pull_request:
+  merge_group:
 
 concurrency:
   group: build-${{ github.ref || github.head_ref }}
