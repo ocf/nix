@@ -72,6 +72,19 @@ in
       ocf.auth.staffOnlySSH = false;
       ocf.ttyd.enable = true;
 
+      # makemysql-real runs as the mysql user for privilege separation
+      # TODO rewrite the makemysql script and see if theres a better way to do this?
+      # just carrying over what was done on our puppet host, tsunami
+      users.users.mysql = {
+        isSystemUser = true;
+        group = "mysql";
+      };
+      users.groups.mysql = { };
+
+      security.sudo.extraConfig = ''
+        ALL ALL=(mysql) NOPASSWD: /run/current-system/sw/bin/makemysql-real
+      '';
+
       security.pam.loginLimits = [
         {
           domain = "*";
