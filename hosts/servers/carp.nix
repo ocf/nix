@@ -33,11 +33,6 @@
     public = true;
   };
 
-  # this should be in ocf utils package somehow
-  security.sudo.extraConfig = ''
-    ALL ALL=(mysql) NOPASSWD: /run/current-system/sw/bin/makemysql-real
-  '';
-
   age.secrets.makemysql-conf = {
     rekeyFile = ../../secrets/master-keyed/carp/makemysql.conf.age;
     path = "/opt/share/makeservices/makemysql.conf";
