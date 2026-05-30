@@ -52,6 +52,8 @@
 
   documentation.dev.enable = true;
 
+  environment.shellAliases.quota = "quota -Qs";
+
   environment.systemPackages = with pkgs; [
     lf
     dua
