@@ -355,30 +355,42 @@
         nixosConfigurations = self.colmenaHive.nodes;
       };
 
-      devShells = forAllSystems (pkgs: {
-        default = pkgs.mkShell {
-          packages = [
-            pkgs.git
-            pkgs.age
-            pkgs.agenix-rekey
-            pkgs.age-plugin-fido2-hmac
-            pkgs.wol
-            pkgs.nixfmt-tree
-            pkgs.nix-fast-build
+      devShells = forAllSystems (
+        pkgs:
+        let
+          # explicitly use pkgs so it doesnt collide with flake inputs
+          deployPkgs = [
             colmena.packages.${pkgs.stdenv.hostPlatform.system}.colmena
-          ];
-        };
-        deploy = pkgs.mkShell {
-          packages = [
             pkgs.git
             pkgs.openssh
             pkgs.wol
             pkgs.nixfmt-tree
             pkgs.nix-fast-build
-            colmena.packages.${pkgs.stdenv.hostPlatform.system}.colmena
           ];
-        };
-      });
+        in
+        {
+          # for development/debugging
+          default = pkgs.mkShell {
+            packages =
+              # explicitly use pkgs so it doesnt collide with flake inputs
+              [
+                pkgs.age
+                pkgs.agenix-rekey
+                pkgs.age-plugin-fido2-hmac
+                pkgs.nix-du
+                pkgs.nix-tree
+                pkgs.nix-eval-jobs
+                pkgs.nix-output-monitor
+              ]
+              ++ deployPkgs;
+          };
+
+          # for ci/cd
+          deploy = pkgs.mkShell {
+            packages = deployPkgs;
+          };
+        }
+      );
 
       nixosConfigurations = builtins.mapAttrs (
         host: colmenaConfig:
