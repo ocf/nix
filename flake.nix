@@ -362,7 +362,7 @@
           deployPkgs = [
             colmena.packages.${pkgs.stdenv.hostPlatform.system}.colmena
             pkgs.git
-            pkgs.openssh
+            pkgs.openssh_gssapi
             pkgs.wol
             pkgs.nixfmt-tree
             pkgs.nix-fast-build
