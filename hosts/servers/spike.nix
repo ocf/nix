@@ -38,6 +38,14 @@
         enable = true;
         repo = "dns";
       }
+      {
+        enable = true;
+        repo = "wordpress";
+        packages = [
+          pkgs.nix
+          pkgs.podman
+        ];
+      }
     ];
   };
 
