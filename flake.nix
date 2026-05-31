@@ -9,6 +9,13 @@
       ref = "nixos-25.11";
     };
 
+    nixpkgs-deprecated = {
+      type = "github";
+      owner = "nixos";
+      repo = "nixpkgs";
+      ref = "nixos-25.11";
+    };
+
     nixpkgs-unstable = {
       type = "github";
       owner = "nixos";
@@ -127,6 +134,7 @@
     {
       self,
       nixpkgs,
+      nixpkgs-deprecated,
       nixpkgs-unstable,
       systems,
       colmena,
@@ -215,6 +223,12 @@
           inherit system;
         };
 
+      pkgsDeprecatedFor =
+        system:
+        import nixpkgs-deprecated {
+          inherit system;
+        };
+
       forAllSystems = fn: nixpkgs.lib.genAttrs (import systems) (system: fn (pkgsFor system));
 
       readGroup =
@@ -261,9 +275,11 @@
               # this should only be used as a *temporary* measure when the version of
               # a package in nixpkgs stable is not sufficiently updated
               pkgs-unstable = pkgsUnstableFor defaultSystem;
+              pkgs-deprecated = pkgsDeprecatedFor defaultSystem;
             };
-            nodeSpecialArgs = nixpkgs.lib.mapAttrs (name: value: {
-              pkgs-unstable = pkgsUnstableFor value;
+            nodeSpecialArgs = nixpkgs.lib.mapAttrs (name: system: {
+              pkgs-unstable = pkgsUnstableFor system;
+              pkgs-deprecated = pkgsDeprecatedFor system;
             }) overrideSystem;
           };
         }
@@ -393,6 +409,7 @@
           specialArgs = {
             inherit inputs;
             pkgs-unstable = pkgsUnstableFor system;
+            pkgs-deprecated = pkgsDeprecatedFor system;
           };
         }
       ) colmenaHosts;
