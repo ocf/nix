@@ -195,6 +195,7 @@
                 "helvetica-neue-lt-std" # tornado
                 "nvidia-settings"
                 "nvidia-x11"
+                "nvidia-kernel-modules"
                 "steam"
                 "steam-unwrapped"
                 "vscode"
