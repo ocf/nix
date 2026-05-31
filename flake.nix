@@ -348,6 +348,15 @@
         ocf-niks3-push = final.callPackage ./pkgs/ocf-niks3-push {
           niks3 = niks3.packages.${final.stdenv.hostPlatform.system}.default;
         };
+
+        # nixpkgs quota is built without RPC support, it can't query
+        # NFS quotas from the filehost via rquotad.
+        # This wasn't necessary for old puppet hosts because debian packages quota with rpc enabled.
+        quota = prev.quota.overrideAttrs (old: {
+          buildInputs = (old.buildInputs or [ ]) ++ [ final.libtirpc ];
+          nativeBuildInputs = (old.nativeBuildInputs or [ ]) ++ [ final.rpcsvc-proto ];
+          configureFlags = (old.configureFlags or [ ]) ++ [ "--enable-rpc" ];
+        });
       };
 
       agenix-rekey = agenix-rekey.configure {
