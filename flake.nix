@@ -232,13 +232,13 @@
       pkgsUnstableFor =
         system:
         import nixpkgs-unstable {
-          inherit system;
+          inherit overlays system;
         };
 
       pkgsDeprecatedFor =
         system:
         import nixpkgs-deprecated {
-          inherit system;
+          inherit overlays system;
         };
 
       forAllSystems = fn: nixpkgs.lib.genAttrs (import systems) (system: fn (defaultPkgsFor system));
