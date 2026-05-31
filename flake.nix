@@ -6,7 +6,7 @@
       type = "github";
       owner = "nixos";
       repo = "nixpkgs";
-      ref = "nixos-25.11";
+      ref = "nixos-26.05";
     };
 
     nixpkgs-deprecated = {
@@ -185,6 +185,23 @@
       overridePkgsFor = {
         # example:
         # hostname = pkgsUnstableFor;
+
+        # even after adding:
+        # nixpkgs.config.permittedInsecurePackages = [
+        #   "nodejs-20.20.2"
+        #   "nodejs-slim-20.20.2"
+        #   "nodejs-20.20.2-source"
+        # ];
+        #
+        # to ./modules/matrix/discord-bridge.nix, scootaloo still fails to
+        # build with:
+        # "error: attribute 'nodeAppDir' missing"
+        #
+        # we will keep scootaloo on nixos-25.11 for now until
+        # matrix-appservice-discord is updated to work with nixos-26.05.
+        #
+        # see: https://github.com/NixOS/nixpkgs/issues/515284
+        scootaloo = pkgsDeprecatedFor;
       };
 
       defaultSystem = "x86_64-linux";

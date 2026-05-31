@@ -97,7 +97,7 @@ in
 
       # pipewire
       easyeffects
-      helvum
+      crosspipe
 
       mission-center
       kana

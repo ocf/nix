@@ -52,15 +52,15 @@
   services = {
     mpd = {
       enable = true;
-      network.port = 6600;
-      network.listenAddress = "0.0.0.0";
-      extraConfig = ''
-        audio_output {
-          type		"pulse"
-          name		"Local Music Player Daemon"
-          server		"127.0.0.1"
-        }
-      '';
+      settings = {
+        port = 6600;
+        bind_to_address = "0.0.0.0";
+        audio_output = lib.singleton {
+          type = "pulse";
+          name = "Local Music Player Daemon";
+          server = "127.0.0.1";
+        };
+      };
     };
 
     avahi.publish = {
