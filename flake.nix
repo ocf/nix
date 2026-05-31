@@ -179,8 +179,18 @@
         wayout.nixosModules.default
       ];
 
+      # NOTE: all hosts will be sharing the same ocf nix modules in this
+      # repository regardless of what pkgs is set to
+      defaultPkgsFor = pkgsStableFor;
+      overridePkgsFor = {
+        # example:
+        # hostname = pkgsUnstableFor;
+      };
+
       defaultSystem = "x86_64-linux";
       overrideSystem = {
+        # example:
+        # hostname = "aarch64-linux";
         overheat = "aarch64-linux";
       };
 
@@ -188,7 +198,9 @@
       # Glue/Internals #
       # ============== #
 
-      pkgsFor =
+      # takes in a system like "x86_64-linux", and returns the pkgs for that
+      # system
+      pkgsStableFor =
         system:
         import nixpkgs {
           inherit overlays system;
@@ -229,7 +241,12 @@
           inherit system;
         };
 
-      forAllSystems = fn: nixpkgs.lib.genAttrs (import systems) (system: fn (pkgsFor system));
+      forAllSystems = fn: nixpkgs.lib.genAttrs (import systems) (system: fn (defaultPkgsFor system));
+
+      pkgsForOverrideSystems = nixpkgs.lib.mapAttrs (_: defaultPkgsFor) overrideSystem;
+      pkgsForOverridePkgs = nixpkgs.lib.mapAttrs (
+        name: pkgsFor: pkgsFor (overrideSystem.${name} or defaultSystem)
+      ) overridePkgsFor;
 
       readGroup =
         group:
@@ -267,8 +284,8 @@
         colmenaHosts
         // {
           meta = {
-            nixpkgs = pkgsFor defaultSystem;
-            nodeNixpkgs = nixpkgs.lib.mapAttrs (name: pkgsFor) overrideSystem;
+            nixpkgs = defaultPkgsFor defaultSystem;
+            nodeNixpkgs = pkgsForOverrideSystems // pkgsForOverridePkgs;
             specialArgs = {
               inherit self inputs;
               # pkgs-unstable exposes the packages from the nixpkgs-unstable input
@@ -404,7 +421,7 @@
         in
         nixpkgs.lib.nixosSystem {
           inherit system;
-          pkgs = pkgsFor system;
+          pkgs = defaultPkgsFor system;
           modules = colmenaConfig.imports;
           specialArgs = {
             inherit inputs;
