@@ -97,10 +97,15 @@ in
       flex
       nasm
 
-      nix-du
-      nix-output-monitor
-      devenv
       claude-code
+
+      # nix
+      nix-du
+      nix-tree
+      nix-eval-jobs
+      nix-output-monitor
+      nix-fast-build
+      devenv
 
       # languages & runtimes
       graphviz
