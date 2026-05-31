@@ -6,6 +6,12 @@
 }:
 
 let
+  # updating kubernetes nodes requires manual steps and potential downtime.
+  # additionally, there can be significant breaking changes between versions
+  # that need to be accounted for in advance. thus, we pin the version of
+  # kubernetes and manually update it, while the rest of its dependencies stay
+  # up to date with the nixpkgs input.
+  # https://bestdocs.ocf.io/staff-docs/infrastructure/kubernetes/runbooks/updating-kubernetes
   kubernetes = pkgs.kubernetes.overrideAttrs (oldAttrs: rec {
     version = "1.36.1";
     src = pkgs.fetchFromGitHub {
