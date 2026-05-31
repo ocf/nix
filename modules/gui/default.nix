@@ -62,7 +62,8 @@ in
     programs.sway.enable = true;
     programs.sway.extraOptions = [ "--unsupported-gpu" ];
     programs.hyprland.enable = true;
-    programs.wayfire.enable = true;
+    # uncomment when wf-config builds no longer fail
+    #programs.wayfire.enable = true;
     programs.niri.enable = true;
     services.xserver.desktopManager.xfce.enable = true;
 
