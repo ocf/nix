@@ -1,15 +1,12 @@
 {
   config,
   pkgs,
-  pkgs-unstable,
   lib,
   ...
 }:
 
 let
-  # TODO kubernetes 1.36 requires go > 1.26. revert to stable nixpkgs
-  # once go version is > 1.26
-  kubernetes = pkgs-unstable.kubernetes.overrideAttrs (oldAttrs: rec {
+  kubernetes = pkgs.kubernetes.overrideAttrs (oldAttrs: rec {
     version = "1.36.1";
     src = pkgs.fetchFromGitHub {
       owner = "kubernetes";
