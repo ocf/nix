@@ -182,6 +182,29 @@
       hostDefaults = {
         nixpkgs = nixpkgs;
         system = "x86_64-linux";
+        config = {
+          allowUnfreePredicate =
+            pkg:
+            builtins.elem (nixpkgs.lib.getName pkg) [
+              "code"
+              "claude-code"
+              "dwarf-fortress"
+              "google-chrome"
+              "helvetica-neue-lt-std" # tornado
+              "nvidia-settings"
+              "nvidia-x11"
+              "nvidia-kernel-modules"
+              "steam"
+              "steam-unwrapped"
+              "vscode"
+              "zoom"
+              "drawio"
+              "datagrip"
+              "davinci-resolve"
+              "1password"
+              "1password-cli"
+            ];
+        };
       };
 
       # override the hostDefaults attribute set per host
@@ -216,33 +239,15 @@
       # - nixpkgs input
       # - system architecture like "x86_64-linux"
       pkgsFor =
-        { nixpkgs, system, ... }@args:
+        {
+          nixpkgs,
+          system,
+          config,
+          ...
+        }@args:
         import args.nixpkgs {
           inherit overlays;
-          inherit (args) system;
-          config = {
-            allowUnfreePredicate =
-              pkg:
-              builtins.elem (nixpkgs.lib.getName pkg) [
-                "code"
-                "claude-code"
-                "dwarf-fortress"
-                "google-chrome"
-                "helvetica-neue-lt-std" # tornado
-                "nvidia-settings"
-                "nvidia-x11"
-                "nvidia-kernel-modules"
-                "steam"
-                "steam-unwrapped"
-                "vscode"
-                "zoom"
-                "drawio"
-                "datagrip"
-                "davinci-resolve"
-                "1password"
-                "1password-cli"
-              ];
-          };
+          inherit (args) system config;
         };
 
       specialArgsFor =
