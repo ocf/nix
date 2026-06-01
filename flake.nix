@@ -180,7 +180,7 @@
       ];
 
       hostDefaults = {
-        nixpkgs = nixpkgs;
+        inherit nixpkgs;
         system = "x86_64-linux";
         config = {
           allowUnfreePredicate =
@@ -269,7 +269,7 @@
 
       forAllSystems =
         fn:
-        nixpkgs.lib.genAttrs (import systems) (system: fn (pkgsFor (hostDefaults // { system = system; })));
+        nixpkgs.lib.genAttrs (import systems) (system: fn (pkgsFor (hostDefaults // { inherit system; })));
 
       readGroup =
         group:
