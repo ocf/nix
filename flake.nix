@@ -257,6 +257,11 @@
         in
         {
           inherit self inputs;
+
+          # even if stable is the default, an overridden host may still want to
+          # access pkgs-stable as a specialArg
+          pkgs-stable = pkgsFromInput nixpkgs;
+
           # pkgs-unstable exposes the packages from the nixpkgs-unstable input
           # this should only be used as a *temporary* measure when the version of
           # a package in nixpkgs stable is not sufficiently updated
