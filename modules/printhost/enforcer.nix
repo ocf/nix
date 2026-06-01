@@ -8,7 +8,7 @@
 let
   cfg = config.ocf.printhost;
 
-  pythonEnv = pkgs.python314.withPackages (
+  pythonEnv = config.ocf.python.package.withPackages (
     ps: with ps; [
       ocflib
       pymysql
