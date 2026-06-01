@@ -179,13 +179,16 @@
         wayout.nixosModules.default
       ];
 
-      # NOTE: all hosts will be sharing the same ocf nix modules in this
-      # repository regardless of what pkgs is set to
-      defaultPkgsFor = pkgsStableFor;
-      overridePkgsFor = {
-        # example:
-        # hostname = pkgsUnstableFor;
+      hostDefaults = {
+        nixpkgs = nixpkgs;
+        system = "x86_64-linux";
+      };
 
+      # override the hostDefaults attribute set per host
+      #
+      # NOTE: all hosts will be sharing the same ocf nix modules in this
+      # repository regardless of what pkgs or system is set to
+      hostOverrides = {
         # even after adding:
         # nixpkgs.config.permittedInsecurePackages = [
         #   "nodejs-20.20.2"
@@ -201,26 +204,22 @@
         # matrix-appservice-discord is updated to work with nixos-26.05.
         #
         # see: https://github.com/NixOS/nixpkgs/issues/515284
-        scootaloo = pkgsDeprecatedFor;
-      };
-
-      defaultSystem = "x86_64-linux";
-      overrideSystem = {
-        # example:
-        # hostname = "aarch64-linux";
-        overheat = "aarch64-linux";
+        scootaloo.nixpkgs = nixpkgs-deprecated;
+        overheat.system = "aarch64-linux";
       };
 
       # ============== #
       # Glue/Internals #
       # ============== #
 
-      # takes in a system like "x86_64-linux", and returns the pkgs for that
-      # system
-      pkgsStableFor =
-        system:
-        import nixpkgs {
-          inherit overlays system;
+      # returns the nixpkgs pkgs set for a given:
+      # - nixpkgs input
+      # - system architecture like "x86_64-linux"
+      pkgsFor =
+        { nixpkgs, system, ... }@args:
+        import args.nixpkgs {
+          inherit overlays;
+          inherit (args) system;
           config = {
             allowUnfreePredicate =
               pkg:
@@ -246,24 +245,26 @@
           };
         };
 
-      pkgsUnstableFor =
-        system:
-        import nixpkgs-unstable {
-          inherit overlays system;
+      specialArgsFor =
+        hostAttrs:
+        let
+          pkgsFromInput = nixpkgs': pkgsFor (hostAttrs // { nixpkgs = nixpkgs'; });
+        in
+        {
+          inherit self inputs;
+          # pkgs-unstable exposes the packages from the nixpkgs-unstable input
+          # this should only be used as a *temporary* measure when the version of
+          # a package in nixpkgs stable is not sufficiently updated
+          pkgs-unstable = pkgsFromInput nixpkgs-unstable;
+          pkgs-deprecated = pkgsFromInput nixpkgs-deprecated;
         };
 
-      pkgsDeprecatedFor =
-        system:
-        import nixpkgs-deprecated {
-          inherit overlays system;
-        };
+      mapHostOverrides =
+        f: builtins.mapAttrs (name: overrides: f (hostDefaults // overrides)) hostOverrides;
 
-      forAllSystems = fn: nixpkgs.lib.genAttrs (import systems) (system: fn (defaultPkgsFor system));
-
-      pkgsForOverrideSystems = nixpkgs.lib.mapAttrs (_: defaultPkgsFor) overrideSystem;
-      pkgsForOverridePkgs = nixpkgs.lib.mapAttrs (
-        name: pkgsFor: pkgsFor (overrideSystem.${name} or defaultSystem)
-      ) overridePkgsFor;
+      forAllSystems =
+        fn:
+        nixpkgs.lib.genAttrs (import systems) (system: fn (pkgsFor (hostDefaults // { system = system; })));
 
       readGroup =
         group:
@@ -301,20 +302,10 @@
         colmenaHosts
         // {
           meta = {
-            nixpkgs = defaultPkgsFor defaultSystem;
-            nodeNixpkgs = pkgsForOverrideSystems // pkgsForOverridePkgs;
-            specialArgs = {
-              inherit self inputs;
-              # pkgs-unstable exposes the packages from the nixpkgs-unstable input
-              # this should only be used as a *temporary* measure when the version of
-              # a package in nixpkgs stable is not sufficiently updated
-              pkgs-unstable = pkgsUnstableFor defaultSystem;
-              pkgs-deprecated = pkgsDeprecatedFor defaultSystem;
-            };
-            nodeSpecialArgs = nixpkgs.lib.mapAttrs (name: system: {
-              pkgs-unstable = pkgsUnstableFor system;
-              pkgs-deprecated = pkgsDeprecatedFor system;
-            }) overrideSystem;
+            nixpkgs = pkgsFor hostDefaults;
+            nodeNixpkgs = mapHostOverrides pkgsFor;
+            specialArgs = specialArgsFor hostDefaults;
+            nodeSpecialArgs = mapHostOverrides specialArgsFor;
           };
         }
       );
@@ -396,17 +387,13 @@
       nixosConfigurations = builtins.mapAttrs (
         host: colmenaConfig:
         let
-          system = overrideSystem.${host} or defaultSystem;
+          hostAttrs = hostDefaults // (hostOverrides.${host} or { });
         in
         nixpkgs.lib.nixosSystem {
-          inherit system;
-          pkgs = defaultPkgsFor system;
+          inherit (hostAttrs) system;
+          pkgs = pkgsFor hostAttrs;
           modules = colmenaConfig.imports;
-          specialArgs = {
-            inherit inputs;
-            pkgs-unstable = pkgsUnstableFor system;
-            pkgs-deprecated = pkgsDeprecatedFor system;
-          };
+          specialArgs = specialArgsFor hostAttrs;
         }
       ) colmenaHosts;
     };
