@@ -9,7 +9,7 @@ let
   cfg = config.ocf.printhost;
 
   # Python environment for the enforcer quota script
-  pythonEnv = pkgs.python312.withPackages (
+  pythonEnv = config.ocf.python.package.withPackages (
     ps: with ps; [
       ocflib
       pycups

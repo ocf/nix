@@ -256,7 +256,7 @@ in
     kubectl
 
     # OCF utilities
-    (python312.withPackages (
+    (config.ocf.python.package.withPackages (
       ps: with ps; [
         ocflib
         dnspython

@@ -55,7 +55,7 @@ in
       # GAMES
       dwarf-fortress
       unciv
-      superTuxKart
+      supertuxkart
       tetris
 
       # emulators
@@ -97,7 +97,7 @@ in
 
       # pipewire
       easyeffects
-      helvum
+      crosspipe
 
       mission-center
       kana
@@ -105,7 +105,8 @@ in
       zotero
 
       # password managers
-      bitwarden-desktop
+      # uncomment when no longer on EOL electron 39.8.10
+      #bitwarden-desktop
       _1password-gui
     ];
   };

@@ -8,7 +8,7 @@
 let
   cfg = config.ocf.printhost;
 
-  pythonEnv = pkgs.python312.withPackages (
+  pythonEnv = config.ocf.python.package.withPackages (
     ps: with ps; [
       pycups
       prometheus-client

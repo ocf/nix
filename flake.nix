@@ -6,6 +6,13 @@
       type = "github";
       owner = "nixos";
       repo = "nixpkgs";
+      ref = "nixos-26.05";
+    };
+
+    nixpkgs-deprecated = {
+      type = "github";
+      owner = "nixos";
+      repo = "nixpkgs";
       ref = "nixos-25.11";
     };
 
@@ -127,6 +134,7 @@
     {
       self,
       nixpkgs,
+      nixpkgs-deprecated,
       nixpkgs-unstable,
       systems,
       colmena,
@@ -171,50 +179,102 @@
         wayout.nixosModules.default
       ];
 
-      defaultSystem = "x86_64-linux";
-      overrideSystem = {
-        overheat = "aarch64-linux";
+      hostDefaults = {
+        inherit nixpkgs;
+        system = "x86_64-linux";
+        config = {
+          allowUnfreePredicate =
+            pkg:
+            builtins.elem (nixpkgs.lib.getName pkg) [
+              "code"
+              "claude-code"
+              "dwarf-fortress"
+              "google-chrome"
+              "helvetica-neue-lt-std" # tornado
+              "nvidia-settings"
+              "nvidia-x11"
+              "nvidia-kernel-modules"
+              "steam"
+              "steam-unwrapped"
+              "vscode"
+              "zoom"
+              "drawio"
+              "datagrip"
+              "davinci-resolve"
+              "1password"
+              "1password-cli"
+            ];
+        };
+      };
+
+      # override the hostDefaults attribute set per host
+      #
+      # NOTE: all hosts will be sharing the same ocf nix modules in this
+      # repository regardless of what pkgs or system is set to
+      hostOverrides = {
+        # even after adding:
+        # nixpkgs.config.permittedInsecurePackages = [
+        #   "nodejs-20.20.2"
+        #   "nodejs-slim-20.20.2"
+        #   "nodejs-20.20.2-source"
+        # ];
+        #
+        # to ./modules/matrix/discord-bridge.nix, scootaloo still fails to
+        # build with:
+        # "error: attribute 'nodeAppDir' missing"
+        #
+        # we will keep scootaloo on nixos-25.11 for now until
+        # matrix-appservice-discord is updated to work with nixos-26.05.
+        #
+        # see: https://github.com/NixOS/nixpkgs/issues/515284
+        scootaloo.nixpkgs = nixpkgs-deprecated;
+        overheat.system = "aarch64-linux";
       };
 
       # ============== #
       # Glue/Internals #
       # ============== #
 
+      # returns the nixpkgs pkgs set for a given:
+      # - nixpkgs input
+      # - system architecture like "x86_64-linux"
       pkgsFor =
-        system:
-        import nixpkgs {
-          inherit overlays system;
-          config = {
-            allowUnfreePredicate =
-              pkg:
-              builtins.elem (nixpkgs.lib.getName pkg) [
-                "code"
-                "claude-code"
-                "dwarf-fortress"
-                "google-chrome"
-                "helvetica-neue-lt-std" # tornado
-                "nvidia-settings"
-                "nvidia-x11"
-                "steam"
-                "steam-unwrapped"
-                "vscode"
-                "zoom"
-                "drawio"
-                "datagrip"
-                "davinci-resolve"
-                "1password"
-                "1password-cli"
-              ];
-          };
+        {
+          nixpkgs,
+          system,
+          config,
+          ...
+        }@args:
+        import args.nixpkgs {
+          inherit overlays;
+          inherit (args) system config;
         };
 
-      pkgsUnstableFor =
-        system:
-        import nixpkgs-unstable {
-          inherit system;
+      specialArgsFor =
+        hostAttrs:
+        let
+          pkgsFromInput = nixpkgs': pkgsFor (hostAttrs // { nixpkgs = nixpkgs'; });
+        in
+        {
+          inherit self inputs;
+
+          # even if stable is the default, an overridden host may still want to
+          # access pkgs-stable as a specialArg
+          pkgs-stable = pkgsFromInput nixpkgs;
+
+          # pkgs-unstable exposes the packages from the nixpkgs-unstable input
+          # this should only be used as a *temporary* measure when the version of
+          # a package in nixpkgs stable is not sufficiently updated
+          pkgs-unstable = pkgsFromInput nixpkgs-unstable;
+          pkgs-deprecated = pkgsFromInput nixpkgs-deprecated;
         };
 
-      forAllSystems = fn: nixpkgs.lib.genAttrs (import systems) (system: fn (pkgsFor system));
+      mapHostOverrides =
+        f: builtins.mapAttrs (name: overrides: f (hostDefaults // overrides)) hostOverrides;
+
+      forAllSystems =
+        fn:
+        nixpkgs.lib.genAttrs (import systems) (system: fn (pkgsFor (hostDefaults // { inherit system; })));
 
       readGroup =
         group:
@@ -252,18 +312,10 @@
         colmenaHosts
         // {
           meta = {
-            nixpkgs = pkgsFor defaultSystem;
-            nodeNixpkgs = nixpkgs.lib.mapAttrs (name: pkgsFor) overrideSystem;
-            specialArgs = {
-              inherit self inputs;
-              # pkgs-unstable exposes the packages from the nixpkgs-unstable input
-              # this should only be used as a *temporary* measure when the version of
-              # a package in nixpkgs stable is not sufficiently updated
-              pkgs-unstable = pkgsUnstableFor defaultSystem;
-            };
-            nodeSpecialArgs = nixpkgs.lib.mapAttrs (name: value: {
-              pkgs-unstable = pkgsUnstableFor value;
-            }) overrideSystem;
+            nixpkgs = pkgsFor hostDefaults;
+            nodeNixpkgs = mapHostOverrides pkgsFor;
+            specialArgs = specialArgsFor hostDefaults;
+            nodeSpecialArgs = mapHostOverrides specialArgsFor;
           };
         }
       );
@@ -300,44 +352,6 @@
         };
 
       overlays.default = final: prev: {
-        # Patch nginx for multiple CVEs disclosed 2026-05-13, until nixos-25.11
-        # channel advances past the fix (nixpkgs#520076).
-        # Remove this overlay once flake.lock points to a nixpkgs with nginx >= 1.30.1.
-        nginx = prev.nginx.overrideAttrs (old: {
-          patches = (old.patches or [ ]) ++ [
-            (final.fetchpatch {
-              name = "CVE-2026-40460.patch";
-              url = "https://github.com/nginx/nginx/commit/f37ec3e5d4f527e52ed5b25951ad8aa7d1ff6266.patch";
-              hash = "sha256-++hYEzMUkl3mbBMaffR2LQTYMxOR/YziNkYCVyhw2Qg=";
-            })
-            (final.fetchpatch {
-              name = "CVE-2026-40701.patch";
-              url = "https://github.com/nginx/nginx/commit/71841dcedfdf46048ef5e25413fdf97a66957913.patch";
-              hash = "sha256-FzNZpEwIj76r5dpqEP6TgpSc1ywcW7ZOEQpFpwI/YZw=";
-            })
-            (final.fetchpatch {
-              name = "CVE-2026-42934.patch";
-              url = "https://github.com/nginx/nginx/commit/696a7f1b9198d576e6a59c1655b746fbf06561cf.patch";
-              hash = "sha256-/vjyEGysPv5VK4TZmk/gtIg9Zc5ogUXMwpBfBwe55Bc=";
-            })
-            (final.fetchpatch {
-              name = "CVE-2026-42945.patch";
-              url = "https://github.com/nginx/nginx/commit/2046b45aa0c6e712c216b9075886f3f26e9b4ca9.patch";
-              hash = "sha256-VK9CXgrCIqORsaRivTZBmkoLyQhbZ07ss6nAbLNvfJM=";
-            })
-            (final.fetchpatch {
-              name = "CVE-2026-42946.patch";
-              url = "https://github.com/nginx/nginx/commit/baef7fdac28e4e1fe26509b50b8d15603393e28e.patch";
-              hash = "sha256-Z1naMxxiVuDbUcvX3PiIK4CMuSSpUyzPqjix9GTwHmk=";
-            })
-            (final.fetchpatch {
-              name = "CVE-2026-42946-part-2.patch";
-              url = "https://github.com/nginx/nginx/commit/39d7d0ba0799fcff6baee52b6525f45739593cfd.patch";
-              hash = "sha256-6PwV0iz4kQGGBwVk9129aH+TFzbSx3QSVpp22AoKQY4=";
-            })
-          ];
-        });
-
         ocf-utils = ocf-utils.packages.${final.stdenv.hostPlatform.system}.default;
         ocf-jukebox = ocf-jukebox.packages.${final.stdenv.hostPlatform.system}.default;
         plasma-applet-commandoutput = final.callPackage ./pkgs/plasma-applet-commandoutput.nix { };
@@ -404,16 +418,13 @@
       nixosConfigurations = builtins.mapAttrs (
         host: colmenaConfig:
         let
-          system = overrideSystem.${host} or defaultSystem;
+          hostAttrs = hostDefaults // (hostOverrides.${host} or { });
         in
         nixpkgs.lib.nixosSystem {
-          inherit system;
-          pkgs = pkgsFor system;
+          inherit (hostAttrs) system;
+          pkgs = pkgsFor hostAttrs;
           modules = colmenaConfig.imports;
-          specialArgs = {
-            inherit inputs;
-            pkgs-unstable = pkgsUnstableFor system;
-          };
+          specialArgs = specialArgsFor hostAttrs;
         }
       ) colmenaHosts;
     };

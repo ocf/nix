@@ -44,7 +44,7 @@ in
       znc
 
       # fetch
-      neofetch
+      hyfetch
       screenfetch
       pfetch-rs
       fastfetch
