@@ -91,7 +91,7 @@
   boot.swraid = {
     enable = true;
     mdadmConf = ''
-      MAILADDR postmaster@ocf.berkeley.edu
+      MAILADDR root@ocf.berkeley.edu
       ARRAY /dev/md/nfs metadata=1.2 UUID=46b10914:9f84099b:dd54304a:917d7898 name=dataloss:nfs
     '';
   };
