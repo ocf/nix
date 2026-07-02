@@ -9,9 +9,8 @@
   ocf.nfs-export = {
     enable = true;
     # https://github.com/ocf/puppet/blob/a081b2210691bd46d585accc8548c985188486a0/modules/ocf_filehost/manifests/init.pp#L10-L16
-    exports = [
+    exports."/opt/homes" = [
       {
-        directory = "/opt/homes";
         hosts = [
           "admin"
           "www"
@@ -21,8 +20,8 @@
           "guanine"
           "cytosine"
           "thymine"
-          "fluttershy"
-          "rainbowdash"
+          "tsunami"
+          "supernova"
         ];
         options = [
           "rw"
@@ -31,9 +30,18 @@
           "no_root_squash"
         ];
       }
+      {
+        hosts = [ "*.ocf.berkeley.edu" ];
+        options = [
+          "rw"
+          "fsid=0"
+          "no_subtree_check"
+          "root_squash"
+          "sec=krb5p"
+        ];
+      }
     ];
   };
-
 
   boot.loader = {
     grub.enable = true;
