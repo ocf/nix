@@ -1,5 +1,5 @@
 {
-  networking.hostName = "trenderhoof";
+  networking.hostName = "kobudai";
 
   ocf.network = {
     enable = true;
@@ -111,8 +111,8 @@
     };
 
     # Bind mount /opt/homes/home to /home. This allows running
-    #     mount trenderhoof:/home /home
-    # In fact, since home is CNAMEd to filehost is CNAMEd to trenderhoof, even
+    #     mount kobudai:/home /home
+    # In fact, since home is CNAMEd to filehost is CNAMEd to kobudai, even
     #     mount homes:/home /home
     # works and that's what the Puppet config in modules/ocf/manifests/nfs.pp does.
     "/home" = {
