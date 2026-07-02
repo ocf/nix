@@ -45,15 +45,13 @@ in
     services.nfs.server = {
       enable = true;
       # https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/5/html/deployment_guide/s1-nfs-server-config-exports
-      exports = lib.traceValSeq (
-        concatMapAttrsStringSep "" (directory: hostsAndOptions: ''
-          ${directory} \
-            ${concatMapStringsSep " \\\n  " (
-              { hosts, options }:
-              concatMapStringsSep " \\\n  " (host: "${host}(${concatStringsSep "," options})") hosts
-            ) hostsAndOptions}
-        '') cfg.exports
-      );
+      exports = concatMapAttrsStringSep "" (directory: hostsAndOptions: ''
+        ${directory} \
+          ${concatMapStringsSep " \\\n  " (
+            { hosts, options }:
+            concatMapStringsSep " \\\n  " (host: "${host}(${concatStringsSep "," options})") hosts
+          ) hostsAndOptions}
+      '') cfg.exports;
     };
 
     networking.firewall.allowedTCPPorts = [
