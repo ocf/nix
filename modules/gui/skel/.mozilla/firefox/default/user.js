@@ -1,0 +1,1 @@
+user_pref("print.more-settings.open", true);

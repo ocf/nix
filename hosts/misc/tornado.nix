@@ -5,21 +5,22 @@
     ../../hardware/minisforum-new.nix
   ];
 
-  networking.hostName = "tornado";
-
   ocf = {
     # TODO: need ensure host keys can't be stolen by booting an external drive...
     acme.enable = false;
 
+    # this machine is not currently in use and cannot be deployed to
+    managed-deployment.automated-deploy = false;
+
     auth.enable = true;
-    browsers.enable = true;
+    gui.apps.browsers.enable = true;
 
     network = {
       enable = true;
       lastOctet = 90;
     };
 
-    kiosk = {
+    gui.kiosk = {
       enable = true;
       url = "https://labmap.ocf.berkeley.edu"; # https://kinn.dev/labmap2;
       extraConfig = ''
@@ -38,15 +39,15 @@
   services = {
     mpd = {
       enable = true;
-      network.port = 6600;
-      network.listenAddress = "0.0.0.0";
-      extraConfig = ''
-        audio_output {
-          type		"pulse"
-          name		"Local Music Player Daemon"
-          server		"127.0.0.1"
-        }
-      '';
+      settings = {
+        port = 6600;
+        bind_to_address = "0.0.0.0";
+        audio_output = lib.singleton {
+          type = "pulse";
+          name = "Local Music Player Daemon";
+          server = "127.0.0.1";
+        };
+      };
     };
 
     avahi.publish = {
@@ -58,8 +59,14 @@
     };
 
     pipewire.extraConfig.pipewire-pulse."100-network-audio-sink"."pulse.cmd" = [
-      { cmd = "load-module"; args = "module-native-protocol-tcp auth-ip-acl=169.229.226.0/24 auth-anonymous=1"; }
-      { cmd = "load-module"; args = "module-zeroconf-publish"; }
+      {
+        cmd = "load-module";
+        args = "module-native-protocol-tcp auth-ip-acl=169.229.226.0/24 auth-anonymous=1";
+      }
+      {
+        cmd = "load-module";
+        args = "module-zeroconf-publish";
+      }
     ];
 
   };
@@ -68,8 +75,6 @@
     pipewire.wantedBy = [ "default.target" ];
     pipewire-pulse.wantedBy = [ "default.target" ];
   };
-
-
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions

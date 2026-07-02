@@ -3,12 +3,12 @@
 {
   imports = [ ../../hardware/virtualized.nix ];
 
-  networking.hostName = "amethyst";
-
   ocf.network = {
     enable = true;
     lastOctet = 50;
   };
+
+  ocf.auth.staffOnlySSH = false;
 
   ocf.webhost = {
     enable = true;
@@ -25,8 +25,6 @@
       }
     ];
   };
-
-
 
   system.stateVersion = "24.11";
 }

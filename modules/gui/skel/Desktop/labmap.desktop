@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=OCF Labmap
+# FIXME: Type=Link not work when double clicked, using Type=Application for now
+#Type=Link
+#URL=https://labmap.ocf.berkeley.edu/
+Type=Application
+Exec=firefox https://labmap.ocf.berkeley.edu/
+# TODO: add an icon for labmap
+Icon=text-html

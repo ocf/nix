@@ -6,8 +6,6 @@
     ../../profiles/desktop.nix
   ];
 
-  networking.hostName = "marshmallow";
-
   ocf.nvidia = {
     enable = true;
     open = false;
@@ -17,6 +15,8 @@
     enable = true;
     lastOctet = 151;
   };
+
+  ocf.managed-deployment.mac-address = "9c:6b:00:38:7f:f1";
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions

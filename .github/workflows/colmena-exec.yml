@@ -1,0 +1,46 @@
+name: Manually Exec on Host
+
+on:
+  workflow_dispatch:
+    inputs:
+      hosts:
+        description: 'Comma separated hostnames or tags (ex: @desktops) to exec on'
+        required: true
+        type: string
+      argv:
+        description: 'command to exec'
+        required: true
+        type: string
+
+run-name: exec on ${{ inputs.hosts }} from ${{ github.ref_name }} by @${{ github.actor }}
+
+jobs:
+  exec-on-hosts:
+    runs-on: ci-ocf-nix-deploy
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup SSH
+        run: |
+          echo '${{ secrets.COLMENA_APPLY_SSH_KEY }}' > ${{ github.workspace }}/id_ed25519
+          chmod 400 ${{ github.workspace }}/id_ed25519
+
+          for keyfile in ${{ github.workspace }}/secrets/host-keys/*.pub; do
+            hostname=$(basename "$keyfile" .pub)
+            fqdn="$hostname.ocf.berkeley.edu"
+            pubkey=$(cat "$keyfile")
+            echo "$fqdn $pubkey"
+          done > ${{ github.workspace }}/known_hosts
+
+          echo "
+          Identityfile $GITHUB_WORKSPACE/id_ed25519
+          UserKnownHostsFile $GITHUB_WORKSPACE/known_hosts
+          StrictHostKeyChecking yes
+          UpdateHostKeys no
+          " >> ${{ github.workspace }}/ssh_config
+
+      - name: Exec with Colmena
+        env:
+          SSH_CONFIG_FILE: ${{ github.workspace }}/ssh_config
+        run: nix develop .#deploy -c colmena exec -v --on "${{ inputs.hosts }}" ${{ inputs.argv }}

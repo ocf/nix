@@ -1,0 +1,45 @@
+name: Check formatting
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+
+jobs:
+  check-format:
+    runs-on: ci-ocf-nix-build
+    steps:
+      - uses: actions/checkout@v4
+        # we need history to be able to get a list of changed files. a treeless
+        # clone allows us to get full history without downloading massive
+        # amounts of file changes.
+        with:
+          fetch-depth: 0
+          filter: blob:none
+      - name: Check formatting with nixfmt-tree
+        run: |
+          # for pull requests, check against the target branch
+          # for push, check against the previous commit
+          if [ -n "${{ github.base_ref }}" ]; then
+            base="origin/${{ github.base_ref }}"
+          else
+            base="HEAD^"
+          fi
+
+          # get a list of changes (add, copy, modify, rename) since branch
+          # diverged from main
+          # deleted files are not included to avoid treefmt errors
+          changes=$(git diff --name-only --diff-filter=ACMR $base...HEAD)
+
+          # only check formatting on changed files
+          # we dont want to annoy people by failing a test on a pr due to
+          # something that is not the fault of the pr
+          # note: this still includes files where the formatting issues are not
+          # in the changed lines of that file, thus not the fault of the pr
+          if [ -n "$changes" ]; then
+            nix develop -c treefmt --ci $changes
+          fi

@@ -1,17 +1,25 @@
-{ pkgs, lib, config, ... }:
+{
+  pkgs,
+  lib,
+  config,
+  ...
+}:
 
 {
   imports = [ ../../hardware/virtualized.nix ];
 
   # Empty Host, will put something here soon
-  networking.hostName = "zecora";
-
   ocf.network = {
     enable = true;
     lastOctet = 44;
   };
 
-  services.unifi.enable = true;
+  ocf.motd = {
+    enable = true;
+    description = "Unifi console.";
+  };
+
+  services.unifi.enable = false;
 
   system.stateVersion = "24.11";
 }

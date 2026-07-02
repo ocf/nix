@@ -1,7 +1,13 @@
 # Hardware configuration for the Raspberry Pi 4. (near printers)
 # Installed with the NixOS SD Image.
 
-{ config, lib, pkgs, modulesPath, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  modulesPath,
+  ...
+}:
 
 {
   imports = [

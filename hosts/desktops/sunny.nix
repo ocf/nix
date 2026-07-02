@@ -6,12 +6,12 @@
     ../../profiles/desktop.nix
   ];
 
-  networking.hostName = "sunny";
-
   ocf.network = {
     enable = true;
     lastOctet = 144;
   };
+
+  ocf.managed-deployment.mac-address = "9c:6b:00:30:e9:68";
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions

@@ -5,8 +5,6 @@
     ../../hardware/raspberry-pi-4b.nix
   ];
 
-  networking.hostName = "overheat";
-
   boot.loader = {
     systemd-boot.enable = false;
     generic-extlinux-compatible.enable = true;
@@ -16,6 +14,9 @@
     # TODO: need ensure host keys can't be stolen by booting an external drive...
     acme.enable = false;
 
+    # this machine is not currently in use and cannot be deployed to
+    managed-deployment.automated-deploy = false;
+
     auth.enable = true;
 
     network = {
@@ -23,7 +24,7 @@
       lastOctet = 94;
     };
 
-    kiosk = {
+    gui.kiosk = {
       enable = true;
       url = "https://printlist.ocf.berkeley.edu/home";
       extraConfig = ''

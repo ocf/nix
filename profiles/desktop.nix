@@ -1,125 +1,80 @@
-{ pkgs, lib, inputs, ... }:
+# basic minimal profile for desktops
 
-# TODO: Move this to pkgs/ or come up with a better way to manage custom scripts
-let
-  vncScript = pkgs.writeShellScriptBin "ocf-tv" ''
-    ${lib.getExe pkgs.openssh_gssapi} -M -S /tmp/ocftv-ssh-ctl -fNT -L 5900:localhost:5900 tornado
-    ${lib.getExe pkgs.remmina} --no-tray-icon --disable-news --disable-stats --enable-extra-hardening -c vnc://localhost
-    ${lib.getExe pkgs.openssh_gssapi} -S /tmp/ocftv-ssh-ctl -O exit tornado
-  '';
-  # override ocf-tv from util
-  ocf-tv = pkgs.hiPrio vncScript;
-in
+{
+  config,
+  pkgs,
+  lib,
+  inputs,
+  ...
+}:
+
 {
 
   # Colmena tagging
   deployment.tags = [ "desktop" ];
+  system.nixos.variant_id = "ocf-desktop";
 
   ocf = {
     # TODO: need ensure host keys can't be stolen by booting an external drive...
     acme.enable = false;
 
-    etc.enable = true;
-    graphical.enable = true;
-    browsers.enable = true;
-    tmpfsHome.enable = true;
+    home.tmpfs = true;
+    home.mountRemote = true;
     network.wakeOnLan.enable = true;
+    logged-in-users-exporter.enable = true;
+
+    zfs.enable = true;
+
+    gui.enable = true;
+    gui.apps.enable = true;
+
+    cli.apps.enable = true;
   };
 
-  boot.loader.systemd-boot.consoleMode = "max";
+  boot = {
+    loader.systemd-boot.consoleMode = "max";
+    loader.timeout = 0;
+    initrd.systemd.enable = true;
+  };
+
+  # FIXME: suspend causes problems with nfs. disable until we fix this
+  systemd.sleep.settings.Sleep = {
+    AllowSuspend = false;
+    AllowHibernation = false;
+    AllowHybridSleep = false;
+    AllowSuspendThenHibernate = false;
+  };
 
   # Enable support SANE scanners
   hardware.sane.enable = true;
 
+  zramSwap.enable = true;
+
+  documentation.dev.enable = true;
+
+  environment.shellAliases.quota = "quota -Qs";
+
   environment.systemPackages = with pkgs; [
-    # Editors
-    emacs
-    neovim
-    helix
-    kakoune
-
-    # Languages
-    poetry
-    ruby
-    elixir
-    clojure
-    ghc
-    rustup
-    clang
-    nodejs_22
-
-    # File management tools
-    zip
-    unzip
-    _7zz
-    eza
-    tree
+    lf
     dua
-    bat
-
-    # Other tools
-    bar
+    tree
     tmux
-    s-tui
-    ocf-tv
-    remmina
-    simple-scan
 
-    # Cosmetics
-    neofetch
-    pfetch-rs
+    # COSMIC Applets
+    ocf-cosmic-applets
+    cosmic-ext-applet-external-monitor-brightness
+
+    # IRC password prompt
+    kdePackages.kdialog
+
+    ddcutil # for monitor brightness control
   ];
 
-
-  environment.etc = {
-    "prometheus_scripts/logged_in_users_exporter.sh" = {
-      mode = "0555";
-      text = ''
-        #!/bin/bash
-        OUTPUT_FILE="/var/lib/node_exporter/textfile_collector/logged_in_users.prom"
-        > "$OUTPUT_FILE"
-        loginctl list-sessions --no-legend | while read -r session_id uid user seat leader class tty idle since; do
-          if [[ $class == "user" ]] && [[ $seat == "seat0" ]] && [[ $idle == "no" ]]; then
-            state=$(loginctl show-session "$session_id" -p State --value)
-            if [[ $state == "active" ]]; then
-              locked_status="unlocked"
-            else
-              locked_status="locked"
-            fi
-          echo "node_logged_in_user{name=\"$user\", state=\"$locked_status\"} 1" > $OUTPUT_FILE
-          fi
-        done
-      '';
-    };
-  };
-
-  # Create the textfile collector directory
-  systemd.tmpfiles.rules = [
-    "d /var/lib/node_exporter/textfile_collector 0755 root root -"
-    "d /etc/prometheus_scripts 0755 root root -"
-    "z /etc/prometheus_scripts/logged_in_users_exporter.sh 0755 root root -"
-  ];
-
-
-  systemd.timers."logged_in_users_exporter" = {
-    description = "Run logged_in_users_exporter.sh every 5 seconds";
-    wantedBy = [ "multi-user.target" ];
-    timerConfig = {
-      OnBootSec = "5s";
-      OnUnitActiveSec = "5s";
-      Unit = "logged_in_users_exporter.service";
-    };
-  };
-
-  systemd.services."logged_in_users_exporter" = {
-    description = "Logged in users exporter";
-    script = "bash /etc/prometheus_scripts/logged_in_users_exporter.sh";
-    serviceConfig = {
-      Environment = "PATH=/run/current-system/sw/bin";
-      Type = "oneshot";
-    };
-    wantedBy = [ "multi-user.target" ];
-  };
+  # enable i2c and set udev rules for monitor brightness control
+  boot.kernelModules = [ "i2c-dev" ];
+  services.udev.extraRules = ''
+    KERNEL=="i2c-[0-9]*", RUN+="${pkgs.coreutils}/bin/chgrp 1000 /dev/%k", RUN+="${pkgs.coreutils}/bin/chmod 0660 /dev/%k"
+  '';
 
   services = {
     avahi.enable = true;
@@ -130,23 +85,43 @@ in
       jack.enable = true;
       alsa.enable = true;
     };
-
-    prometheus = {
-      exporters = {
-        node = {
-          enable = true;
-          port = 9100;
-          enabledCollectors = [ "systemd" "textfile" ];
-          extraFlags = [ "--collector.ethtool" "--collector.softirqs" "--collector.tcpstat" "--collector.wifi" "--collector.textfile.directory=/var/lib/node_exporter/textfile_collector" ];
-        };
-      };
-    };
   };
 
   security.rtkit.enable = true;
   services.pulseaudio.enable = false;
 
+  # needed for accessing totp codes on yubikey via yubico authenticator
+  services.pcscd.enable = true;
+
+  virtualisation.podman.enable = true;
+
+  # kill user processes on logout
+  # if this is not set to true, the system user manager, processes, home tmpfs
+  # mount, etc will linger, causing the logind session and scope to be stuck in
+  # "closing" and "abandoned" respectively. this is undesired behavior on a
+  # shared desktop machine.
+  services.logind.settings.Login.KillUserProcesses = true;
+
+  # enable secure attention key (also enables unraw/xlate)
+  boot.kernel.sysctl."kernel.sysrq" = 4;
+
   # Needed for generic Linux programs
   # More info: https://nix.dev/guides/faq#how-to-run-non-nix-executables
   programs.nix-ld.enable = true;
+
+  # Add forward flag to tickets on desktops
+  security.krb5.settings.libdefaults.forwardable = true;
+
+  # Only forward Kerberos tickets to login servers (carp and koi)
+  programs.ssh.extraConfig = lib.mkOverride 90 ''
+    CanonicalizeHostname yes
+    CanonicalDomains ocf.berkeley.edu
+    Host carp.ocf.berkeley.edu koi.ocf.berkeley.edu
+        GSSAPIAuthentication yes
+        GSSAPIKeyExchange yes
+        GSSAPIDelegateCredentials yes
+    Host *.ocf.berkeley.edu *.ocf.io 169.229.226.* 2607:f140:8801::*
+        GSSAPIAuthentication yes
+        GSSAPIKeyExchange yes
+  '';
 }

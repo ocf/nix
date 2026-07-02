@@ -1,0 +1,368 @@
+# This file should contain basic DE setup but not the big KDE config, etc.
+
+# ocf.gui:
+# - enable: enable ocf graphical config
+# - kiosk: enable minimal kiosk config
+# - desktop: default desktop env
+# - apps.enable: enable apps
+
+{
+  lib,
+  config,
+  pkgs,
+  ...
+}:
+
+let
+  cfg = config.ocf.gui;
+  vncScript = pkgs.writeShellScriptBin "ocf-tv" ''
+    if [ -z $XDG_RUNTIME_DIR ]; then
+      echo "XDG_RUNTIME_DIR must be set"
+      exit 1
+    fi
+    # remmina needs to write to the profile
+    /run/current-system/sw/bin/cp ${./ocf-tv.remmina} "$XDG_RUNTIME_DIR/ocf-tv.remmina"
+    ${pkgs.remmina}/bin/remmina -c "$XDG_RUNTIME_DIR/ocf-tv.remmina"
+  '';
+  # override ocf-tv from util
+  ocf-tv = lib.hiPrio vncScript;
+  catppuccin-sddm =
+    (pkgs.catppuccin-sddm.override {
+      themeConfig.General = {
+        FontSize = 12;
+        Background = "/etc/ocf-assets/images/login.png";
+        #Logo = "/etc/ocf-assets/images/penguin.svg";
+        CustomBackground = true;
+      };
+    }).overrideAttrs
+      (old: {
+        postInstall = (old.postInstall or "") + ''
+          rev="${config.system.nixos.label}"
+
+          # add the commit hash to the bottom left corner of sddm
+          for qml in $out/share/sddm/themes/*/Main.qml; do
+            sed -i 's/^}$/    Text { anchors.bottom: parent.bottom; anchors.left: parent.left; anchors.margins: 10; text: "'"$rev"'"; color: "white"; z: 100 }\n}/' "$qml"
+          done
+        '';
+      });
+in
+{
+  options.ocf.gui = {
+    enable = lib.mkEnableOption "Enable desktop environment configuration";
+
+    # FIXME: this doesnt check if the given value is a valid session
+    desktop = lib.mkOption {
+      type = lib.types.str;
+      description = "Default desktop session in display manager";
+      default = "cosmic";
+    };
+  };
+
+  config = lib.mkIf cfg.enable {
+    programs.sway.enable = true;
+    programs.sway.extraOptions = [ "--unsupported-gpu" ];
+    programs.hyprland.enable = true;
+    # uncomment when wf-config builds no longer fail
+    #programs.wayfire.enable = true;
+    programs.niri.enable = true;
+    services.xserver.desktopManager.xfce.enable = true;
+
+    services.desktopManager.gnome.enable = true;
+    services.gnome.gcr-ssh-agent.enable = false;
+    services.desktopManager.gnome.extraGSettingsOverrides = ''
+      [org.gnome.mutter]
+      experimental-features=['scale-monitor-framebuffer', 'xwayland-native-scaling']
+    '';
+
+    services.desktopManager.plasma6.enable = true;
+
+    i18n.inputMethod = {
+      enable = true;
+      # see https://github.com/pop-os/libcosmic/pull/1182, cosmic specific text will have ime support once this is merged soon
+      # see skel/.config/fcitx5 for IMEs enabled by default on cosmic
+      type = "fcitx5";
+      fcitx5.waylandFrontend = true;
+      fcitx5.addons = with pkgs; [
+        fcitx5-gtk
+        fcitx5-mozc
+        fcitx5-rime
+        qt6Packages.fcitx5-chinese-addons
+        fcitx5-hangul
+        kdePackages.fcitx5-unikey
+        fcitx5-bamboo
+        fcitx5-m17n
+      ];
+    };
+
+    # cosmic-initial-setup will run on every desktop environment and is a
+    # nuisance since home directories are cleared
+    environment.cosmic.excludePackages = [
+      pkgs.cosmic-initial-setup
+    ];
+
+    environment.etc =
+      let
+        kittyThemes = "${pkgs.kitty-themes}share/kitty-themes/themes";
+      in
+      {
+        skel.source = ./skel;
+        ocf-assets.source = ./assets;
+        "xdg/kitty/dark-theme.auto.conf".source = "${kittyThemes}/rose-pine.conf";
+        "xdg/kitty/light-theme.auto.conf ".source = "${kittyThemes}/rose-pine-dawn.conf";
+        "xdg/kitty/no-preference-theme.auto.conf".source = "${kittyThemes}/rose-pine.conf";
+      };
+
+    # Conflict override since multiple DEs set this option
+    programs.ssh.askPassword = pkgs.lib.mkForce (lib.getExe pkgs.ksshaskpass.out);
+
+    xdg.portal = {
+      enable = true;
+      extraPortals = with pkgs; [
+        xdg-desktop-portal-gtk
+      ];
+    };
+
+    environment.systemPackages = with pkgs; [
+      catppuccin-sddm
+
+      # terminal emulators
+      kitty
+      foot
+
+      # misc wayland utils
+      wl-clipboard
+      libnotify
+
+      ocf-tv
+
+      # COSMIC greeter override for logout button
+      ocf-cosmic-greeter
+
+      # OCF IRC
+      halloy
+
+      # Themes
+      adw-gtk3
+      libsForQt5.qt5ct
+      kdePackages.qt6ct
+      kdePackages.qtstyleplugin-kvantum
+      rose-pine-kvantum
+
+      plasma-applet-commandoutput
+    ];
+
+    fonts.packages = with pkgs; [
+      meslo-lgs-nf
+      noto-fonts
+      noto-fonts-cjk-sans
+    ];
+
+    # Only change the setting for cosmic
+    environment.extraInit = ''
+      if [ "$XDG_CURRENT_DESKTOP" = "COSMIC" ]; then
+        export QT_QPA_PLATFORMTHEME="qt5ct"
+      fi
+    '';
+
+    programs.dconf.enable = true;
+
+    services = {
+      desktopManager.cosmic = {
+        enable = true;
+        showExcludedPkgsWarning = false;
+      };
+
+      displayManager = {
+        defaultSession = cfg.desktop;
+
+        sddm = {
+          enable = true;
+          theme = "${catppuccin-sddm}/share/sddm/themes/catppuccin-latte";
+          wayland.enable = true;
+          settings.Users = {
+            RememberLastUser = false;
+            RememberLastSession = false;
+          };
+        };
+      };
+    };
+
+    systemd.user.services.brightness-reset = {
+      description = "Reset monitor brightness to 100% on logout";
+      partOf = [ "graphical-session.target" ];
+      wantedBy = [ "graphical-session.target" ];
+      serviceConfig = {
+        Type = "oneshot";
+        RemainAfterExit = true;
+        ExecStart = "${pkgs.coreutils}/bin/true";
+        ExecStop = "${pkgs.ddcutil}/bin/ddcutil setvcp 10 85";
+      };
+    };
+
+    services.wayout.enable = true;
+    services.wayout.openFirewall = true;
+
+    systemd.user.services.desktoprc = {
+      description = "Source custom rc shared across desktops";
+      after = [ "graphical-session.target" ];
+      partOf = [ "graphical-session.target" ];
+      wantedBy = [ "graphical-session.target" ];
+      environment = {
+        PATH = lib.mkForce "/run/current-system/sw/bin";
+      };
+      script = ''
+        if [ -f ~/remote/.desktoprc ]; then
+          . ~/remote/.desktoprc
+        else
+          echo "User doesn't have a ~/remote/.desktoprc file"
+        fi
+      '';
+    };
+
+    systemd.user.services.cosmic-scale = {
+      description = "Set COSMIC display scaling";
+      after = [ "cosmic-session.target" ];
+      partOf = [ "graphical-session.target" ];
+      wantedBy = [ "cosmic-session.target" ];
+      environment = {
+        PATH = lib.mkForce "/run/current-system/sw/bin";
+      };
+      script = ''
+              # Set 175% scaling for all enabled displays
+              ${pkgs.cosmic-randr}/bin/cosmic-randr list | grep "(enabled)" | sed 's/\x1b[[0-9;]*m//g' | awk '{print $1}' | while read -r output; do
+              # Get current mode for this output
+              mode=$(${pkgs.cosmic-randr}/bin/cosmic-randr list | awk '/@/ {gsub(/\x1b[[0-9;]*m/, ""); print $1, $3;
+        exit}')
+                if [ -n "$mode" ]; then
+                  width=$(echo "$mode" | cut -d'x' -f1)
+                  height=$(echo "$mode" | cut -d'x' -f2 | cut -d' ' -f1)
+                  hz=$(echo "$mode" | cut -d' ' -f2)
+                  scale=1.25
+                  if [[ "$height" -ge "2160" ]]; then
+                      scale=1.5
+                  fi
+                  ${pkgs.cosmic-randr}/bin/cosmic-randr mode "$output" "$width" "$height" --refresh "$hz" --scale "$scale"
+                fi
+              done
+      '';
+    };
+
+    # EDGE CASE: if user has custom halloy config with specific rose pine colorscheme and doesnt want it to dynamically change with dark/light mode, they should name their colorscheme something aside from the OCF defaults (rose-pine.toml and rose-pine-dawn.toml)! Content can stay the same.
+    systemd.user.services.cosmictheme-dark = {
+      description = "Changes the user's persistent preference in ~/remote when the cosmic dark mode setting is changed.";
+      after = [ "cosmic-session.target" ];
+      partOf = [ "graphical-session.target" ];
+      wantedBy = [ "cosmic-session.target" ];
+      environment = {
+        PATH = lib.mkForce "/run/current-system/sw/bin";
+      };
+      script = ''
+        COSMIC_THEME_FILE="$HOME/.config/cosmic/com.system76.CosmicTheme.Mode/v1/is_dark"
+        COSMIC_BG_FILE="$HOME/.config/cosmic/com.system76.CosmicBackground/v1/all"
+        OCF_THEME_FILE="$HOME/remote/.config/ocf/theme"
+        KVANTUM_THEME_FILE="$HOME/.config/Kvantum/kvantum.kvconfig"
+        KVANTUM_LIGHT_THEME="rose-pine-dawn-iris"
+        KVANTUM_DARK_THEME="rose-pine-moon-iris"
+        GTK_LIGHT_THEME="adw-gtk3"
+        GTK_DARK_THEME="adw-gtk3-dark"
+        HALLOY_LIGHT_THEME="rose-pine-dawn"
+        HALLOY_DARK_THEME="rose-pine"
+        QT5CT_FILE="$HOME/.config/qt5ct/qt5ct.conf"
+        QT6CT_FILE="$HOME/.config/qt6ct/qt6ct.conf"
+
+        mkdir -p "$(dirname "$KVANTUM_THEME_FILE")" "$(dirname "$QT5CT_FILE")" "$(dirname "$QT6CT_FILE")" "$(dirname "$COSMIC_THEME_FILE")"
+
+        # Ensure kvantum knows where to find the rose pine themes
+        ln -sfT ${pkgs.rose-pine-kvantum}/share/Kvantum/themes/$KVANTUM_DARK_THEME "$HOME/.config/Kvantum/$KVANTUM_DARK_THEME" || true
+        ln -sfT ${pkgs.rose-pine-kvantum}/share/Kvantum/themes/$KVANTUM_LIGHT_THEME "$HOME/.config/Kvantum/$KVANTUM_LIGHT_THEME" || true
+
+        # Initialize qt5ct and qt6ct if not present
+        if [ ! -f "$QT5CT_FILE" ]; then
+          printf '[Appearance]\nstyle=kvantum\n' > "$QT5CT_FILE"
+        fi
+        if [ ! -f "$QT6CT_FILE" ]; then
+          printf '[Appearance]\nstyle=kvantum\n' > "$QT6CT_FILE"
+        fi
+
+        sync_theme() {
+          if [ -f "$COSMIC_THEME_FILE" ]; then
+            content=$(cat "$COSMIC_THEME_FILE")
+            mkdir -p "$(dirname "$OCF_THEME_FILE")"
+
+            if [ "$content" = "true" ]; then
+              echo "dark" > "$OCF_THEME_FILE"
+              [ -f "$COSMIC_BG_FILE" ] && sed -i -E 's/bg-(light|dark)/bg-dark/g' "$COSMIC_BG_FILE"
+              # Set GTK theme to dark
+              gsettings set org.gnome.desktop.interface color-scheme prefer-dark
+              gsettings set org.gnome.desktop.interface gtk-theme "$GTK_DARK_THEME"
+              [ -f "$HOME/.config/halloy/config.toml" ] && sed -i "s/theme = \"$HALLOY_LIGHT_THEME\"/theme = \"$HALLOY_DARK_THEME\"/" "$HOME/.config/halloy/config.toml"
+              # Set QT theme to dark
+              sed -i "s/^theme=.*/theme=$KVANTUM_DARK_THEME/" "$KVANTUM_THEME_FILE"
+              kvantummanager --set "$KVANTUM_DARK_THEME" || true
+            else
+              echo "light" > "$OCF_THEME_FILE"
+              [ -f "$COSMIC_BG_FILE" ] && sed -i -E 's/bg-(light|dark)/bg-light/g' "$COSMIC_BG_FILE"
+              # Set GTK theme to light
+              gsettings set org.gnome.desktop.interface color-scheme prefer-light
+              gsettings set org.gnome.desktop.interface gtk-theme "$GTK_LIGHT_THEME"
+              [ -f "$HOME/.config/halloy/config.toml" ] && sed -i "s/theme = \"$HALLOY_DARK_THEME\"/theme = \"$HALLOY_LIGHT_THEME\"/" "$HOME/.config/halloy/config.toml"
+              # Set QT theme to light
+              sed -i "s/^theme=.*/theme=$KVANTUM_LIGHT_THEME/" "$KVANTUM_THEME_FILE"
+              kvantummanager --set "$KVANTUM_LIGHT_THEME" || true
+            fi
+            pkill -USR1 halloy || true
+          fi
+        }
+
+        # Initial sync
+        if [ -f "$OCF_THEME_FILE" ]; then
+          ocf_theme=$(cat "$OCF_THEME_FILE")
+          mkdir -p "$(dirname "$COSMIC_THEME_FILE")"
+          if [ "$ocf_theme" = "dark" ]; then
+            echo "true" > "$COSMIC_THEME_FILE"
+            printf '[General]\ntheme=%s\n' "$KVANTUM_DARK_THEME" > "$KVANTUM_THEME_FILE"
+          elif [ "$ocf_theme" = "light" ]; then
+            echo "false" > "$COSMIC_THEME_FILE"
+            printf '[General]\ntheme=%s\n' "$KVANTUM_LIGHT_THEME" > "$KVANTUM_THEME_FILE"
+          fi
+        fi
+        sync_theme
+
+        # sleep to wait for desktop to load so next overwrite doesn't interfere
+        sleep 1
+
+        # Watch for changes
+        ${pkgs.inotify-tools}/bin/inotifywait -m -e close_write,moved_to,create \
+          "$(dirname "$COSMIC_THEME_FILE")" 2>/dev/null | while read -r dir events file; do
+          if [ "$file" = "is_dark" ]; then
+            sync_theme
+          fi
+        done
+      '';
+    };
+
+    ## Generate Halloy IRC config
+    # First, checks for plaintext password file at ~/remote/.config/hallow/nickserv-password.
+    # If that doesn't exist, prompts for password with kdialog gui.
+    systemd.user.services."halloy-config" = {
+      description = "Generate default halloy IRC config with OCF username";
+      wantedBy = [ "default.target" ];
+      serviceConfig = {
+        Type = "oneshot";
+        RemainAfterExit = true;
+      };
+      script = ''
+            cat > $HOME/.config/halloy/config.toml << EOF
+        theme = "rose-pine-dawn"
+        [servers.ocf]
+        nickname = "$USER"
+        server = "irc.ocf.berkeley.edu"
+
+        [servers.ocf.sasl.plain]
+        username = "$USER"
+        password_command = 'sh -c "cat ~/remote/.config/ocf/halloy/nickserv-password 2>/dev/null || kdialog --password \"NickServ password (leave blank if not registered)\""'
+        EOF
+      '';
+    };
+  };
+}

@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<oor:items xmlns:oor="http://openoffice.org/2001/registry" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  
+  <!-- enable languagetool -->
+
+  <item oor:path="/org.openoffice.Office.Linguistic/GrammarChecking/LanguageTool">
+    <prop oor:name="ApiKey" oor:op="fuse">
+      <value/>
+    </prop>
+  </item>
+  <item oor:path="/org.openoffice.Office.Linguistic/GrammarChecking/LanguageTool">
+    <prop oor:name="BaseURL" oor:op="fuse">
+      <value>http://localhost:8081/v2</value>
+    </prop>
+  </item>
+  <item oor:path="/org.openoffice.Office.Linguistic/GrammarChecking/LanguageTool">
+    <prop oor:name="IsEnabled" oor:op="fuse">
+      <value>true</value>
+    </prop>
+  </item>
+  <item oor:path="/org.openoffice.Office.Linguistic/GrammarChecking/LanguageTool">
+    <prop oor:name="RestProtocol" oor:op="fuse">
+      <value/>
+    </prop>
+  </item>
+  <item oor:path="/org.openoffice.Office.Linguistic/GrammarChecking/LanguageTool">
+    <prop oor:name="SSLCertVerify" oor:op="fuse">
+      <value>true</value>
+    </prop>
+  </item>
+  <item oor:path="/org.openoffice.Office.Linguistic/GrammarChecking/LanguageTool">
+    <prop oor:name="Username" oor:op="fuse">
+      <value/>
+    </prop>
+  </item>
+
+  <!-- enable tabbed ui mode -->
+
+  <item oor:path="/org.openoffice.Office.UI.ToolbarMode">
+    <prop oor:name="ActiveCalc" oor:op="fuse">
+      <value>notebookbar.ui</value>
+    </prop>
+  </item>
+  <item oor:path="/org.openoffice.Office.UI.ToolbarMode">
+    <prop oor:name="ActiveDraw" oor:op="fuse">
+      <value>notebookbar.ui</value>
+    </prop>
+  </item>
+  <item oor:path="/org.openoffice.Office.UI.ToolbarMode">
+    <prop oor:name="ActiveImpress" oor:op="fuse">
+      <value>notebookbar.ui</value>
+    </prop>
+  </item>
+  <item oor:path="/org.openoffice.Office.UI.ToolbarMode">
+    <prop oor:name="ActiveWriter" oor:op="fuse">
+      <value>notebookbar.ui</value>
+    </prop>
+  </item>
+  <item oor:path="/org.openoffice.Office.UI.ToolbarMode/Applications/org.openoffice.Office.UI.ToolbarMode:Application['Calc']">
+    <prop oor:name="Active" oor:op="fuse">
+      <value>notebookbar.ui</value>
+    </prop>
+  </item>
+  <item oor:path="/org.openoffice.Office.UI.ToolbarMode/Applications/org.openoffice.Office.UI.ToolbarMode:Application['Draw']">
+    <prop oor:name="Active" oor:op="fuse">
+      <value>notebookbar.ui</value>
+    </prop>
+  </item>
+  <item oor:path="/org.openoffice.Office.UI.ToolbarMode/Applications/org.openoffice.Office.UI.ToolbarMode:Application['Impress']">
+    <prop oor:name="Active" oor:op="fuse">
+      <value>notebookbar.ui</value>
+    </prop>
+  </item>
+  <item oor:path="/org.openoffice.Office.UI.ToolbarMode/Applications/org.openoffice.Office.UI.ToolbarMode:Application['Writer']">
+    <prop oor:name="Active" oor:op="fuse">
+      <value>notebookbar.ui</value>
+    </prop>
+  </item>
+  <item oor:path="/org.openoffice.Office.UI.ToolbarMode/Applications/org.openoffice.Office.UI.ToolbarMode:Application['Writer']/Modes/org.openoffice.Office.UI.ToolbarMode:ModeEntry['Default']">
+    <prop oor:name="UserToolbars" oor:op="fuse">
+      <value>
+        <it>private:resource/toolbar/standardbar</it>
+        <it>private:resource/toolbar/textobjectbar</it>
+      </value>
+    </prop>
+  </item>
+  <item oor:path="/org.openoffice.Office.UI.WriterWindowState/UIElements/States/org.openoffice.Office.UI.WindowState:WindowStateType['private:resource/toolbar/addon_LibreLogo.OfficeToolBar']">
+    <prop oor:name="ContextActive" oor:op="fuse">
+      <value>true</value>
+    </prop>
+  </item>
+  <item oor:path="/org.openoffice.Office.UI.WriterWindowState/UIElements/States/org.openoffice.Office.UI.WindowState:WindowStateType['private:resource/toolbar/addon_LibreLogo.OfficeToolBar']">
+    <prop oor:name="ContextSensitive" oor:op="fuse">
+      <value>false</value>
+    </prop>
+  </item>
+  <item oor:path="/org.openoffice.Office.UI.WriterWindowState/UIElements/States/org.openoffice.Office.UI.WindowState:WindowStateType['private:resource/toolbar/addon_LibreLogo.OfficeToolBar']">
+    <prop oor:name="DockPos" oor:op="fuse">
+      <value>0,0</value>
+    </prop>
+  </item>
+  <item oor:path="/org.openoffice.Office.UI.WriterWindowState/UIElements/States/org.openoffice.Office.UI.WindowState:WindowStateType['private:resource/toolbar/addon_LibreLogo.OfficeToolBar']">
+    <prop oor:name="Docked" oor:op="fuse">
+      <value>true</value>
+    </prop>
+  </item>
+  <item oor:path="/org.openoffice.Office.UI.WriterWindowState/UIElements/States/org.openoffice.Office.UI.WindowState:WindowStateType['private:resource/toolbar/addon_LibreLogo.OfficeToolBar']">
+    <prop oor:name="DockingArea" oor:op="fuse">
+      <value>0</value>
+    </prop>
+  </item>
+  <item oor:path="/org.openoffice.Office.UI.WriterWindowState/UIElements/States/org.openoffice.Office.UI.WindowState:WindowStateType['private:resource/toolbar/addon_LibreLogo.OfficeToolBar']">
+    <prop oor:name="HideFromToolbarMenu" oor:op="fuse">
+      <value>false</value>
+    </prop>
+  </item>
+  <item oor:path="/org.openoffice.Office.UI.WriterWindowState/UIElements/States/org.openoffice.Office.UI.WindowState:WindowStateType['private:resource/toolbar/addon_LibreLogo.OfficeToolBar']">
+    <prop oor:name="Locked" oor:op="fuse">
+      <value>true</value>
+    </prop>
+  </item>
+  <item oor:path="/org.openoffice.Office.UI.WriterWindowState/UIElements/States/org.openoffice.Office.UI.WindowState:WindowStateType['private:resource/toolbar/addon_LibreLogo.OfficeToolBar']">
+    <prop oor:name="NoClose" oor:op="fuse">
+      <value>false</value>
+    </prop>
+  </item>
+  <item oor:path="/org.openoffice.Office.UI.WriterWindowState/UIElements/States/org.openoffice.Office.UI.WindowState:WindowStateType['private:resource/toolbar/addon_LibreLogo.OfficeToolBar']">
+    <prop oor:name="Pos" oor:op="fuse">
+      <value>2147483647,2147483647</value>
+    </prop>
+  </item>
+  <item oor:path="/org.openoffice.Office.UI.WriterWindowState/UIElements/States/org.openoffice.Office.UI.WindowState:WindowStateType['private:resource/toolbar/addon_LibreLogo.OfficeToolBar']">
+    <prop oor:name="Size" oor:op="fuse">
+      <value>0,0</value>
+    </prop>
+  </item>
+  <item oor:path="/org.openoffice.Office.UI.WriterWindowState/UIElements/States/org.openoffice.Office.UI.WindowState:WindowStateType['private:resource/toolbar/addon_LibreLogo.OfficeToolBar']">
+    <prop oor:name="SoftClose" oor:op="fuse">
+      <value>false</value>
+    </prop>
+  </item>
+  <item oor:path="/org.openoffice.Office.UI.WriterWindowState/UIElements/States/org.openoffice.Office.UI.WindowState:WindowStateType['private:resource/toolbar/addon_LibreLogo.OfficeToolBar']">
+    <prop oor:name="Style" oor:op="fuse">
+      <value>0</value>
+    </prop>
+  </item>
+  <item oor:path="/org.openoffice.Office.UI.WriterWindowState/UIElements/States/org.openoffice.Office.UI.WindowState:WindowStateType['private:resource/toolbar/addon_LibreLogo.OfficeToolBar']/UIName">
+    <value xml:lang="en-US">Logo</value>
+  </item>
+  <item oor:path="/org.openoffice.Office.UI.WriterWindowState/UIElements/States/org.openoffice.Office.UI.WindowState:WindowStateType['private:resource/toolbar/addon_LibreLogo.OfficeToolBar']">
+    <prop oor:name="Visible" oor:op="fuse">
+      <value>false</value>
+    </prop>
+  </item>
+</oor:items>

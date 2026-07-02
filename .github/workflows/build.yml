@@ -3,9 +3,7 @@ name: Build Hosts
 on:
   workflow_dispatch:
   pull_request:
-  push:
-    branches:
-      - "*"
+  merge_group:
 
 concurrency:
   group: build-${{ github.ref || github.head_ref }}
@@ -17,33 +15,13 @@ jobs:
       - uses: actions/checkout@v4
       - uses: DeterminateSystems/flake-checker-action@v9
 
-  define-matrix:
-    runs-on: ci-ocf-nix-build
-    outputs:
-      hosts: ${{ steps.hosts.outputs.hosts }}
-    steps:
-      - uses: actions/checkout@v4
-      - id: hosts
-        run: echo "hosts=$(nix eval .#colmenaHive.nodes --apply builtins.attrNames --json)" >> "$GITHUB_OUTPUT"
-
   build:
     runs-on: ci-ocf-nix-build
-    needs: define-matrix
-    strategy:
-      fail-fast: false
-      matrix:
-        host: ${{ fromJSON(needs.define-matrix.outputs.hosts) }}
+    needs: check-flake
     steps:
       - uses: actions/checkout@v4
       - name: Build with colmena
-        run: nix develop -c colmena build --keep-result --on ${{ matrix.host }} >> ${{ matrix.host }}.log 2>&1
-      - name: Display log
-        if: always()
-        run: cat ${{ matrix.host }}.log
-
-  check-all-hosts:
-    runs-on: ci-ocf-nix-build
-    needs: build
-    steps:
-      - name: Combined GitHub status check
-        run: echo "All hosts built successfully!"
+        # `--evaluator streaming` would be preferable, but it results in
+        # colmena exiting as successful after 2 seconds without doing anything,
+        # even if nix-eval-jobs is installed.
+        run: nix develop -c nix-fast-build --no-nom --flake .#colmenaHive.toplevel

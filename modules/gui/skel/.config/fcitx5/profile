@@ -1,0 +1,131 @@
+[Groups/0]
+# Group Name
+Name=Default
+# Layout
+Default Layout=us
+# Default Input Method
+DefaultIM=pinyin
+
+[Groups/0/Items/0]
+# Name
+Name=keyboard-us
+# Layout
+Layout=
+
+[Groups/0/Items/1]
+# Name
+Name=pinyin
+# Layout
+Layout=
+
+[Groups/0/Items/2]
+# Name
+Name=mozc
+# Layout
+Layout=
+
+[Groups/0/Items/3]
+# Name
+Name=hangul
+# Layout
+Layout=
+
+[Groups/0/Items/4]
+# Name
+Name=unikey
+# Layout
+Layout=
+
+[Groups/0/Items/5]
+# Name
+Name=keyboard-es
+# Layout
+Layout=
+
+[Groups/0/Items/6]
+# Name
+Name=keyboard-ru
+# Layout
+Layout=
+
+[Groups/0/Items/7]
+# Name
+Name=keyboard-de
+# Layout
+Layout=
+
+[Groups/0/Items/8]
+# Name
+Name=keyboard-ara
+# Layout
+Layout=
+
+[Groups/0/Items/9]
+# Name
+Name=keyboard-fr
+# Layout
+Layout=
+
+[Groups/0/Items/10]
+# Name
+Name=keyboard-pt
+# Layout
+Layout=
+
+[Groups/0/Items/11]
+# Name
+Name=keyboard-it
+# Layout
+Layout=
+
+[Groups/0/Items/12]
+# Name
+Name=keyboard-th
+# Layout
+Layout=
+
+[Groups/0/Items/13]
+# Name
+Name=keyboard-ir
+# Layout
+Layout=
+
+[Groups/0/Items/14]
+# Name
+Name=keyboard-il
+# Layout
+Layout=
+
+[Groups/0/Items/15]
+# Name
+Name=keyboard-pk
+# Layout
+Layout=
+
+[Groups/0/Items/16]
+# Name
+Name=keyboard-se
+# Layout
+Layout=
+
+[Groups/0/Items/17]
+# Name
+Name=keyboard-dk
+# Layout
+Layout=
+
+[Groups/0/Items/18]
+# Name
+Name=keyboard-be
+# Layout
+Layout=
+
+[Groups/0/Items/19]
+# Name
+Name=keyboard-us-dvorak
+# Layout
+Layout=
+
+[GroupOrder]
+0=Default
+

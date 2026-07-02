@@ -6,13 +6,13 @@
     ../../profiles/desktop.nix
   ];
 
-  networking.hostName = "peaches";
-
   ocf.nvidia.enable = true;
   ocf.network = {
     enable = true;
     lastOctet = 164;
   };
+
+  ocf.managed-deployment.mac-address = "9c:6b:00:69:22:86";
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions

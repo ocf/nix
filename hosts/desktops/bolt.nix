@@ -6,12 +6,12 @@
     ../../profiles/desktop.nix
   ];
 
-  networking.hostName = "bolt";
-
   ocf.network = {
     enable = true;
     lastOctet = 154;
   };
+
+  ocf.managed-deployment.mac-address = "9c:6b:00:38:81:1c";
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
