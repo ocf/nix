@@ -54,7 +54,7 @@
   disko.devices = {
     disk = {
       main = {
-        device = "/dev/disk/by-id/ata-Micron_5100_MTFDDAK960TBY_1725190CE6F0";
+        device = "/dev/disk/by-id/ata-Samsung_SSD_850_PRO_1TB_S252NXAGA05227F";
         type = "disk";
         content = {
           type = "gpt";
