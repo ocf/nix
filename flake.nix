@@ -392,6 +392,7 @@
             packages =
               # explicitly use pkgs so it doesnt collide with flake inputs
               [
+                disko.packages.${pkgs.stdenv.hostPlatform.system}.disko
                 pkgs.age
                 pkgs.agenix-rekey
                 pkgs.age-plugin-fido2-hmac
