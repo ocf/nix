@@ -9,9 +9,6 @@
 }:
 
 {
-
-  # Colmena tagging
-  deployment.tags = [ "desktop" ];
   system.nixos.variant_id = "ocf-desktop";
 
   ocf = {
