@@ -8,14 +8,6 @@
 {
   imports = [ ../../hardware/virtualized.nix ];
 
-  # FIXME: python3.14-html5lib-1.1 and python3.14-rich-14.1.0 are broken on
-  # 25.11 but not 26.05. matrix-appservice-discord is broken on 26.05 but not
-  # 25.11. scootaloo needs all three of these packages, so scootaloo is on nixos
-  # 25.11 with python 3.12.
-  # ps dont you think that its neat that "25.11" is left aligned when i wrapped
-  # this comment at 80 chars? :)
-  ocf.python.package = pkgs.python312;
-
   ocf.network = {
     enable = true;
     lastOctet = 29;

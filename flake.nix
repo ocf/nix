@@ -212,22 +212,6 @@
       # NOTE: all hosts will be sharing the same ocf nix modules in this
       # repository regardless of what pkgs or system is set to
       hostOverrides = {
-        # even after adding:
-        # nixpkgs.config.permittedInsecurePackages = [
-        #   "nodejs-20.20.2"
-        #   "nodejs-slim-20.20.2"
-        #   "nodejs-20.20.2-source"
-        # ];
-        #
-        # to ./modules/matrix/discord-bridge.nix, scootaloo still fails to
-        # build with:
-        # "error: attribute 'nodeAppDir' missing"
-        #
-        # we will keep scootaloo on nixos-25.11 for now until
-        # matrix-appservice-discord is updated to work with nixos-26.05.
-        #
-        # see: https://github.com/NixOS/nixpkgs/issues/515284
-        scootaloo.nixpkgs = nixpkgs-deprecated;
         overheat.system = "aarch64-linux";
       };
 
