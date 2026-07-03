@@ -96,8 +96,6 @@
     '';
   };
 
-  ocf.nfs.enable = false;
-
   fileSystems = {
     "/opt/homes" = {
       device = "/dev/md/nfs";

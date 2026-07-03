@@ -42,6 +42,9 @@ in
   };
 
   config = mkIf cfg.enable {
+    # nfs server should not be mounting nfs from itself
+    ocf.nfs.enable = lib.mkForce false;
+
     services.nfs.server = {
       enable = true;
       # https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/5/html/deployment_guide/s1-nfs-server-config-exports
