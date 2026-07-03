@@ -27,7 +27,9 @@ in
   # TODO: make this read from LDAP
   config = lib.mkIf cfg.enable {
     users.motd = ''
-      ${ansi-bold}Hi, I am ${ansi-red}${config.networking.hostName}${ansi-resetfg}, a ${ansi-red}${builtins.concatStringsSep ", " config.deployment.tags}${ansi-resetfg} at ${ansi-red}169.229.226.${builtins.toString config.ocf.network.lastOctet}${ansi-reset}.
+      ${ansi-bold}Hi, I am ${ansi-red}${config.networking.hostName}${ansi-resetfg}, a ${ansi-red}${
+        builtins.concatStringsSep ", " config.deployment.tags or [ ]
+      }${ansi-resetfg} at ${ansi-red}169.229.226.${builtins.toString config.ocf.network.lastOctet}${ansi-reset}.
 
       ${cfg.description}
     '';
