@@ -8,7 +8,13 @@
 let
   cfg = config.ocf.auth;
   keytabSecretPath = ../secrets/master-keyed/keytabs + "/${config.networking.hostName}.age";
+  keytabPath = "/etc/krb5.keytab";
   hasKeytab = builtins.pathExists keytabSecretPath;
+  domain = config.networking.domain;
+  realm = lib.toUpper domain;
+  kdc = "kerberos.${domain}";
+  ldapURI = "ldaps://ldap.${domain}";
+  ldapBase = "dc=ocf,dc=berkeley,dc=edu"; # TODO: parse this from config.networking.domain?
 in
 {
   options.ocf.auth = {
@@ -27,45 +33,60 @@ in
     # Only configured if the host has a keytab in secrets/master-keyed/keytabs/<hostname>.age
     age.secrets.krb5-keytab = lib.mkIf hasKeytab {
       rekeyFile = keytabSecretPath;
-      path = "/etc/krb5.keytab";
+      path = keytabPath;
       owner = "root";
       group = "root";
       mode = "0600";
     };
 
-    users = {
-      mutableUsers = false;
-      users.root.hashedPasswordFile = config.age.secrets.root-password-hash.path;
+    # dont store tickets as files, use kcm instead
+    # override systemd service because upstream nixos module is broken
+    services.sssd.kcm = true; # FIXME ssh still uses files
+    systemd.services.sssd-kcm.serviceConfig.ExecStart =
+      lib.mkForce "${pkgs.sssd}/libexec/sssd/sssd_kcm";
 
-      ldap = {
-        enable = true;
-        server = "ldaps://ldap.ocf.berkeley.edu";
-        base = "dc=OCF,dc=Berkeley,dc=EDU";
-        daemon.enable = true;
-        extraConfig = ''
-          tls_reqcert hard
-          tls_cacert /etc/ssl/certs/ca-certificates.crt
+    # TODO: passkey support
+    services.sssd = {
+      enable = true;
+      settings = {
+        sssd = {
+          services = "nss, pam";
+          domains = realm;
+        };
+        "domain/${realm}" = {
+          id_provider = "ldap";
+          ldap_uri = ldapURI;
+          ldap_search_base = ldapBase;
+          ldap_user_search_base = "ou=people," + ldapBase;
+          ldap_group_search_base = "ou=group," + ldapBase;
+          ldap_tls_reqcert = "hard";
+          ldap_tls_cacert = "/etc/ssl/certs/ca-certificates.crt";
 
-          base dc=ocf,dc=berkeley,dc=edu
-          nss_base_passwd ou=people,dc=ocf,dc=berkeley,dc=edu
-          nss_base_group  ou=group,dc=ocf,dc=berkeley,dc=edu
+          auth_provider = "krb5";
+          krb5_realm = realm;
+          krb5_server = kdc;
+          krb5_validate = hasKeytab;
+          krb5_keytab = lib.mkIf hasKeytab keytabPath;
+          krb5_use_rdns = false;
 
-          # two attempts before giving up, 1s timeout each
-          network_timeout 1
-          timeout 60
-          timelimit 60
-          bind_timelimit 1
-          nss_reconnect_tries 0
-          nss_reconnect_sleeptime 1
-          nss_reconnect_maxsleeptime 1
-          nss_reconnect_maxconntries 2
-        '';
+          # FIXME this is probably bad... pac_present seems to stop this error from appearing
+          # we do not use active directory
+          # https://github.com/SSSD/sssd/issues/8300#issuecomment-3655101429
+          # [krb5_child[1489]] [sss_extract_pac] (0x0040): [RID#13] No PAC authdata available.
+          # [krb5_child[1489]] [validate_tgt] (0x0040): [RID#13] sss_extract_and_send_pac failed, group membership for user with principal [guser@OCF.BERKELEY.EDU] might not be correct.
+          pac_check = "pac_present";
+        };
       };
     };
 
+    users = {
+      mutableUsers = false;
+      users.root.hashedPasswordFile = config.age.secrets.root-password-hash.path;
+    };
+
     environment.etc."ldap/ldap.conf".text = ''
-      URI ldaps://ldap.ocf.berkeley.edu
-      BASE dc=ocf,dc=berkeley,dc=edu
+      URI ${ldapURI}
+      BASE ${ldapBase}
       TLS_REQCERT hard
       TLS_CACERT /etc/ssl/certs/ca-certificates.crt
       NETWORK_TIMEOUT 1
@@ -105,6 +126,7 @@ in
       ];
     };
 
+    # TODO: migrate this to sssd
     security.pam.services.sudo.text =
       let
         pam_krb5_so = "${pkgs.pam_krb5}/lib/security/pam_krb5.so";
@@ -125,21 +147,24 @@ in
         session required pam_limits.so
       '';
 
+    # include kerberos cli tools and config but do not enable krb5 auth (we use sssd)
+    security.pam.krb5.enable = false;
     security.krb5 = {
       enable = true;
       package = pkgs.heimdal;
 
       settings = {
-        realms."OCF.BERKELEY.EDU" = {
-          admin_server = "kerberos.ocf.berkeley.edu";
-          kdc = [ "kerberos.ocf.berkeley.edu" ];
+        realms."${realm}" = {
+          admin_server = kdc;
+          kdc = [ kdc ];
         };
         domain_realm = {
-          "ocf.berkeley.edu" = "OCF.BERKELEY.EDU";
-          ".ocf.berkeley.edu" = "OCF.BERKELEY.EDU";
+          "${domain}" = realm;
+          ".${domain}" = realm;
         };
         libdefaults = {
-          default_realm = "OCF.BERKELEY.EDU";
+          default_realm = realm;
+          default_ccache_name = "KCM:";
           rdns = false;
         };
       };
