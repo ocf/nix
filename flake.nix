@@ -264,10 +264,14 @@
         group:
         nixpkgs.lib.mapAttrs' (filename: _: {
           name = nixpkgs.lib.nameFromURL filename ".";
-          value = {
-            inherit group;
-            modules = [ ./hosts/${group}/${filename} ];
-          };
+          value =
+            let
+              profile = builtins.filter builtins.pathExists [ ./profiles/${group}.nix ];
+            in
+            {
+              inherit group;
+              modules = [ ./hosts/${group}/${filename} ] ++ profile;
+            };
         }) (builtins.readDir ./hosts/${group});
 
       hosts = nixpkgs.lib.concatMapAttrs (group: _: readGroup group) (builtins.readDir ./hosts);

@@ -3,7 +3,6 @@
 {
   imports = [
     ../../hardware/old-pc.nix
-    ../../profiles/desktop.nix
   ];
 
   ocf.nvidia = {

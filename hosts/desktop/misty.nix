@@ -3,7 +3,6 @@
 {
   imports = [
     ../../hardware/ridge-pc.nix
-    ../../profiles/desktop.nix
   ];
 
   ocf.nvidia = {
