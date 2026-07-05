@@ -262,26 +262,29 @@
 
       readGroup =
         group:
-        nixpkgs.lib.mapAttrs' (filename: _: {
-          name = nixpkgs.lib.nameFromURL filename ".";
-          value =
-            let
-              profile = builtins.filter builtins.pathExists [ ./profiles/${group}.nix ];
-            in
-            {
-              inherit group;
-              modules = [ ./hosts/${group}/${filename} ] ++ profile;
-            };
+        nixpkgs.lib.mapAttrs' (host: _: {
+          # host config can be in the form of hostname.nix or
+          # hostname/default.nix
+          name = nixpkgs.lib.removeSuffix ".nix" host;
+          value = group;
         }) (builtins.readDir ./hosts/${group});
 
       hosts = nixpkgs.lib.concatMapAttrs (group: _: readGroup group) (builtins.readDir ./hosts);
 
       deploy-user = "ocf-nix-deploy-user";
       colmenaHosts = builtins.mapAttrs (
-        host:
-        { modules, group }:
+        host: group:
+        let
+          profile = builtins.filter builtins.pathExists [ ./profiles/${group}.nix ];
+          hostConfig = ./hosts/${group}/${host}.nix;
+        in
         {
-          imports = commonModules ++ modules;
+          imports = nixpkgs.lib.flatten [
+            commonModules
+            profile
+            hostConfig
+          ];
+
           deployment.tags = [ group ];
           deployment.targetHost = "${host}.ocf.berkeley.edu";
           # TODO: Think of a less ugly way of doing this
