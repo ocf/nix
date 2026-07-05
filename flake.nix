@@ -278,7 +278,7 @@
           profile = builtins.filter builtins.pathExists [ ./profiles/${group}.nix ];
           hostConfig = ./hosts/${group}/${host}.nix;
         in
-        { ... }: {
+        { config, ... }: {
           imports = nixpkgs.lib.flatten [
             commonModules
             profile
@@ -291,6 +291,10 @@
           deployment.targetUser =
             nixpkgs.lib.mkIf self.colmenaHive.nodes.${host}.config.ocf.managed-deployment.enable
               deploy-user;
+
+          system.nixos.variant_id = "ocf-${group}";
+          system.nixos.variantName = config.system.nixos.variant_id;
+
           networking.hostName = "${host}";
           networking.hostId = builtins.substring 0 8 (builtins.hashString "sha1" "${host}");
         }
