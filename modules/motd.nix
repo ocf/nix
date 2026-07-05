@@ -12,11 +12,11 @@ let
   ansi-resetfg = "${ansi-esc}[39m";
   ansi-bold = "${ansi-esc}[1m";
   ansi-dim = "${ansi-esc}[2m";
-  ansi-red = "${ansi-esc}[31m";
+  ansi-cyan = "${ansi-esc}[96m";
 
-  greeting = "${ansi-reset}${ansi-bold}Hi, I am ${ansi-red}${config.networking.hostName}${ansi-resetfg}, a ${ansi-red}${
+  greeting = "${ansi-reset}${ansi-bold}Hi, I am ${ansi-cyan}${config.networking.hostName}${ansi-resetfg}, a ${ansi-cyan}${
     builtins.concatStringsSep ", " config.deployment.tags or [ ]
-  }${ansi-resetfg} at ${ansi-red}169.229.226.${builtins.toString config.ocf.network.lastOctet}${ansi-reset}.\n";
+  }${ansi-resetfg} at ${ansi-cyan}169.229.226.${builtins.toString config.ocf.network.lastOctet}${ansi-reset}.\n";
   version = "${ansi-reset}${ansi-dim}${config.system.nixos.label}${ansi-reset}\n";
   motd = cfg.description + "\n";
   ssh-motd = pkgs.writeText "ssh-motd" "${greeting}\n${motd}";
