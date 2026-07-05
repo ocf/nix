@@ -278,7 +278,7 @@
           profile = builtins.filter builtins.pathExists [ ./profiles/${group}.nix ];
           hostConfig = ./hosts/${group}/${host}.nix;
         in
-        {
+        { ... }: {
           imports = nixpkgs.lib.flatten [
             commonModules
             profile
@@ -406,17 +406,6 @@
         }
       );
 
-      nixosConfigurations = builtins.mapAttrs (
-        host: colmenaConfig:
-        let
-          hostAttrs = hostDefaults // (hostOverrides.${host} or { });
-        in
-        nixpkgs.lib.nixosSystem {
-          inherit (hostAttrs) system;
-          pkgs = pkgsFor hostAttrs;
-          modules = colmenaConfig.imports;
-          specialArgs = specialArgsFor hostAttrs;
-        }
-      ) colmenaHosts;
+      nixosConfigurations = self.colmenaHive.nodes;
     };
 }
