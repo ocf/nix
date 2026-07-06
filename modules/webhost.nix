@@ -67,13 +67,13 @@ let
 in
 {
   options.ocf.webhost = {
-    enable = lib.mkEnableOption "Enable static webhosting configuration";
+    enable = lib.mkEnableOption "static webhosting configuration";
     websites = lib.mkOption {
       type = lib.types.listOf (
         lib.types.submodule {
 
           options = {
-            enable = lib.mkEnableOption "Enable this website";
+            enable = lib.mkEnableOption "this website";
 
             name = lib.mkOption {
               type = lib.types.str;

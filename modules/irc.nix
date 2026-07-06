@@ -11,7 +11,7 @@ let
 in
 {
   options.ocf.irc = {
-    enable = lib.mkEnableOption "Enable IRC Server";
+    enable = lib.mkEnableOption "OCF IRC Server";
     motd = lib.mkOption {
       type = lib.types.str;
       description = "Message of the Day";

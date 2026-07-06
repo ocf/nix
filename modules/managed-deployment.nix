@@ -30,7 +30,7 @@ let
   ];
 in
 {
-  options.ocf.managed-deployment.enable = lib.mkEnableOption "Enable OCF Colmena / GitHub Actions Managed Deployment";
+  options.ocf.managed-deployment.enable = lib.mkEnableOption "OCF Colmena / GitHub Actions Managed Deployment";
 
   options.ocf.managed-deployment.automated-deploy = lib.mkOption {
     type = lib.types.bool;

@@ -11,7 +11,7 @@ let
 in
 {
   options.ocf.matrix.discord-bridge = {
-    enable = lib.mkEnableOption "Enable Matrix Discord bridge.";
+    enable = lib.mkEnableOption "Matrix Discord bridge";
   };
 
   config = lib.mkIf cfg.discord-bridge.enable {

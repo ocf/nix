@@ -5,7 +5,7 @@ let
 in
 {
   options.ocf.network.bond = {
-    enable = lib.mkEnableOption "Enable bonding network interfaces";
+    enable = lib.mkEnableOption "bonding network interfaces";
     interfaces = lib.mkOption {
       type = lib.types.listOf lib.types.str;
       description = "Name of the network interfaces to bond";

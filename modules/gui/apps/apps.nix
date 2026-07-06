@@ -9,7 +9,7 @@ let
   cfg = config.ocf.gui.apps;
 in
 {
-  options.ocf.gui.apps.enable = lib.mkEnableOption "Enable development related apps";
+  options.ocf.gui.apps.enable = lib.mkEnableOption "development related apps";
 
   config = lib.mkIf cfg.enable {
     hardware.graphics.enable32Bit = true;

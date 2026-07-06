@@ -10,7 +10,7 @@ let
 in
 {
   options.ocf.zfs = {
-    enable = lib.mkEnableOption "Enable ZFS support";
+    enable = lib.mkEnableOption "ZFS";
   };
 
   config = lib.mkIf cfg.enable {

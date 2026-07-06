@@ -39,13 +39,8 @@ in
 {
   # Configuration for Nodes
   options.services.ocfKubernetes = {
-    enable = lib.mkEnableOption "Enables everything needed to run kubeadm.";
-    isLeader = lib.mkOption {
-      default = false;
-      example = true;
-      description = "Currently identical to worker, but enables kube-vip as a static pod.";
-      type = lib.types.bool;
-    };
+    enable = lib.mkEnableOption "everything needed to run kubeadm";
+    isLeader = lib.mkEnableOption "kube-vip as a static pod";
   };
 
   config = lib.mkIf config.services.ocfKubernetes.enable {

@@ -39,7 +39,7 @@ let
 in
 {
   options.ocf.auth = {
-    enable = lib.mkEnableOption "Enable OCF authentication";
+    enable = lib.mkEnableOption "OCF authentication";
     staffOnlySSH = lib.mkOption {
       type = lib.types.bool;
       description = "Restrict SSH access to ocfstaff and ocfroot. Disable for public login servers (as of now, only carp).";
