@@ -9,8 +9,6 @@
 }:
 
 {
-  system.nixos.variant_id = "ocf-desktop";
-
   ocf = {
     # TODO: need ensure host keys can't be stolen by booting an external drive...
     acme.enable = false;

@@ -262,28 +262,39 @@
 
       readGroup =
         group:
-        nixpkgs.lib.mapAttrs' (filename: _: {
-          name = nixpkgs.lib.nameFromURL filename ".";
-          value = {
-            inherit group;
-            modules = [ ./hosts/${group}/${filename} ];
-          };
+        nixpkgs.lib.mapAttrs' (host: _: {
+          # host config can be in the form of hostname.nix or
+          # hostname/default.nix
+          name = nixpkgs.lib.removeSuffix ".nix" host;
+          value = group;
         }) (builtins.readDir ./hosts/${group});
 
       hosts = nixpkgs.lib.concatMapAttrs (group: _: readGroup group) (builtins.readDir ./hosts);
 
       deploy-user = "ocf-nix-deploy-user";
       colmenaHosts = builtins.mapAttrs (
-        host:
-        { modules, group }:
-        {
-          imports = commonModules ++ modules;
+        host: group:
+        let
+          profile = builtins.filter builtins.pathExists [ ./profiles/${group}.nix ];
+          hostConfig = ./hosts/${group}/${host}.nix;
+        in
+        { config, ... }: {
+          imports = nixpkgs.lib.flatten [
+            commonModules
+            profile
+            hostConfig
+          ];
+
           deployment.tags = [ group ];
           deployment.targetHost = "${host}.ocf.berkeley.edu";
           # TODO: Think of a less ugly way of doing this
           deployment.targetUser =
             nixpkgs.lib.mkIf self.colmenaHive.nodes.${host}.config.ocf.managed-deployment.enable
               deploy-user;
+
+          system.nixos.variant_id = "ocf-${group}";
+          system.nixos.variantName = config.system.nixos.variant_id;
+
           networking.hostName = "${host}";
           networking.hostId = builtins.substring 0 8 (builtins.hashString "sha1" "${host}");
         }
@@ -399,17 +410,6 @@
         }
       );
 
-      nixosConfigurations = builtins.mapAttrs (
-        host: colmenaConfig:
-        let
-          hostAttrs = hostDefaults // (hostOverrides.${host} or { });
-        in
-        nixpkgs.lib.nixosSystem {
-          inherit (hostAttrs) system;
-          pkgs = pkgsFor hostAttrs;
-          modules = colmenaConfig.imports;
-          specialArgs = specialArgsFor hostAttrs;
-        }
-      ) colmenaHosts;
+      nixosConfigurations = self.colmenaHive.nodes;
     };
 }

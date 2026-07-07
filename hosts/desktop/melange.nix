@@ -2,16 +2,20 @@
 
 {
   imports = [
-    ../../hardware/ridge-pc.nix
-    ../../profiles/desktop.nix
+    ../../hardware/old-pc.nix
   ];
+
+  ocf.nvidia = {
+    enable = true;
+    open = false;
+  };
 
   ocf.network = {
     enable = true;
-    lastOctet = 166;
+    lastOctet = 140;
   };
 
-  ocf.managed-deployment.mac-address = "9c:6b:00:69:22:65";
+  ocf.managed-deployment.mac-address = "d0:17:c2:d2:07:0c";
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
@@ -19,5 +23,5 @@
   # this value at the release version of the first install of this system.
   # Before changing this value read the documentation for this option
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
-  system.stateVersion = "24.11"; # Did you read the comment?
+  system.stateVersion = "25.05"; # Did you read the comment?
 }
