@@ -262,12 +262,21 @@
 
       readGroup =
         group:
+        let
+          groupDir = builtins.readDir ./hosts/${group};
+          # exclude files directories in hosts/group/* that end with .disabled
+          activeHosts = nixpkgs.lib.filterAttrs (
+            name: value: !(nixpkgs.lib.hasSuffix ".disabled" name)
+          ) groupDir;
+        in
         nixpkgs.lib.mapAttrs' (host: _: {
-          # host config can be in the form of hostname.nix or
-          # hostname/default.nix
+          # host config in hosts/group/* can be in the form of hostname.nix or
+          # hostname (directory containing default.nix)
+          # FIXME: colmenaHosts expects a .nix file so this doesnt actually
+          # work even though readGroup technically supports it
           name = nixpkgs.lib.removeSuffix ".nix" host;
           value = group;
-        }) (builtins.readDir ./hosts/${group});
+        }) activeHosts;
 
       hosts = nixpkgs.lib.concatMapAttrs (group: _: readGroup group) (builtins.readDir ./hosts);
 
