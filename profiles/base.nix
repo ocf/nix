@@ -237,11 +237,6 @@ in
 
     comma-with-db
 
-    # k8s
-    teleport
-    k9s
-    kubectl
-
     # OCF utilities
     (config.ocf.python.package.withPackages (
       ps: with ps; [

@@ -210,8 +210,10 @@ in
       img2pdf
 
       # kubernetes
+      kubectl
       k9s
       argocd
+      teleport.client
 
       # networking
       pssh
