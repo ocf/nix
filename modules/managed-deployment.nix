@@ -25,6 +25,7 @@ let
     "sk-ssh-ed25519@openssh.com AAAAGnNrLXNzaC1lZDI1NTE5QG9wZW5zc2guY29tAAAAIPs3+fHihwZSBQVtoXffCtSSmBBDb/0NY+BPDIo+FKh9AAAABHNzaDo=" # blakeh backup hardware token
     "sk-ssh-ed25519@openssh.com AAAAGnNrLXNzaC1lZDI1NTE5QG9wZW5zc2guY29tAAAAIB1zLZffea+7TdFSQOhNBmT1hftFwPzAEK2c8siFeS/7AAAABHNzaDo=" # ericgu hardware token
     "sk-ssh-ed25519@openssh.com AAAAGnNrLXNzaC1lZDI1NTE5QG9wZW5zc2guY29tAAAAIKtH02NTIoDXgcD5UJoxWWBu5EhHoYaP6NZQKZSIWmadAAAABHNzaDo=" # ericgu backup hardware token
+    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIF6TAvD4mDHB7BRgCgG50IOc0417lgpYxG8qZ2d7DesV" # dotlambda
   ];
 in
 {
