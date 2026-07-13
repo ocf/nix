@@ -1,6 +1,4 @@
 {
-  networking.hostName = "kobudai";
-
   ocf.network = {
     enable = true;
     bond.enable = true;
