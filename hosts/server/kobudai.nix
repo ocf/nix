@@ -96,11 +96,13 @@
       ];
     };
 
-    # Bind mount /opt/homes/home to /home. This allows running
+    # Bind mount /opt/homes/home to /home. This allows running (for NFSv3)
     #     mount kobudai:/home /home
-    # In fact, since home is CNAMEd to filehost is CNAMEd to kobudai, even
+    # In fact, since homes is CNAMEd to kobudai, even
     #     mount homes:/home /home
     # works and that's what the Puppet config in modules/ocf/manifests/nfs.pp does.
+    # This also means that your home on the filehost when you login to it is
+    # the shared NFS home.
     "/home" = {
       device = "/opt/homes/home";
       fsType = "none";
