@@ -112,8 +112,16 @@ in
         "xdg/kitty/no-preference-theme.auto.conf".source = "${kittyThemes}/rose-pine.conf";
       };
 
-    # Conflict override since multiple DEs set this option
-    programs.ssh.askPassword = pkgs.lib.mkForce (lib.getExe pkgs.ksshaskpass.out);
+    programs.ssh = {
+      # setup ssh agent with askpass on login by default
+      # if you want to forward a fido ssh key that requires a pin, the ssh agent
+      # needs askpass to prompt for the pin when the agent uses the key.
+      startAgent = true;
+      enableAskPassword = true;
+
+      # Conflict override since multiple DEs set this option
+      askPassword = pkgs.lib.mkForce (lib.getExe pkgs.kdePackages.ksshaskpass);
+    };
 
     xdg.portal = {
       enable = true;
