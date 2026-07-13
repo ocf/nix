@@ -366,6 +366,11 @@
           nativeBuildInputs = (old.nativeBuildInputs or [ ]) ++ [ final.rpcsvc-proto ];
           configureFlags = (old.configureFlags or [ ]) ++ [ "--enable-rpc" ];
         });
+
+        # https://github.com/matrix-org/matrix-appservice-irc/issues/1861
+        matrix-appservice-irc = prev.matrix-appservice-irc.override {
+          nodejs-slim = final.nodejs-slim_22;
+        };
       };
 
       agenix-rekey = agenix-rekey.configure {
