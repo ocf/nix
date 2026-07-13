@@ -1,7 +1,13 @@
 {
   ocf.network = {
     enable = true;
-    bond.enable = true;
+    bond = {
+      enable = true;
+      interfaces = [
+        "eno1"
+        "eno2"
+      ];
+    };
     lastOctet = 6;
   };
 
