@@ -25,6 +25,9 @@
     lastOctet = 24;
   };
 
+  # include utilities for developing directly on spike
+  ocf.cli.apps.enable = true;
+
   ocf.github-actions = {
     enable = true;
     runners = [
