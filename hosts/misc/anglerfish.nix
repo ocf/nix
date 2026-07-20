@@ -11,7 +11,7 @@
 
     network = {
       enable = true;
-      lastOctet = 106;
+      lastOctet = 108;
     };
 
     jukebox = {
