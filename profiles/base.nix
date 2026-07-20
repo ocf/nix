@@ -91,8 +91,6 @@ in
     hostPubkey = lib.mkIf (builtins.pathExists hostKeyFile) (builtins.readFile hostKeyFile);
   };
 
-  boot.kernelParams = [ "console=ttyS0,115200" ];
-
   # Mitigate Dirty Frag (universal Linux LPE via esp4/esp6/rxrpc page-cache write)
   # https://github.com/V4bel/dirtyfrag
   boot.extraModprobeConfig = ''
