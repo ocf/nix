@@ -15,7 +15,6 @@
     mysqlPasswordFile = config.age.secrets.printhost-mysql-password.path;
     wayoutPasswordFile = config.age.secrets.printhost-wayout-password.path;
     redisPasswordFile = config.age.secrets.printhost-redis-password.path;
-    printhostUrl = "printhost.ocf.berkeley.edu";
   };
 
   age.secrets.printhost-mysql-password = {
