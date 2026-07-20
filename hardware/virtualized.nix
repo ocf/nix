@@ -14,7 +14,10 @@
   # enable vga and serial consoles, with serial as primary
   # see: https://docs.kernel.org/admin-guide/serial-console.html
   # "last device will be used when you open /dev/console"
-  boot.kernelParams = [ "console=tty0" "console=ttyS0,115200" ];
+  boot.kernelParams = [
+    "console=tty0"
+    "console=ttyS0,115200"
+  ];
 
   boot.initrd.availableKernelModules = [
     "ahci"
