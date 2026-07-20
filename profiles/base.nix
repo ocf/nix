@@ -299,7 +299,7 @@ in
     "cups/lpoptions".text = "Default OCF-BW";
     "cups/client.conf".text = ''
       ServerName printhost.ocf.berkeley.edu
-      Encryption IfRequested
+      Encryption Always
     '';
   };
 
