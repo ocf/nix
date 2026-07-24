@@ -402,6 +402,10 @@
                 pkgs.nix-output-monitor
               ]
               ++ deployPkgs;
+
+            shellHook = ''
+              export AGENIX_REKEY_PRIMARY_IDENTITY="$(grep -Poe "^# public key(?: \(pq safe\))?: \K.*$" secrets/master-identities/by-username/$(whoami) | head -1)"
+            '';
           };
 
           # for ci/cd
