@@ -1,10 +1,24 @@
-{ pkgs, config, ... }:
+{
+  pkgs,
+  config,
+  lib,
+  ...
+}:
 
 {
   imports = [ ../../hardware/virtualized.nix ];
 
   # allows spike to build for raspberry pi
   boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
+
+  nix = {
+    gc.automatic = lib.mkForce false;
+
+    # automatically free up space as needed while building
+    # adjusted based on current /dev/sda size (2T)
+    settings.min-free = "128G";
+    settings.max-free = "512G";
+  };
 
   ocf.network = {
     enable = true;
