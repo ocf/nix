@@ -70,6 +70,10 @@ if github actions deploy is broken (often, ocf-nix-deploy-user can't ssh):
 
 if necessary, reboot the host. but most nix changes should apply in-place just fine.
 
+## Agenix Rekey
+
+Make sure to set the AGENIX_REKEY_PRIMARY_IDENTITY environment variable to the public key from your master identity keyfile. This can be done automatically when running `nix develop` by adding a symlink to `../your-key.pub` at `secrets/master-identities/by-username/$username` (it will pick automatically based on your local username).
+
 ## TODO
 
  - maybe different way of doing admin for IRC. tls certs on yubikey, LDAP, etc..
