@@ -23,6 +23,14 @@ in
     gc = {
       automatic = true;
       dates = "weekly";
+      # we do not want all of our computers to suddenly have cpu/io spikes at the same time
+      randomizedDelaySec = "45min";
+    };
+    optimise = {
+      automatic = true;
+      dates = "daily";
+      # we do not want all of our computers to suddenly have cpu/io spikes at the same time
+      randomizedDelaySec = "45min";
     };
     settings = {
       substituters = [
