@@ -1,16 +1,16 @@
 diff --git a/src/locker.rs b/src/locker.rs
-index 49b13fe..f13b60e 100644
+index 5bf0569..1efcb9b 100644
 --- a/src/locker.rs
 +++ b/src/locker.rs
-@@ -285,6 +285,7 @@ pub enum Message {
+@@ -274,6 +274,7 @@ pub enum Message {
+     Error(String),
      Lock,
      Unlock,
-     SpinnerTick,
 +    LogOut,
  }
-
+ 
  impl From<common::Message> for Message {
-@@ -450,6 +451,13 @@ impl App {
+@@ -449,6 +450,13 @@ impl App {
                      widget::text(fl!("suspend")),
                      widget::tooltip::Position::Top
                  ),
@@ -24,7 +24,7 @@ index 49b13fe..f13b60e 100644
              ]
              .padding([16.0, 0.0, 0.0, 0.0])
              .spacing(8.0);
-@@ -1087,6 +1095,15 @@ impl cosmic::Application for App {
+@@ -1074,6 +1082,15 @@ impl cosmic::Application for App {
                          cosmic::task::message(cosmic::Action::App(Message::Error(err.to_string())))
                      });
              }
@@ -41,13 +41,13 @@ index 49b13fe..f13b60e 100644
                  self.flags.user_data.time_applet_config = config;
              }
 diff --git a/src/logind.rs b/src/logind.rs
-index d4f216c..7708e85 100644
+index c5561f3..0c29285 100644
 --- a/src/logind.rs
 +++ b/src/logind.rs
-@@ -29,6 +29,15 @@ pub async fn suspend() -> zbus::Result<()> {
+@@ -31,6 +31,15 @@ pub async fn suspend() -> zbus::Result<()> {
      manager.suspend(false).await
  }
-
+ 
 +pub async fn terminate_session() -> zbus::Result<()> {
 +    let connection = Connection::system().await?;
 +    let manager = ManagerProxy::new(&connection).await?;
@@ -60,4 +60,3 @@ index d4f216c..7708e85 100644
  async fn inhibit(manager: &ManagerProxy<'_>) -> zbus::Result<OwnedFd> {
      let what = InhibitType::Sleep;
      let who = "COSMIC Greeter";
-

@@ -372,11 +372,6 @@
           nativeBuildInputs = (old.nativeBuildInputs or [ ]) ++ [ final.rpcsvc-proto ];
           configureFlags = (old.configureFlags or [ ]) ++ [ "--enable-rpc" ];
         });
-
-        # https://github.com/matrix-org/matrix-appservice-irc/issues/1861
-        matrix-appservice-irc = prev.matrix-appservice-irc.override {
-          nodejs-slim = final.nodejs-slim_22;
-        };
       };
 
       agenix-rekey = agenix-rekey.configure {
@@ -413,6 +408,10 @@
                 pkgs.nix-output-monitor
               ]
               ++ deployPkgs;
+
+            shellHook = ''
+              export AGENIX_REKEY_PRIMARY_IDENTITY="$(grep -Poe "^# public key(?: \(pq safe\))?: \K.*$" secrets/master-identities/by-username/$(whoami) | head -1)"
+            '';
           };
 
           # for ci/cd

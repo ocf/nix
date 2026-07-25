@@ -24,12 +24,6 @@
       type = lib.types.path;
       description = "Path to file containing the Redis broker password.";
     };
-
-    printhostUrl = lib.mkOption {
-      type = lib.types.str;
-      description = "Public hostname for the print server (used as CUPS ServerName and TLS cert name).";
-      default = "printhost.ocf.berkeley.edu";
-    };
   };
 
   config = lib.mkIf config.ocf.printhost.enable {
@@ -44,14 +38,12 @@
       "cups.service"
     ];
 
-    # Add printhostUrl and its .ocf.io variant as SANs on tule's cert
-    ocf.acme.extraCerts =
-      let
-        cfg = config.ocf.printhost;
-      in
-      [
-        cfg.printhostUrl
-        (lib.replaceStrings [ ".ocf.berkeley.edu" ] [ ".ocf.io" ] cfg.printhostUrl)
-      ];
+    # add all CNAMEs to tule's cert
+    ocf.acme.extraCerts = [
+      "printhost.ocf.berkeley.edu"
+      "printhost.ocf.io"
+      "p.ocf.berkeley.edu"
+      "p.ocf.io"
+    ];
   };
 }

@@ -1,3 +1,5 @@
+{ lib, ... }:
+
 {
   ocf.network = {
     enable = true;
@@ -11,12 +13,15 @@
     lastOctet = 6;
   };
 
-  ocf.nfs-export = {
+  # nfs server should not be mounting nfs from itself
+  ocf.nfs.enable = lib.mkForce false;
+
+  services.nfs.server = {
     enable = true;
     # https://github.com/ocf/puppet/blob/a081b2210691bd46d585accc8548c985188486a0/modules/ocf_filehost/manifests/init.pp#L10-L16
-    exports."/opt/homes" = [
-      {
-        hosts = [
+    exports."/opt/homes" =
+      lib.genAttrs
+        [
           "admin"
           "www"
           "ssh"
@@ -27,26 +32,28 @@
           "thymine"
           "tsunami"
           "supernova"
-        ];
-        options = [
+        ]
+        (_: [
           "rw"
           "fsid=0"
           "no_subtree_check"
           "no_root_squash"
-        ];
-      }
-      {
-        hosts = [ "*.ocf.berkeley.edu" ];
-        options = [
+        ])
+      // {
+        "*.ocf.berkeley.edu" = [
           "rw"
           "fsid=0"
           "no_subtree_check"
           "root_squash"
           "sec=krb5p"
         ];
-      }
-    ];
+      };
   };
+
+  networking.firewall.allowedTCPPorts = [
+    # sufficient for NFSv4
+    2049
+  ];
 
   # FIXME remove and make sure it still boots
   hardware.enableAllHardware = true;
