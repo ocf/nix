@@ -36,6 +36,7 @@
       repo = "colmena";
       ref = "main";
       inputs.nixpkgs.follows = "nixpkgs";
+      inputs.stable.follows = "nixpkgs";
     };
 
     agenix = {
