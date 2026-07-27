@@ -77,6 +77,11 @@
       ref = "master";
     };
 
+    ocf-dns = {
+      url = "github:ocf/dns";
+      flake = false;
+    };
+
     ocf-sync-etc = {
       type = "github";
       owner = "ocf";
@@ -143,6 +148,7 @@
       disko,
       nix-index-database,
       ocflib,
+      ocf-dns,
       ocf-sync-etc,
       ocf-pam-trimspaces,
       ocf-utils,
