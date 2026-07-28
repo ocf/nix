@@ -59,6 +59,23 @@ let
                 };
               }) runner-cfg.instances
             );
+
+            systemd.services = lib.mapAttrs' (runnerName: runnerCfg: {
+              # systemd service is prefixed with "github-runner-"
+              name = "github-runner-${runnerName}";
+
+              # dont interrupt a running job on a nixos configuration switch.
+              # if github-runners.*.ephemeral = true, the runner will exit on
+              # job completion, and systemd will start the updated github
+              # runner.
+              #
+              # NOTE: this means that the runner will only update after the
+              # next job, even if no job was running during the switch
+              value = {
+                restartIfChanged = false;
+              };
+            }) config.services.github-runners;
+
             system.stateVersion = "24.11";
           };
       };
@@ -68,10 +85,17 @@ in
 {
   imports = [ ./options.nix ];
   config = lib.mkIf cfg.enable {
-    # add exemption: automated deployments may cause failures if deploying to themself
-    ocf.managed-deployment.automated-deploy = false;
-
     age.secrets = lib.mkMerge (builtins.map getSecrets cfg.runners);
     containers = lib.mkMerge (builtins.map makeContainer cfg.runners);
+
+    # dont fail/interrupt jobs on a nixos configuration switch by restarting
+    # the container. instead, live reload the containers, which runs
+    # switch-to-configuration within the container.
+    systemd.services = lib.mapAttrs' (containerName: containerCfg: {
+      name = "container@${containerName}";
+      value = {
+        reloadIfChanged = true;
+      };
+    }) config.containers;
   };
 }
