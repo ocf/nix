@@ -10,11 +10,11 @@ let
 in
 {
   options.ocf.matrix.element = {
-    enable = lib.mkEnableOption "Enable Element web client.";
+    enable = lib.mkEnableOption "Element web client";
 
     url = lib.mkOption {
       type = lib.types.str;
-      description = "Element URL.";
+      description = "Element URL";
     };
   };
 

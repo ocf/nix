@@ -5,7 +5,7 @@ let
 in
 {
   options.ocf.network = {
-    enable = lib.mkEnableOption "Enable OCF network configuration";
+    enable = lib.mkEnableOption "OCF network configuration";
     interface = lib.mkOption {
       type = lib.types.str;
       description = "Name of the network interface to configure";
@@ -21,7 +21,7 @@ in
       default = [ ];
     };
 
-    wakeOnLan.enable = lib.mkEnableOption "Enable Wake-on-LAN";
+    wakeOnLan.enable = lib.mkEnableOption "Wake-on-LAN";
   };
 
   config = lib.mkIf cfg.enable {

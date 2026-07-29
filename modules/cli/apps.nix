@@ -9,7 +9,7 @@ let
   cfg = config.ocf.cli.apps;
 in
 {
-  options.ocf.cli.apps.enable = lib.mkEnableOption "Install CLI apps";
+  options.ocf.cli.apps.enable = lib.mkEnableOption "CLI apps";
 
   config = lib.mkIf cfg.enable {
     programs.java.enable = true; # set $JAVA_HOME

@@ -58,7 +58,7 @@ let
 in
 {
   options.ocf.nfs = {
-    enable = lib.mkEnableOption "Enable NFS Mounts (NFS client)";
+    enable = lib.mkEnableOption "NFS Mounts (NFS client)";
 
     # /services is necessary for remote homes since ~/public_html is a symlink
     # to /services
@@ -75,8 +75,8 @@ in
       default = false;
     };
 
-    kerberos = lib.mkEnableOption "Whether to use Kerberos krb5p";
-    cache = lib.mkEnableOption "Whether to use cachefilesd and FS-Cache";
+    kerberos = lib.mkEnableOption "krb5p";
+    cache = lib.mkEnableOption "cachefilesd and FS-Cache";
     softerr = lib.mkOption {
       type = lib.types.bool;
       default = true;

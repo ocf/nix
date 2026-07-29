@@ -23,7 +23,7 @@ let
 in
 {
   options.ocf.motd = {
-    enable = lib.mkEnableOption "Enable OCF MOTD";
+    enable = lib.mkEnableOption "OCF MOTD";
 
     description = lib.mkOption {
       type = lib.types.str;

@@ -17,7 +17,7 @@ let
 in
 {
   options.ocf.gui.kiosk = {
-    enable = lib.mkEnableOption "Enable Kiosk configuration";
+    enable = lib.mkEnableOption "Kiosk configuration";
     url = lib.mkOption {
       type = lib.types.str;
       description = "URL to open the Kiosk with";
