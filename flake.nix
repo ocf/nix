@@ -10,6 +10,7 @@
     colmena = {
       url = "github:zhaofengli/colmena/main";
       inputs.nixpkgs.follows = "nixpkgs";
+      inputs.stable.follows = "nixpkgs";
     };
 
     agenix = {
