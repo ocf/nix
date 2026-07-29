@@ -140,6 +140,7 @@ in
       # misc wayland utils
       wl-clipboard
       libnotify
+      waypipe
 
       ocf-tv
 
