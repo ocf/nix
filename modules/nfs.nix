@@ -18,8 +18,19 @@ let
 
     "sync"
     "vers=4.2" # force version 4.2
-    "bg" # mount in background and continue booting
     "nconnect=8" # 8 connections instead of 1
+
+    # - we dont want boot to hang when nfs is down, since this makes debugging
+    #   the machine difficult.
+    # - instead, this mounts it on initial access
+    # - one advantage x-systemd.automount has over the bg option is that
+    #   automount prevent race conditions during boot by freezing io on the
+    #   mountpoint until it is mounted
+    # - fail fast when the nfs server is down at mount time
+    # - there should be no risk of data corruption, since this is on the initial
+    #   open(), not when the file is open and being written to
+    "x-systemd.automount"
+    "x-systemd.mount-timeout=10s"
 
     (lib.optional cfg.kerberos "sec=krb5p")
     (lib.optional cfg.cache "fsc")
