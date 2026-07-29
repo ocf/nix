@@ -24,6 +24,10 @@
     gui.apps.enable = true;
 
     cli.apps.enable = true;
+
+    # desktops heavily use /remote and bind mount to ~/remote on login
+    # keep the mount cached and ready to use at all times
+    nfs.idleTimeout = 0;
   };
 
   boot = {
