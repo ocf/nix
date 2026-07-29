@@ -32,6 +32,8 @@ let
     "x-systemd.automount"
     "x-systemd.mount-timeout=10s"
 
+    (lib.optional (cfg.idleTimeout != null) "x-systemd.idle-timeout=${toString cfg.idleTimeout}")
+
     (lib.optional cfg.kerberos "sec=krb5p")
     (lib.optional cfg.cache "fsc")
 
@@ -84,6 +86,26 @@ in
       type = lib.types.bool;
       description = "Mount NFS homes to /remote instead of /home (for desktops which create home directory in tmpfs on login).";
       default = false;
+    };
+
+    idleTimeout = lib.mkOption {
+      type = with lib.types; nullOr (either ints.unsigned str);
+      description = ''
+        How long to wait until unmounting an idle nfs mount.
+
+        Accepts a systemd time span value.
+        Set to null to omit the option and use systemd defaults.
+        Set to 0 to disable idle timeout.
+        See TimeoutIdleSec= in systemd.automount(5) for details.
+
+        This can free up resources and prevents slowdowns/freezes on `ls` of the
+        parent directory that the nfs mountpoint is in. Note that this flushes
+        page and metadata caches, which can harm performance on systems that
+        heavily use the nfs mounts and benefit from a warmed cache at all times.
+      '';
+      # many systems that dont use nfs for /home dont need it to be mounted at
+      # all times with a warm cache.
+      default = if cfg.asRemote then "10m" else 0;
     };
 
     kerberos = lib.mkEnableOption "Whether to use Kerberos krb5p";
