@@ -36,8 +36,8 @@ in
       #rstudio
       zed-editor
       gnome-builder
-      jetbrains.idea-oss
-      jetbrains.pycharm-oss
+      jetbrains.idea
+      jetbrains.pycharm
       jetbrains.datagrip
 
       # git
