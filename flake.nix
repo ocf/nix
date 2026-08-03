@@ -136,6 +136,8 @@
               "zoom"
               "drawio"
               "datagrip"
+              "idea"
+              "pycharm"
               "davinci-resolve"
               "1password"
               "1password-cli"
