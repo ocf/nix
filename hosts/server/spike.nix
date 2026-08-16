@@ -55,6 +55,10 @@
         enable = true;
         repo = "dns";
       }
+      {
+        enable = true;
+        repo = "ocflib";
+      }
     ];
   };
 
