@@ -5,7 +5,7 @@ let
 in
 {
   options.ocf.nvidia = {
-    enable = lib.mkEnableOption "Enable NVIDIA Drivers and Config";
+    enable = lib.mkEnableOption "NVIDIA Drivers and Config";
     # See: https://github.com/NVIDIA/open-gpu-kernel-modules#compatible-gpus
     # It's recommend to use the open kernel drivers for turing and above
     open = lib.mkOption {

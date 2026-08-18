@@ -9,29 +9,16 @@
 }:
 
 {
-
-  # Colmena tagging
-  deployment.tags = [ "desktop" ];
-  system.nixos.variant_id = "ocf-desktop";
-
   ocf = {
     # TODO: need ensure host keys can't be stolen by booting an external drive...
     acme.enable = false;
 
     home.tmpfs = true;
+    home.mountRemote = true;
     network.wakeOnLan.enable = true;
     logged-in-users-exporter.enable = true;
 
     zfs.enable = true;
-    nfs = {
-      enable = true;
-      mount = true;
-      kerberos = true;
-
-      # we keep a single nfs mount and then bind mount to it instead of having
-      # many nfs mounts (each logged in user would need a mount)
-      asRemote = true;
-    };
 
     gui.enable = true;
     gui.apps.enable = true;
@@ -46,12 +33,12 @@
   };
 
   # FIXME: suspend causes problems with nfs. disable until we fix this
-  systemd.sleep.extraConfig = ''
-    AllowSuspend=no
-    AllowHibernation=no
-    AllowHybridSleep=no
-    AllowSuspendThenHibernate=no
-  '';
+  systemd.sleep.settings.Sleep = {
+    AllowSuspend = false;
+    AllowHibernation = false;
+    AllowHybridSleep = false;
+    AllowSuspendThenHibernate = false;
+  };
 
   # Enable support SANE scanners
   hardware.sane.enable = true;
@@ -59,6 +46,8 @@
   zramSwap.enable = true;
 
   documentation.dev.enable = true;
+
+  environment.shellAliases.quota = "quota -Qs";
 
   environment.systemPackages = with pkgs; [
     lf
@@ -100,6 +89,13 @@
   services.pcscd.enable = true;
 
   virtualisation.podman.enable = true;
+
+  # kill user processes on logout
+  # if this is not set to true, the system user manager, processes, home tmpfs
+  # mount, etc will linger, causing the logind session and scope to be stuck in
+  # "closing" and "abandoned" respectively. this is undesired behavior on a
+  # shared desktop machine.
+  services.logind.settings.Login.KillUserProcesses = true;
 
   # enable secure attention key (also enables unraw/xlate)
   boot.kernel.sysctl."kernel.sysrq" = 4;

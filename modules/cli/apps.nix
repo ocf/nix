@@ -9,7 +9,7 @@ let
   cfg = config.ocf.cli.apps;
 in
 {
-  options.ocf.cli.apps.enable = lib.mkEnableOption "Install CLI apps";
+  options.ocf.cli.apps.enable = lib.mkEnableOption "CLI apps";
 
   config = lib.mkIf cfg.enable {
     programs.java.enable = true; # set $JAVA_HOME
@@ -44,7 +44,7 @@ in
       znc
 
       # fetch
-      neofetch
+      hyfetch
       screenfetch
       pfetch-rs
       fastfetch
@@ -97,10 +97,15 @@ in
       flex
       nasm
 
-      nix-du
-      nix-output-monitor
-      devenv
       claude-code
+
+      # nix
+      nix-du
+      nix-tree
+      nix-eval-jobs
+      nix-output-monitor
+      nix-fast-build
+      devenv
 
       # languages & runtimes
       graphviz

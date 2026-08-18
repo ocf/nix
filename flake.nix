@@ -2,116 +2,66 @@
   description = "NixOS configuration for the Open Computing Facility";
 
   inputs = {
-    nixpkgs = {
-      type = "github";
-      owner = "nixos";
-      repo = "nixpkgs";
-      ref = "nixos-25.11";
-    };
-
-    systems = {
-      type = "github";
-      owner = "nix-systems";
-      repo = "default";
-      ref = "main";
-    };
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-26.05";
+    nixpkgs-deprecated.url = "github:nixos/nixpkgs/nixos-25.11";
+    nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
+    systems.url = "github:nix-systems/default/main";
 
     colmena = {
-      type = "github";
-      owner = "zhaofengli";
-      repo = "colmena";
-      ref = "main";
+      url = "github:zhaofengli/colmena/main";
       inputs.nixpkgs.follows = "nixpkgs";
+      inputs.stable.follows = "nixpkgs";
     };
 
     agenix = {
-      type = "github";
-      owner = "ryantm";
-      repo = "agenix";
-      ref = "main";
+      url = "github:ryantm/agenix/main";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
     agenix-rekey = {
-      type = "github";
-      owner = "oddlama";
-      repo = "agenix-rekey";
-      ref = "main";
+      url = "github:oddlama/agenix-rekey/main";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
     disko = {
-      type = "github";
-      owner = "nix-community";
-      repo = "disko";
-      ref = "latest";
+      url = "github:nix-community/disko/latest";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
     nix-index-database = {
-      type = "github";
-      owner = "nix-community";
-      repo = "nix-index-database";
-      ref = "main";
+      url = "github:nix-community/nix-index-database/main";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    ocflib = {
-      type = "github";
-      owner = "ocf";
-      repo = "ocflib";
-      ref = "master";
+    niks3 = {
+      url = "github:Mic92/niks3/main";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    ocf-sync-etc = {
-      type = "github";
-      owner = "ocf";
-      repo = "etc";
-      ref = "master";
-    };
+    # -- OCF Inputs -- #
 
-    ocf-pam-trimspaces = {
-      type = "github";
-      owner = "ocf";
-      repo = "pam_trimspaces";
-      ref = "master";
-    };
+    ocflib.url = "github:ocf/ocflib/master";
+    ocf-sync-etc.url = "github:ocf/etc/master";
+    ocf-pam-trimspaces.url = "github:ocf/pam_trimspaces/master";
 
     ocf-utils = {
-      type = "github";
-      owner = "ocf";
-      repo = "utils";
-      ref = "master";
+      url = "github:ocf/utils/master";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.ocflib.follows = "ocflib";
     };
 
     wayout = {
-      type = "github";
-      owner = "ocf";
-      repo = "wayout";
-      ref = "main";
+      url = "github:ocf/wayout/main";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
     ocf-cosmic-applets = {
-      type = "github";
-      owner = "ocf";
-      repo = "cosmic-applets";
-      ref = "main";
+      url = "github:ocf/cosmic-applets/main";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
     ocf-jukebox = {
       url = "github:ocf/jukebox-django";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    niks3 = {
-      type = "github";
-      owner = "Mic92";
-      repo = "niks3";
-      ref = "main";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
@@ -120,6 +70,8 @@
     {
       self,
       nixpkgs,
+      nixpkgs-deprecated,
+      nixpkgs-unstable,
       systems,
       colmena,
       agenix,
@@ -160,72 +112,136 @@
         disko.nixosModules.disko
         niks3.nixosModules.default
         niks3.nixosModules.niks3-auto-upload
+        wayout.nixosModules.default
       ];
 
-      defaultSystem = "x86_64-linux";
-      overrideSystem = {
-        overheat = "aarch64-linux";
+      hostDefaults = {
+        inherit nixpkgs;
+        system = "x86_64-linux";
+        config = {
+          allowUnfreePredicate =
+            pkg:
+            builtins.elem (nixpkgs.lib.getName pkg) [
+              "code"
+              "claude-code"
+              "dwarf-fortress"
+              "google-chrome"
+              "helvetica-neue-lt-std" # tornado
+              "nvidia-settings"
+              "nvidia-x11"
+              "nvidia-kernel-modules"
+              "steam"
+              "steam-unwrapped"
+              "vscode"
+              "zoom"
+              "drawio"
+              "datagrip"
+              "idea"
+              "pycharm"
+              "davinci-resolve"
+              "1password"
+              "1password-cli"
+            ];
+        };
+      };
+
+      # override the hostDefaults attribute set per host
+      #
+      # NOTE: all hosts will be sharing the same ocf nix modules in this
+      # repository regardless of what pkgs or system is set to
+      hostOverrides = {
+        overheat.system = "aarch64-linux";
       };
 
       # ============== #
       # Glue/Internals #
       # ============== #
 
+      # returns the nixpkgs pkgs set for a given:
+      # - nixpkgs input
+      # - system architecture like "x86_64-linux"
       pkgsFor =
-        system:
-        import nixpkgs {
-          inherit overlays system;
-          config = {
-            allowUnfreePredicate =
-              pkg:
-              builtins.elem (nixpkgs.lib.getName pkg) [
-                "code"
-                "claude-code"
-                "dwarf-fortress"
-                "google-chrome"
-                "helvetica-neue-lt-std" # tornado
-                "nvidia-settings"
-                "nvidia-x11"
-                "steam"
-                "steam-unwrapped"
-                "vscode"
-                "zoom"
-                "drawio"
-                "datagrip"
-                "davinci-resolve"
-                "1password"
-                "1password-cli"
-              ];
-          };
+        {
+          nixpkgs,
+          system,
+          config,
+          ...
+        }@args:
+        import args.nixpkgs {
+          inherit overlays;
+          inherit (args) system config;
         };
 
-      forAllSystems = fn: nixpkgs.lib.genAttrs (import systems) (system: fn (pkgsFor system));
+      specialArgsFor =
+        hostAttrs:
+        let
+          pkgsFromInput = nixpkgs': pkgsFor (hostAttrs // { nixpkgs = nixpkgs'; });
+        in
+        {
+          inherit self inputs;
+
+          # even if stable is the default, an overridden host may still want to
+          # access pkgs-stable as a specialArg
+          pkgs-stable = pkgsFromInput nixpkgs;
+
+          # pkgs-unstable exposes the packages from the nixpkgs-unstable input
+          # this should only be used as a *temporary* measure when the version of
+          # a package in nixpkgs stable is not sufficiently updated
+          pkgs-unstable = pkgsFromInput nixpkgs-unstable;
+          pkgs-deprecated = pkgsFromInput nixpkgs-deprecated;
+        };
+
+      mapHostOverrides =
+        f: builtins.mapAttrs (name: overrides: f (hostDefaults // overrides)) hostOverrides;
+
+      forAllSystems =
+        fn:
+        nixpkgs.lib.genAttrs (import systems) (system: fn (pkgsFor (hostDefaults // { inherit system; })));
 
       readGroup =
         group:
-        nixpkgs.lib.mapAttrs' (filename: _: {
-          name = nixpkgs.lib.nameFromURL filename ".";
-          value = {
-            inherit group;
-            modules = [ ./hosts/${group}/${filename} ];
-          };
-        }) (builtins.readDir ./hosts/${group});
+        let
+          groupDir = builtins.readDir ./hosts/${group};
+          # exclude files directories in hosts/group/* that end with .disabled
+          activeHosts = nixpkgs.lib.filterAttrs (
+            name: value: !(nixpkgs.lib.hasSuffix ".disabled" name)
+          ) groupDir;
+        in
+        nixpkgs.lib.mapAttrs' (host: _: {
+          # host config in hosts/group/* can be in the form of hostname.nix or
+          # hostname (directory containing default.nix)
+          # FIXME: colmenaHosts expects a .nix file so this doesnt actually
+          # work even though readGroup technically supports it
+          name = nixpkgs.lib.removeSuffix ".nix" host;
+          value = group;
+        }) activeHosts;
 
       hosts = nixpkgs.lib.concatMapAttrs (group: _: readGroup group) (builtins.readDir ./hosts);
 
       deploy-user = "ocf-nix-deploy-user";
       colmenaHosts = builtins.mapAttrs (
-        host:
-        { modules, group }:
-        {
-          imports = commonModules ++ modules;
+        host: group:
+        let
+          profile = builtins.filter builtins.pathExists [ ./profiles/${group}.nix ];
+          hostConfig = ./hosts/${group}/${host}.nix;
+        in
+        { config, ... }: {
+          imports = nixpkgs.lib.flatten [
+            commonModules
+            profile
+            hostConfig
+          ];
+
           deployment.tags = [ group ];
-          deployment.allowLocalDeployment = true; # for debugging and deploying when github actions deployment breaks
           deployment.targetHost = "${host}.ocf.berkeley.edu";
           # TODO: Think of a less ugly way of doing this
           deployment.targetUser =
             nixpkgs.lib.mkIf self.colmenaHive.nodes.${host}.config.ocf.managed-deployment.enable
               deploy-user;
+
+          system.nixos.variant_id = "ocf-${group}";
+          system.nixos.variantName = config.system.nixos.variant_id;
+
           networking.hostName = "${host}";
           networking.hostId = builtins.substring 0 8 (builtins.hashString "sha1" "${host}");
         }
@@ -238,9 +254,10 @@
         colmenaHosts
         // {
           meta = {
-            nixpkgs = pkgsFor defaultSystem;
-            nodeNixpkgs = nixpkgs.lib.mapAttrs (name: pkgsFor) overrideSystem;
-            specialArgs = { inherit self inputs; };
+            nixpkgs = pkgsFor hostDefaults;
+            nodeNixpkgs = mapHostOverrides pkgsFor;
+            specialArgs = specialArgsFor hostDefaults;
+            nodeSpecialArgs = mapHostOverrides specialArgsFor;
           };
         }
       );
@@ -278,7 +295,6 @@
 
       overlays.default = final: prev: {
         ocf-utils = ocf-utils.packages.${final.stdenv.hostPlatform.system}.default;
-        ocf-wayout = wayout.packages.${final.stdenv.hostPlatform.system}.default;
         ocf-jukebox = ocf-jukebox.packages.${final.stdenv.hostPlatform.system}.default;
         plasma-applet-commandoutput = final.callPackage ./pkgs/plasma-applet-commandoutput.nix { };
         catppuccin-sddm = final.qt6Packages.callPackage ./pkgs/catppuccin-sddm.nix { };
@@ -286,6 +302,18 @@
         ocf-cosmic-greeter = final.callPackage ./pkgs/ocf-cosmic-greeter.nix { };
         ocf-hplip = final.callPackage ./pkgs/ocf-hplip.nix { };
         ldap-git-backup = final.callPackage ./pkgs/ldap-git-backup.nix { };
+        ocf-niks3-push = final.callPackage ./pkgs/ocf-niks3-push {
+          niks3 = niks3.packages.${final.stdenv.hostPlatform.system}.default;
+        };
+
+        # nixpkgs quota is built without RPC support, it can't query
+        # NFS quotas from the filehost via rquotad.
+        # This wasn't necessary for old puppet hosts because debian packages quota with rpc enabled.
+        quota = prev.quota.overrideAttrs (old: {
+          buildInputs = (old.buildInputs or [ ]) ++ [ final.libtirpc ];
+          nativeBuildInputs = (old.nativeBuildInputs or [ ]) ++ [ final.rpcsvc-proto ];
+          configureFlags = (old.configureFlags or [ ]) ++ [ "--enable-rpc" ];
+        });
       };
 
       agenix-rekey = agenix-rekey.configure {
@@ -293,37 +321,48 @@
         nixosConfigurations = self.colmenaHive.nodes;
       };
 
-      devShells = forAllSystems (pkgs: {
-        default = pkgs.mkShell {
-          packages = [
+      devShells = forAllSystems (
+        pkgs:
+        let
+          # explicitly use pkgs so it doesnt collide with flake inputs
+          deployPkgs = [
+            colmena.packages.${pkgs.stdenv.hostPlatform.system}.colmena
             pkgs.git
-            pkgs.age
-            pkgs.agenix-rekey
-            pkgs.age-plugin-fido2-hmac
+            pkgs.openssh_gssapi
             pkgs.wol
             pkgs.nixfmt-tree
-            colmena.packages.${pkgs.stdenv.hostPlatform.system}.colmena
+            pkgs.nix-fast-build
           ];
-        };
-        deploy = pkgs.mkShell {
-          packages = [
-            pkgs.git
-            pkgs.openssh
-            pkgs.wol
-            pkgs.nixfmt-tree
-            colmena.packages.${pkgs.stdenv.hostPlatform.system}.colmena
-          ];
-        };
-      });
+        in
+        {
+          # for development/debugging
+          default = pkgs.mkShell {
+            packages =
+              # explicitly use pkgs so it doesnt collide with flake inputs
+              [
+                disko.packages.${pkgs.stdenv.hostPlatform.system}.disko
+                pkgs.age
+                pkgs.agenix-rekey
+                pkgs.age-plugin-fido2-hmac
+                pkgs.nix-du
+                pkgs.nix-tree
+                pkgs.nix-eval-jobs
+                pkgs.nix-output-monitor
+              ]
+              ++ deployPkgs;
 
-      nixosConfigurations = builtins.mapAttrs (
-        host: colmenaConfig:
-        nixpkgs.lib.nixosSystem rec {
-          system = overrideSystem.${host} or defaultSystem;
-          pkgs = pkgsFor system;
-          modules = colmenaConfig.imports;
-          specialArgs = { inherit self inputs; };
+            shellHook = ''
+              export AGENIX_REKEY_PRIMARY_IDENTITY="$(grep -Poe "^# public key(?: \(pq safe\))?: \K.*$" secrets/master-identities/by-username/$(whoami) | head -1)"
+            '';
+          };
+
+          # for ci/cd
+          deploy = pkgs.mkShell {
+            packages = deployPkgs;
+          };
         }
-      ) colmenaHosts;
+      );
+
+      nixosConfigurations = self.colmenaHive.nodes;
     };
 }

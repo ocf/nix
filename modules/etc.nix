@@ -10,7 +10,7 @@ let
 in
 {
   options.ocf.etc = {
-    enable = lib.mkEnableOption "Enable /etc/ocf configuration";
+    enable = lib.mkEnableOption "syncing /etc/ocf config files";
   };
 
   config = lib.mkIf cfg.enable {

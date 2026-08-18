@@ -10,7 +10,7 @@ let
 in
 {
   options.ocf.matrix.irc-bridge = {
-    enable = lib.mkEnableOption "Enable Matrix IRC bridge.";
+    enable = lib.mkEnableOption "Matrix IRC bridge";
 
     server = lib.mkOption {
       type = lib.types.str;

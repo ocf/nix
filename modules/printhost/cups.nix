@@ -9,7 +9,7 @@ let
   cfg = config.ocf.printhost;
 
   # Python environment for the enforcer quota script
-  pythonEnv = pkgs.python312.withPackages (
+  pythonEnv = config.ocf.python.package.withPackages (
     ps: with ps; [
       ocflib
       pycups
@@ -112,13 +112,12 @@ in
       '';
     };
 
-    # Declaratively configure all printers and classes on every boot.
+    # Declaratively configure all printers and classes on cups service start.
     # Runs after cups.service since /var/lib/cups is stateless.
     systemd.services.cups-setup-printers = {
       description = "Declaratively configure CUPS printers and classes";
       after = [ "cups.service" ];
-      wants = [ "cups.service" ];
-      wantedBy = [ "multi-user.target" ];
+      wantedBy = [ "cups.service" ];
       partOf = [ "cups.service" ];
       path = [ config.services.printing.package ];
       serviceConfig.Type = "oneshot";
@@ -126,19 +125,19 @@ in
         set -euo pipefail
 
         lpadmin -p logjam \
-          -v ocfbackend:socket://169.229.226.92:9100 \
+          -v ocfbackend:socket://logjam:9100 \
           -m raw \
           -D "HP LaserJet M806" -L "OCF lab" \
           -E -o printer-is-shared=false -o Duplex=DuplexNoTumble
 
         lpadmin -p papercut \
-          -v ocfbackend:socket://169.229.226.93:9100 \
+          -v ocfbackend:socket://papercut:9100 \
           -m raw \
           -D "HP LaserJet M806" -L "OCF lab" \
           -E -o printer-is-shared=false -o Duplex=DuplexNoTumble
           
         lpadmin -p pagefault \
-          -v ocfbackend:socket://169.229.226.91:9100 \
+          -v ocfbackend:socket://pagefault:9100 \
           -m raw \
           -D "HP LaserJet M806" -L "OCF lab" \
           -E -o printer-is-shared=false -o Duplex=DuplexNoTumble
@@ -156,7 +155,7 @@ in
           -D "OCF Black & White" -L "OCF lab" \
           -E -o printer-is-shared=true -o Duplex=DuplexNoTumble
         lpadmin -p OCF-Color \
-          -v ocfbackend:socket://169.229.226.107:9100 \
+          -v ocfbackend:socket://fishpaper:9100 \
           -P ${hpColorPpd} \
           -D "OCF Color" -L "OCF lab" \
           -E -o printer-is-shared=true -o Duplex=None

@@ -48,7 +48,7 @@ let
 in
 {
   options.ocf.gui = {
-    enable = lib.mkEnableOption "Enable desktop environment configuration";
+    enable = lib.mkEnableOption "desktop environment configuration";
 
     # FIXME: this doesnt check if the given value is a valid session
     desktop = lib.mkOption {
@@ -62,7 +62,8 @@ in
     programs.sway.enable = true;
     programs.sway.extraOptions = [ "--unsupported-gpu" ];
     programs.hyprland.enable = true;
-    programs.wayfire.enable = true;
+    # uncomment when wf-config builds no longer fail
+    #programs.wayfire.enable = true;
     programs.niri.enable = true;
     services.xserver.desktopManager.xfce.enable = true;
 
@@ -99,13 +100,28 @@ in
       pkgs.cosmic-initial-setup
     ];
 
-    environment.etc = {
-      skel.source = ./skel;
-      ocf-assets.source = ./assets;
-    };
+    environment.etc =
+      let
+        kittyThemes = "${pkgs.kitty-themes}share/kitty-themes/themes";
+      in
+      {
+        skel.source = ./skel;
+        ocf-assets.source = ./assets;
+        "xdg/kitty/dark-theme.auto.conf".source = "${kittyThemes}/rose-pine.conf";
+        "xdg/kitty/light-theme.auto.conf ".source = "${kittyThemes}/rose-pine-dawn.conf";
+        "xdg/kitty/no-preference-theme.auto.conf".source = "${kittyThemes}/rose-pine.conf";
+      };
 
-    # Conflict override since multiple DEs set this option
-    programs.ssh.askPassword = pkgs.lib.mkForce (lib.getExe pkgs.ksshaskpass.out);
+    programs.ssh = {
+      # setup ssh agent with askpass on login by default
+      # if you want to forward a fido ssh key that requires a pin, the ssh agent
+      # needs askpass to prompt for the pin when the agent uses the key.
+      startAgent = true;
+      enableAskPassword = true;
+
+      # Conflict override since multiple DEs set this option
+      askPassword = pkgs.lib.mkForce (lib.getExe pkgs.kdePackages.ksshaskpass);
+    };
 
     xdg.portal = {
       enable = true;
@@ -124,6 +140,7 @@ in
       # misc wayland utils
       wl-clipboard
       libnotify
+      waypipe
 
       ocf-tv
 
@@ -191,17 +208,8 @@ in
       };
     };
 
-    systemd.user.services.wayout = {
-      description = "Automatic idle logout manager";
-      after = [ "graphical-session.target" ];
-      partOf = [ "graphical-session.target" ];
-      wantedBy = [ "graphical-session.target" ];
-      serviceConfig = {
-        ExecStart = "${pkgs.ocf-wayout}/bin/wayout";
-        Type = "simple";
-        Restart = "on-failure";
-      };
-    };
+    services.wayout.enable = true;
+    services.wayout.openFirewall = true;
 
     systemd.user.services.desktoprc = {
       description = "Source custom rc shared across desktops";

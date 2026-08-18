@@ -11,13 +11,9 @@ in
 {
   options.ocf.acme = {
 
-    enable = lib.mkEnableOption "Enable OCF ACME";
+    enable = lib.mkEnableOption "OCF ACME";
 
-    shortlived = lib.mkOption {
-      type = lib.types.bool;
-      description = "Enable Using Short Lived (6 Day) Certs";
-      default = false;
-    };
+    shortlived = lib.mkEnableOption "using Short Lived (6 Day) Certs";
 
     extraCerts = lib.mkOption {
       type = lib.types.listOf lib.types.str;

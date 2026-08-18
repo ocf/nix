@@ -9,7 +9,7 @@ let
 in
 {
   options.ocf.niks3-push = {
-    enable = lib.mkEnableOption "Auto-push built paths to the OCF binary cache";
+    enable = lib.mkEnableOption "auto-pushing of built paths to the OCF binary cache";
 
     cacheDomain = lib.mkOption {
       type = lib.types.str;

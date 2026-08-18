@@ -10,7 +10,7 @@ let
 in
 {
   options.ocf.cli = {
-    enable = lib.mkEnableOption "Enable shell configuration";
+    enable = lib.mkEnableOption "shell configuration";
   };
 
   config = lib.mkIf cfg.enable {

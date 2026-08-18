@@ -14,7 +14,7 @@ let
 in
 {
   options.ocf.matrix = {
-    enable = lib.mkEnableOption "Enable Matrix server";
+    enable = lib.mkEnableOption "Matrix server";
 
     postgresPackage = lib.mkOption {
       type = lib.types.package;

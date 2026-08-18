@@ -9,7 +9,7 @@ let
   cfg = config.ocf.gui.apps;
 in
 {
-  options.ocf.gui.apps.enable = lib.mkEnableOption "Enable development related apps";
+  options.ocf.gui.apps.enable = lib.mkEnableOption "development related apps";
 
   config = lib.mkIf cfg.enable {
     hardware.graphics.enable32Bit = true;
@@ -36,8 +36,8 @@ in
       #rstudio
       zed-editor
       gnome-builder
-      jetbrains.idea-oss
-      jetbrains.pycharm-oss
+      jetbrains.idea
+      jetbrains.pycharm
       jetbrains.datagrip
 
       # git
@@ -55,7 +55,7 @@ in
       # GAMES
       dwarf-fortress
       unciv
-      superTuxKart
+      supertuxkart
       tetris
 
       # emulators
@@ -97,7 +97,7 @@ in
 
       # pipewire
       easyeffects
-      helvum
+      crosspipe
 
       mission-center
       kana
@@ -105,7 +105,8 @@ in
       zotero
 
       # password managers
-      bitwarden-desktop
+      # uncomment when no longer on EOL electron 39.8.10
+      #bitwarden-desktop
       _1password-gui
     ];
   };

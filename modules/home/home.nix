@@ -15,12 +15,8 @@ let
 in
 {
   options.ocf.home = {
-    tmpfs = lib.mkEnableOption "mount tmpfs on /home and each user's home directory (unmounted on logout)";
-    mountRemote = lib.mkOption {
-      type = lib.types.bool;
-      default = config.ocf.nfs.mount && config.ocf.nfs.asRemote;
-      description = "nfs mount ~/remote, copy skel from remote on login if it exists";
-    };
+    tmpfs = lib.mkEnableOption "tmpfs mount on /home and each user's home directory (unmounted on logout)";
+    mountRemote = lib.mkEnableOption "nfs mount ~/remote, copy skel from remote on login if it exists";
   };
 
   config = lib.mkIf cfg.tmpfs {

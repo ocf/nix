@@ -6,14 +6,20 @@
 }:
 
 let
+  # updating kubernetes nodes requires manual steps and potential downtime.
+  # additionally, there can be significant breaking changes between versions
+  # that need to be accounted for in advance. thus, we pin the version of
+  # kubernetes and manually update it, while the rest of its dependencies stay
+  # up to date with the nixpkgs input.
+  # https://bestdocs.ocf.io/staff-docs/infrastructure/kubernetes/runbooks/updating-kubernetes
   kubernetes = pkgs.kubernetes.overrideAttrs (oldAttrs: rec {
-    version = "1.33.3";
+    version = "1.36.1";
     src = pkgs.fetchFromGitHub {
       owner = "kubernetes";
       repo = "kubernetes";
       rev = "v${version}";
       # make sure to update hash if changing kubernetes version
-      hash = "sha256-UZdrfQEEx0RRe4Bb4EAWcjgCCLq4CJL06HIriYuk1Io=";
+      hash = "sha256-QG2zFaFtGXoWIlyp3hVBRU+OHre/6vWcvijUe1DdjIo=";
     };
   });
   kubePkgs = with pkgs; [
@@ -33,13 +39,8 @@ in
 {
   # Configuration for Nodes
   options.services.ocfKubernetes = {
-    enable = lib.mkEnableOption "Enables everything needed to run kubeadm.";
-    isLeader = lib.mkOption {
-      default = false;
-      example = true;
-      description = "Currently identical to worker, but enables kube-vip as a static pod.";
-      type = lib.types.bool;
-    };
+    enable = lib.mkEnableOption "everything needed to run kubeadm";
+    isLeader = lib.mkEnableOption "kube-vip as a static pod";
   };
 
   config = lib.mkIf config.services.ocfKubernetes.enable {

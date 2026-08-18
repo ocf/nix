@@ -25,11 +25,22 @@ in
         python3Packages.cached-property
       ];
 
+      # -s to display output in human friendly units by default
+      # old puppet hosts had -Q as well, but can be removed? maybe?
+      environment.shellAliases.quota = "quota -Qs";
+
       ocf.cli.apps.enable = true;
 
       ocf.nfs = {
         enable = true;
         mount = true;
+        asRemote = false;
+        kerberos = false;
+
+        # if nfs servers are down, the login servers will be so broken that you
+        # might as well freeze all io to the nfs mounts at /home and /services.
+        # this would also be better for data integrity.
+        softerr = false;
       };
 
       programs.mosh.enable = true;
@@ -62,8 +73,21 @@ in
     })
 
     (lib.mkIf (cfg.enable && cfg.public) {
-      ocf.managed-deployment.staffOnlySsh = false;
+      ocf.auth.staffOnlySSH = false;
       ocf.ttyd.enable = true;
+
+      # makemysql-real runs as the mysql user for privilege separation
+      # TODO rewrite the makemysql script and see if theres a better way to do this?
+      # just carrying over what was done on our puppet host, tsunami
+      users.users.mysql = {
+        isSystemUser = true;
+        group = "mysql";
+      };
+      users.groups.mysql = { };
+
+      security.sudo.extraConfig = ''
+        ALL ALL=(mysql) NOPASSWD: /run/current-system/sw/bin/makemysql-real
+      '';
 
       security.pam.loginLimits = [
         {

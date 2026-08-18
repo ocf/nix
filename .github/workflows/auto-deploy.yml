@@ -49,6 +49,19 @@ jobs:
         env:
           SSH_CONFIG_FILE: ${{ github.workspace }}/ssh_config
         run: |
+          # parse "Deploy-action" git trailer
+          action="$(
+            git log -1 --format='%(trailers:key=Deploy-action,valueonly)' \
+            | tr '[:upper:]' '[:lower:]' \
+            | tr -d '\n'
+          )"
+
+          # default to switch unless valid alternative is provided
+          case "$action" in
+            build|push|switch|boot|test|dry-activate|upload-keys) ;;
+            *) action=switch ;;
+          esac
+
           echo "$HOSTS" | tr ' ' '\n' | \
           xargs -P 10 -n 1 -I {} \
           nix develop .#deploy -c sh -c "
@@ -64,7 +77,7 @@ jobs:
               exit
             fi
 
-            if colmena apply --on {} switch > {}.log 2>&1; then
+            if colmena apply --on {} "$action" > {}.log 2>&1; then
               echo '✅ Successfully deployed to {}'
               echo 'SUCCESS:{}' >> results.txt
             else

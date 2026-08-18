@@ -11,7 +11,7 @@ let
 in
 {
   options.ocf.logged-in-users-exporter = {
-    enable = mkEnableOption "Enable logged in users exporter for Prometheus (used by OCF Labmap)";
+    enable = mkEnableOption "logged in users exporter for Prometheus (used by OCF Labmap)";
     interval = mkOption {
       type = types.int;
       default = 5;

@@ -9,10 +9,42 @@ let
   cfg = config.ocf.auth;
   keytabSecretPath = ../../secrets/master-keyed/keytabs + "/${config.networking.hostName}.age";
   hasKeytab = builtins.pathExists keytabSecretPath;
+
+  # sort for regular *.pub files
+  hostKeyDir = ../../secrets/host-keys;
+  hostKeyFiles = lib.filterAttrs (
+    filename: filetype: lib.hasSuffix ".pub" filename && filetype == "regular"
+  ) (builtins.readDir hostKeyDir);
+
+  # remove .pub suffix and set the value for each host to the attribute sets
+  # that programs.ssh.knownHosts expects
+  knownHosts = lib.concatMapAttrs (
+    name: value:
+    let
+      host = lib.removeSuffix ".pub" name;
+    in
+    {
+      ${host} = {
+        # TODO: add *.ocf.io and ip addresses, but i want to clean up those values
+        # into a centrally accessible place like networking.domain first
+        # add fqdn
+        hostNames = [
+          host
+          "${host}.${config.networking.domain}"
+        ];
+        publicKeyFile = "${hostKeyDir}/${name}";
+      };
+    }
+  ) hostKeyFiles;
 in
 {
   options.ocf.auth = {
-    enable = lib.mkEnableOption "Enable OCF authentication";
+    enable = lib.mkEnableOption "OCF authentication";
+    staffOnlySSH = lib.mkOption {
+      type = lib.types.bool;
+      description = "Restrict SSH access to ocfstaff and ocfroot. Disable for public login servers (as of now, only carp).";
+      default = true;
+    };
   };
 
   config = lib.mkIf cfg.enable {
@@ -143,6 +175,13 @@ in
       };
     };
 
+    # dynamically generate the known_hosts file with the public keys of all
+    # nix hosts and directly put it on each host:
+    # - this approach is really simple and avoids the need for managing a cert
+    #   authority.
+    # - one drawback is that hosts need to be re-deployed to in order to
+    #   add/change a host public key.
+    programs.ssh.knownHosts = knownHosts;
     services.openssh.settings = {
       GSSAPIAuthentication = "yes";
       GSSAPICleanupCredentials = "yes";
@@ -152,6 +191,10 @@ in
       # exchanges (which supports post-quantum safe key exchange).
       # Only enable key exchange if host has a keytab
       #GSSAPIKeyExchange = lib.mkIf hasKeytab "yes";
+      AllowGroups = lib.mkIf cfg.staffOnlySSH [
+        "ocfstaff"
+        "ocfroot"
+      ];
     };
   };
 }
