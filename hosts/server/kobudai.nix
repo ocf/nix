@@ -1,4 +1,4 @@
-{ lib, ... }:
+{ lib, pkgs, ... }:
 
 {
   ocf.network = {
@@ -50,9 +50,30 @@
       };
   };
 
+  systemd.services.rquotad = {
+    serviceConfig = {
+      ExecStart = "${lib.getExe' pkgs.quota "rpc.rquotad"} --foreground --port 875";
+    };
+    wantedBy = [ "multi-user.target" ];
+  };
+
   networking.firewall.allowedTCPPorts = [
     # sufficient for NFSv4
     2049
+
+    # rquotad
+    875
+
+    # portmapper
+    111
+  ];
+
+  networking.firewall.allowedUDPPorts = [
+    # rquotad
+    875
+
+    # portmapper
+    111
   ];
 
   # FIXME remove and make sure it still boots
