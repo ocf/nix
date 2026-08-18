@@ -25,6 +25,13 @@ in
   # and restore with: kadmin -l load <file>
 
   config = lib.mkIf cfg.enable {
+    assertions = [
+      {
+        assertion = config.security.krb5.package.passthru.implementation or null == "heimdal";
+        message = "ocf.kerberosKdc requires Heimdal; security.krb5.package is not a Heimdal build.";
+      }
+    ];
+
     services.kerberos_server = {
       enable = true;
       settings = {
