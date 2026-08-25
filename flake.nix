@@ -40,9 +40,13 @@
 
     # -- OCF Inputs -- #
 
-    ocflib.url = "github:ocf/ocflib/master";
     ocf-sync-etc.url = "github:ocf/etc/master";
     ocf-pam-trimspaces.url = "github:ocf/pam_trimspaces/master";
+
+    ocflib = {
+      url = "github:ocf/ocflib/master";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
     ocf-utils = {
       url = "github:ocf/utils/master";
