@@ -52,6 +52,10 @@ in
         source = ./kubevip.yaml;
       };
       "kubernetes/kubeadm.yaml".source = ./kubeadm.yaml;
+      "nfsmount.conf".text = ''
+        [ NFSMount_Global_Options ]
+        vers=4.2
+      '';
     };
 
     # From an OCF alumni, some of these might be unnecessary.
