@@ -124,7 +124,7 @@ in
           users = [ "ocfbackups" ];
           commands = [
             {
-              command = lib.getExe pkgs.rsync;
+              command = "/run/current-system/sw/bin/ionice";
               options = [ "NOPASSWD" ];
             }
           ];
