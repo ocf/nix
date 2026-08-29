@@ -184,6 +184,7 @@ in
     iftop
     tcpdump
     whois
+    openssl
 
     # Other useful stuff
     tmux

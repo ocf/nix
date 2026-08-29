@@ -1,0 +1,86 @@
+dn: cn=ocf,cn=schema,cn=config
+objectClass: olcSchemaConfig
+cn: ocf
+olcAttributeTypes: ( 1.3.6.1.4.1.41759.1.2.1
+  NAME 'calnetUid'
+  DESC 'An integer identifying a user in the CalNet Directory'
+  EQUALITY integerMatch
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.27
+  SINGLE-VALUE )
+olcAttributeTypes: ( 1.3.6.1.4.1.41759.1.3.1
+  NAME 'oslGid'
+  DESC 'An integer identifying a student organization (deprecated)'
+  EQUALITY integerMatch
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.27
+  SINGLE-VALUE )
+olcAttributeTypes: ( 1.3.6.1.4.1.41759.1.4.1
+  NAME 'callinkOid'
+  DESC 'An integer identifying an organization in CalLink'
+  EQUALITY integerMatch
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.27
+  SINGLE-VALUE )
+olcAttributeTypes: ( 1.3.6.1.4.1.41759.1.5.1
+  NAME 'lastRenewal'
+  DESC 'Last virtual host renewal date'
+  EQUALITY generalizedTimeMatch
+  ORDERING generalizedTimeOrderingMatch
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.24
+  SINGLE-VALUE )
+olcAttributeTypes: ( 1.3.6.1.4.1.41759.1.6.1
+  NAME 'creationTime'
+  DESC 'Account creation date'
+  EQUALITY generalizedTimeMatch
+  ORDERING generalizedTimeOrderingMatch
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.24
+  SINGLE-VALUE )
+olcAttributeTypes: ( 1.3.6.1.4.1.41759.1.7.1
+  NAME 'ocfEmail'
+  DESC 'OCF email address'
+  EQUALITY caseIgnoreIA5Match
+  SUBSTR caseIgnoreIA5SubstringsMatch
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.26{256}
+  SINGLE-VALUE )
+olcObjectClasses: ( 1.3.6.1.4.1.41759.1.1.1
+  NAME 'ocfAccount'
+  DESC 'Attributes for OCF accounts'
+  SUP posixAccount
+  AUXILIARY
+  MUST ( cn $ uid $ uidNumber $ gidNumber $ homeDirectory $ loginShell )
+  MAY ( calnetUid $ oslGid $ callinkOid $ mail $ lastRenewal $ creationTime $ ocfEmail ) )
+olcAttributeTypes: ( 1.3.6.1.4.1.41759.2.2.1
+  NAME 'type'
+  DESC 'Host type'
+  EQUALITY caseIgnoreIA5Match
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.26
+  SINGLE-VALUE )
+olcAttributeTypes: ( 1.3.6.1.4.1.41759.2.2.2
+  NAME 'dnsCname'
+  DESC 'DNS CNAME record'
+  EQUALITY caseIgnoreMatch
+  SUBSTR caseIgnoreSubstringsMatch
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.15 )
+olcAttributeTypes: ( 1.3.6.1.4.1.41759.2.2.3
+  NAME 'dnsA'
+  DESC 'DNS A record'
+  EQUALITY caseIgnoreMatch
+  SUBSTR caseIgnoreSubstringsMatch
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.15 )
+olcAttributeTypes: ( 1.3.6.1.4.1.41759.2.2.4
+  NAME 'ip6HostNumber'
+  DESC 'IPv6 address, as represented by RFC1884 section 2.2.2'
+  EQUALITY caseIgnoreIA5Match
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.26{128} )
+olcObjectClasses: ( 1.3.6.1.4.1.41759.2.1.2
+  NAME 'ip6Host'
+  DESC 'Host optionally supporting IPv6'
+  SUP top
+  AUXILIARY
+  MUST ( cn )
+  MAY ( ip6HostNumber $ manager $ description $ l ) )
+olcObjectClasses: ( 1.3.6.1.4.1.41759.2.1.1
+  NAME 'ocfDevice'
+  DESC 'Attributes for OCF hosts'
+  SUP ( ipHost $ ip6Host $ ieee802Device $ puppetClient )
+  AUXILIARY
+  MUST ( cn $ type )
+  MAY ( environment $ dnsCname $ dnsA ) )

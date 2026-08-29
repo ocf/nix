@@ -305,6 +305,7 @@
         ocf-cosmic-applets = ocf-cosmic-applets.packages.${final.stdenv.hostPlatform.system}.default;
         ocf-cosmic-greeter = final.callPackage ./pkgs/ocf-cosmic-greeter.nix { };
         ocf-hplip = final.callPackage ./pkgs/ocf-hplip.nix { };
+        ldap-git-backup = final.callPackage ./pkgs/ldap-git-backup.nix { };
         ocf-niks3-push = final.callPackage ./pkgs/ocf-niks3-push {
           niks3 = niks3.packages.${final.stdenv.hostPlatform.system}.default;
         };
