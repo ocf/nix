@@ -97,8 +97,6 @@ in
       flex
       nasm
 
-      claude-code
-
       # nix
       nix-du
       nix-tree
