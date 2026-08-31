@@ -82,7 +82,7 @@
   disko.devices = {
     disk = {
       main = {
-        device = "/dev/disk/by-id/ata-Samsung_SSD_850_PRO_1TB_S252NXAGA05227F";
+        device = "/dev/disk/by-id/ata-SuperMicro_SSD_SMC0515D92517CF42434";
         type = "disk";
         content = {
           type = "gpt";
