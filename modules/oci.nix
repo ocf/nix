@@ -26,7 +26,12 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    hardware.nvidia-container-toolkit.enable = cfg.nvidia;
+    hardware.nvidia-container-toolkit = {
+      enable = cfg.nvidia;
+
+      # prevent build-vm from failing
+      suppressNvidiaDriverAssertion = true;
+    };
 
     virtualisation.podman = {
       enable = true;
