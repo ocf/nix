@@ -15,6 +15,8 @@ in
     programs.java.enable = true; # set $JAVA_HOME
     programs.java.package = pkgs.zulu25;
 
+    ocf.oci.enable = true;
+
     environment.systemPackages = with pkgs; [
       # tui editors
       neovim
