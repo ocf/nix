@@ -11,6 +11,9 @@
   # allows spike to build for raspberry pi
   boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
 
+  # gracefully cover emergency cases where builds use too much memory
+  zramSwap.enable = true;
+
   nix = {
     gc.automatic = lib.mkForce false;
 
