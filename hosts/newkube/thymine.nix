@@ -27,8 +27,11 @@
     };
   };
 
-  services.ocfKubernetes.enable = true;
-  services.ocfKubernetes.isLeader = false;
+  ocf.kubernetes = {
+    enable = true;
+    isLeader = false;
+    staging = false;
+  };
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions

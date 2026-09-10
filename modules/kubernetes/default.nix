@@ -35,16 +35,17 @@ let
     cri-tools
     ebtables
   ];
+  cfg = config.ocf.kubernetes;
 in
 {
   # Configuration for Nodes
-  options.services.ocfKubernetes = {
+  options.ocf.kubernetes = {
     enable = lib.mkEnableOption "everything needed to run kubeadm";
     isLeader = lib.mkEnableOption "kube-vip as a static pod";
     staging = lib.mkEnableOption "staging cluster node";
   };
 
-  config = lib.mkIf config.services.ocfKubernetes.enable {
+  config = lib.mkIf cfg.enable {
     # add exemption: automated deployments has caused failures due to the control plane all going down at once
     ocf.managed-deployment.automated-deploy = false;
 
