@@ -70,6 +70,9 @@ in
             --hashlimit-mode srcip -j DROP
         '';
       };
+
+      # enable printing
+      ocf.printing.enable = true;
     })
 
     (lib.mkIf (cfg.enable && cfg.public) {
