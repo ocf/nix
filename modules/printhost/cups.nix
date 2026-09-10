@@ -153,7 +153,7 @@ in
           -v "ipp://localhost/classes/OCF-BW-Group?waitjob=false&waitprinter=false" \
           -P ${hpPpd} \
           -D "OCF Black & White" -L "OCF lab" \
-          -E -o printer-is-shared=true -o Duplex=DuplexNoTumble
+          -E -o printer-is-shared=true -o Duplex=DuplexNoTumble -o media=Letter -o fit-to-page-default=true
         lpadmin -p OCF-Color \
           -v ocfbackend:socket://fishpaper:9100 \
           -P ${hpColorPpd} \
