@@ -299,13 +299,35 @@ in
     "nixos/configuration.nix".text = ''
       {}: builtins.abort "This machine is not managed by /etc/nixos. Please use configs at ocf.io/gh/nix with Colmena."
     '';
-  }
-  // lib.optionalAttrs (!config.ocf.printhost.enable) {
-    "cups/lpoptions".text = "Default OCF-BW";
-    "cups/client.conf".text = ''
-      ServerName printhost.ocf.berkeley.edu
-      Encryption Always
-    '';
+  };
+
+  services.printing = lib.mkIf (!config.ocf.printhost.enable) {
+    enable = true;
+    startWhenNeeded = true;
+    drivers = [ pkgs.ocf-hplip ];
+  };
+  hardware.printers = lib.mkIf (!config.ocf.printhost.enable) {
+    ensureDefaultPrinter = "OCF-BW";
+    ensurePrinters = [
+      {
+        deviceUri = "ipps://printhost.ocf.berkeley.edu/classes/OCF-BW-Group?waitjob=false&waitprinter=false";
+        name = "OCF-BW";
+        model = "HP/hp-laserjet_m806-ps.ppd.gz";
+        location = "OCF lab";
+        ppdOptions = {
+          Duplex = "DuplexNoTumble";
+        };
+      }
+      {
+        deviceUri = "ipps://printhost.ocf.berkeley.edu/classes/OCF-Color?waitjob=false&waitprinter=false";
+        name = "OCF-Color";
+        model = "HP/hp-color_laserjet_m856-ps.ppd.gz";
+        location = "OCF lab";
+        ppdOptions = {
+          Duplex = "None";
+        };
+      }
+    ];
   };
 
   systemd.services.nix-remove-profiles = {
