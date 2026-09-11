@@ -14,7 +14,11 @@ in
 {
   nix = {
     channel.enable = false;
+
+    # set system flake registry and NIX_PATH to flake inputs
     registry = lib.mapAttrs (_: value: { flake = value; }) inputs;
+    nixPath = lib.mapAttrsToList (key: value: "${key}=${value.outPath}") inputs;
+
     settings = {
       experimental-features = "nix-command flakes";
       nix-path = lib.mapAttrsToList (name: _: "${name}=flake:${name}") inputs;
