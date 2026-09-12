@@ -63,18 +63,7 @@ in
       browsed.enable = false;
       browsing = false;
       stateless = true;
-      # Substitute the public hostname into ServerName, and switch to
-      # Negotiate (GSSAPI/Kerberos) auth when a keytab is configured.
-      extraConf = lib.mkForce (
-        lib.replaceStrings
-          [
-            "@cups-url@"
-          ]
-          [
-            "${config.networking.hostName}.ocf.berkeley.edu"
-          ]
-          (builtins.readFile ./conf/cupsd.conf)
-      );
+      extraConf = builtins.readFile ./conf/cupsd.conf;
       extraFilesConf = builtins.readFile ./conf/cups-files.conf;
       # hplip provides hpps (HP PPD filter); epson-escpr2 provides epson-escpr-wrapper2.
       drivers = [
@@ -100,13 +89,13 @@ in
       serviceConfig.Type = "oneshot";
       script = ''
         ln -sf /var/lib/acme/${config.networking.hostName}.ocf.berkeley.edu/fullchain.pem \
-          /var/lib/cups/ssl/${config.networking.hostName}.ocf.berkeley.edu.crt
+          /var/lib/cups/ssl/printhost.ocf.berkeley.edu.crt
         ln -sf /var/lib/acme/${config.networking.hostName}.ocf.berkeley.edu/key.pem \
-          /var/lib/cups/ssl/${config.networking.hostName}.ocf.berkeley.edu.key
+          /var/lib/cups/ssl/printhost.ocf.berkeley.edu.key
         ln -sf /var/lib/acme/${config.networking.hostName}.ocf.berkeley.edu/fullchain.pem \
-          "/var/lib/cups/ssl/${config.networking.hostName}.OCF.Berkeley.EDU.crt"
+          "/var/lib/cups/ssl/printhost.OCF.Berkeley.EDU.crt"
         ln -sf /var/lib/acme/${config.networking.hostName}.ocf.berkeley.edu/key.pem \
-          "/var/lib/cups/ssl/${config.networking.hostName}.OCF.Berkeley.EDU.key"
+          "/var/lib/cups/ssl/printhost.OCF.Berkeley.EDU.key"
       '';
     };
 
