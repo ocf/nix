@@ -3,8 +3,7 @@
 {
   imports = [
     ./cups.nix
-    ./enforcer.nix
-    ./monitor.nix
+    ./cleanup.nix
   ];
 
   options.ocf.printhost = {
@@ -18,11 +17,6 @@
     wayoutPasswordFile = lib.mkOption {
       type = lib.types.path;
       description = "Path to file containing the wayout notification password.";
-    };
-
-    redisPasswordFile = lib.mkOption {
-      type = lib.types.path;
-      description = "Path to file containing the Redis broker password.";
     };
   };
 
