@@ -30,6 +30,7 @@ import requests
 from ocflib.misc.mail import MAIL_SIGNATURE
 from ocflib.misc.mail import send_mail_user
 from ocflib.misc.mail import send_problem_report
+import cups
 
 
 # Redis broker for real-time notifications
@@ -291,10 +292,15 @@ def send_printer_mail(message, job, quo):
     send_mail_user(job.user, message.subject, body)
 
 
-def send_notification(wayout_pass, summary, body, username):
+def send_notification(wayout_pass, summary, body):
     try:
-        hostname = get_hostname_from_username(username)
+        job_id = env.get('TEAJOBID')
+        conn = cups.Connection()
+        job_attrs = conn.getJobAttributes(job_id, requested_attributes=['job-originating-host-name'])
+        hostname = job_attrs.get('job-originating-host-name')
+
         if not hostname:
+            syslog(f'ERROR: no hostname found for job id: {job_id}')
             return
         url = 'http://' + hostname + ':' + str(PORT) + '/notify'
         data = {
@@ -311,19 +317,6 @@ def send_notification(wayout_pass, summary, body, username):
         syslog('Exception: ' + str(e))
 
 
-def get_hostname_from_username(username):
-    try:
-        url = 'https://labmap.ocf.berkeley.edu/api/generate'
-        res = requests.get(url, timeout=5).json()
-        desktops = res.get('desktops', [])
-        for desktop in desktops:
-            if desktop.get('user', '') == username:
-                return desktop.get('name')
-        return None
-    except Exception as e:
-        syslog('Exception: ' + str(e))
-
-
 def prehook(c, r, job, wayout_pass):
     quo = quota.get_quota(c, job.user)
 
@@ -332,7 +325,7 @@ def prehook(c, r, job, wayout_pass):
         send_printer_mail(NON_LETTER_ERROR_MESSAGE, job, quo)
         msg = NOTIFY_NON_LETTER.format(document=job.doc_name)
         r.publish('user-' + job.user, msg)
-        send_notification(wayout_pass, 'Non Letter Error', msg, job.user)
+        send_notification(wayout_pass, 'Non Letter Error', msg)
         sys.exit(255)
 
     if job.pages > quo.daily:
@@ -342,7 +335,7 @@ def prehook(c, r, job, wayout_pass):
             quota=quo.daily,
         )
         r.publish('user-' + job.user, msg)
-        send_notification(wayout_pass, 'Insufficient Quota', msg, job.user)
+        send_notification(wayout_pass, 'Insufficient Quota', msg)
         sys.exit(255)
     elif job.queue in COLOR_QUEUES and job.pages > quo.color:
         send_printer_mail(INSUFFICIENT_COLOR_QUOTA_MESSAGE, job, quo)
@@ -351,7 +344,7 @@ def prehook(c, r, job, wayout_pass):
             quota=quo.color,
         )
         r.publish('user-' + job.user, msg)
-        send_notification(wayout_pass, 'Insufficient Color Quota', msg, job.user)
+        send_notification(wayout_pass, 'Insufficient Color Quota', msg)
         sys.exit(255)
 
 
@@ -363,7 +356,7 @@ def posthook(c, r, job, success, wayout_pass):
             document=job.doc_name,
             printer=job.printer
         )
-        send_notification(wayout_pass, 'Job Queued', msg, job.user)
+        send_notification(wayout_pass, 'Job Queued', msg)
         r.publish('printer-' + job.printer, job.user)
     else:
         quo = quota.get_quota(c, job.user)
@@ -382,7 +375,7 @@ def posthook(c, r, job, success, wayout_pass):
 
         syslog(err_msg)
         send_problem_report(err_msg)
-        send_notification(wayout_pass, 'Printer Error', msg, job.user)
+        send_notification(wayout_pass, 'Printer Error', msg)
     r.publish('user-' + job.user, msg)
 
 
