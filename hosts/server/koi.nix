@@ -30,27 +30,28 @@
 
   ocf.loginServer.enable = true;
 
-  age.secrets.ocfprinting = {
-    rekeyFile = ../../secrets/master-keyed/ocfprinting.age;
-    path = "/etc/ocfprinting.json";
-    owner = "root";
-    group = "ocfstaff";
-    mode = "0640";
-  };
-
-  # like puppet certs, needed for the ocfmail-dev and ocfstats-dev users that are in the ocfweb tests suite, which is run on koi.
-  age.secrets.ocfweb-conf = {
-    rekeyFile = ../../secrets/master-keyed/koi/ocfweb.conf.age;
-    path = "/etc/ocfweb/ocfweb.conf";
-    owner = "root";
-    group = "ocfstaff";
-    mode = "0640";
-  };
-
-  # These puppet certs are necessary to (at least) load the servers page properly in the dev environment on ocfweb. The puppetdb must be queried by koi when running ocfweb tests to get correct information about puppet hosts (ex. which ones are kvm hypervisors, what are their corresponding VMs)
   age.secrets =
     let
-      types = [
+      secrets = [
+        {
+          name = "ocfprinting";
+          rekeyFile = ../../secrets/master-keyed/ocfprinting.age;
+          path = "/etc/ocfprinting.json";
+        }
+        # like puppet certs, needed for the ocfmail-dev and ocfstats-dev users that are in the ocfweb tests suite, which is run on koi.
+        {
+          name = "ocfweb-conf";
+          rekeyFile = ../../secrets/master-keyed/koi/ocfweb.conf.age;
+          path = "/etc/ocfweb/ocfweb.conf";
+        }
+        {
+          name = "ucbldap";
+          rekeyFile = ../../secrets/master-keyed/koi/ucbldap.passwd.age;
+          path = "/etc/ucbldap.passwd";
+        }
+      ];
+      # These puppet certs are necessary to (at least) load the servers page properly in the dev environment on ocfweb. The puppetdb must be queried by koi when running ocfweb tests to get correct information about puppet hosts (ex. which ones are kvm hypervisors, what are their corresponding VMs)
+      puppetSecretTypes = [
         "ca"
         "cert"
         "private"
@@ -58,25 +59,27 @@
         "signed"
       ];
     in
-    builtins.listToAttrs (
-      map (type: {
-        name = "puppet-${type}";
-        value = {
-          rekeyFile = ../../secrets/master-keyed/koi/puppet-${type}.pem.age;
-          path = "/etc/ocfweb/puppet-certs/puppet-${type}.pem";
-          owner = "root";
-          mode = "0644";
-        };
-      }) types
-    );
-
-  age.secrets.ucbldap = {
-    rekeyFile = ../../secrets/master-keyed/koi/ucbldap.passwd.age;
-    path = "/etc/ucbldap.passwd";
-    owner = "root";
-    group = "ocfstaff";
-    mode = "0640";
-  };
+    # build age.secrets.${secret.name} from secrets
+    builtins.listToAttrs
+    ++ (map (secret: {
+      inherit (secret) name;
+      value = {
+        inherit (secret) rekeyFile path;
+        owner = "root";
+        group = "ocfstaff";
+        mode = "0640";
+      };
+    }) secrets)
+    # build age.secrets.puppet-${type} from puppetSecretTypes
+    ++ (map (type: {
+      name = "puppet-${type}";
+      value = {
+        rekeyFile = ../../secrets/master-keyed/koi/puppet-${type}.pem.age;
+        path = "/etc/ocfweb/puppet-certs/puppet-${type}.pem";
+        owner = "root";
+        mode = "0644";
+      };
+    }) puppetSecretTypes);
 
   system.stateVersion = "25.05";
 }
