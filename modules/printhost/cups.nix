@@ -15,7 +15,6 @@ let
       pycups
       pymysql
       requests
-      redis
     ]
   );
 
@@ -32,7 +31,6 @@ let
     enforcer = enforcerBin;
     mysqlPasswordFile = cfg.mysqlPasswordFile;
     wayoutPasswordFile = cfg.wayoutPasswordFile;
-    redisPasswordFile = cfg.redisPasswordFile;
   };
 
   # Shell wrapper so the backend runs under the Nix-store python3 rather than

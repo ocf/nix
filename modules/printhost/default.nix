@@ -18,11 +18,6 @@
       type = lib.types.path;
       description = "Path to file containing the wayout notification password.";
     };
-
-    redisPasswordFile = lib.mkOption {
-      type = lib.types.path;
-      description = "Path to file containing the Redis broker password.";
-    };
   };
 
   config = lib.mkIf config.ocf.printhost.enable {
