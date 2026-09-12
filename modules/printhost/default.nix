@@ -3,7 +3,7 @@
 {
   imports = [
     ./cups.nix
-    ./enforcer.nix
+    ./cleanup.nix
   ];
 
   options.ocf.printhost = {
