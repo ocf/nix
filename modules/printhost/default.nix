@@ -4,7 +4,6 @@
   imports = [
     ./cups.nix
     ./enforcer.nix
-    ./monitor.nix
   ];
 
   options.ocf.printhost = {
