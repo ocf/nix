@@ -455,6 +455,22 @@
         "type": "github"
       }
     },
+    "ocf-dns": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1784534980,
+        "narHash": "sha256-Cl2VlN+NY59l1GXi8DUkqHeLxmxoY/LPAAb9SO1PsQU=",
+        "owner": "ocf",
+        "repo": "dns",
+        "rev": "736e31802ed35e66db6eeb3dcbadd47104e155d4",
+        "type": "github"
+      },
+      "original": {
+        "owner": "ocf",
+        "repo": "dns",
+        "type": "github"
+      }
+    },
     "ocf-jukebox": {
       "inputs": {
         "nixpkgs": [
@@ -642,6 +658,7 @@
         "nixpkgs-deprecated": "nixpkgs-deprecated",
         "nixpkgs-unstable": "nixpkgs-unstable",
         "ocf-cosmic-applets": "ocf-cosmic-applets",
+        "ocf-dns": "ocf-dns",
         "ocf-jukebox": "ocf-jukebox",
         "ocf-pam-trimspaces": "ocf-pam-trimspaces",
         "ocf-sync-etc": "ocf-sync-etc",

@@ -1,0 +1,69 @@
+// ACLs
+acl "ocf" {
+  169.229.226.0/24;
+  2607:f140:8801::/48;
+  169.229.220.64/28;
+  2607:f140:0:32::/64;
+};
+
+acl "ucb" {
+  {
+    128.32/16;
+    136.152/16;
+    169.229/16;
+    192.31.161/24;
+    192.58.221/24;
+    2607:f140::/32;
+  };
+};
+
+// Options
+options {
+  // This directory is used to search for any relative directives
+  // (including $INCLUDE in zone files)
+  directory "/srv/dns/etc/zones";
+
+  // Where to store more permanent keys (non-managed keys)
+  key-directory "/etc/bind/keys";
+
+  // This directory is used to store any managed keys (auto-updated DNSSEC keys
+  // for example)
+  managed-keys-directory "/var/cache/bind";
+
+  // Forward requests to campus nameservers
+  forwarders {
+    128.32.206.9;
+    128.32.136.9;
+    128.32.206.12;
+    128.32.136.12;
+  };
+
+  dnssec-validation yes;
+
+  // Notify campus Infoblox gridmaster
+  also-notify { 169.229.2.168; };
+
+  // Allow queries from anywhere and zone transfers from OCF/UCB
+  allow-query { any; };
+  allow-transfer { "ocf"; "ucb"; "localhost"; };
+
+  // Only allow recursive queries from OCF
+  recursion yes;
+  allow-recursion { "ocf"; "localhost"; };
+};
+
+// Query URIBL directly because campus nameservers are often blocked
+zone "multi.uribl.com" {
+  type forward;
+  forwarders {};
+};
+
+key "decal.ocfhosted.com" {
+  algorithm HMAC-SHA512;
+  secret "$DECAL_DDNS_KEY";
+};
+
+key "letsencrypt.ocf.io" {
+  algorithm HMAC-SHA512;
+  secret "$LETSENCRYPYT_DDNS_KEY";
+};
