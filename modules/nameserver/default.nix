@@ -33,6 +33,24 @@ in
   };
 
   config = lib.mkIf cfg.enable {
+    age.secrets =
+      lib.genAttrs (lib.attrNames (lib.readDir ../../secrets/master-keyed/nameserver)) (file: {
+        rekeyFile = ../../secrets/master-keyed/nameserver/${file};
+        path = "/etc/bind/keys/${lib.removeSuffix ".age" file}";
+      })
+      // {
+        "named.conf.keys.age" = {
+          owner = bindUser;
+          group = bindGroup;
+          rekeyFile = ../../secrets/master-keyed/nameserver/named.conf.keys.age;
+        };
+      };
+
+    environment.etc = lib.genAttrs (lib.attrNames (lib.readDir ./keys)) (file: {
+      source = ./keys/${file};
+      target = "bind/keys/${file}";
+    });
+
     networking.firewall = {
       allowedTCPPorts = [ 53 ];
       allowedUDPPorts = [ 53 ];
@@ -41,9 +59,23 @@ in
     services.bind = {
       enable = true;
       configFile = pkgs.writeText "named.conf" ''
-        include "/srv/dns/etc/named.conf.options";
+        include "/etc/bind/rndc.key";
+        controls {
+          inet 127.0.0.1 allow {localhost;} keys {"rndc-key";};
+        };
+
+        // from https://github.com/ocf/puppet/blob/master/modules/ocf_ns/templates/named.conf.options.erb
+        include "${./named.conf.options}";
+        include "${config.age.secrets."named.conf.keys.age".path}";
         include "/srv/dns/etc/named.conf.local";
       '';
+    };
+
+    systemd.services.bind = {
+      serviceConfig = {
+        CacheDirectory = "bind";
+        ReadWritePaths = [ "/srv/dns" ];
+      };
     };
 
     systemd.services.rebuild-dns-from-ldap = {
@@ -63,8 +95,6 @@ in
         sed -i /auto-dnssec/d etc/named.conf.local  # removed in bind 9.19.16
         build-zones
         check-zones
-        # from https://github.com/ocf/puppet/blob/master/modules/ocf_ns/templates/named.conf.options.erb
-        ${lib.getExe pkgs.envsubst} < ${./named.conf.options} > etc/named.conf.options
         cp -r etc /run/dns/
       '';
       serviceConfig = {

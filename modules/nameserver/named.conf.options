@@ -38,7 +38,7 @@ options {
     128.32.136.12;
   };
 
-  dnssec-validation yes;
+  dnssec-validation auto;
 
   // Notify campus Infoblox gridmaster
   also-notify { 169.229.2.168; };
@@ -56,14 +56,4 @@ options {
 zone "multi.uribl.com" {
   type forward;
   forwarders {};
-};
-
-key "decal.ocfhosted.com" {
-  algorithm HMAC-SHA512;
-  secret "$DECAL_DDNS_KEY";
-};
-
-key "letsencrypt.ocf.io" {
-  algorithm HMAC-SHA512;
-  secret "$LETSENCRYPYT_DDNS_KEY";
 };
