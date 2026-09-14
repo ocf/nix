@@ -51,26 +51,82 @@ in
     services.printing = {
       enable = true;
       startWhenNeeded = false;
-      listenAddresses = [
-        "*:80"
-        "*:631"
-      ];
       browsed.enable = false;
       browsing = false;
       stateless = true;
-      # Substitute the public hostname into ServerName, and switch to
-      # Negotiate (GSSAPI/Kerberos) auth when a keytab is configured.
-      extraConf = lib.mkForce (
-        lib.replaceStrings
-          [
-            "@cups-url@"
-          ]
-          [
-            "${config.networking.hostName}.ocf.berkeley.edu"
-          ]
-          (builtins.readFile ./conf/cupsd.conf)
-      );
-      extraFilesConf = builtins.readFile ./conf/cups-files.conf;
+      webInterface = true;
+      listenAddresses = [
+        "*:631"
+        "*:443"
+      ];
+      openFirewall = true;
+      extraConf = lib.mkForce ''
+        ServerName ${config.networking.fqdn}
+        ServerAlias ${config.networking.hostName}.ocf.io printhost.ocf.berkeley.edu printhost.ocf.io # matches the list of CNAMEs
+
+        PreserveJobFiles No
+
+        HostNameLookups On # required for print notifications
+
+        ErrorPolicy retry-job
+
+
+        <Location />
+          Order allow,deny
+          Allow from 169.229.226.0/24
+          Allow from [2607:f140:8801::]/64
+          Allow from localhost
+        </Location>
+
+        <Location /jobs>
+          Require user @SYSTEM
+          Order allow,deny
+          Allow from 169.229.226.0/24
+          Allow from [2607:f140:8801::]/64
+          Allow from localhost
+        </Location>
+
+        <Location /admin>
+          Require user @SYSTEM
+          Order allow,deny
+          Allow from 169.229.226.0/24
+          Allow from [2607:f140:8801::]/64
+          Allow from localhost
+        </Location>
+
+        <Location /admin/conf>
+          Require user @SYSTEM
+          Order allow,deny
+          Allow from 169.229.226.0/24
+          Allow from [2607:f140:8801::]/64
+          Allow from localhost
+        </Location>
+
+        <Policy default>
+          JobPrivateAccess all
+          JobPrivateValues none
+
+          # users can manage their own jobs and @SYSTEM group can manage all jobs
+          <Limit Send-Document Send-URI Hold-Job Release-Job Restart-Job Purge-Jobs Set-Job-Attributes Create-Job-Subscription Renew-Subscription Cancel-Subscription Get-Notifications Reprocess-Job Cancel-Current-Job Suspend-Current-Job Resume-Job CUPS-Move-Job CUPS-Get-Document Cancel-Job CUPS-Authenticate-Job>
+            Require user @OWNER @SYSTEM
+            Order deny,allow
+          </Limit>
+
+          # restrict management to @SYSTEM
+          <Limit CUPS-Add-Modify-Printer CUPS-Delete-Printer CUPS-Add-Modify-Class CUPS-Delete-Class CUPS-Set-Default Pause-Printer Resume-Printer Enable-Printer Disable-Printer Pause-Printer-After-Current-Job Hold-New-Jobs Release-Held-New-Jobs Deactivate-Printer Activate-Printer Restart-Printer Shutdown-Printer Startup-Printer Promote-Job Schedule-Job-After CUPS-Accept-Jobs CUPS-Reject-Jobs>
+            Require user @SYSTEM
+            Order deny,allow
+          </Limit>
+
+          <Limit All>
+            Order deny,allow
+          </Limit>
+        </Policy>
+      '';
+      extraFilesConf = ''
+        SystemGroup ocfstaff opstaff
+        ServerKeychain /var/lib/acme
+      '';
       # hplip provides hpps (HP PPD filter); epson-escpr2 provides epson-escpr-wrapper2.
       drivers = [
         ocfCupsBackend
@@ -124,14 +180,5 @@ in
     };
 
     services.avahi.enable = lib.mkForce false;
-
-    networking.firewall = {
-      allowedTCPPorts = [
-        80
-        443
-        631
-      ];
-      allowedUDPPorts = [ 631 ];
-    };
   };
 }
