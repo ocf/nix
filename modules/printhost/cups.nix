@@ -46,11 +46,6 @@ let
   ocfCupsBackend = pkgs.runCommand "ocf-cups-backend" { } ''
     install -Dm0700 ${ocfBackendBin} $out/lib/cups/backend/ocfbackend
   '';
-
-  # Use official PPDs unmodified; defaults are set via lpadmin -o below.
-  hpPpd = "${pkgs.ocf-hplip}/share/cups/model/HP/hp-laserjet_m806-ps.ppd.gz";
-  hpColorPpd = "${pkgs.ocf-hplip}/share/cups/model/HP/hp-color_laserjet_m856-ps.ppd.gz";
-
 in
 {
   config = lib.mkIf cfg.enable {
@@ -135,7 +130,7 @@ in
           -m raw \
           -D "HP LaserJet M806" -L "OCF lab" \
           -E -o printer-is-shared=false -o Duplex=DuplexNoTumble
-          
+
         lpadmin -p pagefault \
           -v ocfbackend:socket://pagefault:9100 \
           -m raw \
@@ -145,20 +140,14 @@ in
         lpadmin -p logjam    -c OCF-BW-Group
         lpadmin -p papercut  -c OCF-BW-Group
         lpadmin -p pagefault -c OCF-BW-Group
-        lpadmin -p OCF-BW-Group -E -o printer-is-shared=false \
+        lpadmin -p OCF-BW-Group -E -o printer-is-shared=true \
           -D "HP LaserJet M806" -L "OCF lab"
 
-        # ── Public Printers -------------─────────────────────────────────────
-        lpadmin -p OCF-BW \
-          -v "ipp://localhost/classes/OCF-BW-Group?waitjob=false&waitprinter=false" \
-          -P ${hpPpd} \
-          -D "OCF Black & White" -L "OCF lab" \
-          -E -o printer-is-shared=true -o Duplex=DuplexNoTumble
         lpadmin -p OCF-Color \
           -v ocfbackend:socket://fishpaper:9100 \
-          -P ${hpColorPpd} \
-          -D "OCF Color" -L "OCF lab" \
-          -E -o printer-is-shared=true -o Duplex=None
+          -m raw \
+          -D "HP Color LaserJet M856" -L "OCF lab" \
+          -E -o printer-is-shared=true
       '';
     };
 

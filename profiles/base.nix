@@ -286,7 +286,6 @@ in
     };
 
     fwupd.enable = true;
-    avahi.enable = true;
   };
 
   security.rtkit.enable = true;
@@ -298,13 +297,6 @@ in
     papersize.text = "letter";
     "nixos/configuration.nix".text = ''
       {}: builtins.abort "This machine is not managed by /etc/nixos. Please use configs at ocf.io/gh/nix with Colmena."
-    '';
-  }
-  // lib.optionalAttrs (!config.ocf.printhost.enable) {
-    "cups/lpoptions".text = "Default OCF-BW";
-    "cups/client.conf".text = ''
-      ServerName printhost.ocf.berkeley.edu
-      Encryption Always
     '';
   };
 
