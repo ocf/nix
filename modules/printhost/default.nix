@@ -26,11 +26,17 @@
     # root needs lp group to run lpadmin in the printer setup service
     users.users."root".extraGroups = [ "lp" ];
 
-    # Reload CUPS when the host's LE cert is renewed (cert lives at hostName path,
-    # printhost SAN is included as an extraCert below)
-    security.acme.certs."${config.networking.hostName}.ocf.berkeley.edu".reloadServices = [
-      "cups.service"
-    ];
+    # reload cups when the host's tls cert is renewed
+    # and link certs to the paths cups expects (cups pointed to /var/lib/acme in cups-files.conf)
+    security.acme.certs."${config.networking.fqdn}" = {
+      reloadServices = [ "cups.service" ];
+      postRun = ''
+        ln -sf /var/lib/acme/${config.networking.fqdn}/fullchain.pem \
+          /var/lib/acme/${config.networking.fqdn}.crt
+        ln -sf /var/lib/acme/${config.networking.fqdn}/key.pem \
+          /var/lib/acme/${config.networking.fqdn}.key
+      '';
+    };
 
     # add all CNAMEs to tule's cert
     ocf.acme.extraCerts = [
