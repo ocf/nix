@@ -91,13 +91,13 @@ in
       serviceConfig.Type = "oneshot";
       script = ''
         ln -sf /var/lib/acme/${config.networking.hostName}.ocf.berkeley.edu/fullchain.pem \
-          /var/lib/cups/ssl/printhost.ocf.berkeley.edu.crt
+          /var/lib/cups/ssl/tule.ocf.berkeley.edu.crt
         ln -sf /var/lib/acme/${config.networking.hostName}.ocf.berkeley.edu/key.pem \
-          /var/lib/cups/ssl/printhost.ocf.berkeley.edu.key
+          /var/lib/cups/ssl/tule.ocf.berkeley.edu.key
         ln -sf /var/lib/acme/${config.networking.hostName}.ocf.berkeley.edu/fullchain.pem \
-          "/var/lib/cups/ssl/printhost.OCF.Berkeley.EDU.crt"
+          "/var/lib/cups/ssl/tule.OCF.Berkeley.EDU.crt"
         ln -sf /var/lib/acme/${config.networking.hostName}.ocf.berkeley.edu/key.pem \
-          "/var/lib/cups/ssl/printhost.OCF.Berkeley.EDU.key"
+          "/var/lib/cups/ssl/tule.OCF.Berkeley.EDU.key"
       '';
     };
 

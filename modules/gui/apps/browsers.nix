@@ -86,6 +86,7 @@ in
           "auth.ocf.berkeley.edu"
           "idm.ocf.berkeley.edu"
           "printhost.ocf.berkeley.edu"
+          "tule.ocf.berkeley.edu"
         ];
 
         ExtensionSettings = {
@@ -191,8 +192,8 @@ in
         DefaultBrowserSettingEnabled = false;
 
         # Allow SPNEGO for Keycloak SSO
-        AuthServerAllowlist = "auth.ocf.berkeley.edu,idm.ocf.berkeley.edu,printhost.ocf.berkeley.edu";
-        AuthNegotiateDelegateAllowlist = "auth.ocf.berkeley.edu,idm.ocf.berkeley.edu,printhost.ocf.berkeley.edu";
+        AuthServerAllowlist = "auth.ocf.berkeley.edu,idm.ocf.berkeley.edu,printhost.ocf.berkeley.edu,tule.ocf.berkeley.edu";
+        AuthNegotiateDelegateAllowlist = "auth.ocf.berkeley.edu,idm.ocf.berkeley.edu,printhost.ocf.berkeley.edu,tule.ocf.berkeley.edu";
 
         # Printing from Chrome's PDF viewer often results in cut-off pages
         DisablePrintPreview = true;
