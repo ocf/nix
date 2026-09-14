@@ -94,6 +94,30 @@ in
           };
         };
 
+        Bookmarks = [
+          {
+            Title = "bCourses";
+            URL = "https://bcourses.berkeley.edu/";
+          }
+          {
+            Title = "bDrive";
+            URL = "http://bdrive.berkeley.edu/";
+          }
+          {
+            Title = "bMail";
+            URL = "http://bmail.berkeley.edu/";
+          }
+          {
+            Title = "Gradescope";
+            URL = "https://www.gradescope.com/auth/saml/berkeley/";
+          }
+        ];
+
+        HttpAllowlist = [
+          "http://bdrive.berkeley.edu/"
+          "http://bmail.berkeley.edu/"
+        ];
+
         Preferences = {
           # OCF (HP B&W): default to double-sided, black & white, letter
           "print.printer_OCF-BW.print_duplex" = {
