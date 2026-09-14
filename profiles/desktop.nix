@@ -92,8 +92,6 @@
   # needed for accessing totp codes on yubikey via yubico authenticator
   services.pcscd.enable = true;
 
-  virtualisation.podman.enable = true;
-
   # kill user processes on logout
   # if this is not set to true, the system user manager, processes, home tmpfs
   # mount, etc will linger, causing the logind session and scope to be stuck in

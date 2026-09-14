@@ -20,6 +20,9 @@ in
     hardware.nvidia.modesetting.enable = true;
     hardware.nvidia.open = cfg.open;
 
+    # the latest nvidia drivers no longer support pascal cards (ex: 1060)
+    hardware.nvidia.package = lib.mkIf (!cfg.open) config.boot.kernelPackages.nvidiaPackages.legacy_580;
+
     # userspace nvidia drivers to restore video memory
     hardware.nvidia.powerManagement.enable = true;
     boot.extraModprobeConfig = ''

@@ -16,6 +16,16 @@
   # nfs server should not be mounting nfs from itself
   ocf.nfs.enable = lib.mkForce false;
 
+  # in linux 6.6, nfsd added write delegations. however, this causes old clients to
+  # get stuck spamming TEST_STATEID (~5000/s) causing open() to take multiple seconds:
+  #
+  # fixed client-side in linux 6.7, but death (and others) are super old (5.10 lol),
+  # so let's disable delegations for now by disabling vfs leases.
+  #
+  # issue: https://gitlab.com/gitlab-org/gitlab-foss/-/work_items/52017
+  # fix: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=a9b8d90f8726
+  boot.kernel.sysctl."fs.leases-enable" = 0;
+
   services.nfs.server = {
     enable = true;
     # https://github.com/ocf/puppet/blob/a081b2210691bd46d585accc8548c985188486a0/modules/ocf_filehost/manifests/init.pp#L10-L16
@@ -82,7 +92,7 @@
   disko.devices = {
     disk = {
       main = {
-        device = "/dev/disk/by-id/ata-Samsung_SSD_850_PRO_1TB_S252NXAGA05227F";
+        device = "/dev/disk/by-id/ata-SuperMicro_SSD_SMC0515D92517CF42434";
         type = "disk";
         content = {
           type = "gpt";

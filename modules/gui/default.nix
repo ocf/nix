@@ -144,6 +144,9 @@ in
 
       ocf-tv
 
+      # niri default application runner
+      fuzzel
+
       # COSMIC greeter override for logout button
       ocf-cosmic-greeter
 

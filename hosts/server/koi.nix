@@ -83,5 +83,13 @@
     mode = "0644";
   };
 
+  age.secrets.ucbldap = {
+    rekeyFile = ../../secrets/master-keyed/koi/ucbldap.passwd.age;
+    path = "/etc/ucbldap.passwd";
+    owner = "root";
+    group = "ocfstaff";
+    mode = "0640";
+  };
+
   system.stateVersion = "25.05";
 }
