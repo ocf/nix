@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=bCourses
+# FIXME: Type=Link not work when double clicked, using Type=Application for now
+#Type=Link
+#URL=https://bcourses.berkeley.edu/
+Type=Application
+Exec=firefox https://bcourses.berkeley.edu/
+# TODO: add an icon for canvas
+Icon=text-html
