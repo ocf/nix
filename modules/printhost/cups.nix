@@ -79,32 +79,6 @@ in
       ];
     };
 
-    # /var/lib/cups is a tmpfs (stateless = true), so this runs every boot.
-    # CUPS resolves its SSL cert by the machine's actual hostname, not ServerName,
-    # so we name the files after the host. The cert includes printhostUrl as a SAN
-    # so clients connecting to either hostname get a valid cert.
-    systemd.services.cups-ssl-certs = {
-      description = "Copy ACME certificates into CUPS SSL directory";
-      after = [
-        "cups.service"
-        "acme-${config.networking.hostName}.ocf.berkeley.edu.service"
-      ];
-      wants = [ "acme-${config.networking.hostName}.ocf.berkeley.edu.service" ];
-      wantedBy = [ "cups.service" ];
-      partOf = [ "cups.service" ];
-      serviceConfig.Type = "oneshot";
-      script = ''
-        ln -sf /var/lib/acme/${config.networking.hostName}.ocf.berkeley.edu/fullchain.pem \
-          /var/lib/cups/ssl/${config.networking.hostName}.ocf.berkeley.edu.crt
-        ln -sf /var/lib/acme/${config.networking.hostName}.ocf.berkeley.edu/key.pem \
-          /var/lib/cups/ssl/${config.networking.hostName}.ocf.berkeley.edu.key
-        ln -sf /var/lib/acme/${config.networking.hostName}.ocf.berkeley.edu/fullchain.pem \
-          "/var/lib/cups/ssl/${config.networking.hostName}.OCF.Berkeley.EDU.crt"
-        ln -sf /var/lib/acme/${config.networking.hostName}.ocf.berkeley.edu/key.pem \
-          "/var/lib/cups/ssl/${config.networking.hostName}.OCF.Berkeley.EDU.key"
-      '';
-    };
-
     # Declaratively configure all printers and classes on cups service start.
     # Runs after cups.service since /var/lib/cups is stateless.
     systemd.services.cups-setup-printers = {
