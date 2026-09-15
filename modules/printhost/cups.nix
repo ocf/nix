@@ -123,11 +123,9 @@ in
         SystemGroup ocfstaff opstaff
         ServerKeychain /var/lib/acme
       '';
-      # hplip provides hpps (HP PPD filter); epson-escpr2 provides epson-escpr-wrapper2.
       drivers = [
         ocfCupsBackend
         pkgs.ocf-hplip
-        pkgs.epson-escpr2
       ];
     };
 
