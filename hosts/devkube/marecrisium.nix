@@ -1,11 +1,13 @@
 { ... }:
 
 {
-  imports = [ ../../hardware/nucleus.nix ];
+  imports = [ ../../hardware/virtualized.nix ];
+
+  networking.hostName = "marecrisium";
 
   ocf.network = {
     enable = true;
-    lastOctet = 8;
+    lastOctet = 101;
     extraRoutes = [
       # We use these subnets for Kubernetes, they aren't part of the main /64
       {
@@ -17,20 +19,12 @@
         Scope = "link";
       }
     ];
-
-    bond = {
-      enable = true;
-      interfaces = [
-        "enp66s0f0np0"
-        "enp66s0f1np1"
-      ];
-    };
   };
 
   ocf.kubernetes = {
     enable = true;
     isLeader = true;
-    staging = false;
+    staging = true;
   };
 
   # This value determines the NixOS release from which the default
@@ -39,5 +33,5 @@
   # this value at the release version of the first install of this system.
   # Before changing this value read the documentation for this option
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
-  system.stateVersion = "22.11"; # Did you read the comment?
+  system.stateVersion = "25.05"; # Did you read the comment?
 }
