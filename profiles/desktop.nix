@@ -47,6 +47,9 @@
   # Enable support SANE scanners
   hardware.sane.enable = true;
 
+  # enable printing
+  ocf.printing.enable = true;
+
   zramSwap.enable = true;
 
   documentation.dev.enable = true;
@@ -76,8 +79,6 @@
   '';
 
   services = {
-    avahi.enable = true;
-
     pipewire = {
       enable = true;
       pulse.enable = true;
