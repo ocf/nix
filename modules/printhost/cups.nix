@@ -80,6 +80,7 @@ in
 
         ErrorPolicy retry-job
 
+        DefaultShared Yes
 
         <Location />
           Order allow,deny
@@ -143,49 +144,47 @@ in
       ];
     };
 
-    # Declaratively configure all printers and classes on cups service start.
-    # Runs after cups.service since /var/lib/cups is stateless.
-    systemd.services.cups-setup-printers = {
-      description = "Declaratively configure CUPS printers and classes";
-      after = [ "cups.service" ];
-      wantedBy = [ "cups.service" ];
-      partOf = [ "cups.service" ];
-      path = [ config.services.printing.package ];
-      serviceConfig.Type = "oneshot";
-      script = ''
-        set -euo pipefail
+    hardware.printers =
+      let
+        bwPrinters = [
+          "logjam"
+          "papercut"
+          "pagefault"
+        ];
+      in
+      {
+        ensurePrinters =
+          (map (printer: {
+            name = printer;
+            model = "raw";
+            description = "HP LaserJet M806";
+            location = "OCF lab";
+            deviceUri = "ocfbackend:socket://${printer}:9100";
+            ppdOptions = {
+              printer-is-shared = "false";
+              Duplex = "DuplexNoTumble";
+            };
+          }) bwPrinters)
+          ++ [
+            {
+              name = "OCF-Color";
+              model = "raw";
+              description = "HP Color LaserJet M856";
+              location = "OCF lab";
+              deviceUri = "ocfbackend:socket://fishpaper:9100";
+              ppdOptions = {
+                printer-is-shared = "true";
+              };
+            }
+          ];
 
-        lpadmin -p logjam \
-          -v ocfbackend:socket://logjam:9100 \
-          -m raw \
-          -D "HP LaserJet M806" -L "OCF lab" \
-          -E -o printer-is-shared=false -o Duplex=DuplexNoTumble
-
-        lpadmin -p papercut \
-          -v ocfbackend:socket://papercut:9100 \
-          -m raw \
-          -D "HP LaserJet M806" -L "OCF lab" \
-          -E -o printer-is-shared=false -o Duplex=DuplexNoTumble
-
-        lpadmin -p pagefault \
-          -v ocfbackend:socket://pagefault:9100 \
-          -m raw \
-          -D "HP LaserJet M806" -L "OCF lab" \
-          -E -o printer-is-shared=false -o Duplex=DuplexNoTumble
-
-        lpadmin -p logjam    -c OCF-BW-Group
-        lpadmin -p papercut  -c OCF-BW-Group
-        lpadmin -p pagefault -c OCF-BW-Group
-        lpadmin -p OCF-BW-Group -E -o printer-is-shared=true \
-          -D "HP LaserJet M806" -L "OCF lab"
-
-        lpadmin -p OCF-Color \
-          -v ocfbackend:socket://fishpaper:9100 \
-          -m raw \
-          -D "HP Color LaserJet M856" -L "OCF lab" \
-          -E -o printer-is-shared=true
-      '';
-    };
+        ensureClasses = {
+          OCF-BW-Group = {
+            location = "OCF lab";
+            printers = bwPrinters;
+          };
+        };
+      };
 
     services.avahi.enable = lib.mkForce false;
   };
