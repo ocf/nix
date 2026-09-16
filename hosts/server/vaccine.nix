@@ -18,7 +18,7 @@
   disko.devices = {
     disk = {
       main = {
-        device = "/dev/vdb";
+        device = "/dev/disk/by-id/ata-SuperMicro_SSD_SMC0515D92517CE71175";
         type = "disk";
         content = {
           type = "gpt";
@@ -43,10 +43,7 @@
   };
 
   boot.loader = {
-    grub = {
-      enable = true;
-      device = "/dev/disk/by-id/ata-SuperMicro_SSD_SMC0515D92517CE71175";
-    };
+    grub.enable = true;
 
     systemd-boot.enable = false;
   };
