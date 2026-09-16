@@ -18,20 +18,15 @@
   disko.devices = {
     disk = {
       main = {
-        device = "/dev/disk/by-id/ata-SuperMicro_SSD_SMC0515D92517CE71175";
+        device = "/dev/vdb";
         type = "disk";
         content = {
           type = "gpt";
           partitions = {
-            ESP = {
-              size = "1G";
-              type = "EF00";
-              content = {
-                type = "filesystem";
-                format = "vfat";
-                mountpoint = "/boot";
-                mountOptions = [ "umask=0077" ];
-              };
+            boot = {
+              size = "1M";
+              type = "EF02"; # for grub MBR
+              attributes = [ 0 ]; # partition attribute
             };
             root = {
               size = "100%";
@@ -47,12 +42,16 @@
     };
   };
 
-  boot.loader.grub = {
-    enable = true;
-    device = "/dev/disk/by-id/ata-SuperMicro_SSD_SMC0515D92517CE71175";
+  boot.loader = {
+    grub = {
+      enable = true;
+      device = "/dev/disk/by-id/ata-SuperMicro_SSD_SMC0515D92517CE71175";
+    };
+
+    systemd-boot.enable = false;
   };
 
-  services.ceph.enable = true;
+  #services.ceph.enable = true;
 
   nixpkgs.hostPlatform = "x86_64-linux";
 
