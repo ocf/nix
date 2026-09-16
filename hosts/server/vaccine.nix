@@ -8,8 +8,8 @@
     bond = {
       enable = true;
       interfaces = [
-        "eno1"
-        "eno2"
+        "enp4s0f0np0"
+        "enp4s0f1np1"
       ];
     };
     lastOctet = 14;
