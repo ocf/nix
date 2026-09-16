@@ -2,6 +2,7 @@
   lib,
   config,
   pkgs,
+  pkgs-unstable,
   ...
 }:
 
@@ -46,6 +47,15 @@ let
   '';
 in
 {
+  # use nixos-unstable printers module to include nixpkgs pr #558981 and #524127
+  # FIXME remove after nixos-26.11 upgrade
+  disabledModules = [
+    "hardware/printers.nix"
+  ];
+  imports = [
+    "${pkgs-unstable.path}/nixos/modules/hardware/printers.nix"
+  ];
+
   config = lib.mkIf cfg.enable {
 
     services.printing = {
