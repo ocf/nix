@@ -47,6 +47,11 @@
     };
   };
 
+  boot.loader.grub = {
+    enable = true;
+    device = "/dev/disk/by-id/ata-SuperMicro_SSD_SMC0515D92517CE71175";
+  };
+
   services.ceph.enable = true;
 
   nixpkgs.hostPlatform = "x86_64-linux";
