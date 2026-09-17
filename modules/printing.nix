@@ -22,9 +22,10 @@ in
     services.avahi.enable = lib.mkForce false; # prevent printer discovery by cups client
     services.printing = {
       enable = true;
-      startWhenNeeded = true;
+      startWhenNeeded = false; # print dialog does not wait for cups to start, will show no printers first time if socket-activated
       browsed.enable = false;
       browsing = false;
+      stateless = true;
       drivers = [ pkgs.ocf-hplip ];
     };
     hardware.printers = {
