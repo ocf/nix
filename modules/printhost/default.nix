@@ -38,6 +38,19 @@
       '';
     };
 
+    # Postfix relay so ocflib can send mail via sendmail.
+    services.postfix = {
+      enable = true;
+      settings.main = {
+        mydomain = config.networking.domain;
+        myorigin = config.networking.domain;
+        mydestination = "";
+        inet_interfaces = "loopback-only";
+        relayhost = [ "smtp.${config.networking.domain}" ];
+        sender_canonical_maps = "static:root@${config.networking.domain}";
+      };
+    };
+
     # add all CNAMEs to tule's cert
     ocf.acme.extraCerts = [
       "printhost.ocf.berkeley.edu"
