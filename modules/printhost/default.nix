@@ -1,5 +1,8 @@
 { lib, config, ... }:
 
+let
+  cfg = config.ocf.printhost;
+in
 {
   imports = [
     ./cups.nix
@@ -8,6 +11,12 @@
 
   options.ocf.printhost = {
     enable = lib.mkEnableOption "OCF print server";
+
+    subdomain = lib.mkOption {
+      type = lib.types.str;
+      description = "sets SUBDOMAIN.ocf.berkeley.edu and SUBDOMAIN.ocf.io";
+      default = "printhost";
+    };
 
     mysqlPasswordFile = lib.mkOption {
       type = lib.types.path;
@@ -51,10 +60,8 @@
 
     # add all CNAMEs to tule's cert
     ocf.acme.extraCerts = [
-      "printhost.ocf.berkeley.edu"
-      "printhost.ocf.io"
-      "p.ocf.berkeley.edu"
-      "p.ocf.io"
+      "${cfg.subdomain}.ocf.berkeley.edu"
+      "${cfg.subdomain}.ocf.io"
     ];
   };
 }

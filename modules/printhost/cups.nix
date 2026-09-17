@@ -73,7 +73,7 @@ in
       # using lib.mkForce to overwrite the default extraConf
       extraConf = lib.mkForce ''
         ServerName ${config.networking.fqdn}
-        ServerAlias ${config.networking.hostName}.ocf.io printhost.ocf.berkeley.edu printhost.ocf.io # matches the list of CNAMEs
+        ServerAlias ${config.networking.hostName}.ocf.io ${cfg.subdomain}.ocf.berkeley.edu ${cfg.subdomain}.ocf.io # matches the list of CNAMEs
 
         PreserveJobFiles No
 
