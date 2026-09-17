@@ -29,7 +29,7 @@
 
   services.ocfKubernetes.enable = true;
   services.ocfKubernetes.isLeader = false;
-  
+
   disko.devices = {
     disk = {
       main = {
