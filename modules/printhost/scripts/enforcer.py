@@ -32,7 +32,7 @@ from ocflib.misc.mail import send_problem_report
 import cups
 
 
-COLOR_QUEUES = {'OCF-Color'}
+COLOR_QUEUES = {'fishpaper'}
 
 APP_NAME = 'Printer'
 PORT = 6767

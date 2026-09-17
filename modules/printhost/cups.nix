@@ -167,7 +167,7 @@ in
           }) bwPrinters)
           ++ [
             {
-              name = "OCF-Color";
+              name = "fishpaper";
               model = "raw";
               description = "HP Color LaserJet M856";
               location = "OCF lab";
