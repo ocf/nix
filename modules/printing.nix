@@ -25,6 +25,7 @@ in
       startWhenNeeded = true;
       browsed.enable = false;
       browsing = false;
+      stateless = true;
       drivers = [ pkgs.ocf-hplip ];
     };
     hardware.printers = {
