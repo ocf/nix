@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=bDrive
+# FIXME: Type=Link not work when double clicked, using Type=Application for now
+#Type=Link
+#URL=http://bdrive.berkeley.edu/
+Type=Application
+Exec=firefox http://bdrive.berkeley.edu/
+# TODO: add an icon for bdrive
+Icon=text-html
