@@ -1,0 +1,32 @@
+{ config, ... }:
+
+{
+  imports = [ ../../hardware/virtualized.nix ];
+
+  ocf.network = {
+    enable = true;
+    lastOctet = 126;
+  };
+
+  ocf.acme.enable = true;
+
+  ocf.printhost = {
+    enable = true;
+    subdomain = "printhost-dev";
+    mysqlPasswordFile = config.age.secrets.printhost-mysql-password.path;
+    wayoutPasswordFile = config.age.secrets.printhost-wayout-password.path;
+  };
+
+  age.secrets.printhost-mysql-password = {
+    rekeyFile = ../../secrets/master-keyed/printhost/mysql-password.age;
+    mode = "0440";
+    group = "lp";
+  };
+  age.secrets.printhost-wayout-password = {
+    rekeyFile = ../../secrets/master-keyed/printhost/wayout-password.age;
+    mode = "0440";
+    group = "lp";
+  };
+
+  system.stateVersion = "26.05";
+}
