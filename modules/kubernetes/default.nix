@@ -11,6 +11,7 @@ let
   # that need to be accounted for in advance. thus, we pin the version of
   # kubernetes and manually update it, while the rest of its dependencies stay
   # up to date with the nixpkgs input.
+  # do not change any of these values without reading the following:
   # https://bestdocs.ocf.io/staff-docs/infrastructure/kubernetes/runbooks/updating-kubernetes
   kubernetes = pkgs.kubernetes.overrideAttrs (oldAttrs: rec {
     version = "1.36.1";
