@@ -1,14 +1,22 @@
 { lib, config, ... }:
 
+let
+  cfg = config.ocf.printhost;
+in
 {
   imports = [
     ./cups.nix
-    ./enforcer.nix
-    ./monitor.nix
+    ./cleanup.nix
   ];
 
   options.ocf.printhost = {
     enable = lib.mkEnableOption "OCF print server";
+
+    subdomain = lib.mkOption {
+      type = lib.types.str;
+      description = "sets SUBDOMAIN.ocf.berkeley.edu and SUBDOMAIN.ocf.io";
+      default = "printhost";
+    };
 
     mysqlPasswordFile = lib.mkOption {
       type = lib.types.path;
@@ -19,11 +27,6 @@
       type = lib.types.path;
       description = "Path to file containing the wayout notification password.";
     };
-
-    redisPasswordFile = lib.mkOption {
-      type = lib.types.path;
-      description = "Path to file containing the Redis broker password.";
-    };
   };
 
   config = lib.mkIf config.ocf.printhost.enable {
@@ -32,18 +35,35 @@
     # root needs lp group to run lpadmin in the printer setup service
     users.users."root".extraGroups = [ "lp" ];
 
-    # Reload CUPS when the host's LE cert is renewed (cert lives at hostName path,
-    # printhost SAN is included as an extraCert below)
-    security.acme.certs."${config.networking.hostName}.ocf.berkeley.edu".reloadServices = [
-      "cups.service"
-    ];
+    # reload cups when the host's tls cert is renewed
+    # and link certs to the paths cups expects (cups pointed to /var/lib/acme in cups-files.conf)
+    security.acme.certs."${config.networking.fqdn}" = {
+      reloadServices = [ "cups.service" ];
+      postRun = ''
+        ln -sf /var/lib/acme/${config.networking.fqdn}/fullchain.pem \
+          /var/lib/acme/${config.networking.fqdn}.crt
+        ln -sf /var/lib/acme/${config.networking.fqdn}/key.pem \
+          /var/lib/acme/${config.networking.fqdn}.key
+      '';
+    };
+
+    # Postfix relay so ocflib can send mail via sendmail.
+    services.postfix = {
+      enable = true;
+      settings.main = {
+        mydomain = config.networking.domain;
+        myorigin = config.networking.domain;
+        mydestination = "";
+        inet_interfaces = "loopback-only";
+        relayhost = [ "smtp.${config.networking.domain}" ];
+        sender_canonical_maps = "static:root@${config.networking.domain}";
+      };
+    };
 
     # add all CNAMEs to tule's cert
     ocf.acme.extraCerts = [
-      "printhost.ocf.berkeley.edu"
-      "printhost.ocf.io"
-      "p.ocf.berkeley.edu"
-      "p.ocf.io"
+      "${cfg.subdomain}.ocf.berkeley.edu"
+      "${cfg.subdomain}.ocf.io"
     ];
   };
 }

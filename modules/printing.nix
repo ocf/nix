@@ -25,6 +25,7 @@ in
       startWhenNeeded = true;
       browsed.enable = false;
       browsing = false;
+      stateless = true;
       drivers = [ pkgs.ocf-hplip ];
     };
     hardware.printers = {
@@ -40,7 +41,7 @@ in
           };
         }
         {
-          deviceUri = "ipps://${cfg.printhostURL}/classes/OCF-Color?waitjob=false&waitprinter=false";
+          deviceUri = "ipps://${cfg.printhostURL}/classes/fishpaper?waitjob=false&waitprinter=false";
           name = "OCF-Color";
           model = "HP/hp-color_laserjet_m856-ps.ppd.gz";
           location = "OCF lab";
