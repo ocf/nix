@@ -11,15 +11,16 @@ let
   # that need to be accounted for in advance. thus, we pin the version of
   # kubernetes and manually update it, while the rest of its dependencies stay
   # up to date with the nixpkgs input.
+  # do not change any of these values without reading the following:
   # https://bestdocs.ocf.io/staff-docs/infrastructure/kubernetes/runbooks/updating-kubernetes
   kubernetes = pkgs.kubernetes.overrideAttrs (oldAttrs: rec {
-    version = "1.36.1";
+    version = "1.37.0";
     src = pkgs.fetchFromGitHub {
       owner = "kubernetes";
       repo = "kubernetes";
       rev = "v${version}";
       # make sure to update hash if changing kubernetes version
-      hash = "sha256-QG2zFaFtGXoWIlyp3hVBRU+OHre/6vWcvijUe1DdjIo=";
+      hash = "sha256-irRDtPf+bk2uQ/QOcAXzYcrm/0pys/e4M5ITyL6omqs=";
     };
   });
   kubePkgs = with pkgs; [
