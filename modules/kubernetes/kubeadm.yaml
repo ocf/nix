@@ -1,7 +1,7 @@
 kind: ClusterConfiguration
 apiVersion: kubeadm.k8s.io/v1beta4
 kubernetesVersion: v1.37.0
-controlPlaneEndpoint: "dna.ocf.io:6443"
+controlPlaneEndpoint: "dna.ocf.berkeley.edu:6443"
 networking:
   podSubnet: 10.244.0.0/16,2607:f140:8801:1::/112
   serviceSubnet: 10.96.0.0/16,2607:f140:8801:2::/112

@@ -27,8 +27,10 @@
     };
   };
 
-  services.ocfKubernetes.enable = true;
-  services.ocfKubernetes.isLeader = false;
+  ocf.kubernetes = {
+    enable = true;
+    controlPlane = false;
+  };
 
   disko.devices = {
     disk = {
