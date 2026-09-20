@@ -30,6 +30,7 @@
   ocf.kubernetes = {
     enable = true;
     controlPlane = false;
+    staging = false;
   };
 
   # This value determines the NixOS release from which the default

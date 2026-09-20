@@ -30,6 +30,7 @@
   ocf.kubernetes = {
     enable = true;
     controlPlane = false;
+    staging = false;
   };
 
   disko.devices = {

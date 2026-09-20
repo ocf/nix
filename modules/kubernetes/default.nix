@@ -43,6 +43,7 @@ in
   options.ocf.kubernetes = {
     enable = lib.mkEnableOption "everything needed to run kubeadm";
     controlPlane = lib.mkEnableOption "kube-vip as a static pod";
+    staging = lib.mkEnableOption "staging cluster node";
   };
 
   config = lib.mkIf cfg.enable {
@@ -51,9 +52,9 @@ in
 
     environment.etc = {
       "kubernetes/manifests/kubevip.yaml" = lib.mkIf cfg.controlPlane {
-        source = ./kubevip.yaml;
+        source = if cfg.staging then ./staging-kubevip.yaml else ./kubevip.yaml;
       };
-      "kubernetes/kubeadm.yaml".source = ./kubeadm.yaml;
+      "kubernetes/kubeadm.yaml".source = if cfg.staging then ./staging-kubeadm.yaml else ./kubeadm.yaml;
     };
 
     # From an OCF alumni, some of these might be unnecessary.
