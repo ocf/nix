@@ -211,6 +211,8 @@ in
 
       # kubernetes
       kubectl
+      fluxcd
+      kubelogin-oidc
       k9s
       argocd
       teleport.client
