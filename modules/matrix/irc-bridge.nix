@@ -39,6 +39,7 @@ in
         };
 
         ircService.mediaProxy.publicUrl = "https://${cfg.baseUrl}/media";
+        ircService.mediaProxy.bindHostname = "localhost";
 
         ircService.servers."${cfg.irc-bridge.server}" = {
           name = "OCF IRC";
@@ -85,7 +86,9 @@ in
       };
     };
 
-    services.nginx.virtualHosts."synapse".locations."/media".proxyPass = "http://[::1]:11111";
+    services.nginx.virtualHosts."synapse".locations."/media/".proxyPass =
+      with config.services.matrix-appservice-irc.settings.ircService.mediaProxy;
+      "http://${bindHostname}:${toString bindPort}/";
 
     services.matrix-synapse.settings.app_service_config_files = [
       "/etc/matrix-synapse/irc-registration.yaml"
