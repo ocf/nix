@@ -35,20 +35,26 @@ let
     gvisor
     cri-tools
     ebtables
+    etcd
   ];
-  cfg = config.ocf.kubernetes;
+  cfg = config.ocf.kubernetes.cluster;
 in
 {
   # Configuration for Nodes
-  options.ocf.kubernetes = {
-    enable = lib.mkEnableOption "everything needed to run kubeadm";
+  options.ocf.kubernetes.cluster = {
+    enable = lib.mkEnableOption "configurations required for a kubernetes node";
     controlPlane = lib.mkEnableOption "kube-vip as a static pod";
     staging = lib.mkEnableOption "staging cluster node";
   };
 
   config = lib.mkIf cfg.enable {
-    # add exemption: automated deployments has caused failures due to the control plane all going down at once
-    ocf.managed-deployment.automated-deploy = false;
+    ocf = {
+      # add exemption: automated deployments has caused failures due to the control plane all going down at once
+      managed-deployment.automated-deploy = false;
+
+      # enable client tools but not oidc, as you should only run kubectl on nodes for debugging
+      kubernetes.client.enable = true;
+    };
 
     environment.etc = {
       "kubernetes/manifests/kubevip.yaml" = lib.mkIf cfg.controlPlane {
@@ -166,9 +172,14 @@ in
       settings.crio.image.short_name_mode = "disabled";
     };
 
-    # NixOS cri-o config does weird stuff... reverting these
-    environment.etc."cni/net.d/10-crio-bridge.conflist".enable = false;
-    environment.etc."cni/net.d/99-loopback.conflist".enable = false;
+    environment.etc = {
+      # NixOS cri-o config does weird stuff... reverting these
+      "cni/net.d/10-crio-bridge.conflist".enable = false;
+      "cni/net.d/99-loopback.conflist".enable = false;
+
+      # this file is part of a hostPath mount in the apiserver, so it can't be a symlink
+      "ssl/certs/ca-certificates.crt".mode = lib.mkForce "0644";
+    };
     virtualisation.cri-o.settings.crio.network = lib.mkForce { };
   };
 }

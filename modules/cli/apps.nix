@@ -15,8 +15,15 @@ in
     programs.java.enable = true; # set $JAVA_HOME
     programs.java.package = pkgs.zulu25;
 
-    ocf.oci.enable = true;
+    ocf = {
+      oci.enable = true;
+      kubernetes.client = {
+        enable = true;
+        oidcLogin.enable = true;
+      };
+    };
 
+    # assorted utilities that people may find useful
     environment.systemPackages = with pkgs; [
       # tui editors
       neovim
@@ -44,6 +51,7 @@ in
       lynx
       epic5
       znc
+      k9s
 
       # fetch
       hyfetch
@@ -208,14 +216,6 @@ in
       imagemagick
       pandoc
       img2pdf
-
-      # kubernetes
-      kubectl
-      fluxcd
-      kubelogin-oidc
-      k9s
-      argocd
-      teleport.client
 
       # networking
       pssh

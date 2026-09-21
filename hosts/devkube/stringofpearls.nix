@@ -19,7 +19,7 @@
     ];
   };
 
-  ocf.kubernetes = {
+  ocf.kubernetes.cluster = {
     enable = true;
     controlPlane = true;
     staging = true;

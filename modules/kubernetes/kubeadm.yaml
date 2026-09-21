@@ -9,6 +9,21 @@ apiServer:
   certSANs:
   - dna.ocf.io
   - dna.ocf.berkeley.edu
+  extraArgs:
+  - name: oidc-issuer-url
+    value: "https://idm.ocf.berkeley.edu/realms/ocf"
+  - name: oidc-client-id
+    value: kubernetes-prod
+  - name: oidc-username-claim
+    value: preferred_username
+  - name: oidc-username-prefix
+    value: "oidc:"
+  - name: oidc-groups-claim
+    value: groups
+  - name: oidc-groups-prefix
+    value: "oidc:"
+  - name: oidc-ca-file
+    value: /etc/ssl/certs/ca-certificates.crt
 clusterName: ocf-dna
 controllerManager:
   extraArgs:
