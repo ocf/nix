@@ -71,8 +71,6 @@ in
       mpv
 
       # useful for iso files even without a cd drive
-      # needed for melange (cd drive host)
-      brasero
       kdePackages.k3b
       apostrophe
       #texliveFull

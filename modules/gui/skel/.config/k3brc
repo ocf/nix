@@ -1,0 +1,8 @@
+[External Programs]
+cdrdao default=/run/wrappers/bin/cdrdao
+cdrdao last seen newest version=1.2.6
+cdrdao user parameters=
+cdrecord default=/run/wrappers/bin/cdrecord
+cdrecord last seen newest version=3.2a09
+cdrecord user parameters=
+

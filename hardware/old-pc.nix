@@ -47,9 +47,14 @@
 
   swapDevices = [ ];
 
-  services.udev.extraRules = ''
-    SUBSYSTEM=="block", KERNEL=="sr[0-9]*", RUN+="${pkgs.coreutils}/bin/chgrp 1000 /dev/%k", RUN+="${pkgs.coreutils}/bin/chmod 0660 /dev/%k"
-  '';
+  # allow users to burn CDs with k3b (creates wrappers)
+  # see https://github.com/NixOS/nixpkgs/blob/master/nixos/modules/programs/k3b.nix
+  # k3b is configured to use these wrappers in `skel/.config/k3brc`
+  programs.k3b.enable = true;
+  security.wrappers = {
+    cdrdao.group = lib.mkForce "ocf";
+    cdrecord.group = lib.mkForce "ocf";
+  };
 
   # Enables DHCP on each ethernet and wireless interface. In case of scripted networking
   # (the default) this is the recommended approach. When using systemd-networkd it's
