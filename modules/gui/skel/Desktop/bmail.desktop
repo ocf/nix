@@ -5,5 +5,4 @@ Name=bMail
 #URL=http://bmail.berkeley.edu/
 Type=Application
 Exec=firefox http://bmail.berkeley.edu/
-# TODO: add an icon for bmail
-Icon=text-html
+Icon=/etc/ocf-assets/icons/bmail.png

@@ -5,5 +5,4 @@ Name=bCourses
 #URL=https://bcourses.berkeley.edu/
 Type=Application
 Exec=firefox https://bcourses.berkeley.edu/
-# TODO: add an icon for canvas
-Icon=text-html
+Icon=/etc/ocf-assets/icons/bcourses.png

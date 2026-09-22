@@ -98,18 +98,22 @@ in
           {
             Title = "bCourses";
             URL = "https://bcourses.berkeley.edu/";
+            Favicon = "https://instructure-uploads.s3.amazonaws.com/account_190000000090242/attachments/69189289/favicon.ico?AWSAccessKeyId=AKIAJFNFXH2V2O7RPCAA&Expires=1937117017&Signature=Fl4VolGY%2BFv9lcdUjWLTQCVBZZg%3D&response-cache-control=Cache-Control%3Amax-age%3D473364000.0%2C%20public&response-expires=473364000.0";
           }
           {
             Title = "bDrive";
             URL = "http://bdrive.berkeley.edu/";
+            Favicon = "https://ssl.gstatic.com/docs/doclist/images/drive_favicon_2026_32dp.png";
           }
           {
             Title = "bMail";
             URL = "http://bmail.berkeley.edu/";
+            Favicon = "https://www.google.com/a/cpanel/berkeley.edu/images/favicon.ico";
           }
           {
             Title = "Gradescope";
             URL = "https://www.gradescope.com/auth/saml/berkeley/";
+            Favicon = "https://cdn.gradescope.com/assets/logo/icons/64x64-3c29e9891a184582f67b6a2cd6c4a96bbfb20bbe7d7249d8f7feaa2ebd13832e.png";
           }
         ];
 

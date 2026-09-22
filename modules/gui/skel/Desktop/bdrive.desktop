@@ -5,5 +5,4 @@ Name=bDrive
 #URL=http://bdrive.berkeley.edu/
 Type=Application
 Exec=firefox http://bdrive.berkeley.edu/
-# TODO: add an icon for bdrive
-Icon=text-html
+Icon=/etc/ocf-assets/icons/bdrive.png

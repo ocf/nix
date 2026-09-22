@@ -5,5 +5,4 @@ Name=Gradescope
 #URL=https://www.gradescope.com/auth/saml/berkeley/
 Type=Application
 Exec=firefox https://www.gradescope.com/auth/saml/berkeley/
-# TODO: add an icon for gradescope
-Icon=text-html
+Icon=/etc/ocf-assets/icons/gradescope.png
