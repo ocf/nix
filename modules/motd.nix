@@ -16,10 +16,10 @@ let
 
   greeting = "${ansi-reset}${ansi-bold}Hi, I am ${ansi-cyan}${config.networking.hostName}${ansi-resetfg}, a ${ansi-cyan}${
     builtins.concatStringsSep ", " config.deployment.tags or [ ]
-  }${ansi-resetfg} at ${ansi-cyan}169.229.226.${builtins.toString config.ocf.network.lastOctet}${ansi-reset}.\n";
-  version = "${ansi-reset}${ansi-dim}${config.system.nixos.label}${ansi-reset}\n";
+  }${ansi-resetfg} at ${ansi-cyan}169.229.226.${builtins.toString config.ocf.network.lastOctet}${ansi-reset}.";
+  version = "${ansi-reset}${ansi-dim}${config.system.nixos.label}${ansi-reset}";
   motd = cfg.description + "\n";
-  ssh-motd = pkgs.writeText "ssh-motd" "${greeting}\n${motd}";
+  ssh-motd = pkgs.writeText "ssh-motd" "${greeting}\n\n${motd}";
 in
 {
   options.ocf.motd = {
@@ -44,6 +44,10 @@ in
     # on getty:
     # - print greeting before login as greetingLine
     # - print motd after login
-    services.getty.greetingLine = greeting + version;
+    services.getty.greetingLine = "${greeting}\n${version}";
+
+    # remove clutter
+    # if you are using getty, you likely already know about nixos-help
+    services.getty.helpLine = lib.mkForce "";
   };
 }
