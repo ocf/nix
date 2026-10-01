@@ -328,6 +328,8 @@ in
     };
   };
 
+  virtualisation.vmVariant.ocf.vm.enable = lib.mkDefault true;
+
   # CVE-2026-31431
   # remove after kernel is updated to a fixed release
   boot.blacklistedKernelModules = [ "algif_aead" ];
