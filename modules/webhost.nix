@@ -12,6 +12,7 @@ let
   fqdn = "${config.networking.hostName}.${baseDomain}";
 
   enabledSites = builtins.filter (website-cfg: website-cfg.enable) cfg.websites;
+  enabledRedirects = builtins.filter (redirect-cfg: redirect-cfg.enable) cfg.redirects;
 
   makeUsers = website-cfg: {
     "deploy-${website-cfg.name}" = {
@@ -34,6 +35,15 @@ let
                 add_header Last-Modified "";
               	add_header Cache-Control "public, max-age=${website-cfg.cacheTime}";
         	'';
+    };
+  };
+
+  makeRedirectVirtHosts = redirect-cfg: {
+    "${redirect-cfg.name}.${baseDomain}" = {
+      forceSSL = true;
+      useACMEHost = "${fqdn}";
+      serverAliases = [ "${redirect-cfg.name}.${shortDomain}" ];
+      globalRedirect = "${redirect-cfg.target}.${baseDomain}";
     };
   };
 
@@ -96,17 +106,42 @@ in
         }
       );
     };
+    redirects = lib.mkOption {
+      type = lib.types.listOf (
+        lib.types.submodule {
+
+          options = {
+            enable = lib.mkEnableOption "this redirect";
+
+            name = lib.mkOption {
+              type = lib.types.str;
+              description = "Subdomain to redirect from - will redirect <name>.ocf.berkeley.edu & <name>.ocf.io";
+            };
+
+            target = lib.mkOption {
+              type = lib.types.str;
+              description = "Subdomain to redirect to - will redirect to <target>.ocf.berkeley.edu";
+            };
+          };
+
+        }
+      );
+    };
   };
   config = lib.mkIf cfg.enable {
 
     security.acme.certs."${fqdn}".group = "nginx";
     users.users = lib.mkMerge (builtins.map makeUsers enabledSites);
     systemd.tmpfiles.settings."web-roots" = lib.mkMerge (builtins.map makeTmpFileRules enabledSites);
-    ocf.acme.extraCerts = (builtins.concatMap makeExtraCerts enabledSites);
+    ocf.acme.extraCerts = builtins.concatMap makeExtraCerts (enabledSites ++ enabledRedirects);
 
     services.nginx = {
       enable = true;
-      virtualHosts = lib.mkMerge ((builtins.map makeVirtHosts enabledSites) ++ defaultVirtHost);
+      virtualHosts = lib.mkMerge (
+        (builtins.map makeVirtHosts enabledSites)
+        ++ (builtins.map makeRedirectVirtHosts enabledRedirects)
+        ++ defaultVirtHost
+      );
     };
 
     networking.firewall.allowedTCPPorts = [
