@@ -78,7 +78,7 @@ in
       #texliveFull
       texstudio
 
-      aesprite
+      aseprite
       krita
       gimp3
       darktable
