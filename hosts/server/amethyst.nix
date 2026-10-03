@@ -22,12 +22,7 @@
         githubActionsPubkey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBcmT7hG2lb4HigSYs7NoXfZx31vmBxheglR4ryv/LgK";
       }
     ];
-    redirects = [
-      {
-        name = "docs";
-        target = "bestdocs";
-      }
-    ];
+    redirects."docs".target = "bestdocs";
   };
 
   system.stateVersion = "24.11";

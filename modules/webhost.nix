@@ -102,15 +102,19 @@ in
       );
     };
     redirects = lib.mkOption {
-      type = lib.types.listOf (
+      default = { };
+      description = "Set of subdomains to redirect from - will redirect <name>.ocf.berkeley.edu & <name>.ocf.io";
+      # map to same format type as cfg.websites
+      apply = lib.mapAttrsToList (
+        name: submod: {
+          inherit name;
+          inherit (submod) target;
+        }
+      );
+      type = lib.types.attrsOf (
         lib.types.submodule {
 
           options = {
-            name = lib.mkOption {
-              type = lib.types.str;
-              description = "Subdomain to redirect from - will redirect <name>.ocf.berkeley.edu & <name>.ocf.io";
-            };
-
             target = lib.mkOption {
               type = lib.types.str;
               description = "Subdomain to redirect to - will redirect to <target>.ocf.berkeley.edu";
