@@ -16,7 +16,6 @@ Paths substituted by Nix at build time:
   @enforcer@            path to the enforcer binary
   @mysqlPasswordFile@   path to MySQL password file
   @wayoutPasswordFile@  path to wayout password file
-  @redisPasswordFile@   path to Redis password file
 """
 import os
 import sys
@@ -27,7 +26,6 @@ from urllib.parse import urlparse
 ENFORCER = '@enforcer@'
 MYSQL_PASSWORD_FILE = '@mysqlPasswordFile@'
 WAYOUT_PASSWORD_FILE = '@wayoutPasswordFile@'
-REDIS_PASSWORD_FILE = '@redisPasswordFile@'
 
 # CUPS backend exit codes
 CUPS_BACKEND_OK = 0
@@ -108,7 +106,6 @@ def main():
             'CLASS': class_name,
             'ENFORCER_MYSQL_PASSWORD': MYSQL_PASSWORD_FILE,
             'ENFORCER_WAYOUT_PASSWORD': WAYOUT_PASSWORD_FILE,
-            'ENFORCER_REDIS_PASSWORD': REDIS_PASSWORD_FILE,
         })
 
         # Prehook: check quota before sending to printer.

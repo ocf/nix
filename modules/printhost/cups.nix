@@ -2,6 +2,7 @@
   lib,
   config,
   pkgs,
+  inputs,
   ...
 }:
 
@@ -15,7 +16,6 @@ let
       pycups
       pymysql
       requests
-      redis
     ]
   );
 
@@ -32,7 +32,6 @@ let
     enforcer = enforcerBin;
     mysqlPasswordFile = cfg.mysqlPasswordFile;
     wayoutPasswordFile = cfg.wayoutPasswordFile;
-    redisPasswordFile = cfg.redisPasswordFile;
   };
 
   # Shell wrapper so the backend runs under the Nix-store python3 rather than
@@ -48,118 +47,146 @@ let
   '';
 in
 {
+  # use nixos-unstable printers module to include nixpkgs pr #558981 and #524127
+  # FIXME remove after nixos-26.11 upgrade
+  disabledModules = [
+    "hardware/printers.nix"
+  ];
+  imports = [
+    "${inputs.nixpkgs-unstable}/nixos/modules/hardware/printers.nix"
+  ];
+
   config = lib.mkIf cfg.enable {
 
     services.printing = {
       enable = true;
       startWhenNeeded = false;
-      listenAddresses = [
-        "*:80"
-        "*:631"
-      ];
       browsed.enable = false;
       browsing = false;
       stateless = true;
-      # Substitute the public hostname into ServerName, and switch to
-      # Negotiate (GSSAPI/Kerberos) auth when a keytab is configured.
-      extraConf = lib.mkForce (
-        lib.replaceStrings
-          [
-            "@cups-url@"
-          ]
-          [
-            "${config.networking.hostName}.ocf.berkeley.edu"
-          ]
-          (builtins.readFile ./conf/cupsd.conf)
-      );
-      extraFilesConf = builtins.readFile ./conf/cups-files.conf;
-      # hplip provides hpps (HP PPD filter); epson-escpr2 provides epson-escpr-wrapper2.
+      webInterface = true;
+      listenAddresses = [
+        "*:631"
+        "*:443"
+      ];
+      openFirewall = true;
+      # using lib.mkForce to overwrite the default extraConf
+      extraConf = lib.mkForce ''
+        ServerName ${config.networking.fqdn}
+        ServerAlias ${config.networking.hostName}.ocf.io ${cfg.subdomain}.ocf.berkeley.edu ${cfg.subdomain}.ocf.io # matches the list of CNAMEs
+
+        PreserveJobFiles No
+
+        HostNameLookups On # required for print notifications
+
+        ErrorPolicy retry-job
+
+        DefaultShared Yes
+
+        <Location />
+          Order allow,deny
+          Allow from 169.229.226.0/24
+          Allow from [2607:f140:8801::]/64
+          Allow from localhost
+        </Location>
+
+        <Location /jobs>
+          Require user @SYSTEM
+          Order allow,deny
+          Allow from 169.229.226.0/24
+          Allow from [2607:f140:8801::]/64
+          Allow from localhost
+        </Location>
+
+        <Location /admin>
+          Require user @SYSTEM
+          Order allow,deny
+          Allow from 169.229.226.0/24
+          Allow from [2607:f140:8801::]/64
+          Allow from localhost
+        </Location>
+
+        <Location /admin/conf>
+          Require user @SYSTEM
+          Order allow,deny
+          Allow from 169.229.226.0/24
+          Allow from [2607:f140:8801::]/64
+          Allow from localhost
+        </Location>
+
+        <Policy default>
+          JobPrivateAccess all
+          JobPrivateValues none
+
+          # users can manage their own jobs and @SYSTEM group can manage all jobs
+          <Limit Send-Document Send-URI Hold-Job Release-Job Restart-Job Purge-Jobs Set-Job-Attributes Create-Job-Subscription Renew-Subscription Cancel-Subscription Get-Notifications Reprocess-Job Cancel-Current-Job Suspend-Current-Job Resume-Job CUPS-Move-Job CUPS-Get-Document Cancel-Job CUPS-Authenticate-Job>
+            Require user @OWNER @SYSTEM
+            Order deny,allow
+          </Limit>
+
+          # restrict management to @SYSTEM
+          <Limit CUPS-Add-Modify-Printer CUPS-Delete-Printer CUPS-Add-Modify-Class CUPS-Delete-Class CUPS-Set-Default Pause-Printer Resume-Printer Enable-Printer Disable-Printer Pause-Printer-After-Current-Job Hold-New-Jobs Release-Held-New-Jobs Deactivate-Printer Activate-Printer Restart-Printer Shutdown-Printer Startup-Printer Promote-Job Schedule-Job-After CUPS-Accept-Jobs CUPS-Reject-Jobs>
+            Require user @SYSTEM
+            Order deny,allow
+          </Limit>
+
+          <Limit All>
+            Order deny,allow
+          </Limit>
+        </Policy>
+      '';
+      extraFilesConf = ''
+        SystemGroup ocfstaff opstaff
+        ServerKeychain /etc/cups-certs
+      '';
       drivers = [
         ocfCupsBackend
         pkgs.ocf-hplip
-        pkgs.epson-escpr2
       ];
     };
 
-    # /var/lib/cups is a tmpfs (stateless = true), so this runs every boot.
-    # CUPS resolves its SSL cert by the machine's actual hostname, not ServerName,
-    # so we name the files after the host. The cert includes printhostUrl as a SAN
-    # so clients connecting to either hostname get a valid cert.
-    systemd.services.cups-ssl-certs = {
-      description = "Copy ACME certificates into CUPS SSL directory";
-      after = [
-        "cups.service"
-        "acme-${config.networking.hostName}.ocf.berkeley.edu.service"
-      ];
-      wants = [ "acme-${config.networking.hostName}.ocf.berkeley.edu.service" ];
-      wantedBy = [ "cups.service" ];
-      partOf = [ "cups.service" ];
-      serviceConfig.Type = "oneshot";
-      script = ''
-        ln -sf /var/lib/acme/${config.networking.hostName}.ocf.berkeley.edu/fullchain.pem \
-          /var/lib/cups/ssl/${config.networking.hostName}.ocf.berkeley.edu.crt
-        ln -sf /var/lib/acme/${config.networking.hostName}.ocf.berkeley.edu/key.pem \
-          /var/lib/cups/ssl/${config.networking.hostName}.ocf.berkeley.edu.key
-        ln -sf /var/lib/acme/${config.networking.hostName}.ocf.berkeley.edu/fullchain.pem \
-          "/var/lib/cups/ssl/${config.networking.hostName}.OCF.Berkeley.EDU.crt"
-        ln -sf /var/lib/acme/${config.networking.hostName}.ocf.berkeley.edu/key.pem \
-          "/var/lib/cups/ssl/${config.networking.hostName}.OCF.Berkeley.EDU.key"
-      '';
-    };
+    hardware.printers =
+      let
+        bwPrinters = [
+          "logjam"
+          "papercut"
+          "pagefault"
+        ];
+      in
+      {
+        ensurePrinters =
+          (map (printer: {
+            name = printer;
+            model = "raw";
+            description = "HP LaserJet M806";
+            location = "OCF lab";
+            deviceUri = "ocfbackend:socket://${printer}:9100";
+            ppdOptions = {
+              printer-is-shared = "false";
+              Duplex = "DuplexNoTumble";
+            };
+          }) bwPrinters)
+          ++ [
+            {
+              name = "fishpaper";
+              model = "raw";
+              description = "HP Color LaserJet M856";
+              location = "OCF lab";
+              deviceUri = "ocfbackend:socket://fishpaper:9100";
+              ppdOptions = {
+                printer-is-shared = "true";
+              };
+            }
+          ];
 
-    # Declaratively configure all printers and classes on cups service start.
-    # Runs after cups.service since /var/lib/cups is stateless.
-    systemd.services.cups-setup-printers = {
-      description = "Declaratively configure CUPS printers and classes";
-      after = [ "cups.service" ];
-      wantedBy = [ "cups.service" ];
-      partOf = [ "cups.service" ];
-      path = [ config.services.printing.package ];
-      serviceConfig.Type = "oneshot";
-      script = ''
-        set -euo pipefail
-
-        lpadmin -p logjam \
-          -v ocfbackend:socket://logjam:9100 \
-          -m raw \
-          -D "HP LaserJet M806" -L "OCF lab" \
-          -E -o printer-is-shared=false -o Duplex=DuplexNoTumble
-
-        lpadmin -p papercut \
-          -v ocfbackend:socket://papercut:9100 \
-          -m raw \
-          -D "HP LaserJet M806" -L "OCF lab" \
-          -E -o printer-is-shared=false -o Duplex=DuplexNoTumble
-
-        lpadmin -p pagefault \
-          -v ocfbackend:socket://pagefault:9100 \
-          -m raw \
-          -D "HP LaserJet M806" -L "OCF lab" \
-          -E -o printer-is-shared=false -o Duplex=DuplexNoTumble
-
-        lpadmin -p logjam    -c OCF-BW-Group
-        lpadmin -p papercut  -c OCF-BW-Group
-        lpadmin -p pagefault -c OCF-BW-Group
-        lpadmin -p OCF-BW-Group -E -o printer-is-shared=true \
-          -D "HP LaserJet M806" -L "OCF lab"
-
-        lpadmin -p OCF-Color \
-          -v ocfbackend:socket://fishpaper:9100 \
-          -m raw \
-          -D "HP Color LaserJet M856" -L "OCF lab" \
-          -E -o printer-is-shared=true
-      '';
-    };
+        ensureClasses = {
+          OCF-BW-Group = {
+            location = "OCF lab";
+            printers = bwPrinters;
+          };
+        };
+      };
 
     services.avahi.enable = lib.mkForce false;
-
-    networking.firewall = {
-      allowedTCPPorts = [
-        80
-        443
-        631
-      ];
-      allowedUDPPorts = [ 631 ];
-    };
   };
 }

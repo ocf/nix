@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=bMail
+# FIXME: Type=Link not work when double clicked, using Type=Application for now
+#Type=Link
+#URL=http://bmail.berkeley.edu/
+Type=Application
+Exec=firefox http://bmail.berkeley.edu/
+Icon=/etc/ocf-assets/icons/bmail.png

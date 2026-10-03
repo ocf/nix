@@ -72,6 +72,8 @@
     ddcutil # for monitor brightness control
   ];
 
+  hardware.opentabletdriver.enable = true;
+
   # enable i2c and set udev rules for monitor brightness control
   boot.kernelModules = [ "i2c-dev" ];
   services.udev.extraRules = ''

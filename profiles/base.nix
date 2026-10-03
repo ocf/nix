@@ -271,20 +271,6 @@ in
       alsa.enable = true;
     };
 
-    envfs = {
-      enable = true;
-
-      # We need /bin/bash etc. to work because people's shells are set to it
-      extraFallbackPathCommands = ''
-        ln -s ${lib.getExe pkgs.bash} $out/bash
-        ln -s ${lib.getExe pkgs.zsh} $out/zsh
-        ln -s ${lib.getExe pkgs.fish} $out/fish
-        ln -s ${lib.getExe pkgs.xonsh} $out/xonsh
-        ln -s ${lib.getExe pkgs.tcsh} $out/tcsh
-        ln -s ${lib.getExe pkgs.tcsh} $out/csh
-      '';
-    };
-
     fwupd.enable = true;
   };
 
@@ -327,6 +313,8 @@ in
       Persistent = true;
     };
   };
+
+  virtualisation.vmVariant.ocf.vm.enable = lib.mkDefault true;
 
   # CVE-2026-31431
   # remove after kernel is updated to a fixed release

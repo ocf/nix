@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=Gradescope
+# FIXME: Type=Link not work when double clicked, using Type=Application for now
+#Type=Link
+#URL=https://www.gradescope.com/auth/saml/berkeley/
+Type=Application
+Exec=firefox https://www.gradescope.com/auth/saml/berkeley/
+Icon=/etc/ocf-assets/icons/gradescope.png
