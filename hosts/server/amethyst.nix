@@ -14,7 +14,7 @@
     enable = true;
     websites = [
       {
-        name = "bestdocs";
+        name = "docs";
         githubActionsPubkey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGfbHPz52unvWwGAEVenVycOIQqIoZEj5OYi8vzJ1mJS";
       }
       {
@@ -22,7 +22,7 @@
         githubActionsPubkey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBcmT7hG2lb4HigSYs7NoXfZx31vmBxheglR4ryv/LgK";
       }
     ];
-    redirects."docs".target = "bestdocs";
+    redirects."bestdocs".target = "docs";
   };
 
   system.stateVersion = "24.11";
