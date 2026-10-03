@@ -11,8 +11,6 @@ let
   shortDomain = "ocf.io";
   fqdn = "${config.networking.hostName}.${baseDomain}";
 
-  enabledSites = builtins.filter (website-cfg: website-cfg.enable) cfg.websites;
-
   makeUsers = website-cfg: {
     "deploy-${website-cfg.name}" = {
       group = "nginx";
@@ -34,6 +32,15 @@ let
                 add_header Last-Modified "";
               	add_header Cache-Control "public, max-age=${website-cfg.cacheTime}";
         	'';
+    };
+  };
+
+  makeRedirectVirtHosts = redirect-cfg: {
+    "${redirect-cfg.name}.${baseDomain}" = {
+      forceSSL = true;
+      useACMEHost = "${fqdn}";
+      serverAliases = [ "${redirect-cfg.name}.${shortDomain}" ];
+      globalRedirect = "${redirect-cfg.target}.${baseDomain}";
     };
   };
 
@@ -73,8 +80,6 @@ in
         lib.types.submodule {
 
           options = {
-            enable = lib.mkEnableOption "this website";
-
             name = lib.mkOption {
               type = lib.types.str;
               description = "Subdomain of webpage - will set <name>.ocf.berkeley.edu & <name>.ocf.io";
@@ -96,17 +101,44 @@ in
         }
       );
     };
+    redirects = lib.mkOption {
+      default = { };
+      description = "Set of subdomains to redirect from - will redirect <name>.ocf.berkeley.edu & <name>.ocf.io";
+      # map to same format type as cfg.websites
+      apply = lib.mapAttrsToList (
+        name: submod: {
+          inherit name;
+          inherit (submod) target;
+        }
+      );
+      type = lib.types.attrsOf (
+        lib.types.submodule {
+
+          options = {
+            target = lib.mkOption {
+              type = lib.types.str;
+              description = "Subdomain to redirect to - will redirect to <target>.ocf.berkeley.edu";
+            };
+          };
+
+        }
+      );
+    };
   };
   config = lib.mkIf cfg.enable {
 
     security.acme.certs."${fqdn}".group = "nginx";
-    users.users = lib.mkMerge (builtins.map makeUsers enabledSites);
-    systemd.tmpfiles.settings."web-roots" = lib.mkMerge (builtins.map makeTmpFileRules enabledSites);
-    ocf.acme.extraCerts = (builtins.concatMap makeExtraCerts enabledSites);
+    users.users = lib.mkMerge (builtins.map makeUsers cfg.websites);
+    systemd.tmpfiles.settings."web-roots" = lib.mkMerge (builtins.map makeTmpFileRules cfg.redirects);
+    ocf.acme.extraCerts = builtins.concatMap makeExtraCerts (cfg.websites ++ cfg.redirects);
 
     services.nginx = {
       enable = true;
-      virtualHosts = lib.mkMerge ((builtins.map makeVirtHosts enabledSites) ++ defaultVirtHost);
+      virtualHosts = lib.mkMerge (
+        (builtins.map makeVirtHosts cfg.websites)
+        ++ (builtins.map makeRedirectVirtHosts cfg.redirects)
+        ++ defaultVirtHost
+      );
     };
 
     networking.firewall.allowedTCPPorts = [
