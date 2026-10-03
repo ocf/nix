@@ -126,6 +126,7 @@
           allowUnfreePredicate =
             pkg:
             builtins.elem (nixpkgs.lib.getName pkg) [
+              "aseprite"
               "code"
               "claude-code"
               "dwarf-fortress"
