@@ -104,10 +104,10 @@ in
 
       fish.enable = true;
       xonsh.enable = true;
-    };
 
-    # disable builtin handler because we have our own
-    command-not-found.enable = false;
+      # disable builtin handler because we have our own
+      command-not-found.enable = false;
+    };
 
     users.defaultUserShell = pkgs.zsh;
   };
