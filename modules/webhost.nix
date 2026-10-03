@@ -11,9 +11,6 @@ let
   shortDomain = "ocf.io";
   fqdn = "${config.networking.hostName}.${baseDomain}";
 
-  enabledSites = builtins.filter (website-cfg: website-cfg.enable) cfg.websites;
-  enabledRedirects = builtins.filter (redirect-cfg: redirect-cfg.enable) cfg.redirects;
-
   makeUsers = website-cfg: {
     "deploy-${website-cfg.name}" = {
       group = "nginx";
@@ -83,8 +80,6 @@ in
         lib.types.submodule {
 
           options = {
-            enable = lib.mkEnableOption "this website";
-
             name = lib.mkOption {
               type = lib.types.str;
               description = "Subdomain of webpage - will set <name>.ocf.berkeley.edu & <name>.ocf.io";
@@ -111,8 +106,6 @@ in
         lib.types.submodule {
 
           options = {
-            enable = lib.mkEnableOption "this redirect";
-
             name = lib.mkOption {
               type = lib.types.str;
               description = "Subdomain to redirect from - will redirect <name>.ocf.berkeley.edu & <name>.ocf.io";
@@ -131,15 +124,15 @@ in
   config = lib.mkIf cfg.enable {
 
     security.acme.certs."${fqdn}".group = "nginx";
-    users.users = lib.mkMerge (builtins.map makeUsers enabledSites);
-    systemd.tmpfiles.settings."web-roots" = lib.mkMerge (builtins.map makeTmpFileRules enabledSites);
-    ocf.acme.extraCerts = builtins.concatMap makeExtraCerts (enabledSites ++ enabledRedirects);
+    users.users = lib.mkMerge (builtins.map makeUsers cfg.websites);
+    systemd.tmpfiles.settings."web-roots" = lib.mkMerge (builtins.map makeTmpFileRules cfg.redirects);
+    ocf.acme.extraCerts = builtins.concatMap makeExtraCerts (cfg.websites ++ cfg.redirects);
 
     services.nginx = {
       enable = true;
       virtualHosts = lib.mkMerge (
-        (builtins.map makeVirtHosts enabledSites)
-        ++ (builtins.map makeRedirectVirtHosts enabledRedirects)
+        (builtins.map makeVirtHosts cfg.websites)
+        ++ (builtins.map makeRedirectVirtHosts cfg.redirects)
         ++ defaultVirtHost
       );
     };
