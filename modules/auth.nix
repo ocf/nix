@@ -61,7 +61,14 @@ in
     };
 
     users = {
+      # - non-ldap users are reserved for services or special cases, and should
+      #   only be added declaratively.
+      # - ldap users have homes set to /home. local users rarely need home
+      #   directories but in case createHome is set without specifying a home,
+      #   provide a default that does not clutter up /home.
       mutableUsers = false;
+      defaultUserHome = "/home.local";
+
       users.root.hashedPasswordFile = config.age.secrets.root-password-hash.path;
 
       ldap = {
