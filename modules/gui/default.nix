@@ -10,6 +10,7 @@
   lib,
   config,
   pkgs,
+  inputs,
   ...
 }:
 
@@ -26,16 +27,20 @@ let
   '';
   # override ocf-tv from util
   ocf-tv = lib.hiPrio vncScript;
-  catppuccin-sddm =
+
+  catppuccin-flavor = "latte";
+  catppuccin-accent = "blue";
+  ocf-catppuccin-sddm =
     (pkgs.catppuccin-sddm.override {
-      themeConfig.General = {
-        FontSize = 12;
-        Background = "/etc/ocf-assets/images/login.png";
-        #Logo = "/etc/ocf-assets/images/penguin.svg";
-        CustomBackground = true;
-      };
+      flavor = catppuccin-flavor;
+      accent = catppuccin-accent;
+      fontSize = "12";
+      background = "/etc/ocf-assets/images/login.png";
     }).overrideAttrs
       (old: {
+        # add ocf patches
+        src = inputs.ocf-sddm;
+
         postInstall = (old.postInstall or "") + ''
           rev="${config.system.nixos.label}"
 
@@ -131,7 +136,7 @@ in
     };
 
     environment.systemPackages = with pkgs; [
-      catppuccin-sddm
+      ocf-catppuccin-sddm
 
       # terminal emulators
       kitty
@@ -189,7 +194,7 @@ in
 
         sddm = {
           enable = true;
-          theme = "${catppuccin-sddm}/share/sddm/themes/catppuccin-latte";
+          theme = "${ocf-catppuccin-sddm}/share/sddm/themes/catppuccin-${catppuccin-flavor}-${catppuccin-accent}";
           wayland.enable = true;
           settings.Users = {
             RememberLastUser = false;

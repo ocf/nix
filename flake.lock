@@ -494,6 +494,22 @@
         "type": "github"
       }
     },
+    "ocf-sddm": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1791080468,
+        "narHash": "sha256-uhF3wAhRdTsfs3XdGxbD3GqfLmAI7IyB9iSnfjS5qS8=",
+        "owner": "ocf",
+        "repo": "sddm",
+        "rev": "3e0a0b941ad548d50d83e47dac8664b0f4e696b6",
+        "type": "github"
+      },
+      "original": {
+        "owner": "ocf",
+        "repo": "sddm",
+        "type": "github"
+      }
+    },
     "ocf-sync-etc": {
       "locked": {
         "lastModified": 1788900916,
@@ -644,6 +660,7 @@
         "ocf-cosmic-applets": "ocf-cosmic-applets",
         "ocf-jukebox": "ocf-jukebox",
         "ocf-pam-trimspaces": "ocf-pam-trimspaces",
+        "ocf-sddm": "ocf-sddm",
         "ocf-sync-etc": "ocf-sync-etc",
         "ocf-utils": "ocf-utils",
         "ocflib": "ocflib",
