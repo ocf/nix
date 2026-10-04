@@ -154,8 +154,13 @@ in
     '';
   };
 
-  environment.variables.EDITOR = "${pkgs.vim}/bin/ex"; # line editor
-  environment.variables.VISUAL = "${pkgs.nano}/bin/nano"; # visual editor
+  programs.vim.enable = true;
+  programs.vim.defaultEditor = true;
+
+  # some programs dont check VISUAL before EDITOR, which surprises the user
+  # with ex. we can use ex manually if we need to
+  #environment.variables.EDITOR = "${pkgs.vim}/bin/ex"; # line editor
+  #environment.variables.VISUAL = "${pkgs.nano}/bin/nano"; # visual editor
 
   environment.systemPackages = with pkgs; [
     # System utilities
@@ -255,8 +260,6 @@ in
     ocf-utils
     ocf-niks3-push
   ];
-
-  programs.vim.enable = true;
 
   services = {
     openssh = {
