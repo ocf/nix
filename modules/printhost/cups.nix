@@ -9,7 +9,6 @@
 let
   cfg = config.ocf.printhost;
 
-  # Python environment for the enforcer quota script
   pythonEnv = config.ocf.python.package.withPackages (
     ps: with ps; [
       ocflib
@@ -19,32 +18,37 @@ let
     ]
   );
 
-  enforcerScript = ./scripts/enforcer.py;
+  ocfCupsBackend = pkgs.stdenv.mkDerivation rec {
+    pname = "ocf-cups-backend";
+    version = "1.0.0";
+    src = ./backend;
 
-  # Wrapper that invokes enforcer.py with the right Python environment
-  enforcerBin = pkgs.writeShellScript "enforcer" ''
-    exec ${pythonEnv}/bin/python3 ${enforcerScript} "$@"
-  '';
+    nativeBuildInputs = [ pkgs.makeWrapper ];
+    buildInputs = [ pythonEnv ];
 
-  # ocf-cups-backend with enforcer path and password file paths substituted.
-  # mysqlPasswordFile/wayoutPasswordFile/redisPasswordFile are paths to agenix secrets.
-  ocfBackendScript = pkgs.replaceVars ./scripts/ocf-cups-backend {
-    enforcer = enforcerBin;
-    mysqlPasswordFile = cfg.mysqlPasswordFile;
-    wayoutPasswordFile = cfg.wayoutPasswordFile;
+    dontBuild = true;
+
+    postPatch = ''
+      substituteInPlace utils.py \
+        --replace-fail "@mysqlPasswordFile@" "${cfg.mysqlPasswordFile}" \
+        --replace-fail "@wayoutPasswordFile@" "${cfg.wayoutPasswordFile}"
+    '';
+
+    installPhase = ''
+      mkdir -p $out/bin
+      mkdir -p $out/lib/${pname}
+
+      cp * $out/lib/${pname}/
+
+      makeWrapper ${lib.getExe pythonEnv} $out/bin/${pname} \
+        --add-flags "$out/lib/${pname}/main.py" \
+        --prefix PYTHONPATH : "$out/lib/${pname}"
+
+
+      # install with 0555 permissions to force cups to run it as non-privleged lp user
+      install -Dm0555 $out/bin/${pname} $out/lib/cups/backend/ocfbackend
+    '';
   };
-
-  # Shell wrapper so the backend runs under the Nix-store python3 rather than
-  # relying on python3 being in PATH (CUPS backends run in a restricted env).
-  ocfBackendBin = pkgs.writeShellScript "ocfbackend" ''
-    exec ${pythonEnv}/bin/python3 ${ocfBackendScript} "$@"
-  '';
-
-  # Package exposing the backend at $out/lib/cups/backend/ocfbackend (mode 0700
-  # so CUPS runs it as root, which is required for raw socket access to printers)
-  ocfCupsBackend = pkgs.runCommand "ocf-cups-backend" { } ''
-    install -Dm0700 ${ocfBackendBin} $out/lib/cups/backend/ocfbackend
-  '';
 in
 {
   # use nixos-unstable printers module to include nixpkgs pr #558981 and #524127
