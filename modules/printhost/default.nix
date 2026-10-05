@@ -4,11 +4,6 @@ let
   cfg = config.ocf.printhost;
 in
 {
-  imports = [
-    ./cups.nix
-    ./cleanup.nix
-  ];
-
   options.ocf.printhost = {
     enable = lib.mkEnableOption "OCF print server";
 
@@ -30,7 +25,7 @@ in
   };
 
   config = lib.mkIf config.ocf.printhost.enable {
-    # cups user needs acme group to read /var/lib/acme certs in preStart
+    # cups user needs acme group to read /var/lib/acme certs
     users.users."cups".extraGroups = [ "acme" ];
     # root needs lp group to run lpadmin in the printer setup service
     users.users."root".extraGroups = [ "lp" ];
@@ -57,6 +52,11 @@ in
         sender_canonical_maps = "static:root@${config.networking.domain}";
       };
     };
+
+    # ocflib hardcodes /usr/sbin/sendmail
+    systemd.tmpfiles.rules = [
+      "L /usr/sbin/sendmail - - - - /run/wrappers/bin/sendmail"
+    ];
 
     # add all CNAMEs to tule's cert
     ocf.acme.extraCerts = [
