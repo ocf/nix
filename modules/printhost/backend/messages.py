@@ -1,9 +1,17 @@
-from collections import namedtuple
 from textwrap import dedent
+from typing import NamedTuple
 
 from ocflib.misc.mail import MAIL_SIGNATURE
 
-Message = namedtuple("Message", ["subject", "body"])
+
+class Message(NamedTuple):
+    subject: str
+    body: str
+
+
+class MessagePair(NamedTuple):
+    message: Message | None
+    notification: Message
 
 
 USER_ERROR_INFO = dedent("""\
@@ -106,26 +114,6 @@ ENFORCER_ERROR_MESSAGE = Message(
     + MAIL_SIGNATURE,
 )
 
-
-NOTIFY_QUOTA_MESSAGE = dedent("""\
-        Your print job failed due to insufficient pages. Your job was
-        {pages} pages, and you have {quota} pages remaining today.\
-""")
-
-NOTIFY_COLOR_QUOTA_MESSAGE = dedent("""\
-        Your print job failed due to insufficient color quota. Your job was
-        {pages} pages, and you have {quota} color pages remaining today.\
-""")
-
-NOTIFY_JOB_QUEUED = dedent("""\
-        Your print job '{document}' was accepted and queued on '{printer}'.\
-""")
-
-NOTIFY_JOB_ERROR = dedent("""\
-        Your print job '{document}' failed due to a printer error.
-        Please contact a staff member for assistance.\
-""")
-
 NON_LETTER_ERROR_MESSAGE = Message(
     subject="[OCF] Your latest print job failed",
     body=dedent("""\
@@ -147,6 +135,75 @@ NON_LETTER_ERROR_MESSAGE = Message(
     + MAIL_SIGNATURE,
 )
 
-NOTIFY_NON_LETTER = dedent("""\
+
+NOTIFY_QUOTA = Message(
+    subject="Insufficient Quota",
+    body=dedent("""\
+        Your print job failed due to insufficient pages. Your job was
+        {pages} pages, and you have {quota} pages remaining today.\
+"""),
+)
+
+NOTIFY_COLOR_QUOTA = Message(
+    subject="Insufficient Color Quota",
+    body=dedent("""\
+        Your print job failed due to insufficient color quota. Your job was
+        {pages} pages, and you have {quota} color pages remaining today.\
+"""),
+)
+
+NOTIFY_JOB_QUEUED = Message(
+    subject="Job Queued",
+    body=dedent("""\
+        Your print job '{document}' was accepted and queued on '{printer}'.\
+"""),
+)
+NOTIFY_JOB_ERROR = Message(
+    subject="Print Error",
+    body=dedent("""\
+        Your print job '{document}' failed due to a printer error.
+        Please contact a staff member for assistance.\
+"""),
+)
+
+NOTIFY_ENFORCER_ERROR = Message(
+    subject="Print Error",
+    body=dedent("""\
+        Your print job '{document}' failed due to a printing system error.
+        Please contact a staff member for assistance.\
+"""),
+)
+
+NOTIFY_NON_LETTER = Message(
+    subject="Non Letter Error",
+    body=dedent("""\
         Your print job '{document}' failed due to not being letter sized.\
-""")
+"""),
+)
+
+
+# Reasons
+INSUFFICIENT_QUOTA = MessagePair(
+    message=INSUFFICIENT_QUOTA_MESSAGE,
+    notification=NOTIFY_QUOTA,
+)
+INSUFFICIENT_COLOR_QUOTA = MessagePair(
+    message=INSUFFICIENT_COLOR_QUOTA_MESSAGE,
+    notification=NOTIFY_COLOR_QUOTA,
+)
+PRINTER_ERROR = MessagePair(
+    message=PRINTER_ERROR_MESSAGE,
+    notification=NOTIFY_JOB_ERROR,
+)
+ENFORCER_ERROR = MessagePair(
+    message=ENFORCER_ERROR_MESSAGE,
+    notification=NOTIFY_ENFORCER_ERROR,
+)
+NON_LETTER_ERROR = MessagePair(
+    message=NON_LETTER_ERROR_MESSAGE,
+    notification=NOTIFY_NON_LETTER,
+)
+JOB_QUEUED = MessagePair(
+    message=None,
+    notification=NOTIFY_JOB_QUEUED,
+)
