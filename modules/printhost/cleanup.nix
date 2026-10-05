@@ -53,12 +53,6 @@ let
 in
 {
   config = lib.mkIf cfg.enable {
-    # ocflib hardcodes /usr/sbin/sendmail; on NixOS postfix provides it at
-    # /run/wrappers/bin/sendmail via security.wrappers.
-    systemd.tmpfiles.rules = [
-      "L /usr/sbin/sendmail - - - - /run/wrappers/bin/sendmail"
-    ];
-
     # Hourly job to NULL out doc_name for jobs older than 14 days (privacy).
     systemd.services.enforcer-privacy-cleanup = {
       description = "Remove old print job document titles for privacy";
