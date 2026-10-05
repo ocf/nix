@@ -1,12 +1,12 @@
 import re
 import sys
 from datetime import datetime
-from syslog import syslog
 from typing import NamedTuple
 
 import cups
 import ocflib.printing.quota as quota
 import requests
+from messages import *
 from ocflib.misc.mail import send_mail_user
 
 MYSQL_PASSWORD_FILE = "@mysqlPasswordFile@"
@@ -24,14 +24,14 @@ LETTER_SIZES = {"Letter", "279x215mm", "215x279mm", "279x216mm", "216x279mm"}
 
 
 class Job(NamedTuple):
-    id: int
     user: str
-    document_title: str
-    printer_name: str
-    class_name: str
-    data_file: str
-    job_size: str
-    time: datetime
+    id: int = 0
+    document_title: str = ""
+    printer_name: str = ""
+    class_name: str = ""
+    data_file: str = ""
+    job_size: str = ""
+    time: datetime = datetime.min
     pages: int = 0
     hostname: str = ""
     page_size: str = ""
@@ -53,7 +53,7 @@ def page_count(job: Job):
                         try:
                             pages = int(pages_match.group(1))
                         except ValueError:
-                            syslog(
+                            print(
                                 f"non-integer output when processing PS pages: {pages_match}"
                             )
                             pass
@@ -64,17 +64,17 @@ def page_count(job: Job):
                         try:
                             copies = int(copies_match.group(1))
                         except ValueError:
-                            syslog(
+                            print(
                                 f"non-integer output when processing PS copies: {copies_match}"
                             )
                             pass
     except Exception as e:
-        syslog(f"Page count error: {e}")
+        print(f"Page count error: {e}")
         pass
 
     total_sides = pages * copies
     if total_sides <= 0:
-        syslog(f"failed to get document sides (pages={pages}, copies={copies})")
+        print(f"failed to get document sides (pages={pages}, copies={copies})")
         sys.exit(CUPS_BACKEND_CANCEL)
     return total_sides
 
@@ -97,19 +97,24 @@ def page_size(job: Job):
     return None
 
 
-def send_printer_mail(message: Message, job: Job, quo):
+def send_printer_mail(message: Message, job: Job, quo: quota.UserQuota | None):
     body = message.body.format(
         user=job.user,
         time=job.time,
         doc_name=job.document_title,
         pages=job.pages,
-        daily_pages=quo.daily,
-        semester_pages=quo.semesterly,
-        color_pages=quo.color,
         daily_quota=quota.daily_quota(),
         semester_quota=quota.SEMESTERLY_QUOTA,
         color_quota=quota.COLOR_QUOTA,
     )
+
+    if quo:
+        body = body.format(
+            daily_pages=quo.daily,
+            semester_pages=quo.semesterly,
+            color_pages=quo.color,
+        )
+
     send_mail_user(job.user, message.subject, body)
 
 
@@ -121,18 +126,75 @@ def get_hostname(job: Job):
     return job_attrs.get("job-originating-host-name")
 
 
-def send_notification(wayout_pass, job: Job, summary, body):
+def send_notification(
+    wayout_pass, job: Job, quo: quota.UserQuota | None, message: Message
+):
     try:
         if job.hostname == "":
-            syslog(f"ERROR: no hostname found for job id: {job.id}")
+            print(f"ERROR: no hostname found for job id: {job.id}")
             return
         url = "http://" + job.hostname + ":" + str(WAYOUT_PORT) + "/notify"
         data = {
-            "summary": summary,
-            "body": body,
+            "summary": message.subject,
+            "body": message.body,
             "app_name": WAYOUT_APP_NAME,
         }
         headers = {"Authorization": wayout_pass, "Content-Type": "application/json"}
         _ = requests.post(url=url, json=data, headers=headers, timeout=5)
     except Exception as e:
-        syslog("Exception: " + str(e))
+        print("Exception: " + str(e))
+
+
+def notify_user(
+    wayout_pass, job: Job, quo: quota.UserQuota | None, reason: MessagePair
+):
+    if reason.message:
+        send_printer_mail(format_message(job, quo, reason.message), job, quo)
+    send_notification(
+        wayout_pass, job, quo, format_message(job, quo, reason.notification)
+    )
+
+
+def cancel_job(wayout_pass, job: Job, quo: quota.UserQuota | None, reason: MessagePair):
+    notify_user(wayout_pass, job, quo, reason)
+    sys.exit(CUPS_BACKEND_CANCEL)
+
+
+def retry_job(wayout_pass, job: Job, quo: quota.UserQuota | None, reason: MessagePair):
+    notify_user(wayout_pass, job, quo, reason)
+    sys.exit(CUPS_BACKEND_FAILED)
+
+
+def format_message(job: Job, quo: quota.UserQuota | None, message: Message):
+    body = message.body.format(
+        user=job.user,
+        time=job.time,
+        doc_name=job.document_title,
+        pages=job.pages,
+        daily_quota=quota.daily_quota(),
+        semester_quota=quota.SEMESTERLY_QUOTA,
+        color_quota=quota.COLOR_QUOTA,
+    )
+    if quo:
+        body = body.format(
+            daily_pages=quo.daily,
+            semester_pages=quo.semesterly,
+            color_pages=quo.color,
+        )
+
+    return Message(subject=message.subject, body=body)
+
+
+def add_db_job(c, job: Job):
+    quota.add_job(
+        c,
+        quota.Job(
+            user=job.user,
+            time=job.time,
+            pages=job.pages,
+            queue=job.class_name,
+            printer=job.printer_name,
+            doc_name=job.document_title,
+            filesize=job.job_size,
+        ),
+    )
