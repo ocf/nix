@@ -28,6 +28,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    impermanence = {
+      url = "github:nix-community/impermanence";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     nix-index-database = {
       url = "github:nix-community/nix-index-database/main";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -81,6 +86,7 @@
       agenix,
       agenix-rekey,
       disko,
+      impermanence,
       nix-index-database,
       ocflib,
       ocf-sync-etc,
@@ -114,6 +120,7 @@
         agenix.nixosModules.default
         agenix-rekey.nixosModules.default
         disko.nixosModules.disko
+        impermanence.nixosModules.impermanence
         niks3.nixosModules.default
         niks3.nixosModules.niks3-auto-upload
         wayout.nixosModules.default
