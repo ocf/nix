@@ -22,6 +22,12 @@ in
       type = lib.types.path;
       description = "Path to file containing the wayout notification password.";
     };
+
+    exporter.enable = lib.mkOption {
+      type = lib.types.bool;
+      default = cfg.subdomain == cfg.subdomain.default;
+      description = "enable exporting printer status to prometheus";
+    };
   };
 
   config = lib.mkIf config.ocf.printhost.enable {
