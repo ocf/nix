@@ -14,6 +14,7 @@ in
 
   config = lib.mkIf cfg.enable {
     fileSystems."/persist".neededForBoot = true;
+    age.identityPaths = [ "/persist/etc/ssh/ssh_host_ed25519_key" ];
 
     environment.persistence."/persist" = {
       directories = [
