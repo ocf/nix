@@ -61,10 +61,8 @@ in
         users.groups.${deploy-user} = { };
 
         users.users.${deploy-user} = {
-          isNormalUser = true;
+          isSystemUser = true;
           group = deploy-user;
-          createHome = false;
-          home = "/var/empty";
           openssh.authorizedKeys.keys = [
             "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDMuiOUsjVJSi+0WeMHKquQmwoyz/c3N7HhjJwzz21B3" # github-actions
           ]
