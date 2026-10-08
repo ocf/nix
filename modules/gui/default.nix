@@ -30,7 +30,7 @@ let
     (pkgs.catppuccin-sddm.override {
       themeConfig.General = {
         FontSize = 12;
-        Background = "/etc/ocf-assets/images/login.png";
+        Background = "${./assets/images/login.png}";
         #Logo = "/etc/ocf-assets/images/penguin.svg";
         CustomBackground = true;
       };
@@ -103,9 +103,42 @@ in
     environment.etc =
       let
         kittyThemes = "${pkgs.kitty-themes}share/kitty-themes/themes";
+        cosmicCustomImages = pkgs.writeTextFile {
+          name = "cosmic-custom-images";
+          text = ''
+            [
+              ${./assets/images/cosmic-bg-light.png},
+              ${./assets/images/cosmic-bg-dark.png},
+            ]
+          '';
+          destination = "/.config/cosmic/com.system76.CosmicSettings.Wallpaper/v1/custom-images";
+        };
+        cosmicBackgroundConf = pkgs.writeTextFile {
+          name = "cosmic-bg-conf";
+          text = ''
+            (
+              output: "all",
+              source: Path("${./assets/images/cosmic-bg-light.png}"),
+              filter_by_theme: true,
+              rotation_frequency: 300,
+              filter_method: Lanczos,
+              scaling_mode: Zoom,
+              sampling_method: Alphanumeric,
+            )
+          '';
+          destination = "/.config/cosmic/com.system76.CosmicBackground/v1/all";
+        };
+        mergedSkel = pkgs.symlinkJoin {
+          name = "skel";
+          paths = [
+            ./skel
+            cosmicCustomImages
+            cosmicBackgroundConf
+          ];
+        };
       in
       {
-        skel.source = ./skel;
+        skel.source = mergedSkel;
         ocf-assets.source = ./assets;
         "xdg/kitty/dark-theme.auto.conf".source = "${kittyThemes}/rose-pine.conf";
         "xdg/kitty/light-theme.auto.conf ".source = "${kittyThemes}/rose-pine-dawn.conf";
