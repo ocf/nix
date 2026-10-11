@@ -90,6 +90,7 @@ in
       rustc
       cargo
       clang
+      gcc
       dix
       lldb
       gdb
@@ -119,6 +120,7 @@ in
       graphviz
       nodejs
       go
+      delve
       godot # has both cli and gui tools
       libxml2 # xmllint
       elixir
