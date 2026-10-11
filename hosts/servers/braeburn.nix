@@ -1,0 +1,54 @@
+{
+  pkgs,
+  ...
+}:
+
+{
+  imports = [ ../../hardware/virtualized.nix ];
+
+  networking.hostName = "braeburn";
+
+  ocf.network = {
+    enable = true;
+    lastOctet = 00;
+  };
+
+  services.mysql = {
+    enable = true;
+    package = pkgs.mariadb_118;
+    settings = {
+      mysqld = {
+        bind-address = "*";
+
+        # https://mariadb.com/kb/en/mariadb/optimizing-key_buffer_size/
+        key_buffer_size = "128M";
+
+        max_connections = 750;
+        max_user_connections = 50;
+
+        # https://dev.mysql.com/doc/refman/5.5/en/table-cache.html
+        # table_open_cache should be at least max_connections * N
+        # (where N = number of tables per join)
+        table_open_cache = 4000;
+
+        # http://haydenjames.io/mysql-query-cache-size-performance/
+        query_cache_size = "128M";
+
+        # https://mariadb.com/kb/en/mariadb/xtradbinnodb-server-system-variables/
+        # https://dev.mysql.com/doc/refman/5.6/en/innodb-multiple-buffer-pools.html
+        innodb_file_per_table = 1;
+        # each pool should have at least 1 GB
+        innodb_buffer_pool_size = "4G";
+        innodb_buffer_pool_instances = 4;
+
+        # http://dev.mysql.com/doc/refman/5.6/en/innodb-parameters.html#sysvar_innodb_log_buffer_size
+        innodb_log_buffer_size = "256M";
+        innodb_log_file_size = "1G";
+      };
+    };
+  };
+
+  networking.firewall.allowedTCPPorts = [ 3306 ];
+
+  system.stateVersion = "25.11";
+}
