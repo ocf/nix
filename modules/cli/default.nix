@@ -49,8 +49,11 @@ in
       let
         execName = shell.meta.mainProgram or shell.pname;
       in
-      # let system.activationScripts.binsh and usrbinenv handle these
-      lib.optionalString (execName != "sh") ''
+      # let system.activationScripts.binsh and usrbinenv handle sh and env
+      ''
+        mkdir -p /bin /usr/bin
+      ''
+      + lib.optionalString (execName != "sh") ''
         ln -sf '${lib.getExe shell}' /bin/
       ''
       + lib.optionalString (execName != "env") ''
