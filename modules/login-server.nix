@@ -73,6 +73,9 @@ in
 
       # enable printing
       ocf.printing.enable = true;
+
+      # allow users to run unpatched binaries
+      programs.nix-ld.enable = true;
     })
 
     (lib.mkIf (cfg.enable && cfg.public) {
