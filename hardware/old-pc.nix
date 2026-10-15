@@ -49,6 +49,7 @@
 
   services.udev.extraRules = ''
     SUBSYSTEM=="block", KERNEL=="sr[0-9]*", RUN+="${pkgs.coreutils}/bin/chgrp 1000 /dev/%k", RUN+="${pkgs.coreutils}/bin/chmod 0660 /dev/%k"
+    SUBSYSTEM=="scsi_generic", KERNEL=="sg[0-9]*", RUN+="${pkgs.coreutils}/bin/chgrp 1000 /dev/%k", RUN+="${pkgs.coreutils}/bin/chmod 0660 /dev/%k"
   '';
 
   # Enables DHCP on each ethernet and wireless interface. In case of scripted networking
