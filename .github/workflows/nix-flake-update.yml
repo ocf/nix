@@ -13,7 +13,9 @@ jobs:
   nix-flake-update:
     runs-on: ci-ocf-nix-build
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
+        with:
+          token: ${ secrets.OCFBOT_TOKEN }
       - name: nix flake update
         env:
           GIT_AUTHOR_NAME: "ocfbot"
@@ -34,7 +36,7 @@ jobs:
             exit 0
           fi
 
-          git push https://x-access-token:${TODO}@github.com/${{ github.repository }}.git "$branch" --force
+          git push --force
 
           title="$(git log -1 --format=%s)"
           body="$(git log -1 --format=%b)"
