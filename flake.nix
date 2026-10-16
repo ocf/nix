@@ -325,17 +325,6 @@
           nativeBuildInputs = (old.nativeBuildInputs or [ ]) ++ [ final.rpcsvc-proto ];
           configureFlags = (old.configureFlags or [ ]) ++ [ "--enable-rpc" ];
         });
-
-        # https://discourse.nixos.org/t/security-advisory-for-nix-and-lix-october-2026/80547
-        nix = prev.nix.overrideAttrs rec {
-          version = "2.34.9";
-          src = final.fetchFromGitHub {
-            owner = "NixOS";
-            repo = "nix";
-            tag = version;
-            hash = "sha256-ZJwg/qG4M1Impy774HKMZ3Hsq7vlBJy7sXl1fI9QDXI=";
-          };
-        };
       };
 
       agenix-rekey = agenix-rekey.configure {
