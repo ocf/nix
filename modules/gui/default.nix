@@ -77,7 +77,14 @@ in
     services.desktopManager.plasma6.enable = true;
 
     i18n.inputMethod = {
-      enable = true;
+      # IME currently breaks dropdown and right click menus in many
+      # applications such as Krita and LibreOffice, rendering them basically
+      # unusable.
+      # known issue upstream:
+      # - https://github.com/pop-os/cosmic-comp/issues/2778
+      # - https://github.com/pop-os/cosmic-comp/issues/1763
+      # - https://github.com/pop-os/cosmic-comp/issues/1211
+      enable = false;
       # see https://github.com/pop-os/libcosmic/pull/1182, cosmic specific text will have ime support once this is merged soon
       # see skel/.config/fcitx5 for IMEs enabled by default on cosmic
       type = "fcitx5";
