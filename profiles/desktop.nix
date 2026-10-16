@@ -16,6 +16,7 @@
     home.tmpfs = true;
     home.mountRemote = true;
     network.wakeOnLan.enable = true;
+    prometheus-export.enable = true;
     logged-in-users-exporter.enable = true;
 
     zfs.enable = true;
