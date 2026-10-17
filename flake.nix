@@ -343,6 +343,7 @@
             pkgs.wol
             pkgs.nixfmt-tree
             pkgs.nix-fast-build
+            pkgs.gh
           ];
         in
         {
