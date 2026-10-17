@@ -60,6 +60,14 @@ in
       mode = "0600";
     };
 
+    # nixbld uid starts at 30000 by default, which collides with our ldap range
+    # auto-allocate-uids starts uids at 872415232 by default, which should not collide
+    nix.settings.auto-allocate-uids = true;
+    nix.settings.experimental-features = [ "auto-allocate-uids" ];
+
+    # FIXME: we need to implement a more reliable way to make sure nixos and
+    # other things dont create uids/gids that collide with ldap
+
     users = {
       mutableUsers = false;
       users.root.hashedPasswordFile = config.age.secrets.root-password-hash.path;

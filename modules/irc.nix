@@ -133,8 +133,7 @@ in
     ];
 
     users.users."ergochat" = {
-      isNormalUser = true;
-      createHome = true;
+      isSystemUser = true;
       group = "acme";
     };
   };
