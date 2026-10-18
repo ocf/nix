@@ -2,8 +2,10 @@
 
 {
   imports = [
-    ../../hardware/ridge-pc.nix
+    ../../hardware/ridge-pc-zfs.nix
   ];
+
+  disko.devices.disk.main.device = "/dev/disk/by-id/nvme-CT500P3SSD8_241147963423";
 
   ocf.network = {
     enable = true;

@@ -28,6 +28,8 @@
     # desktops heavily use /remote and bind mount to ~/remote on login
     # keep the mount cached and ready to use at all times
     nfs.idleTimeout = 0;
+
+    impermanence.enable = lib.mkIf (config.disko.devices.zpool ? "zroot") true;
   };
 
   boot = {
