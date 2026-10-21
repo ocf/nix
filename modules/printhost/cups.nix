@@ -157,10 +157,10 @@ in
         ensurePrinters =
           (map (printer: {
             name = printer;
-            model = "raw";
+            model = "everywhere";
             description = "HP LaserJet M806";
             location = "OCF lab";
-            deviceUri = "ocfbackend:socket://${printer}:9100";
+            deviceUri = "ipps://${printer}.ocf.berkeley.edu?waitjob=false&waitprinter=false";
             ppdOptions = {
               printer-is-shared = "false";
               Duplex = "DuplexNoTumble";
@@ -169,10 +169,10 @@ in
           ++ [
             {
               name = "fishpaper";
-              model = "raw";
+              model = "everywhere";
               description = "HP Color LaserJet M856";
               location = "OCF lab";
-              deviceUri = "ocfbackend:socket://fishpaper:9100";
+              deviceUri = "ipps://fishpaper.ocf.berkeley.edu?waitjob=false&waitprinter=false";
               ppdOptions = {
                 printer-is-shared = "true";
               };

@@ -1,6 +1,5 @@
 {
   lib,
-  pkgs,
   config,
   ...
 }:
@@ -26,28 +25,19 @@ in
       browsed.enable = false;
       browsing = false;
       stateless = true;
-      drivers = [ pkgs.ocf-hplip ];
     };
     hardware.printers = {
       ensureDefaultPrinter = "OCF-BW";
       ensurePrinters = [
         {
-          deviceUri = "ipps://${cfg.printhostURL}/classes/OCF-BW-Group?waitjob=false&waitprinter=false";
+          deviceUri = "ipps://${cfg.printhostURL}/classes/OCF-BW-Group";
           name = "OCF-BW";
-          model = "HP/hp-laserjet_m806-ps.ppd.gz";
-          location = "OCF lab";
-          ppdOptions = {
-            Duplex = "DuplexNoTumble";
-          };
+          model = "everywhere";
         }
         {
-          deviceUri = "ipps://${cfg.printhostURL}/classes/fishpaper?waitjob=false&waitprinter=false";
+          deviceUri = "ipps://${cfg.printhostURL}/classes/fishpaper";
           name = "OCF-Color";
-          model = "HP/hp-color_laserjet_m856-ps.ppd.gz";
-          location = "OCF lab";
-          ppdOptions = {
-            Duplex = "None";
-          };
+          model = "everywhere";
         }
       ];
     };
