@@ -1,6 +1,7 @@
 import re
 import sys
 from datetime import datetime
+from syslog import syslog
 from typing import NamedTuple
 
 import cups
@@ -53,7 +54,7 @@ def page_count(job: Job):
                         try:
                             pages = int(pages_match.group(1))
                         except ValueError:
-                            print(
+                            syslog(
                                 f"non-integer output when processing PS pages: {pages_match}"
                             )
                             pass
@@ -64,17 +65,17 @@ def page_count(job: Job):
                         try:
                             copies = int(copies_match.group(1))
                         except ValueError:
-                            print(
+                            syslog(
                                 f"non-integer output when processing PS copies: {copies_match}"
                             )
                             pass
     except Exception as e:
-        print(f"Page count error: {e}")
+        syslog(f"Page count error: {e}")
         pass
 
     total_sides = pages * copies
     if total_sides <= 0:
-        print(f"failed to get document sides (pages={pages}, copies={copies})")
+        syslog(f"failed to get document sides (pages={pages}, copies={copies})")
         sys.exit(CUPS_BACKEND_CANCEL)
     return total_sides
 
@@ -131,7 +132,7 @@ def send_notification(
 ):
     try:
         if job.hostname == "":
-            print(f"ERROR: no hostname found for job id: {job.id}")
+            syslog(f"ERROR: no hostname found for job id: {job.id}")
             return
         url = "http://" + job.hostname + ":" + str(WAYOUT_PORT) + "/notify"
         data = {
@@ -142,7 +143,7 @@ def send_notification(
         headers = {"Authorization": wayout_pass, "Content-Type": "application/json"}
         _ = requests.post(url=url, json=data, headers=headers, timeout=5)
     except Exception as e:
-        print("Exception: " + str(e))
+        syslog("Exception: " + str(e))
 
 
 def notify_user(

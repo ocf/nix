@@ -4,6 +4,7 @@ import sys
 import threading
 import time
 from pprint import pprint
+from syslog import syslog
 from urllib.parse import urlparse
 
 import cups
@@ -21,20 +22,20 @@ def enforce_print_init(job: Job):
 
     while attempt < MAX_RETRIES and not success:
         try:
-            print(f"job {job.id}: attempt {attempt + 1}...")
+            syslog(f"job {job.id}: attempt {attempt + 1}...")
 
             enforce_print(job)
 
-            print(f"job {job.id}: enforcer succeeded")
+            syslog(f"job {job.id}: enforcer succeeded")
             success = True
 
         except cups.IPPError as e:
             attempt += 1
-            print(f"job {job.id}: error = {e}. retrying in {DELAY} seconds...")
+            syslog(f"job {job.id}: error = {e}. retrying in {DELAY} seconds...")
             time.sleep(DELAY)
 
     if not success:
-        print(f"job {job.id}: max retries reached")
+        syslog(f"job {job.id}: max retries reached")
 
 
 def enforce_print(job: Job):

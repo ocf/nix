@@ -1,6 +1,7 @@
 import threading
 import time
 from pathlib import PurePosixPath
+from syslog import syslog
 from urllib.parse import urlparse
 
 import cups
@@ -34,7 +35,7 @@ def process_new_jobs(conn, job_id_list):
                 printer_uri = job_attributes.get("job-printer-uri")
             printer = PurePosixPath(urlparse(printer_uri).path).name
 
-            print(
+            syslog(
                 f"Job #{job_id} | Printer: {printer} | User: {user} | Title: {job_name} | Host: {host} | Color: {color}"
             )
 
@@ -53,7 +54,7 @@ def process_new_jobs(conn, job_id_list):
             )
             t.start()
         except cups.IPPError:
-            print(f"Job #{job_id} | failed to get data")
+            syslog(f"Job #{job_id} | failed to get data")
 
 
 def process_completed_jobs(conn, job_id_list):
@@ -102,7 +103,7 @@ def monitor_cups_jobs(conn):
                     elif reason == "job-completed":
                         completed_job_ids.append(job_id)
                 else:
-                    print("failed to get job id")
+                    syslog("failed to get job id")
 
             process_new_jobs(conn, new_job_ids)
             process_completed_jobs(conn, completed_job_ids)
