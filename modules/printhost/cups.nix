@@ -187,6 +187,11 @@ in
         };
       };
 
+    systemd.services.cups.postStart = lib.mkAfter ''
+      lpadmin -p OCF-BW-Group -o job-hold-until-default=indefinite
+      lpadmin -p fishpaper -o job-hold-until-default=indefinite
+    '';
+
     services.avahi.enable = lib.mkForce false;
   };
 }
