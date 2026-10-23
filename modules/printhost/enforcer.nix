@@ -58,7 +58,8 @@ in
         ExecStart = "${lib.getExe ocfEnforcer}";
         Restart = "on-failure";
         RestartSec = "5s";
-        User = "cups"; # user is created in services.printing at services/printing/cupsd.nix
+	User = "root"; # TODO have a custom user with perms
+        #User = "cups"; # user is created in services.printing at services/printing/cupsd.nix
       };
     };
   };
