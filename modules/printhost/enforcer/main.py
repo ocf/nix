@@ -1,9 +1,11 @@
+import threading
 import time
 from pathlib import PurePosixPath
-from pprint import pprint
 from urllib.parse import urlparse
 
 import cups
+from enforcer import *
+from utils import *
 
 
 def process_new_jobs(conn, job_id_list):
@@ -27,16 +29,29 @@ def process_new_jobs(conn, job_id_list):
             user = job_attributes.get("job-originating-user-name", "Unknown")
             host = job_attributes.get("job-originating-host-name", "Unknown")
             color = job_attributes.get("print-color-mode", "Unknown")
-            printer = job_attributes.get("job-printer-uri-actual")
-            if not printer:
-                printer = job_attributes.get("job-printer-uri")
-                printer = PurePosixPath(urlparse(printer).path).name
+            printer_uri = job_attributes.get("job-printer-uri-actual")
+            if not printer_uri:
+                printer_uri = job_attributes.get("job-printer-uri")
+            printer = PurePosixPath(urlparse(printer_uri).path).name
 
             print(
                 f"Job #{job_id} | Printer: {printer} | User: {user} | Title: {job_name} | Host: {host} | Color: {color}"
             )
-            conn.cancelJob(job_id)
-            print(f"canceled #{job_id}")
+
+            job = Job(
+                id=int(job_id),
+                user=user,
+                document_title=job_name,
+                printer_name=printer,
+                printer_uri=printer_uri,
+                hostname=host,
+                time=datetime.now(),
+            )
+
+            t = threading.Thread(
+                target=enforce_print_init, args=(job,), name=f"job-{job_id}"
+            )
+            t.start()
         except cups.IPPError:
             print(f"Job #{job_id} | failed to get data")
 
@@ -92,8 +107,7 @@ def monitor_cups_jobs(conn):
             process_new_jobs(conn, new_job_ids)
             process_completed_jobs(conn, completed_job_ids)
 
-            if max_seq > sequence_num:
-                sequence_num = max_seq
+            sequence_num = max(sequence_num, max_seq)
 
             time.sleep(1)
 

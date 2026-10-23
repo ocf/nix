@@ -49,7 +49,7 @@ let
 in
 {
   config = lib.mkIf cfg.enable {
-    systemd.units.ocf-enforcer = {
+    systemd.services.ocf-enforcer = {
       description = "OCF Print Enforcer";
       wantedBy = [ "multi-user.target" ];
       wants = [ "cups.service" ];
@@ -58,7 +58,7 @@ in
         ExecStart = "${lib.getExe ocfEnforcer}";
         Restart = "on-failure";
         RestartSec = "5s";
-        User = "lp";
+        User = "cups"; # user is created in services.printing at services/printing/cupsd.nix
       };
     };
   };

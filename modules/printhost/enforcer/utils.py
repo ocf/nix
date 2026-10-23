@@ -28,7 +28,7 @@ class Job(NamedTuple):
     id: int = 0
     document_title: str = ""
     printer_name: str = ""
-    class_name: str = ""
+    printer_uri: str = ""
     data_file: str = ""
     job_size: str = ""
     time: datetime = datetime.min
@@ -155,17 +155,12 @@ def notify_user(
     )
 
 
-def cancel_job(wayout_pass, job: Job, quo: quota.UserQuota | None, reason: MessagePair):
+def cancel_job(
+    conn, wayout_pass, job: Job, quo: quota.UserQuota | None, reason: MessagePair
+):
     notify_user(wayout_pass, job, quo, reason)
-    sys.exit(CUPS_BACKEND_CANCEL)
-
-
-def retry_job(job: Job):
-    print(
-      f"ocf-cups-backend: retrying job id: {job.id}",
-      file=sys.stderr,
-    )
-    sys.exit(CUPS_BACKEND_FAILED)
+    conn.cancelJob(job.id)
+    sys.exit()
 
 
 def format_message(job: Job, quo: quota.UserQuota | None, message: Message):
