@@ -8,47 +8,6 @@
 
 let
   cfg = config.ocf.printhost;
-
-  pythonEnv = config.ocf.python.package.withPackages (
-    ps: with ps; [
-      ocflib
-      pycups
-      pymysql
-      requests
-    ]
-  );
-
-  ocfCupsBackend = pkgs.stdenv.mkDerivation rec {
-    pname = "ocf-cups-backend";
-    version = "1.0.0";
-    src = ./backend;
-
-    nativeBuildInputs = [ pkgs.makeWrapper ];
-    buildInputs = [ pythonEnv ];
-
-    dontBuild = true;
-
-    postPatch = ''
-      substituteInPlace utils.py \
-        --replace-fail "@mysqlPasswordFile@" "${cfg.mysqlPasswordFile}" \
-        --replace-fail "@wayoutPasswordFile@" "${cfg.wayoutPasswordFile}"
-    '';
-
-    installPhase = ''
-      mkdir -p $out/bin
-      mkdir -p $out/lib/${pname}
-
-      cp * $out/lib/${pname}/
-
-      makeWrapper ${lib.getExe pythonEnv} $out/bin/${pname} \
-        --add-flags "$out/lib/${pname}/main.py" \
-        --prefix PYTHONPATH : "$out/lib/${pname}"
-
-
-      # install with 0555 permissions to force cups to run it as non-privleged lp user
-      install -Dm0555 $out/bin/${pname} $out/lib/cups/backend/ocfbackend
-    '';
-  };
 in
 {
   # use nixos-unstable printers module to include nixpkgs pr #558981 and #524127
@@ -142,10 +101,6 @@ in
         SystemGroup ocfstaff opstaff
         ServerKeychain /etc/cups-certs
       '';
-      drivers = [
-        ocfCupsBackend
-        pkgs.ocf-hplip
-      ];
     };
 
     hardware.printers =

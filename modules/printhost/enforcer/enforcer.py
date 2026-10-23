@@ -9,18 +9,7 @@ from ocflib.printing.printers import COLOR_PRINTERS
 from utils import *
 
 
-def main():
-    if len(sys.argv) == 1:
-        sys.exit(CUPS_BACKEND_OK)
-
-    if len(sys.argv) != 7:
-        print(
-            f"Usage: {sys.argv[0]} job-id user title copies options [file]",
-            file=sys.stderr,
-        )
-        sys.exit(CUPS_BACKEND_CANCEL)
-
-    # we don't use copies (sys.argv[4])
+def enforce_print():
     job_id, user, title, _, options, data_file = sys.argv[1:7]
 
     device_uri = os.environ.get("DEVICE_URI", "")
@@ -34,32 +23,8 @@ def main():
     with open(WAYOUT_PASSWORD_FILE) as f:
         wayout_pass = f.read().strip()
 
-    if content_type != "application/vnd.cups-postscript":
-        print(
-            f"ocf-cups-backend: unexpected CONTENT_TYPE: {content_type!r}",
-            file=sys.stderr,
-        )
-        cancel_job(wayout_pass, Job(user=user), None, ENFORCER_ERROR)
 
-    if not device_uri.startswith("ocfbackend:"):
-        print(
-            f"ocf-cups-backend: unexpected DEVICE_URI: {device_uri!r}",
-            file=sys.stderr,
-        )
-        cancel_job(wayout_pass, Job(user=user), None, ENFORCER_ERROR)
-
-    real_uri = device_uri[len("ocfbackend:") :]
-    scheme = urlparse(real_uri).scheme
-    # ipps uses the same backend binary as ipp
-    backend_scheme = "ipp" if scheme == "ipps" else scheme
-    backend_bin = os.path.join(cups_serverbin, "backend", backend_scheme)
-
-    if not os.path.exists(backend_bin):
-        print(
-            f"ocf-cups-backend: backend not found: {backend_bin}",
-            file=sys.stderr,
-        )
-        cancel_job(wayout_pass, Job(user=user), None, ENFORCER_ERROR)
+    # TODO: finish integration with the notification listener       
 
     file_size = str(os.path.getsize(data_file))
 
@@ -118,6 +83,3 @@ def main():
         )
         cancel_job(wayout_pass, Job(user=user), None, ENFORCER_ERROR)
 
-
-if __name__ == "__main__":
-    main()
