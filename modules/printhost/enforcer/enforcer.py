@@ -54,6 +54,9 @@ def enforce_print(job: Job):
     job = job._replace(
         data_file=data_file,
         job_size=file_size,
+    )
+
+    job = job._replace(
         pages=page_count(job),
         page_size=page_size(job),
     )
