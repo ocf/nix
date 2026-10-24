@@ -16,7 +16,7 @@ MAX_RETRIES = 3
 DELAY = 10
 
 
-def enforce_print_init(job: Job):
+def enforce_print_init(r, job: Job):
     attempt = 0
     success = False
 
@@ -24,7 +24,7 @@ def enforce_print_init(job: Job):
         try:
             syslog(f"job {job.id}: attempt {attempt + 1}...")
 
-            enforce_print(job)
+            enforce_print(r, job)
 
             syslog(f"job {job.id}: enforcer succeeded")
             success = True
@@ -38,7 +38,7 @@ def enforce_print_init(job: Job):
         syslog(f"job {job.id}: max retries reached")
 
 
-def enforce_print(job: Job):
+def enforce_print(r, job: Job):
     conn = cups.Connection()
 
     with open(MYSQL_PASSWORD_FILE) as f:
@@ -70,19 +70,22 @@ def enforce_print(job: Job):
         #     cancel_job(conn, wayout_pass, job, quo, NON_LETTER_ERROR)
         if job.pages > quo.daily:
             cancel_job(conn, wayout_pass, job, quo, INSUFFICIENT_QUOTA)
-        elif job.printer_name in COLOR_PRINTERS and job.pages > quo.color:
+        elif job.color and job.pages > quo.color:
             cancel_job(conn, wayout_pass, job, quo, INSUFFICIENT_COLOR_QUOTA)
 
         # release job
-        conn.setJobHoldUntil(job.id, "resume")
+        syslog(f"job {job.id}: released")
+        conn.setJobHoldUntil(job.id, "no-hold")
+        save_pending_job_data(r, job)
 
 
-# TODO this will not have the full job print info because it's a new job object, need to keep the same somehow or get the info again
-def post_print(job: Job):
+def post_print(r, job: Job):
     with open(MYSQL_PASSWORD_FILE) as f:
         mysql_pass = f.read().strip()
     with open(WAYOUT_PASSWORD_FILE) as f:
         wayout_pass = f.read().strip()
+
+    job = get_pending_job_data(r, job)
 
     with quota.get_connection(user="ocfprinting", password=mysql_pass) as c:
         add_db_job(c, job)

@@ -15,6 +15,7 @@ let
       pymysql
       requests
       pypdf
+      valkey
     ]
   );
 
@@ -59,8 +60,16 @@ in
         ExecStart = "${lib.getExe ocfEnforcer}";
         Restart = "on-failure";
         RestartSec = "5s";
-	User = "root"; # TODO have a custom user with perms
+      	User = "root"; # TODO have a custom user with perms
         #User = "cups"; # user is created in services.printing at services/printing/cupsd.nix
+      };
+    };
+
+    services.redis = {
+      package = pkgs.valkey;
+      servers."" = {
+        enable = true;
+        save = []; # keep in memory
       };
     };
   };

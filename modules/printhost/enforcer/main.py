@@ -9,25 +9,39 @@ from enforcer import *
 from utils import *
 
 
-def process_new_jobs(conn, job_id_list):
-    jobs = conn.getJobs(
-        which_jobs="not-completed",
-        requested_attributes=[
-            "job-id",
-            "job-name",
-            "job-originating-user-name",
-            "job-originating-host-name",
-            "print-color-mode",
-            "job-printer-uri-actual",
-            "job-printer-uri",
-            "copies",
-        ],
-    )
+def process_new_jobs(conn, r, job_id_list):
+    # jobs = conn.getJobs(
+    #     which_jobs="not-completed",
+    #     requested_attributes=[
+    #         "job-id",
+    #         "job-name",
+    #         "job-originating-user-name",
+    #         "job-originating-host-name",
+    #         "print-color-mode",
+    #         "job-printer-uri-actual",
+    #         "job-printer-uri",
+    #         "copies",
+    #     ],
+    # )
 
     for job_id in job_id_list:
         try:
-            job_attributes = jobs.get(job_id)
+            job_attributes = conn.getJobAttributes(
+                job_id,
+                requested_attributes=[
+                    "job-id",
+                    "job-name",
+                    "job-uuid",
+                    "job-originating-user-name",
+                    "job-originating-host-name",
+                    "print-color-mode",
+                    "job-printer-uri-actual",
+                    "job-printer-uri",
+                    "copies",
+                ],
+            )
             job_name = job_attributes.get("job-name", "Unknown")
+            job_uuid = job_attributes.get("job_uuid", "Unknown")
             user = job_attributes.get("job-originating-user-name", "Unknown")
             host = job_attributes.get("job-originating-host-name", "Unknown")
             color = job_attributes.get("print-color-mode", "Unknown")
@@ -50,21 +64,64 @@ def process_new_jobs(conn, job_id_list):
                 hostname=host,
                 time=datetime.now(),
                 copies=int(copies),
+                color=(color == "color"),
+                uuid=job_uuid,
             )
 
             t = threading.Thread(
-                target=enforce_print_init, args=(job,), name=f"job-{job_id}"
+                target=enforce_print_init,
+                args=(
+                    r,
+                    job,
+                ),
+                name=f"job-{job_id}",
             )
             t.start()
         except cups.IPPError:
             syslog(f"Job #{job_id} | failed to get data")
 
 
-def process_completed_jobs(conn, job_id_list):
-    pass
+def process_completed_jobs(conn, r, job_id_list):
+    for job_id in job_id_list:
+        try:
+            job_attributes = conn.getJobAttributes(
+                job_id,
+                requested_attributes=[
+                    "job-id",
+                    "job-state",
+                    "job-uuid",
+                ],
+            )
+
+            job_state = job_attributes.get("job-state", "Unknown")
+            job_uuid = job_attributes.get("job_uuid", "Unknown")
+
+            job = Job(
+                id=int(job_id),
+                uuid=job_uuid,
+            )
+
+            if job_state == cups.IPP_JOB_COMPLETED:
+                # job completed successfully
+                t = threading.Thread(
+                    target=post_print,
+                    args=(
+                        r,
+                        job,
+                    ),
+                    name=f"job-complete-{job_id}",
+                )
+                t.start()
+            else:
+                syslog(f"Job #{job_id} | failed to print")
+                # job failed
+                pass
+
+        except cups.IPPError:
+            syslog(f"Job #{job_id} | failed to get data")
 
 
-def get_initial_jobs(conn):
+def get_initial_jobs(conn, r):
     all_active_jobs = conn.getJobs(
         which_jobs="not-completed", requested_attributes=["job-id", "job-state"]
     )
@@ -75,7 +132,7 @@ def get_initial_jobs(conn):
     return held_jobs
 
 
-def monitor_cups_jobs(conn):
+def monitor_cups_jobs(conn, r):
     sub_id = conn.createSubscription(
         uri="/",
         events=["job-created", "job-completed"],
@@ -108,8 +165,8 @@ def monitor_cups_jobs(conn):
                 else:
                     syslog("failed to get job id")
 
-            process_new_jobs(conn, new_job_ids)
-            process_completed_jobs(conn, completed_job_ids)
+            process_new_jobs(conn, r, new_job_ids)
+            process_completed_jobs(conn, r, completed_job_ids)
 
             sequence_num = max(sequence_num, max_seq)
 
@@ -124,6 +181,7 @@ def monitor_cups_jobs(conn):
 
 if __name__ == "__main__":
     conn = cups.Connection()
+    r = connect_redis()
 
-    process_new_jobs(conn, get_initial_jobs(conn))
-    monitor_cups_jobs(conn)
+    process_new_jobs(conn, r, get_initial_jobs(conn, r))
+    monitor_cups_jobs(conn, r)

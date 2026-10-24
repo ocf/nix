@@ -1,3 +1,4 @@
+import pickle
 import re
 import sys
 from datetime import datetime
@@ -7,6 +8,7 @@ from typing import NamedTuple
 import cups
 import ocflib.printing.quota as quota
 import requests
+import valkey
 from messages import *
 from ocflib.misc.mail import send_mail_user
 from pypdf import PdfReader
@@ -26,8 +28,8 @@ LETTER_SIZES = {"Letter", "279x215mm", "215x279mm", "279x216mm", "216x279mm"}
 
 
 class Job(NamedTuple):
-    user: str
     id: int = 0
+    user: str = ""
     document_title: str = ""
     printer_name: str = ""
     printer_uri: str = ""
@@ -38,6 +40,8 @@ class Job(NamedTuple):
     hostname: str = ""
     page_size: str = ""
     copies: int = 0
+    color: bool = False
+    uuid: str = ""
 
 
 def page_count(job: Job):
@@ -143,6 +147,8 @@ def format_message(job: Job, quo: quota.UserQuota | None, message: Message):
         user=job.user,
         time=job.time,
         doc_name=job.document_title,
+        document=job.document_title,
+        printer=job.printer_name,
         pages=job.pages,
         daily_quota=quota.daily_quota(),
         semester_quota=quota.SEMESTERLY_QUOTA,
@@ -165,9 +171,21 @@ def add_db_job(c, job: Job):
             user=job.user,
             time=job.time,
             pages=job.pages,
-            queue=job.class_name,
+            queue=job.printer_name,
             printer=job.printer_name,
             doc_name=job.document_title,
             filesize=job.job_size,
         ),
     )
+
+
+def save_pending_job_data(r, job):
+    r.set(job.uuid, pickle.dumps(job))
+
+
+def get_pending_job_data(r, job):
+    return pickle.loads(r.get(job.uuid))
+
+
+def connect_redis():
+    return valkey.Valkey(connection_pool=valkey.BlockingConnectionPool())
