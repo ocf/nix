@@ -8,43 +8,6 @@
 
 let
   cfg = config.ocf.printhost;
-
-  # Python environment for the enforcer quota script
-  pythonEnv = config.ocf.python.package.withPackages (
-    ps: with ps; [
-      ocflib
-      pycups
-      pymysql
-      requests
-    ]
-  );
-
-  enforcerScript = ./scripts/enforcer.py;
-
-  # Wrapper that invokes enforcer.py with the right Python environment
-  enforcerBin = pkgs.writeShellScript "enforcer" ''
-    exec ${pythonEnv}/bin/python3 ${enforcerScript} "$@"
-  '';
-
-  # ocf-cups-backend with enforcer path and password file paths substituted.
-  # mysqlPasswordFile/wayoutPasswordFile/redisPasswordFile are paths to agenix secrets.
-  ocfBackendScript = pkgs.replaceVars ./scripts/ocf-cups-backend {
-    enforcer = enforcerBin;
-    mysqlPasswordFile = cfg.mysqlPasswordFile;
-    wayoutPasswordFile = cfg.wayoutPasswordFile;
-  };
-
-  # Shell wrapper so the backend runs under the Nix-store python3 rather than
-  # relying on python3 being in PATH (CUPS backends run in a restricted env).
-  ocfBackendBin = pkgs.writeShellScript "ocfbackend" ''
-    exec ${pythonEnv}/bin/python3 ${ocfBackendScript} "$@"
-  '';
-
-  # Package exposing the backend at $out/lib/cups/backend/ocfbackend (mode 0700
-  # so CUPS runs it as root, which is required for raw socket access to printers)
-  ocfCupsBackend = pkgs.runCommand "ocf-cups-backend" { } ''
-    install -Dm0700 ${ocfBackendBin} $out/lib/cups/backend/ocfbackend
-  '';
 in
 {
   # use nixos-unstable printers module to include nixpkgs pr #558981 and #524127
@@ -65,6 +28,7 @@ in
       browsing = false;
       stateless = true;
       webInterface = true;
+      defaultShared = true;
       listenAddresses = [
         "*:631"
         "*:443"
@@ -80,8 +44,6 @@ in
         HostNameLookups On # required for print notifications
 
         ErrorPolicy retry-job
-
-        DefaultShared Yes
 
         <Location />
           Order allow,deny
@@ -139,10 +101,6 @@ in
         SystemGroup ocfstaff opstaff
         ServerKeychain /etc/cups-certs
       '';
-      drivers = [
-        ocfCupsBackend
-        pkgs.ocf-hplip
-      ];
     };
 
     hardware.printers =
@@ -157,25 +115,22 @@ in
         ensurePrinters =
           (map (printer: {
             name = printer;
-            model = "raw";
+            model = "everywhere";
             description = "HP LaserJet M806";
             location = "OCF lab";
-            deviceUri = "ocfbackend:socket://${printer}:9100";
+            deviceUri = "ipps://${printer}.ocf.berkeley.edu?waitjob=false&waitprinter=false";
             ppdOptions = {
-              printer-is-shared = "false";
+              printer-is-shared = "false"; # don't share the individual printers in the class
               Duplex = "DuplexNoTumble";
             };
           }) bwPrinters)
           ++ [
             {
               name = "fishpaper";
-              model = "raw";
+              model = "everywhere";
               description = "HP Color LaserJet M856";
               location = "OCF lab";
-              deviceUri = "ocfbackend:socket://fishpaper:9100";
-              ppdOptions = {
-                printer-is-shared = "true";
-              };
+              deviceUri = "ipps://fishpaper.ocf.berkeley.edu?waitjob=false&waitprinter=false";
             }
           ];
 
@@ -186,6 +141,11 @@ in
           };
         };
       };
+
+    systemd.services.cups.postStart = lib.mkAfter ''
+      lpadmin -p OCF-BW-Group -o job-hold-until-default=indefinite
+      lpadmin -p fishpaper -o job-hold-until-default=indefinite
+    '';
 
     services.avahi.enable = lib.mkForce false;
   };
