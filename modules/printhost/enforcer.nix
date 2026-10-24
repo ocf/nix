@@ -14,6 +14,7 @@ let
       pycups
       pymysql
       requests
+      pypdf
     ]
   );
 

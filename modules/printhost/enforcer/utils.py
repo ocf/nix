@@ -9,6 +9,7 @@ import ocflib.printing.quota as quota
 import requests
 from messages import *
 from ocflib.misc.mail import send_mail_user
+from pypdf import PdfReader
 
 MYSQL_PASSWORD_FILE = "@mysqlPasswordFile@"
 WAYOUT_PASSWORD_FILE = "@wayoutPasswordFile@"
@@ -36,42 +37,14 @@ class Job(NamedTuple):
     pages: int = 0
     hostname: str = ""
     page_size: str = ""
+    copies: int = 0
 
 
 def page_count(job: Job):
-    """Read the page count and copies from PostScript %%Pages: and %RBINumCopies: comments."""
-    pages = 0
-    copies = 1
+    """Read the page count and copies from the pdf"""
 
-    try:
-        with open(job.data_file, "rb") as f:
-            for line in f:
-                if b"%%Pages:" in line or b"%RBINumCopies:" in line:
-                    line_str = line.decode("utf-8", errors="ignore").strip()
-
-                    pages_match = re.search(r"^%%Pages:\s+(\d+)", line_str)
-                    if pages_match:
-                        try:
-                            pages = int(pages_match.group(1))
-                        except ValueError:
-                            syslog(
-                                f"non-integer output when processing PS pages: {pages_match}"
-                            )
-                            pass
-
-                    # always use PostScript copies
-                    copies_match = re.search(r"^%RBINumCopies:\s+(\d+)", line_str)
-                    if copies_match:
-                        try:
-                            copies = int(copies_match.group(1))
-                        except ValueError:
-                            syslog(
-                                f"non-integer output when processing PS copies: {copies_match}"
-                            )
-                            pass
-    except Exception as e:
-        syslog(f"Page count error: {e}")
-        pass
+    pages = len(PdfReader(job.data_file).pages)
+    copies = job.copies
 
     total_sides = pages * copies
     if total_sides <= 0:
@@ -80,8 +53,9 @@ def page_count(job: Job):
     return total_sides
 
 
-def page_size(job: Job):
+def page_size(job: Job):  # TODO rewrite
     """Read the page size from PostScript %%PageMedia: or %%DocumentMedia: comments."""
+
     path = job.data_file
     with open(path, "rb") as f:
         header_chunk = f.read(4096)

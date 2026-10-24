@@ -49,7 +49,8 @@ def enforce_print(job: Job):
     # get file details
     document = conn.getDocument(job.printer_uri, job.id, 1)
     data_file = document.get("file")
-    type = document.get("document-format")  # TODO: use this?
+    type = document.get("document-format")
+    assert type == "application/pdf"  # must be pdf
     file_size = str(os.path.getsize(data_file))
     job = job._replace(
         data_file=data_file,
@@ -58,15 +59,15 @@ def enforce_print(job: Job):
 
     job = job._replace(
         pages=page_count(job),
-        page_size=page_size(job),
+        # page_size=page_size(job),
     )
 
     with quota.get_connection(user="ocfprinting", password=mysql_pass) as c:
         quo = quota.get_quota(c, job.user)
 
         # check quota before sending to printer
-        if job.page_size not in LETTER_SIZES:
-            cancel_job(conn, wayout_pass, job, quo, NON_LETTER_ERROR)
+        # if job.page_size not in LETTER_SIZES: # TODO fix page size check
+        #     cancel_job(conn, wayout_pass, job, quo, NON_LETTER_ERROR)
         if job.pages > quo.daily:
             cancel_job(conn, wayout_pass, job, quo, INSUFFICIENT_QUOTA)
         elif job.printer_name in COLOR_PRINTERS and job.pages > quo.color:

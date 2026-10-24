@@ -20,6 +20,7 @@ def process_new_jobs(conn, job_id_list):
             "print-color-mode",
             "job-printer-uri-actual",
             "job-printer-uri",
+            "copies",
         ],
     )
 
@@ -30,6 +31,7 @@ def process_new_jobs(conn, job_id_list):
             user = job_attributes.get("job-originating-user-name", "Unknown")
             host = job_attributes.get("job-originating-host-name", "Unknown")
             color = job_attributes.get("print-color-mode", "Unknown")
+            copies = job_attributes.get("copies")
             printer_uri = job_attributes.get("job-printer-uri-actual")
             if not printer_uri:
                 printer_uri = job_attributes.get("job-printer-uri")
@@ -47,6 +49,7 @@ def process_new_jobs(conn, job_id_list):
                 printer_uri=printer_uri,
                 hostname=host,
                 time=datetime.now(),
+                copies=int(copies),
             )
 
             t = threading.Thread(
