@@ -1,6 +1,8 @@
+import pickle
 import re
 import sys
 from datetime import datetime
+from syslog import syslog
 from typing import NamedTuple
 
 import cups
@@ -8,6 +10,7 @@ import ocflib.printing.quota as quota
 import requests
 from messages import *
 from ocflib.misc.mail import send_mail_user
+from pypdf import PdfReader
 
 MYSQL_PASSWORD_FILE = "@mysqlPasswordFile@"
 WAYOUT_PASSWORD_FILE = "@wayoutPasswordFile@"
@@ -24,63 +27,38 @@ LETTER_SIZES = {"Letter", "279x215mm", "215x279mm", "279x216mm", "216x279mm"}
 
 
 class Job(NamedTuple):
-    user: str
     id: int = 0
+    user: str = ""
     document_title: str = ""
     printer_name: str = ""
-    class_name: str = ""
+    printer_uri: str = ""
     data_file: str = ""
     job_size: str = ""
     time: datetime = datetime.min
     pages: int = 0
     hostname: str = ""
     page_size: str = ""
+    copies: int = 0
+    color: bool = False
+    uuid: str = ""
 
 
 def page_count(job: Job):
-    """Read the page count and copies from PostScript %%Pages: and %RBINumCopies: comments."""
-    pages = 0
-    copies = 1
+    """Read the page count and copies from the pdf"""
 
-    try:
-        with open(job.data_file, "rb") as f:
-            for line in f:
-                if b"%%Pages:" in line or b"%RBINumCopies:" in line:
-                    line_str = line.decode("utf-8", errors="ignore").strip()
-
-                    pages_match = re.search(r"^%%Pages:\s+(\d+)", line_str)
-                    if pages_match:
-                        try:
-                            pages = int(pages_match.group(1))
-                        except ValueError:
-                            print(
-                                f"non-integer output when processing PS pages: {pages_match}"
-                            )
-                            pass
-
-                    # always use PostScript copies
-                    copies_match = re.search(r"^%RBINumCopies:\s+(\d+)", line_str)
-                    if copies_match:
-                        try:
-                            copies = int(copies_match.group(1))
-                        except ValueError:
-                            print(
-                                f"non-integer output when processing PS copies: {copies_match}"
-                            )
-                            pass
-    except Exception as e:
-        print(f"Page count error: {e}")
-        pass
+    pages = len(PdfReader(job.data_file).pages)
+    copies = job.copies
 
     total_sides = pages * copies
     if total_sides <= 0:
-        print(f"failed to get document sides (pages={pages}, copies={copies})")
+        syslog(f"failed to get document sides (pages={pages}, copies={copies})")
         sys.exit(CUPS_BACKEND_CANCEL)
     return total_sides
 
 
-def page_size(job: Job):
+def page_size(job: Job):  # TODO rewrite
     """Read the page size from PostScript %%PageMedia: or %%DocumentMedia: comments."""
+
     path = job.data_file
     with open(path, "rb") as f:
         header_chunk = f.read(4096)
@@ -131,7 +109,7 @@ def send_notification(
 ):
     try:
         if job.hostname == "":
-            print(f"ERROR: no hostname found for job id: {job.id}")
+            syslog(f"ERROR: no hostname found for job id: {job.id}")
             return
         url = "http://" + job.hostname + ":" + str(WAYOUT_PORT) + "/notify"
         data = {
@@ -142,7 +120,7 @@ def send_notification(
         headers = {"Authorization": wayout_pass, "Content-Type": "application/json"}
         _ = requests.post(url=url, json=data, headers=headers, timeout=5)
     except Exception as e:
-        print("Exception: " + str(e))
+        syslog("Exception: " + str(e))
 
 
 def notify_user(
@@ -155,17 +133,12 @@ def notify_user(
     )
 
 
-def cancel_job(wayout_pass, job: Job, quo: quota.UserQuota | None, reason: MessagePair):
+def cancel_job(
+    conn, wayout_pass, job: Job, quo: quota.UserQuota | None, reason: MessagePair
+):
     notify_user(wayout_pass, job, quo, reason)
-    sys.exit(CUPS_BACKEND_CANCEL)
-
-
-def retry_job(job: Job):
-    print(
-      f"ocf-cups-backend: retrying job id: {job.id}",
-      file=sys.stderr,
-    )
-    sys.exit(CUPS_BACKEND_FAILED)
+    conn.cancelJob(job.id)
+    sys.exit()
 
 
 def format_message(job: Job, quo: quota.UserQuota | None, message: Message):
@@ -173,6 +146,8 @@ def format_message(job: Job, quo: quota.UserQuota | None, message: Message):
         user=job.user,
         time=job.time,
         doc_name=job.document_title,
+        document=job.document_title,
+        printer=job.printer_name,
         pages=job.pages,
         daily_quota=quota.daily_quota(),
         semester_quota=quota.SEMESTERLY_QUOTA,
@@ -195,9 +170,17 @@ def add_db_job(c, job: Job):
             user=job.user,
             time=job.time,
             pages=job.pages,
-            queue=job.class_name,
+            queue=job.printer_name,
             printer=job.printer_name,
             doc_name=job.document_title,
             filesize=job.job_size,
         ),
     )
+
+
+def save_pending_job_data(job_data, job):
+    job_data[job.uuid] = job
+
+
+def get_pending_job_data(job_data, job):
+    return job_data.get(job.uuid)
