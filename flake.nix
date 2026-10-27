@@ -60,7 +60,7 @@
     };
 
     wayout = {
-      url = "github:ocf/wayout/main";
+      url = "github:ocf/wayout/uncapped-notif-time";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
