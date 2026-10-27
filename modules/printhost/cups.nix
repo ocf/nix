@@ -69,6 +69,7 @@ in
       browsing = false;
       stateless = true;
       webInterface = true;
+      defaultShared = true;
       listenAddresses = [
         "*:631"
         "*:443"
@@ -84,8 +85,6 @@ in
         HostNameLookups On # required for print notifications
 
         ErrorPolicy retry-job
-
-        DefaultShared Yes
 
         <Location />
           Order allow,deny
@@ -166,7 +165,7 @@ in
             location = "OCF lab";
             deviceUri = "ocfbackend:socket://${printer}:9100";
             ppdOptions = {
-              printer-is-shared = "false";
+              printer-is-shared = "false"; # don't share the individual printers in the class
               Duplex = "DuplexNoTumble";
             };
           }) bwPrinters)
@@ -177,9 +176,6 @@ in
               description = "HP Color LaserJet M856";
               location = "OCF lab";
               deviceUri = "ocfbackend:socket://fishpaper:9100";
-              ppdOptions = {
-                printer-is-shared = "true";
-              };
             }
           ];
 
