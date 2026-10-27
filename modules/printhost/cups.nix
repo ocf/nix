@@ -126,7 +126,7 @@ in
           }) bwPrinters)
           ++ [
             {
-              name = "fishpaper";
+              name = "OCF-Color";
               model = "everywhere";
               description = "HP Color LaserJet M856";
               location = "OCF lab";
@@ -135,7 +135,7 @@ in
           ];
 
         ensureClasses = {
-          OCF-BW-Group = {
+          OCF-BW = {
             location = "OCF lab";
             printers = bwPrinters;
           };
@@ -143,8 +143,8 @@ in
       };
 
     systemd.services.cups.postStart = lib.mkAfter ''
-      lpadmin -p OCF-BW-Group -o job-hold-until-default=indefinite
-      lpadmin -p fishpaper -o job-hold-until-default=indefinite
+      lpadmin -p OCF-BW -o job-hold-until-default=indefinite
+      lpadmin -p OCF-Color -o job-hold-until-default=indefinite
     '';
 
     services.avahi.enable = lib.mkForce false;
