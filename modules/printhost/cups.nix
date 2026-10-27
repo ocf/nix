@@ -119,10 +119,7 @@ in
             description = "HP LaserJet M806";
             location = "OCF lab";
             deviceUri = "ipps://${printer}.ocf.berkeley.edu?waitjob=false&waitprinter=false";
-            ppdOptions = {
-              printer-is-shared = "false"; # don't share the individual printers in the class
-              Duplex = "DuplexNoTumble";
-            };
+            ppdOptions.printer-is-shared = "false"; # don't share the individual printers in the class
           }) bwPrinters)
           ++ [
             {
@@ -143,7 +140,7 @@ in
       };
 
     systemd.services.cups.postStart = lib.mkAfter ''
-      lpadmin -p OCF-BW -o job-hold-until-default=indefinite
+      lpadmin -p OCF-BW -o job-hold-until-default=indefinite -o Duplex=DuplexNoTumble
       lpadmin -p OCF-Color -o job-hold-until-default=indefinite
     '';
 

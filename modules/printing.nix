@@ -22,7 +22,7 @@ in
       "cups/lpoptions".text = "Default OCF-BW";
       "cups/client.conf".text = ''
         ServerName ${cfg.printhostURL}
-        Encryption Always
+        Encryption IfRequested
       '';
     };
   };

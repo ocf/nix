@@ -72,7 +72,7 @@ def enforce_print(conn, mysql_pass, wayout_pass, job_data, job: Job):
         #     cancel_job(conn, wayout_pass, job, quo, NON_LETTER_ERROR)
         if job.pages > quo.daily:
             cancel_job(conn, wayout_pass, job, quo, INSUFFICIENT_QUOTA)
-        elif job.printer_name in COLOR_PRINTERS and job.pages > quo.color:
+        elif job.printer_name == "OCF-Color" and job.pages > quo.color:
             cancel_job(conn, wayout_pass, job, quo, INSUFFICIENT_COLOR_QUOTA)
 
         # release job
