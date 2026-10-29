@@ -266,7 +266,7 @@ in
       alsa.enable = true;
     };
 
-    fwupd.enable = true;
+    fwupd.enable = lib.mkDefault true;
   };
 
   security.rtkit.enable = true;
