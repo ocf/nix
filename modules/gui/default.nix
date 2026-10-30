@@ -379,6 +379,7 @@ in
 
         [servers.ocf.sasl.plain]
         username = "$USER"
+        disconnect_on_failure = false # required for an empty password to work
         password_command = 'sh -c "cat ~/remote/.config/ocf/halloy/nickserv-password 2>/dev/null || kdialog --password \"NickServ password (leave blank if not registered)\""'
         EOF
       '';
