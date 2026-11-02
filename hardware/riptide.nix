@@ -24,9 +24,6 @@
   boot.initrd.kernelModules = [ "dm-snapshot" ];
   boot.kernelModules = [ "kvm-intel" ];
   boot.extraModulePackages = [ ];
-  boot.supportedFilesystems = {
-    nfs = true;
-  };
 
   swapDevices = [ ];
 
