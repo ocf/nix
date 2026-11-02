@@ -87,7 +87,7 @@ in
 
           if [ "$EUID" -eq "0" ]
             then precmd(){
-              echo "meow hai :3 heres ur command output: "
+              echo "meow hai :3 heres ur command output^"
             }
           fi
 
