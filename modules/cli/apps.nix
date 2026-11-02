@@ -77,6 +77,7 @@ in
       # version control
       gh
       git
+      git-lfs
       mercurial
       pre-commit
       sapling
