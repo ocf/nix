@@ -94,6 +94,9 @@ in
       "xts"
     ];
 
+    # needed for pods that use nfs mounts (such as ocf/create)
+    boot.supportedFilesystems.nfs = true;
+
     # <https://docs.cilium.io/en/stable/operations/system_requirements/#mounted-ebpf-filesystem>
     fileSystems."/sys/fs/bpf" = {
       device = "bpffs";

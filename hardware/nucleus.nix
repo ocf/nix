@@ -26,9 +26,6 @@
   boot.initrd.kernelModules = [ ];
   boot.kernelModules = [ "kvm-amd" ];
   boot.extraModulePackages = [ ];
-  boot.supportedFilesystems = {
-    nfs = true;
-  };
 
   fileSystems."/" = {
     device = "/dev/disk/by-label/nixos";
