@@ -8,6 +8,24 @@
 let
   cfg = config.ocf.niks3-cache;
   keycloakIssuer = "https://idm.ocf.berkeley.edu/realms/ocf";
+
+  # FIXME: use nixpkgs seaweedfs after it's updated to version >=4.49
+  ocf-seaweedfs = pkgs.seaweedfs.overrideAttrs (
+    finalAttrs: previousAttrs: {
+      version = "4.52";
+      src = pkgs.fetchFromGitHub {
+        inherit (previousAttrs.src)
+          owner
+          repo
+          leaveDotGit
+          postFetch
+          ;
+        tag = finalAttrs.version;
+        hash = "sha256-QBogS2NQeQaFRIHOhCKotlJupHrmNSwUUhKEWatY4mQ=";
+      };
+      vendorHash = "sha256-1Xdbij4yzkIaDIJDkFA/TL5HcoiKj/IYejtIXe3f/jI=";
+    }
+  );
 in
 {
   options.ocf.niks3-cache = {
@@ -82,7 +100,7 @@ in
         }
         EOF
 
-        exec ${pkgs.seaweedfs}/bin/weed server \
+        exec ${ocf-seaweedfs}/bin/weed server \
           -dir=/var/lib/seaweedfs \
           -s3 -filer \
           -ip=${config.networking.hostName}.ocf.berkeley.edu \
