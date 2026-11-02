@@ -85,6 +85,12 @@ in
             return
           fi
 
+          if [ "$EUID" -eq "0" ]
+            then precmd(){
+              echo "meow hai :3 heres ur command output^"
+            }
+          fi
+
           # emacs keybinds: ^u, ^k, ^a, ^e, etc
           # this is a good nonintrusive default that adds useful keybinds while
           # not interfering with people's muscle memory
