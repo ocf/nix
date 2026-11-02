@@ -84,7 +84,7 @@ in
           if [[ -n "$SKIP_OCF_ZSHRC" ]]; then
             return
           fi
-          
+
           if [ "$EUID" -eq "0" ]
             then precmd(){
               echo "meow hai :3 heres ur command output: "
