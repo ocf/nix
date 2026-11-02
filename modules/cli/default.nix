@@ -84,7 +84,9 @@ in
           if [[ -n "$SKIP_OCF_ZSHRC" ]]; then
             return
           fi
-
+          precmd(){
+             echo "meow hai :3 heres ur command output: "
+          }
           # emacs keybinds: ^u, ^k, ^a, ^e, etc
           # this is a good nonintrusive default that adds useful keybinds while
           # not interfering with people's muscle memory
