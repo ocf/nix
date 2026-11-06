@@ -91,8 +91,14 @@ in
       };
       users.groups.mysql = { };
 
-      security.sudo.extraConfig = ''
-        ALL ALL=(mysql) NOPASSWD: /run/current-system/sw/bin/makemysql-real
+      security.polkit.extraConfig = ''
+        polkit.addRule(function(action, subject) {
+          if (action.id == "org.freedesktop.policykit.exec" &&
+              action.lookup("program") == "/run/current-system/sw/bin/makemysql-real" &&
+              action.lookup("user") == "mysql") {
+              return polkit.Result.YES;
+          }
+        });
       '';
 
       security.pam.loginLimits = [
