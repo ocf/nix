@@ -94,7 +94,7 @@ in
       security.polkit.extraConfig = ''
         polkit.addRule(function(action, subject) {
           if (action.id == "org.freedesktop.policykit.exec" &&
-              action.lookup("program") == "/run/current-system/sw/bin/makemysql-real" &&
+              action.lookup("program") == "{pkgs.ocf-utils}/bin/makemysql-real" &&
               action.lookup("user") == "mysql") {
               return polkit.Result.YES;
           }
