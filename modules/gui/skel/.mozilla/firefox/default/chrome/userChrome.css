@@ -1,3 +1,382 @@
+@import "userColors.css";
+
+:root {
+  --lwt-accent-color: var(--rp-base) !important;
+  --toolbar-bgcolor: var(--rp-surface) !important;
+  --toolbar-color: var(--rp-text) !important;
+  --toolbar-field-background-color: var(--rp-overlay) !important;
+  --toolbar-field-color: var(--rp-text) !important;
+  --toolbar-field-focus-background-color: var(--rp-overlay) !important;
+  --toolbar-field-focus-color: var(--rp-text) !important;
+  --toolbar-field-border-color: var(--rp-highlight-med) !important;
+  --toolbar-field-highlight: var(--rp-highlight-med) !important;
+  --toolbar-field-highlight-text: var(--rp-text) !important;
+  --lwt-tab-text: var(--rp-subtle) !important;
+  --tab-line-color: var(--rp-love) !important;
+  --lwt-selected-tab-background-color: var(--rp-overlay) !important;
+  --tab-selected-bgcolor: var(--rp-overlay) !important;
+  --tab-selected-textcolor: var(--rp-text) !important;
+  --tab-selected-outline-color: var(--rp-rose) !important;
+  --tab-hover-background-color: var(--rp-highlight-low) !important;
+  --toolbarbutton-icon-fill: var(--rp-rose) !important;
+  --lwt-toolbarbutton-icon-fill-attention: var(--rp-love) !important;
+  --toolbarbutton-hover-background: var(--rp-highlight-low) !important;
+  --toolbarbutton-active-background: var(--rp-highlight-med) !important;
+  --autocomplete-popup-background: var(--rp-base) !important;
+  --autocomplete-popup-color: var(--rp-text) !important;
+  --autocomplete-popup-highlight-background: var(--rp-highlight-med) !important;
+  --autocomplete-popup-highlight-color: var(--rp-text) !important;
+  --arrowpanel-border-color: var(--rp-highlight-med) !important;
+  --tabs-border-color: var(--rp-highlight-low) !important;
+  --chrome-content-separator-color: var(--rp-highlight-low) !important;
+  --sidebar-background-color: var(--rp-base) !important;
+  --sidebar-text-color: var(--rp-text) !important;
+  --sidebar-border-color: var(--rp-highlight-low) !important;
+  --lwt-text-color: var(--rp-text) !important;
+  --focus-outline-color: var(--rp-highlight-med) !important;
+  --focus-outline: none !important;
+  --button-color: var(--rp-text) !important;
+  --button-bgcolor: var(--rp-overlay) !important;
+  --button-hover-bgcolor: var(--rp-highlight-med) !important;
+  --button-active-bgcolor: var(--rp-highlight-high) !important;
+  --urlbar-box-bgcolor: var(--rp-overlay) !important;
+  --urlbar-box-hover-bgcolor: var(--rp-highlight-med) !important;
+  --urlbar-box-active-bgcolor: var(--rp-highlight-high) !important;
+  --urlbar-box-focus-bgcolor: var(--rp-overlay) !important;
+  --urlbar-background-color-focus: var(--rp-overlay) !important;
+  --urlbar-box-text-color: var(--rp-text) !important;
+  --urlbar-box-hover-text-color: var(--rp-text) !important;
+  --urlbar-input-background: var(--rp-overlay) !important;
+  --input-bgcolor: var(--rp-overlay) !important;
+  --input-color: var(--rp-text) !important;
+  --input-border-color: var(--rp-highlight-med) !important;
+}
+
+#browser,
+#appcontent,
+.browserContainer,
+#tabbrowser-tabbox,
+#tabbrowser-tabpanels {
+  background-color: var(--lwt-accent-color) !important;
+  color: var(--lwt-text-color) !important;
+}
+
+#navigator-toolbox {
+  background-color: var(--toolbar-bgcolor) !important;
+  border-bottom: 1px solid var(--chrome-content-separator-color) !important;
+}
+
+#nav-bar,
+#PersonalToolbar,
+#TabsToolbar,
+#titlebar,
+#toolbar-menubar {
+  background-color: var(--toolbar-bgcolor) !important;
+  color: var(--toolbar-color) !important;
+  box-shadow: none !important;
+}
+
+#TabsToolbar,
+#tabbrowser-tabs,
+#tabbrowser-arrowscrollbox {
+  --tab-min-height: 36px !important;
+  --tab-block-margin: 4px 0 !important;
+  --tab-border-radius: 6px !important;
+}
+
+#TabsToolbar {
+  border-bottom: 1px solid var(--tabs-border-color) !important;
+}
+
+.tabbrowser-tab {
+  color: var(--lwt-tab-text) !important;
+  border-inline-end: 1px solid var(--rp-highlight-low) !important;
+}
+
+.tabbrowser-tab:hover > .tab-stack > .tab-background {
+  background-color: var(--tab-hover-background-color) !important;
+  border-radius: 6px !important;
+}
+
+.tabbrowser-tab:hover {
+  color: var(--rp-text) !important;
+}
+
+.tabbrowser-tab[selected] > .tab-stack > .tab-background,
+.tabbrowser-tab[visuallyselected="true"] > .tab-stack > .tab-background,
+.tabbrowser-tab[selected] .tab-background,
+.tab-background[selected="true"] {
+  background-color: var(--tab-selected-bgcolor) !important;
+  border: 1px solid var(--rp-love) !important;
+  border-radius: 6px !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.tabbrowser-tab[selected],
+.tabbrowser-tab[visuallyselected="true"] {
+  color: var(--tab-selected-textcolor) !important;
+}
+
+.tabbrowser-tab[selected] .tab-line,
+.tabbrowser-tab[visuallyselected="true"] .tab-line,
+.tab-line[selected="true"] {
+  background-color: transparent !important;
+  height: 0 !important;
+  max-height: 0 !important;
+}
+
+.tab-close-button {
+  color: var(--rp-subtle) !important;
+  fill: var(--rp-subtle) !important;
+}
+
+.tab-close-button:hover {
+  color: var(--rp-text) !important;
+  fill: var(--rp-text) !important;
+  background-color: var(--rp-highlight-med) !important;
+}
+
+#urlbar,
+#urlbar-background,
+#urlbar-input-container,
+#urlbar-input,
+.searchbar-textbox,
+#searchbar,
+#searchbar-background {
+  background-color: var(--rp-overlay) !important;
+  color: var(--rp-text) !important;
+}
+
+#urlbar,
+#searchbar {
+  border: 1px solid var(--rp-highlight-med) !important;
+  border-radius: 8px !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+#urlbar > #urlbar-background,
+#urlbar:not([focused]) > #urlbar-background,
+#urlbar[focused="true"] > #urlbar-background,
+#urlbar:focus-within > #urlbar-background {
+  background-color: var(--rp-overlay) !important;
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+#urlbar[focused="true"],
+#urlbar:focus-within,
+#searchbar:focus-within {
+  border: 2px solid var(--rp-pine) !important;
+}
+
+#urlbar ::selection,
+#urlbar ::-moz-selection,
+.searchbar-textbox ::selection {
+  background-color: var(--rp-highlight-med) !important;
+  color: var(--rp-text) !important;
+}
+
+#identity-box,
+#identity-permission-box,
+#tracking-protection-icon-container,
+#page-action-buttons,
+#star-button-box {
+  background-color: transparent !important;
+  color: var(--rp-subtle) !important;
+  fill: var(--rp-subtle) !important;
+}
+
+#identity-box:hover,
+#tracking-protection-icon-container:hover,
+#page-action-buttons > toolbarbutton:hover,
+#star-button-box:hover {
+  background-color: var(--rp-highlight-low) !important;
+  border-radius: 6px !important;
+}
+
+toolbarbutton,
+.toolbarbutton-1 > .toolbarbutton-icon,
+.toolbarbutton-1 > .toolbarbutton-badge-stack {
+  fill: var(--toolbarbutton-icon-fill) !important;
+  color: var(--rp-text) !important;
+}
+
+.toolbarbutton-1 > .toolbarbutton-icon,
+.toolbarbutton-1 > .toolbarbutton-badge-stack {
+  color: var(--toolbarbutton-icon-fill) !important;
+}
+
+toolbarbutton:hover,
+.toolbarbutton-1:hover > .toolbarbutton-icon,
+.toolbarbutton-1:hover > .toolbarbutton-badge-stack {
+  fill: var(--rp-love) !important;
+  background-color: var(--rp-highlight-low) !important;
+  border-radius: 6px !important;
+}
+
+toolbarbutton[open="true"],
+.toolbarbutton-1[open="true"] > .toolbarbutton-icon {
+  background-color: var(--rp-highlight-med) !important;
+  border-radius: 6px !important;
+}
+
+toolbarbutton .toolbarbutton-text,
+.toolbarbutton-text,
+.bookmark-item,
+.bookmark-item > .toolbarbutton-text,
+#PersonalToolbar .bookmark-item,
+#PersonalToolbar toolbarbutton,
+#PersonalToolbar .toolbarbutton-text {
+  color: var(--rp-text) !important;
+}
+
+#PersonalToolbar .bookmark-item:hover {
+  background-color: var(--rp-highlight-low) !important;
+  color: var(--rp-text) !important;
+}
+
+panel,
+.panel-arrowcontent,
+menupopup,
+panelview,
+.panel-subview-body {
+  background-color: var(--autocomplete-popup-background) !important;
+  color: var(--autocomplete-popup-color) !important;
+  border-color: var(--arrowpanel-border-color) !important;
+}
+
+.panel-arrow {
+  fill: var(--autocomplete-popup-background) !important;
+  stroke: var(--arrowpanel-border-color) !important;
+}
+
+menuitem:hover,
+menu[_moz-menuactive="true"],
+menu:hover,
+.subviewbutton:hover {
+  background-color: var(--autocomplete-popup-highlight-background) !important;
+  color: var(--autocomplete-popup-highlight-color) !important;
+}
+
+menuseparator,
+toolbarseparator {
+  border-color: var(--rp-highlight-low) !important;
+}
+
+#sidebar-box,
+#sidebar-header,
+#sidebar {
+  background-color: var(--sidebar-background-color) !important;
+  color: var(--sidebar-text-color) !important;
+  border-color: var(--sidebar-border-color) !important;
+}
+
+findbar {
+  background-color: var(--toolbar-bgcolor) !important;
+  color: var(--toolbar-color) !important;
+  border-top: 1px solid var(--chrome-content-separator-color) !important;
+}
+
+#statuspanel-label {
+  background-color: var(--rp-overlay) !important;
+  color: var(--rp-text) !important;
+  border-color: var(--rp-highlight-med) !important;
+}
+
+#tabbrowser-tabpanels browser[type="content"] {
+  background-color: var(--rp-base) !important;
+}
+
+#urlbar-results,
+.urlbarView,
+.urlbarView-body-outer,
+.urlbarView-body-inner,
+.urlbarView-results {
+  background-color: var(--rp-overlay) !important;
+  border: none !important;
+  border-radius: 0 0 8px 8px !important;
+  box-shadow: none !important;
+  outline: none !important;
+  scrollbar-width: thin !important;
+  scrollbar-color: var(--rp-highlight-high) var(--rp-overlay) !important;
+}
+
+#urlbar[open="true"] > #urlbar-background,
+#urlbar[breakout-extend="true"] > #urlbar-background,
+#urlbar[breakout="true"] > #urlbar-background {
+  background-color: var(--rp-overlay) !important;
+  border: 1px solid var(--rp-highlight-med) !important;
+  border-radius: 8px !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+.urlbarView-row,
+.urlbarView-row-inner,
+.urlbarView-group,
+.urlbarView-group-header,
+.urlbarView-section,
+.urlbarView-section-header {
+  background-color: transparent !important;
+  color: var(--rp-text) !important;
+  border: none !important;
+  border-top: none !important;
+  border-bottom: none !important;
+  border-image: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+.urlbarView-title {
+  color: var(--rp-text) !important;
+}
+
+.urlbarView-url {
+  color: var(--rp-subtle) !important;
+}
+
+.urlbarView-title-separator,
+.urlbarView-title-separator::before {
+  color: var(--rp-subtle) !important;
+  opacity: 1 !important;
+}
+
+.urlbarView-action,
+.urlbarView-type-icon {
+  color: var(--rp-rose) !important;
+  fill: var(--rp-rose) !important;
+}
+
+.urlbarView-favicon {
+  fill: var(--rp-text) !important;
+  color: var(--rp-text) !important;
+}
+
+.urlbarView-row[has-url="false"] .urlbarView-title-separator {
+  display: none !important;
+}
+
+#urlbar-results,
+.urlbarView,
+.urlbarView-body-outer,
+.urlbarView-body-inner,
+.urlbarView-row {
+  --arrowpanel-background: var(--rp-overlay) !important;
+  --arrowpanel-color: var(--rp-text) !important;
+  --arrowpanel-border-color: transparent !important;
+  --autocomplete-popup-background: var(--rp-overlay) !important;
+  --autocomplete-popup-color: var(--rp-text) !important;
+  --panel-background: var(--rp-overlay) !important;
+  --panel-color: var(--rp-text) !important;
+  --panel-border-color: transparent !important;
+  --panel-separator-color: transparent !important;
+  --urlbar-popup-background: var(--rp-overlay) !important;
+  --urlbar-popup-action-color: var(--rp-rose) !important;
+}
+
 #color-mode {
-    display: none;
+  display: none;
 }
