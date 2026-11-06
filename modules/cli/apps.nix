@@ -115,6 +115,7 @@ in
       nix-eval-jobs
       nix-output-monitor
       nix-fast-build
+      hydra-check
       devenv
 
       # languages & runtimes
