@@ -101,6 +101,7 @@ in
 
       strawberry
       songrec
+      qgis
     ];
 
     ocf.gui.apps.browsers.handlePDFs = true;
