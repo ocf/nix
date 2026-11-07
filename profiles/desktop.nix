@@ -75,6 +75,7 @@
   ];
 
   hardware.opentabletdriver.enable = true;
+  hardware.uinput.enable = true;
 
   # enable i2c and set udev rules for monitor brightness control
   boot.kernelModules = [ "i2c-dev" ];
