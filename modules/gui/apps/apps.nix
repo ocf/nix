@@ -79,6 +79,7 @@ in
       alacritty
       st
       ghostty
+      wezterm
 
       yubioath-flutter
       kdiskmark
