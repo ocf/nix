@@ -23,6 +23,7 @@ in
     (lib.mkIf cfg.enable {
       environment.systemPackages = with pkgs; [
         python3Packages.cached-property
+        wezterm.headless # wezterm-mux-server
       ];
 
       # -s to display output in human friendly units by default
