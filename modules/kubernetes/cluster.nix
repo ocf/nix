@@ -14,13 +14,13 @@ let
   # do not change any of these values without reading the following:
   # https://bestdocs.ocf.berkeley.edu/staff-docs/infrastructure/kubernetes/runbooks/updating-kubernetes
   kubernetes = pkgs.kubernetes.overrideAttrs (oldAttrs: rec {
-    version = "1.37.0";
+    version = "1.37.2";
     src = pkgs.fetchFromGitHub {
       owner = "kubernetes";
       repo = "kubernetes";
       rev = "v${version}";
       # make sure to update hash if changing kubernetes version
-      hash = "sha256-irRDtPf+bk2uQ/QOcAXzYcrm/0pys/e4M5ITyL6omqs=";
+      hash = "sha256-Bbyu5hMQTSrvr/kDFHlRnfz5RIR7ecBfTFOGTCffn5c=";
     };
   });
   kubePkgs = with pkgs; [
