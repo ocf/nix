@@ -2,9 +2,15 @@
   description = "NixOS configuration for the Open Computing Facility";
 
   inputs = {
-    nixpkgs.url = "https://channels.nixos.org/nixos-26.05/nixexprs.tar.zst";
-    nixpkgs-deprecated.url = "github:nixos/nixpkgs/nixos-25.11";
+    # default nixpkgs channel is stable small for quicker security updates.
+    # big channel can be used on demand if stable small leads to ballooned
+    # build times.
+    nixpkgs.url = "https://channels.nixos.org/nixos-26.05-small/nixexprs.tar.zst";
+    nixpkgs-stable.url = "https://channels.nixos.org/nixos-26.05/nixexprs.tar.zst";
+
     nixpkgs-unstable.url = "https://channels.nixos.org/nixos-unstable/nixexprs.tar.zst";
+    nixpkgs-deprecated.url = "github:nixos/nixpkgs/nixos-25.11";
+
     systems.url = "github:nix-systems/default/main";
 
     colmena = {
@@ -79,8 +85,9 @@
     {
       self,
       nixpkgs,
-      nixpkgs-deprecated,
+      nixpkgs-stable,
       nixpkgs-unstable,
+      nixpkgs-deprecated,
       systems,
       colmena,
       agenix,
@@ -161,9 +168,25 @@
       #
       # NOTE: all hosts will be sharing the same ocf nix modules in this
       # repository regardless of what pkgs or system is set to
-      hostOverrides = {
-        overheat.system = "aarch64-linux";
-      };
+      hostOverrides = builtins.mapAttrs (
+        host: group:
+        # desktops contain a large number of big packages like desktop
+        # environments, browsers, apps, etc. using the big stable channel
+        # instead of stable small prevents needing to compile large packages on
+        # our build server, which balloons build times on flake updates. big
+        # stable lags behind stable small by a few days, which should be
+        # sufficient since our desktops are firewalled and you need to be
+        # physically in the lab to login (ssh is limited to ocfstaff), which
+        # reduces the risk of a remote attack. the main attack vectors on our
+        # desktops are arbitrary code execution, local privilege escalation,
+        # and physical tampering.
+        if group == "desktop" || host == "anglerfish" then
+          {
+            nixpkgs = nixpkgs-stable;
+          }
+        else
+          { }
+      ) hosts;
 
       # ============== #
       # Glue/Internals #

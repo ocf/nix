@@ -29,10 +29,13 @@ in
 
     environment.systemPackages = with pkgs; [
       # gui editors
-      vscode-fhs
+      # FIXME: uncomment when in stable:
+      # https://github.com/NixOS/nixpkgs/pull/585279
+      #vscode-fhs
       vscodium-fhs
       # uncomment once electron version is updated to non eol
       # https://github.com/ocf/nix/pull/244
+      # UPDATE 2026-11-08: still failing...
       #rstudio
       zed-editor
       gnome-builder
