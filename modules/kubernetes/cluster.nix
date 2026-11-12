@@ -56,6 +56,8 @@ in
       kubernetes.client.enable = true;
     };
 
+    deployment.tags = lib.singleton (if cfg.controlPlane then "kube-control" else "kube-worker");
+
     environment.etc = {
       "kubernetes/manifests/kubevip.yaml" = lib.mkIf cfg.controlPlane {
         source = if cfg.staging then ./staging-kubevip.yaml else ./kubevip.yaml;
