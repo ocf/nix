@@ -119,11 +119,10 @@ in
             description = "HP LaserJet M806";
             location = "OCF lab";
             deviceUri = "ipps://${printer}.ocf.berkeley.edu?waitjob=false&waitprinter=false";
-            ppdOptions.printer-is-shared = "false"; # don't share the individual printers in the class
           }) bwPrinters)
           ++ [
             {
-              name = "OCF-Color";
+              name = "fishpaper";
               model = "everywhere";
               description = "HP Color LaserJet M856";
               location = "OCF lab";
@@ -132,7 +131,7 @@ in
           ];
 
         ensureClasses = {
-          OCF-BW = {
+          OCF-BW-Group = {
             location = "OCF lab";
             printers = bwPrinters;
           };
@@ -140,8 +139,8 @@ in
       };
 
     systemd.services.cups.postStart = lib.mkAfter ''
-      lpadmin -p OCF-BW -o job-hold-until-default=indefinite -o Duplex=DuplexNoTumble
-      lpadmin -p OCF-Color -o job-hold-until-default=indefinite
+      lpadmin -p OCF-BW-Group -o job-hold-until-default=indefinite -o Duplex=DuplexNoTumble
+      lpadmin -p fishpaper -o job-hold-until-default=indefinite
     '';
 
     services.avahi.enable = lib.mkForce false;
