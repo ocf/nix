@@ -1,7 +1,7 @@
 {
-  lib,
-  pkgs,
   config,
+  pkgs,
+  lib,
   ...
 }:
 
@@ -14,7 +14,7 @@ in
 
     printhostURL = lib.mkOption {
       type = lib.types.str;
-      default = "printhost.ocf.berkeley.edu";
+      default = "printhost-dev.ocf.berkeley.edu";
     };
   };
 
@@ -26,7 +26,9 @@ in
       browsed.enable = false;
       browsing = false;
       stateless = true;
-      drivers = [ pkgs.ocf-hplip ];
+      drivers = [
+        (pkgs.writeTextDir "share/cups/model/OCF-BW-Group.ppd" (builtins.readFile ./OCF-BW-Group.ppd))
+      ];
     };
     hardware.printers = {
       ensureDefaultPrinter = "OCF-BW";
@@ -34,16 +36,16 @@ in
         {
           deviceUri = "ipps://${cfg.printhostURL}/classes/OCF-BW-Group?waitjob=false&waitprinter=false";
           name = "OCF-BW";
-          model = "HP/hp-laserjet_m806-ps.ppd.gz";
+          model = "OCF-BW-Group.ppd"; # generated ppd from `logjam`
           location = "OCF lab";
           ppdOptions = {
             Duplex = "DuplexNoTumble";
           };
         }
         {
-          deviceUri = "ipps://${cfg.printhostURL}/classes/fishpaper?waitjob=false&waitprinter=false";
+          deviceUri = "ipps://${cfg.printhostURL}/printers/fishpaper?waitjob=false&waitprinter=false";
           name = "OCF-Color";
-          model = "HP/hp-color_laserjet_m856-ps.ppd.gz";
+          model = "everywhere";
           location = "OCF lab";
           ppdOptions = {
             Duplex = "None";
