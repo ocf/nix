@@ -29,9 +29,7 @@ in
 
     environment.systemPackages = with pkgs; [
       # gui editors
-      # FIXME: uncomment when in stable:
-      # https://github.com/NixOS/nixpkgs/pull/585279
-      #vscode-fhs
+      vscode-fhs
       vscodium-fhs
       # uncomment once electron version is updated to non eol
       # https://github.com/ocf/nix/pull/244
