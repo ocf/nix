@@ -231,7 +231,7 @@ in
       asciinema
       colordiff
       ack
-      silver-searcher
+      silver-searcher-ng
       shellcheck
       fzf
       bar
