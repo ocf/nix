@@ -75,7 +75,6 @@ in
       brasero
       kdePackages.k3b
       apostrophe
-      #texliveFull
       texstudio
 
       aseprite

@@ -173,7 +173,7 @@ in
       ))
 
       # teX
-      texlive.combined.scheme-medium
+      texliveMedium
 
       # python
       (python3.withPackages (
