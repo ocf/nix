@@ -39,7 +39,7 @@ let
         config =
           { ... }:
           {
-            nix.settings.experimental-features = "nix-command flakes";
+            nix.settings.experimental-features = [ "nix-command" "flakes" ];
             networking.firewall.enable = true;
 
             services.github-runners = builtins.listToAttrs (
