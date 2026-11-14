@@ -70,6 +70,7 @@ in
         "*:443"
       ];
       openFirewall = true;
+      package = pkgs.ocf-cups;
       # using lib.mkForce to overwrite the default extraConf
       extraConf = lib.mkForce ''
         ServerName ${config.networking.fqdn}
