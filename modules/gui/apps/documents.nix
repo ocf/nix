@@ -57,7 +57,7 @@ in
       papers
 
       # libreoffice
-      libreoffice-still
+      libreoffice-stable
       mythes
       hunspell # spell check
       hunspellDicts.en_US
