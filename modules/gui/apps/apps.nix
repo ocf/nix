@@ -94,7 +94,6 @@ in
       cobang
 
       # IRC Clients
-      hexchat
       halloy
 
       element-desktop
