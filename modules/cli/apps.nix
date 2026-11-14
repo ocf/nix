@@ -124,7 +124,7 @@ in
       delve
       godot # has both cli and gui tools
       libxml2 # xmllint
-      elixir
+      beamPackages.elixir
       clojure
       maven
       scala_3
