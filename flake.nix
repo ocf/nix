@@ -340,6 +340,16 @@
           niks3 = niks3.packages.${final.stdenv.hostPlatform.system}.default;
         };
 
+        # FIXME: update cups to 2.4.20 to fix CVE's until NixOS/nixpkgs#586508 reaches stable
+        ocf-cups = prev.cups.overrideAttrs (old: {
+          version = "2.4.20";
+          src = final.fetchurl {
+            inherit (old.src) url;
+            hash = "sha256-q02c1/PlgGAJHSsklyIj1kAWdfEcSbZav09u8x3qIv8=";
+          };
+          patches = [ ];
+        });
+
         # nixpkgs quota is built without RPC support, it can't query
         # NFS quotas from the filehost via rquotad.
         # This wasn't necessary for old puppet hosts because debian packages quota with rpc enabled.

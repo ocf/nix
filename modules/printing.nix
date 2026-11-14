@@ -27,6 +27,7 @@ in
       browsing = false;
       stateless = true;
       drivers = [ pkgs.ocf-hplip ];
+      package = pkgs.ocf-cups;
     };
     hardware.printers = {
       ensureDefaultPrinter = "OCF-BW";
