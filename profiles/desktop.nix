@@ -35,7 +35,6 @@
   boot = {
     loader.systemd-boot.consoleMode = "max";
     loader.timeout = 0;
-    initrd.systemd.enable = true;
   };
 
   # FIXME: suspend causes problems with nfs. disable until we fix this
