@@ -49,12 +49,12 @@ in
 {
   # use nixos-unstable printers module to include nixpkgs pr #558981 and #524127
   # FIXME remove after nixos-26.11 upgrade
-  disabledModules = [
-    "hardware/printers.nix"
-  ];
-  imports = [
-    "${inputs.nixpkgs-unstable}/nixos/modules/hardware/printers.nix"
-  ];
+  #disabledModules = [
+  #  "hardware/printers.nix"
+  #];
+  #imports = [
+  #  "${inputs.nixpkgs-unstable}/nixos/modules/hardware/printers.nix"
+  #];
 
   config = lib.mkIf cfg.enable {
 
@@ -141,7 +141,7 @@ in
       '';
       drivers = [
         ocfCupsBackend
-        pkgs.ocf-hplip
+        pkgs.hplip
       ];
     };
 

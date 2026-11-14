@@ -26,7 +26,7 @@ in
       browsed.enable = false;
       browsing = false;
       stateless = true;
-      drivers = [ pkgs.ocf-hplip ];
+      drivers = [ pkgs.hplip ];
     };
     hardware.printers = {
       ensureDefaultPrinter = "OCF-BW";
