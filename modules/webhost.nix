@@ -15,9 +15,8 @@ let
 
   makeUsers = website-cfg: {
     "deploy-${website-cfg.name}" = {
+      isSystemUser = true;
       group = "nginx";
-      isNormalUser = true;
-      createHome = false;
       openssh.authorizedKeys.keys = [
         "${website-cfg.githubActionsPubkey}"
       ];
