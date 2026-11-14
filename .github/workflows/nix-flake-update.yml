@@ -1,0 +1,51 @@
+name: Nix Flake Update
+
+on:
+  schedule:
+    # weekly on wednesday at 15:00 PST
+    - cron: '0 23 * * 3'
+  workflow_dispatch:
+
+concurrency:
+  group: nix-flake-update-${{ github.ref || github.head_ref }}
+  cancel-in-progress: true
+jobs:
+  nix-flake-update:
+    runs-on: ci-ocf-nix-build
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          token: ${ secrets.OCFBOT_TOKEN }
+      - name: nix flake update
+        env:
+          GIT_AUTHOR_NAME: "ocfbot"
+          GIT_AUTHOR_EMAIL: "ocfbot@ocf.berkeley.edu"
+          GIT_COMMITTER_NAME: "ocfbot"
+          GIT_COMMITTER_EMAIL: "ocfbot@ocf.berkeley.edu"
+        run: |
+          branch="ocfbot/nix-flake-update"
+
+          . <(nix print-dev-env .#deploy)
+
+          git checkout -B "$branch" origin/main
+
+          nix flake update --commit-lock-file --option commit-lockfile-summary "nix flake update"
+
+          if [ "$(git rev-parse HEAD)" = "$(git rev-parse origin/main)" ]; then
+            echo "no changes, exiting..."
+            exit 0
+          fi
+
+          git push --force
+
+          title="$(git log -1 --format=%s)"
+          body="$(git log -1 --format=%b)"
+          pr_state=$(gh pr view "$branch" --json state --jq '.state' 2>/dev/null || echo "NOT_FOUND")
+
+          if [ "$pr_state" = "OPEN" ]; then
+            echo "updating existing pr..."
+            gh pr edit "$branch" --title "$title" --body "$body"
+          else
+            echo "creating new pr..."
+            gh pr create --head "$branch" --base main --title "$title" --body "$body"
+          fi
