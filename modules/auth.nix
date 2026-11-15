@@ -48,6 +48,11 @@ in
   };
 
   config = lib.mkIf cfg.enable {
+    # TODO: make sure we check/setup all allowed account shells from ocflib
+    assertions = lib.singleton {
+      assertion = config.ocf.cli.enable;
+      message = "ocf.auth.enable requires ocf.cli.enable: shells and symlinks in /usr/bin must be setup for LDAP logins";
+    };
     age.secrets.root-password-hash.rekeyFile = ../secrets/master-keyed/root-password-hash.age;
 
     # Per-host keytab for GSSAPI SSH authentication
