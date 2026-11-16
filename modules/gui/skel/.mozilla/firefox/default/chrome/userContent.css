@@ -1,0 +1,33 @@
+/* chrome/userContent.css */
+@import url("userColors.css");
+
+@-moz-document url("about:newtab"), url("about:home") {
+  :root {
+    --newtab-background-color: var(--rp-base) !important;
+    --newtab-text-primary-color: var(--rp-text) !important;
+    --newtab-primary-action-background: var(--rp-love) !important;
+    --newtab-border-color: var(--rp-highlight-low) !important;
+  }
+
+  body,
+  .outer-wrapper {
+    background: var(--rp-base) !important;
+    color: var(--rp-text) !important;
+  }
+
+  .top-site-outer .tile,
+  .card-outer {
+    background-color: var(--rp-surface) !important;
+    border-color: var(--rp-highlight-low) !important;
+  }
+
+  .top-site-outer .title {
+    color: var(--rp-text) !important;
+  }
+
+  .search-wrapper .search-handoff-button {
+    background-color: var(--rp-overlay) !important;
+    color: var(--rp-text) !important;
+    border: 1px solid var(--rp-highlight-med) !important;
+  }
+}
