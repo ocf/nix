@@ -26,25 +26,6 @@ let
   '';
   # override ocf-tv from util
   ocf-tv = lib.hiPrio vncScript;
-  catppuccin-sddm =
-    (pkgs.catppuccin-sddm.override {
-      themeConfig.General = {
-        FontSize = 12;
-        Background = "/etc/ocf-assets/images/login.png";
-        #Logo = "/etc/ocf-assets/images/penguin.svg";
-        CustomBackground = true;
-      };
-    }).overrideAttrs
-      (old: {
-        postInstall = (old.postInstall or "") + ''
-          rev="${config.system.nixos.label}"
-
-          # add the commit hash to the bottom left corner of sddm
-          for qml in $out/share/sddm/themes/*/Main.qml; do
-            sed -i 's/^}$/    Text { anchors.bottom: parent.bottom; anchors.left: parent.left; anchors.margins: 10; text: "'"$rev"'"; color: "white"; z: 100 }\n}/' "$qml"
-          done
-        '';
-      });
 in
 {
   options.ocf.gui = {
@@ -138,8 +119,6 @@ in
     };
 
     environment.systemPackages = with pkgs; [
-      catppuccin-sddm
-
       # terminal emulators
       kitty
       foot
@@ -193,16 +172,35 @@ in
 
       displayManager = {
         defaultSession = cfg.desktop;
+      };
+    };
 
-        sddm = {
-          enable = true;
-          theme = "${catppuccin-sddm}/share/sddm/themes/catppuccin-latte";
-          wayland.enable = true;
-          settings.Users = {
-            RememberLastUser = false;
-            RememberLastSession = false;
-          };
-        };
+    services.ocf-greeter = {
+      enable = true;
+      defaultSession = "COSMIC";
+      displayScale = 1.75;
+    };
+    # required for greetd to use our custom pam modules
+    security.pam.services.greetd.rules = {
+      auth.login = {
+        order = 11500;
+        control = "substack";
+        modulePath = "login";
+      };
+      account.login = {
+        order = 11500;
+        control = "substack";
+        modulePath = "login";
+      };
+      password.login = {
+        order = 11500;
+        control = "substack";
+        modulePath = "login";
+      };
+      session.login = {
+        order = 11500;
+        control = "substack";
+        modulePath = "login";
       };
     };
 
