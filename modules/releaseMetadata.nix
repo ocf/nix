@@ -40,6 +40,7 @@ in
         SUPPORT_URL = "https://bestdocs.ocf.io/user-docs/contact/";
         PRIVACY_POLICY_URL = "https://bestdocs.ocf.io/user-docs/privacy/";
         BUG_REPORT_URL = "https://github.com/ocf/nix/issues";
+        BUILD_ID = config.system.nixos.label;
       };
     };
   };

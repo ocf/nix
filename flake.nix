@@ -79,6 +79,8 @@
       url = "github:ocf/jukebox-django";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    ocf-greeter.url = "github:ocf/ocf-greeter";
   };
 
   outputs =
@@ -103,6 +105,7 @@
       ocf-cosmic-applets,
       ocf-jukebox,
       niks3,
+      ocf-greeter,
     }@inputs:
     let
       # ============== #
@@ -131,6 +134,7 @@
         niks3.nixosModules.default
         niks3.nixosModules.niks3-auto-upload
         wayout.nixosModules.default
+        ocf-greeter.nixosModules.default
       ];
 
       hostDefaults = {
@@ -332,7 +336,6 @@
         ocf-utils = ocf-utils.packages.${final.stdenv.hostPlatform.system}.default;
         ocf-jukebox = ocf-jukebox.packages.${final.stdenv.hostPlatform.system}.default;
         plasma-applet-commandoutput = final.callPackage ./pkgs/plasma-applet-commandoutput.nix { };
-        catppuccin-sddm = final.qt6Packages.callPackage ./pkgs/catppuccin-sddm.nix { };
         ocf-cosmic-applets = ocf-cosmic-applets.packages.${final.stdenv.hostPlatform.system}.default;
         ocf-cosmic-greeter = final.callPackage ./pkgs/ocf-cosmic-greeter.nix { };
         ocf-hplip = final.callPackage ./pkgs/ocf-hplip.nix { };
