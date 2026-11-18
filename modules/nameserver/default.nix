@@ -80,11 +80,6 @@ in
 
     systemd.services.rebuild-dns-from-ldap = {
       after = [ "network-online.target" ];
-      # TODO replace with EnvironmentFile that is obtained from agenix
-      environment = {
-        DECAL_DDNS_KEY = "foo";
-        LETSENCRYPYT_DDNS_KEY = "bar";
-      };
       path = [
         build-zones
         pkgs.bind
@@ -92,7 +87,6 @@ in
       script = ''
         cd "$(mktemp -d)"
         cp --no-preserve=mode -r ${inputs.ocf-dns}/{etc,templates} .
-        sed -i /auto-dnssec/d etc/named.conf.local  # removed in bind 9.19.16
         build-zones
         check-zones
         cp -r etc /run/dns/

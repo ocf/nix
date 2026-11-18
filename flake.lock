@@ -458,11 +458,11 @@
     "ocf-dns": {
       "flake": false,
       "locked": {
-        "lastModified": 1784534980,
-        "narHash": "sha256-Cl2VlN+NY59l1GXi8DUkqHeLxmxoY/LPAAb9SO1PsQU=",
+        "lastModified": 1794875598,
+        "narHash": "sha256-J6E0LbhukgV71ucK/HdqZJ/iM9O5UZAI0BnbV+agYbs=",
         "owner": "ocf",
         "repo": "dns",
-        "rev": "736e31802ed35e66db6eeb3dcbadd47104e155d4",
+        "rev": "95661285234be991488f81f94f2c4b12dfe72882",
         "type": "github"
       },
       "original": {
