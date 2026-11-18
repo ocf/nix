@@ -5,6 +5,45 @@
   ...
 }:
 
+let
+  # age.secrets.${name}
+  secrets = {
+    ocfprinting = {
+      rekeyFile = ../../secrets/master-keyed/ocfprinting.age;
+      path = "/etc/ocfprinting.json";
+    };
+    # like puppet certs, needed for the ocfmail-dev and ocfstats-dev users that are in the ocfweb tests suite, which is run on koi.
+    ocfweb-conf = {
+      rekeyFile = ../../secrets/master-keyed/koi/ocfweb.conf.age;
+      path = "/etc/ocfweb/ocfweb.conf";
+    };
+    ucbldap = {
+      rekeyFile = ../../secrets/master-keyed/koi/ucbldap.passwd.age;
+      path = "/etc/ucbldap.passwd";
+    };
+  };
+
+  makeSecret = name: value: {
+    inherit (value) rekeyFile path;
+    owner = "root";
+    group = "ocfstaff";
+    mode = "0640";
+  };
+
+  # These puppet certs are necessary to (at least) load the servers page properly in the dev environment on ocfweb. The puppetdb must be queried by koi when running ocfweb tests to get correct information about puppet hosts (ex. which ones are kvm hypervisors, what are their corresponding VMs)
+
+  # get puppet secrets from filenames (e.g. "puppet-ca")
+  puppetSecrets = map (s: lib.removeSuffix ".pem.age" s) (
+    lib.filter (lib.hasPrefix "puppet-") (lib.attrNames (lib.readDir ../../secrets/master-keyed/koi))
+  );
+
+  makePuppetSecret = puppetType: {
+    rekeyFile = ../../secrets/master-keyed/koi/${puppetType}.pem.age;
+    path = "/etc/ocfweb/puppet-certs/${puppetType}.pem";
+    owner = "root";
+    mode = "0644";
+  };
+in
 {
   imports = [ ../../hardware/virtualized.nix ];
 
@@ -30,66 +69,7 @@
 
   ocf.loginServer.enable = true;
 
-  age.secrets.ocfprinting = {
-    rekeyFile = ../../secrets/master-keyed/ocfprinting.age;
-    path = "/etc/ocfprinting.json";
-    owner = "root";
-    group = "ocfstaff";
-    mode = "0640";
-  };
-
-  # like puppet certs, needed for the ocfmail-dev and ocfstats-dev users that are in the ocfweb tests suite, which is run on koi.
-  age.secrets.ocfweb-conf = {
-    rekeyFile = ../../secrets/master-keyed/koi/ocfweb.conf.age;
-    path = "/etc/ocfweb/ocfweb.conf";
-    owner = "root";
-    group = "ocfstaff";
-    mode = "0640";
-  };
-
-  # These puppet certs are necessary to (at least) load the servers page properly in the dev environment on ocfweb. The puppetdb must be queried by koi when running ocfweb tests to get correct information about puppet hosts (ex. which ones are kvm hypervisors, what are their corresponding VMs)
-  age.secrets.puppet-ca = {
-    rekeyFile = ../../secrets/master-keyed/koi/puppet-ca.pem.age;
-    path = "/etc/ocfweb/puppet-certs/puppet-ca.pem";
-    owner = "root";
-    mode = "0644";
-  };
-
-  age.secrets.puppet-cert = {
-    rekeyFile = ../../secrets/master-keyed/koi/puppet-cert.pem.age;
-    path = "/etc/ocfweb/puppet-certs/puppet-cert.pem";
-    owner = "root";
-    mode = "0644";
-  };
-
-  age.secrets.puppet-private = {
-    rekeyFile = ../../secrets/master-keyed/koi/puppet-private.pem.age;
-    path = "/etc/ocfweb/puppet-certs/puppet-private.pem";
-    owner = "root";
-    mode = "0644";
-  };
-
-  age.secrets.puppet-public = {
-    rekeyFile = ../../secrets/master-keyed/koi/puppet-public.pem.age;
-    path = "/etc/ocfweb/puppet-certs/puppet-public.pem";
-    owner = "root";
-    mode = "0644";
-  };
-
-  age.secrets.puppet-signed = {
-    rekeyFile = ../../secrets/master-keyed/koi/puppet-signed.pem.age;
-    path = "/etc/ocfweb/puppet-certs/puppet-signed.pem";
-    owner = "root";
-    mode = "0644";
-  };
-
-  age.secrets.ucbldap = {
-    rekeyFile = ../../secrets/master-keyed/koi/ucbldap.passwd.age;
-    path = "/etc/ucbldap.passwd";
-    owner = "root";
-    group = "ocfstaff";
-    mode = "0640";
-  };
+  age.secrets = builtins.mapAttrs makeSecret secrets // lib.genAttrs puppetSecrets makePuppetSecret;
 
   system.stateVersion = "25.05";
 }

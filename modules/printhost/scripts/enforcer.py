@@ -25,18 +25,14 @@ from textwrap import dedent
 from traceback import format_exc
 
 import ocflib.printing.quota as quota
-import redis
 import requests
 from ocflib.misc.mail import MAIL_SIGNATURE
 from ocflib.misc.mail import send_mail_user
 from ocflib.misc.mail import send_problem_report
+import cups
 
 
-# Redis broker for real-time notifications
-REDIS_HOST = 'broker.ocf.berkeley.edu'
-REDIS_PORT = 6378
-
-COLOR_QUEUES = {'OCF-Color'}
+COLOR_QUEUES = {'fishpaper'}
 
 APP_NAME = 'Printer'
 PORT = 6767
@@ -178,11 +174,9 @@ NOTIFY_NON_LETTER = dedent("""\
 def read_config():
     with open(os.environ['ENFORCER_MYSQL_PASSWORD']) as f:
         mysql_passwd = f.read().strip()
-    with open(os.environ['ENFORCER_REDIS_PASSWORD']) as f:
-        redis_passwd = f.read().strip()
     with open(os.environ['ENFORCER_WAYOUT_PASSWORD']) as f:
         wayout_passwd = f.read().strip()
-    return 'ocfprinting', mysql_passwd, redis_passwd, wayout_passwd
+    return 'ocfprinting', mysql_passwd, wayout_passwd
 
 
 def page_count(env):
@@ -291,10 +285,15 @@ def send_printer_mail(message, job, quo):
     send_mail_user(job.user, message.subject, body)
 
 
-def send_notification(wayout_pass, summary, body, username):
+def send_notification(wayout_pass, summary, body):
     try:
-        hostname = get_hostname_from_username(username)
+        job_id = int(os.environ['TEAJOBID'])
+        conn = cups.Connection()
+        job_attrs = conn.getJobAttributes(job_id, requested_attributes=['job-originating-host-name'])
+        hostname = job_attrs.get('job-originating-host-name')
+
         if not hostname:
+            syslog(f'ERROR: no hostname found for job id: {job_id}')
             return
         url = 'http://' + hostname + ':' + str(PORT) + '/notify'
         data = {
@@ -311,28 +310,14 @@ def send_notification(wayout_pass, summary, body, username):
         syslog('Exception: ' + str(e))
 
 
-def get_hostname_from_username(username):
-    try:
-        url = 'https://labmap.ocf.berkeley.edu/api/generate'
-        res = requests.get(url, timeout=5).json()
-        desktops = res.get('desktops', [])
-        for desktop in desktops:
-            if desktop.get('user', '') == username:
-                return desktop.get('name')
-        return None
-    except Exception as e:
-        syslog('Exception: ' + str(e))
-
-
-def prehook(c, r, job, wayout_pass):
+def prehook(c, job, wayout_pass):
     quo = quota.get_quota(c, job.user)
 
     size = page_size(os.environ)
     if size is not None and size not in LETTER_SIZES:
         send_printer_mail(NON_LETTER_ERROR_MESSAGE, job, quo)
         msg = NOTIFY_NON_LETTER.format(document=job.doc_name)
-        r.publish('user-' + job.user, msg)
-        send_notification(wayout_pass, 'Non Letter Error', msg, job.user)
+        send_notification(wayout_pass, 'Non Letter Error', msg)
         sys.exit(255)
 
     if job.pages > quo.daily:
@@ -341,8 +326,7 @@ def prehook(c, r, job, wayout_pass):
             pages=job.pages,
             quota=quo.daily,
         )
-        r.publish('user-' + job.user, msg)
-        send_notification(wayout_pass, 'Insufficient Quota', msg, job.user)
+        send_notification(wayout_pass, 'Insufficient Quota', msg)
         sys.exit(255)
     elif job.queue in COLOR_QUEUES and job.pages > quo.color:
         send_printer_mail(INSUFFICIENT_COLOR_QUOTA_MESSAGE, job, quo)
@@ -350,12 +334,11 @@ def prehook(c, r, job, wayout_pass):
             pages=job.pages,
             quota=quo.color,
         )
-        r.publish('user-' + job.user, msg)
-        send_notification(wayout_pass, 'Insufficient Color Quota', msg, job.user)
+        send_notification(wayout_pass, 'Insufficient Color Quota', msg)
         sys.exit(255)
 
 
-def posthook(c, r, job, success, wayout_pass):
+def posthook(c, job, success, wayout_pass):
     msg = ''
     if success:
         quota.add_job(c, job)
@@ -363,8 +346,7 @@ def posthook(c, r, job, success, wayout_pass):
             document=job.doc_name,
             printer=job.printer
         )
-        send_notification(wayout_pass, 'Job Queued', msg, job.user)
-        r.publish('printer-' + job.printer, job.user)
+        send_notification(wayout_pass, 'Job Queued', msg)
     else:
         quo = quota.get_quota(c, job.user)
         msg = NOTIFY_JOB_ERROR.format(document=job.doc_name)
@@ -382,8 +364,7 @@ def posthook(c, r, job, success, wayout_pass):
 
         syslog(err_msg)
         send_problem_report(err_msg)
-        send_notification(wayout_pass, 'Printer Error', msg, job.user)
-    r.publish('user-' + job.user, msg)
+        send_notification(wayout_pass, 'Printer Error', msg)
 
 
 def main(argv):
@@ -397,19 +378,13 @@ def main(argv):
                             choices={'prehook', 'posthook'})
         args = parser.parse_args(argv[1:])
         job = create_job(os.environ)
-        mysql_user, mysql_pass, redis_pass, wayout_pass = read_config()
-        r = redis.StrictRedis(
-            host=REDIS_HOST,
-            port=REDIS_PORT,
-            password=redis_pass,
-            ssl=True,
-        )
+        mysql_user, mysql_pass, wayout_pass = read_config()
         with quota.get_connection(user=mysql_user, password=mysql_pass) as c:
             if args.command == 'prehook':
-                prehook(c, r, job, wayout_pass)
+                prehook(c, job, wayout_pass)
             else:
                 success = os.environ['TEASTATUS'] == '0'
-                posthook(c, r, job, success, wayout_pass)
+                posthook(c, job, success, wayout_pass)
     except SystemExit as e:
         sys.exit(e.code)
     except Exception:

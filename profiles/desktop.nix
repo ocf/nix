@@ -28,6 +28,8 @@
     # desktops heavily use /remote and bind mount to ~/remote on login
     # keep the mount cached and ready to use at all times
     nfs.idleTimeout = 0;
+
+    impermanence.enable = lib.mkIf (config.disko.devices.zpool ? "zroot") true;
   };
 
   boot = {
@@ -46,6 +48,9 @@
 
   # Enable support SANE scanners
   hardware.sane.enable = true;
+
+  # enable printing
+  ocf.printing.enable = true;
 
   zramSwap.enable = true;
 
@@ -69,6 +74,8 @@
     ddcutil # for monitor brightness control
   ];
 
+  hardware.opentabletdriver.enable = true;
+
   # enable i2c and set udev rules for monitor brightness control
   boot.kernelModules = [ "i2c-dev" ];
   services.udev.extraRules = ''
@@ -76,8 +83,6 @@
   '';
 
   services = {
-    avahi.enable = true;
-
     pipewire = {
       enable = true;
       pulse.enable = true;

@@ -42,6 +42,8 @@
   networking.useDHCP = lib.mkDefault true;
   # networking.interfaces.enp1s0.useDHCP = lib.mkDefault true;
 
+  services.fwupd.enable = false; # fwupd not required on machines with virtual hardware
+
   disko.devices = lib.mkDefault {
     disk = {
       main = {

@@ -1,9 +1,9 @@
-{ ... }:
-
 {
   imports = [
-    ../../hardware/ridge-pc.nix
+    ../../hardware/ridge-pc-zfs.nix
   ];
+
+  disko.devices.disk.main.device = "/dev/disk/by-id/nvme-HP_SSD_FX900_Pro_512GB_HBSE33220300412";
 
   ocf.nvidia.enable = true;
   ocf.network = {

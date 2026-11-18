@@ -62,6 +62,10 @@
         enable = true;
         repo = "ocflib";
       }
+      {
+        enable = true;
+        repo = "imprint";
+      }
     ];
   };
 

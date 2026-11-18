@@ -20,7 +20,10 @@ in
     nixPath = lib.mapAttrsToList (key: value: "${key}=${value.outPath}") inputs;
 
     settings = {
-      experimental-features = "nix-command flakes";
+      experimental-features = [
+        "nix-command"
+        "flakes"
+      ];
       nix-path = lib.mapAttrsToList (name: _: "${name}=flake:${name}") inputs;
       builders-use-substitutes = true;
     };
@@ -103,14 +106,6 @@ in
     hostPubkey = lib.mkIf (builtins.pathExists hostKeyFile) (builtins.readFile hostKeyFile);
   };
 
-  # Mitigate Dirty Frag (universal Linux LPE via esp4/esp6/rxrpc page-cache write)
-  # https://github.com/V4bel/dirtyfrag
-  boot.extraModprobeConfig = ''
-    install esp4 /bin/false
-    install esp6 /bin/false
-    install rxrpc /bin/false
-  '';
-
   boot.tmp.useTmpfs = true;
 
   boot.loader = {
@@ -154,8 +149,13 @@ in
     '';
   };
 
-  environment.variables.EDITOR = "${pkgs.vim}/bin/ex"; # line editor
-  environment.variables.VISUAL = "${pkgs.nano}/bin/nano"; # visual editor
+  programs.vim.enable = true;
+  programs.vim.defaultEditor = true;
+
+  # some programs dont check VISUAL before EDITOR, which surprises the user
+  # with ex. we can use ex manually if we need to
+  #environment.variables.EDITOR = "${pkgs.vim}/bin/ex"; # line editor
+  #environment.variables.VISUAL = "${pkgs.nano}/bin/nano"; # visual editor
 
   environment.systemPackages = with pkgs; [
     # System utilities
@@ -256,8 +256,6 @@ in
     ocf-niks3-push
   ];
 
-  programs.vim.enable = true;
-
   services = {
     openssh = {
       enable = true;
@@ -271,22 +269,7 @@ in
       alsa.enable = true;
     };
 
-    envfs = {
-      enable = true;
-
-      # We need /bin/bash etc. to work because people's shells are set to it
-      extraFallbackPathCommands = ''
-        ln -s ${lib.getExe pkgs.bash} $out/bash
-        ln -s ${lib.getExe pkgs.zsh} $out/zsh
-        ln -s ${lib.getExe pkgs.fish} $out/fish
-        ln -s ${lib.getExe pkgs.xonsh} $out/xonsh
-        ln -s ${lib.getExe pkgs.tcsh} $out/tcsh
-        ln -s ${lib.getExe pkgs.tcsh} $out/csh
-      '';
-    };
-
-    fwupd.enable = true;
-    avahi.enable = true;
+    fwupd.enable = lib.mkDefault true;
   };
 
   security.rtkit.enable = true;
@@ -298,13 +281,6 @@ in
     papersize.text = "letter";
     "nixos/configuration.nix".text = ''
       {}: builtins.abort "This machine is not managed by /etc/nixos. Please use configs at ocf.io/gh/nix with Colmena."
-    '';
-  }
-  // lib.optionalAttrs (!config.ocf.printhost.enable) {
-    "cups/lpoptions".text = "Default OCF-BW";
-    "cups/client.conf".text = ''
-      ServerName printhost.ocf.berkeley.edu
-      Encryption Always
     '';
   };
 
@@ -336,7 +312,10 @@ in
     };
   };
 
-  # CVE-2026-31431
-  # remove after kernel is updated to a fixed release
-  boot.blacklistedKernelModules = [ "algif_aead" ];
+  virtualisation.vmVariant.ocf.vm.enable = lib.mkDefault true;
+
+  boot.blacklistedKernelModules = [
+    # https://xint.io/blog/nginx2root-remote-code-execution#6-analysis-of-the-linux-kernel-lpe-vulnerability-22
+    "sctp"
+  ];
 }

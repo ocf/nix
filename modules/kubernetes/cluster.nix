@@ -11,15 +11,16 @@ let
   # that need to be accounted for in advance. thus, we pin the version of
   # kubernetes and manually update it, while the rest of its dependencies stay
   # up to date with the nixpkgs input.
-  # https://bestdocs.ocf.io/staff-docs/infrastructure/kubernetes/runbooks/updating-kubernetes
+  # do not change any of these values without reading the following:
+  # https://bestdocs.ocf.berkeley.edu/staff-docs/infrastructure/kubernetes/runbooks/updating-kubernetes
   kubernetes = pkgs.kubernetes.overrideAttrs (oldAttrs: rec {
-    version = "1.36.1";
+    version = "1.37.2";
     src = pkgs.fetchFromGitHub {
       owner = "kubernetes";
       repo = "kubernetes";
       rev = "v${version}";
       # make sure to update hash if changing kubernetes version
-      hash = "sha256-QG2zFaFtGXoWIlyp3hVBRU+OHre/6vWcvijUe1DdjIo=";
+      hash = "sha256-Bbyu5hMQTSrvr/kDFHlRnfz5RIR7ecBfTFOGTCffn5c=";
     };
   });
   kubePkgs = with pkgs; [
@@ -34,24 +35,34 @@ let
     gvisor
     cri-tools
     ebtables
+    etcd
   ];
+  cfg = config.ocf.kubernetes.cluster;
 in
 {
   # Configuration for Nodes
-  options.services.ocfKubernetes = {
-    enable = lib.mkEnableOption "everything needed to run kubeadm";
-    isLeader = lib.mkEnableOption "kube-vip as a static pod";
+  options.ocf.kubernetes.cluster = {
+    enable = lib.mkEnableOption "configurations required for a kubernetes node";
+    controlPlane = lib.mkEnableOption "kube-vip as a static pod";
+    staging = lib.mkEnableOption "staging cluster node";
   };
 
-  config = lib.mkIf config.services.ocfKubernetes.enable {
-    # add exemption: automated deployments has caused failures due to the control plane all going down at once
-    ocf.managed-deployment.automated-deploy = false;
+  config = lib.mkIf cfg.enable {
+    ocf = {
+      # add exemption: automated deployments has caused failures due to the control plane all going down at once
+      managed-deployment.automated-deploy = false;
+
+      # enable client tools but not oidc, as you should only run kubectl on nodes for debugging
+      kubernetes.client.enable = true;
+    };
+
+    deployment.tags = lib.singleton (if cfg.controlPlane then "kube-control" else "kube-worker");
 
     environment.etc = {
-      "kubernetes/manifests/kubevip.yaml" = lib.mkIf config.services.ocfKubernetes.isLeader {
-        source = ./kubevip.yaml;
+      "kubernetes/manifests/kubevip.yaml" = lib.mkIf cfg.controlPlane {
+        source = if cfg.staging then ./staging-kubevip.yaml else ./kubevip.yaml;
       };
-      "kubernetes/kubeadm.yaml".source = ./kubeadm.yaml;
+      "kubernetes/kubeadm.yaml".source = if cfg.staging then ./staging-kubeadm.yaml else ./kubeadm.yaml;
     };
 
     # From an OCF alumni, some of these might be unnecessary.
@@ -84,6 +95,9 @@ in
       "xt_socket"
       "xts"
     ];
+
+    # needed for pods that use nfs mounts (such as ocf/create)
+    boot.supportedFilesystems.nfs = true;
 
     # <https://docs.cilium.io/en/stable/operations/system_requirements/#mounted-ebpf-filesystem>
     fileSystems."/sys/fs/bpf" = {
@@ -163,9 +177,14 @@ in
       settings.crio.image.short_name_mode = "disabled";
     };
 
-    # NixOS cri-o config does weird stuff... reverting these
-    environment.etc."cni/net.d/10-crio-bridge.conflist".enable = false;
-    environment.etc."cni/net.d/99-loopback.conflist".enable = false;
+    environment.etc = {
+      # NixOS cri-o config does weird stuff... reverting these
+      "cni/net.d/10-crio-bridge.conflist".enable = false;
+      "cni/net.d/99-loopback.conflist".enable = false;
+
+      # this file is part of a hostPath mount in the apiserver, so it can't be a symlink
+      "ssl/certs/ca-certificates.crt".mode = lib.mkForce "0644";
+    };
     virtualisation.cri-o.settings.crio.network = lib.mkForce { };
   };
 }

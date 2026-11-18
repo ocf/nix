@@ -1,0 +1,56 @@
+{
+  lib,
+  pkgs,
+  config,
+  ...
+}:
+
+let
+  cfg = config.ocf.printing;
+in
+{
+  options.ocf.printing = {
+    enable = lib.mkEnableOption "OCF client printing support";
+
+    printhostURL = lib.mkOption {
+      type = lib.types.str;
+      default = "printhost.ocf.berkeley.edu";
+    };
+  };
+
+  config = lib.mkIf cfg.enable {
+    services.avahi.enable = lib.mkForce false; # prevent printer discovery by cups client
+    services.printing = {
+      enable = true;
+      startWhenNeeded = false; # print dialog does not wait for cups to start, will show no printers first time if socket-activated
+      browsed.enable = false;
+      browsing = false;
+      stateless = true;
+      drivers = [ pkgs.ocf-hplip ];
+      package = pkgs.ocf-cups;
+    };
+    hardware.printers = {
+      ensureDefaultPrinter = "OCF-BW";
+      ensurePrinters = [
+        {
+          deviceUri = "ipps://${cfg.printhostURL}/classes/OCF-BW-Group?waitjob=false&waitprinter=false";
+          name = "OCF-BW";
+          model = "HP/hp-laserjet_m806-ps.ppd.gz";
+          location = "OCF lab";
+          ppdOptions = {
+            Duplex = "DuplexNoTumble";
+          };
+        }
+        {
+          deviceUri = "ipps://${cfg.printhostURL}/classes/fishpaper?waitjob=false&waitprinter=false";
+          name = "OCF-Color";
+          model = "HP/hp-color_laserjet_m856-ps.ppd.gz";
+          location = "OCF lab";
+          ppdOptions = {
+            Duplex = "None";
+          };
+        }
+      ];
+    };
+  };
+}

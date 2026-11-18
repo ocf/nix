@@ -71,13 +71,12 @@ in
       mpv
 
       # useful for iso files even without a cd drive
-      # needed for melange (cd drive host)
-      brasero
       kdePackages.k3b
       apostrophe
       #texliveFull
       texstudio
 
+      aseprite
       krita
       gimp3
       darktable
@@ -100,6 +99,7 @@ in
 
       strawberry
       songrec
+      qgis
     ];
 
     ocf.gui.apps.browsers.handlePDFs = true;

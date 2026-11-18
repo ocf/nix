@@ -48,6 +48,11 @@ in
   };
 
   config = lib.mkIf cfg.enable {
+    # TODO: make sure we check/setup all allowed account shells from ocflib
+    assertions = lib.singleton {
+      assertion = config.ocf.cli.enable;
+      message = "ocf.auth.enable requires ocf.cli.enable: shells and symlinks in /usr/bin must be setup for LDAP logins";
+    };
     age.secrets.root-password-hash.rekeyFile = ../secrets/master-keyed/root-password-hash.age;
 
     # Per-host keytab for GSSAPI SSH authentication
@@ -60,8 +65,23 @@ in
       mode = "0600";
     };
 
+    # nixbld uid starts at 30000 by default, which collides with our ldap range
+    # auto-allocate-uids starts uids at 872415232 by default, which should not collide
+    nix.settings.auto-allocate-uids = true;
+    nix.settings.experimental-features = [ "auto-allocate-uids" ];
+
+    # FIXME: we need to implement a more reliable way to make sure nixos and
+    # other things dont create uids/gids that collide with ldap
+
     users = {
+      # - non-ldap users are reserved for services or special cases, and should
+      #   only be added declaratively.
+      # - ldap users have homes set to /home. local users rarely need home
+      #   directories but in case createHome is set without specifying a home,
+      #   provide a default that does not clutter up /home.
       mutableUsers = false;
+      defaultUserHome = "/home.local";
+
       users.root.hashedPasswordFile = config.age.secrets.root-password-hash.path;
 
       ldap = {

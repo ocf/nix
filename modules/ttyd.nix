@@ -71,6 +71,11 @@ in
           locations."/" = {
             proxyPass = "http://127.0.0.1:${toString cfg.port}";
             proxyWebsockets = true;
+
+            # CVE-2026-111497 mitigation
+            extraConfig = ''
+              proxy_set_header Accept-Encoding "gzip, deflate, zstd";
+            '';
           };
         };
 

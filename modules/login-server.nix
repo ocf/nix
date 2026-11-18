@@ -23,6 +23,7 @@ in
     (lib.mkIf cfg.enable {
       environment.systemPackages = with pkgs; [
         python3Packages.cached-property
+        wezterm.headless # wezterm-mux-server
       ];
 
       # -s to display output in human friendly units by default
@@ -70,6 +71,12 @@ in
             --hashlimit-mode srcip -j DROP
         '';
       };
+
+      # enable printing
+      ocf.printing.enable = true;
+
+      # allow users to run unpatched binaries
+      programs.nix-ld.enable = true;
     })
 
     (lib.mkIf (cfg.enable && cfg.public) {
