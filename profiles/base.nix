@@ -313,4 +313,9 @@ in
   };
 
   virtualisation.vmVariant.ocf.vm.enable = lib.mkDefault true;
+
+  boot.blacklistedKernelModules = [
+    # https://xint.io/blog/nginx2root-remote-code-execution#6-analysis-of-the-linux-kernel-lpe-vulnerability-22
+    "sctp"
+  ];
 }
