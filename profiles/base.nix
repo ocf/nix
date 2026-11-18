@@ -20,7 +20,10 @@ in
     nixPath = lib.mapAttrsToList (key: value: "${key}=${value.outPath}") inputs;
 
     settings = {
-      experimental-features = "nix-command flakes";
+      experimental-features = [
+        "nix-command"
+        "flakes"
+      ];
       nix-path = lib.mapAttrsToList (name: _: "${name}=flake:${name}") inputs;
       builders-use-substitutes = true;
     };
