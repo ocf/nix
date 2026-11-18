@@ -20,5 +20,13 @@
         group = "ocf";
       };
     };
+    virtualisation.vmVariant.virtualisation = {
+      memorySize = 8192;
+      cores = 6;
+      qemu.options = [
+        "-vga virtio"
+        "-display gtk,gl=on"
+      ];
+    };
   };
 }
