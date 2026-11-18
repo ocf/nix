@@ -34,10 +34,13 @@ in
 
   config = lib.mkIf cfg.enable {
     age.secrets =
-      lib.genAttrs (lib.attrNames (lib.readDir ../../secrets/master-keyed/nameserver)) (file: {
-        rekeyFile = ../../secrets/master-keyed/nameserver/${file};
-        path = "/etc/bind/keys/${lib.removeSuffix ".age" file}";
-      })
+      lib.genAttrs' (lib.attrNames (lib.readDir ../../secrets/master-keyed/nameserver)) (
+        file:
+        lib.nameValuePair (lib.removeSuffix ".age" file) {
+          rekeyFile = ../../secrets/master-keyed/nameserver/${file};
+          path = "/etc/bind/keys/${lib.removeSuffix ".age" file}";
+        }
+      )
       // {
         "named.conf.keys.age" = {
           owner = bindUser;
