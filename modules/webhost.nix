@@ -17,6 +17,7 @@ let
     "deploy-${website-cfg.name}" = {
       isSystemUser = true;
       group = "nginx";
+      useDefaultShell = true;
       openssh.authorizedKeys.keys = [
         "${website-cfg.githubActionsPubkey}"
       ];
