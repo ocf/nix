@@ -494,11 +494,11 @@
         "treefmt-nix": "treefmt-nix_3"
       },
       "locked": {
-        "lastModified": 1795128551,
-        "narHash": "sha256-adEZHbBn+cRr3qkd8bQHl4UZRk0UT9ARN2Y/oYlFh6c=",
+        "lastModified": 1795135095,
+        "narHash": "sha256-WBURenIhdVjpD8f0+aNc4IYEzY7Jb2I5olTudd8wzYU=",
         "owner": "ocf",
         "repo": "ocf-greeter",
-        "rev": "d218ba4cf1ec18837002f49bedc97e990237c560",
+        "rev": "1d75736c013816ee4242b282e87a3a2a904a7733",
         "type": "github"
       },
       "original": {

@@ -180,29 +180,6 @@ in
       defaultSession = "COSMIC";
       displayScale = 1.75;
     };
-    # required for greetd to use our custom pam modules
-    security.pam.services.greetd.rules = {
-      auth.login = {
-        order = 11500;
-        control = "substack";
-        modulePath = "login";
-      };
-      account.login = {
-        order = 11500;
-        control = "substack";
-        modulePath = "login";
-      };
-      password.login = {
-        order = 11500;
-        control = "substack";
-        modulePath = "login";
-      };
-      session.login = {
-        order = 11500;
-        control = "substack";
-        modulePath = "login";
-      };
-    };
 
     systemd.user.services.brightness-reset = {
       description = "Reset monitor brightness to 100% on logout";
