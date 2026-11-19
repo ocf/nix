@@ -62,6 +62,7 @@ in
 
         users.users.${deploy-user} = {
           isSystemUser = true;
+          useDefaultShell = true; # deploy user needs to be able to login to deploy
           group = deploy-user;
           openssh.authorizedKeys.keys = [
             "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDMuiOUsjVJSi+0WeMHKquQmwoyz/c3N7HhjJwzz21B3" # github-actions
