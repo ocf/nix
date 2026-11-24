@@ -318,4 +318,6 @@ in
     # https://xint.io/blog/nginx2root-remote-code-execution#6-analysis-of-the-linux-kernel-lpe-vulnerability-22
     "sctp"
   ];
+
+  security.lockKernelModules = true;
 }
