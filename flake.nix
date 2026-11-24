@@ -54,6 +54,11 @@
     ocf-sync-etc.url = "github:ocf/etc/master";
     ocf-pam-trimspaces.url = "github:ocf/pam_trimspaces/master";
 
+    ocf-dns = {
+      url = "github:ocf/dns";
+      flake = false;
+    };
+
     ocflib = {
       url = "github:ocf/ocflib/master";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -96,6 +101,7 @@
       impermanence,
       nix-index-database,
       ocflib,
+      ocf-dns,
       ocf-sync-etc,
       ocf-pam-trimspaces,
       ocf-utils,
