@@ -5,7 +5,7 @@
     # default nixpkgs channel is stable small for quicker security updates.
     # big channel can be used on demand if stable small leads to ballooned
     # build times.
-    nixpkgs.url = "https://channels.nixos.org/nixos-26.05-small/nixexprs.tar.zst";
+    nixpkgs.url = "https://channels.nixos.org/nixos-26.11-small/nixexprs.tar.zst";
     nixpkgs-stable.url = "https://channels.nixos.org/nixos-26.05/nixexprs.tar.zst";
 
     nixpkgs-unstable.url = "https://channels.nixos.org/nixos-unstable/nixexprs.tar.zst";
