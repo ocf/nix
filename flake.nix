@@ -79,6 +79,11 @@
       url = "github:ocf/jukebox-django";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    ocf-sddm = {
+      url = "github:ocf/sddm";
+      flake = false;
+    };
   };
 
   outputs =
@@ -103,6 +108,7 @@
       ocf-cosmic-applets,
       ocf-jukebox,
       niks3,
+      ocf-sddm,
     }@inputs:
     let
       # ============== #
@@ -332,7 +338,6 @@
         ocf-utils = ocf-utils.packages.${final.stdenv.hostPlatform.system}.default;
         ocf-jukebox = ocf-jukebox.packages.${final.stdenv.hostPlatform.system}.default;
         plasma-applet-commandoutput = final.callPackage ./pkgs/plasma-applet-commandoutput.nix { };
-        catppuccin-sddm = final.qt6Packages.callPackage ./pkgs/catppuccin-sddm.nix { };
         ocf-cosmic-applets = ocf-cosmic-applets.packages.${final.stdenv.hostPlatform.system}.default;
         ocf-cosmic-greeter = final.callPackage ./pkgs/ocf-cosmic-greeter.nix { };
         ocf-hplip = final.callPackage ./pkgs/ocf-hplip.nix { };
