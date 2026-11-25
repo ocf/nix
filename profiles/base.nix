@@ -118,6 +118,10 @@ in
     efi.canTouchEfiVariables = true;
   };
 
+  # auto reboot on kernel panics to prevent a system from hanging
+  # 5s delay lets someone on the console read or take a picture briefly
+  boot.kernelParams = [ "panic=5" ];
+
   security.pam = {
     services.login.makeHomeDir = true;
     services.sshd.makeHomeDir = true;
